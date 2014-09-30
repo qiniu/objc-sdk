@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 
-@interface QNCrc : NSObject
+@interface QNCrc32 : NSObject
 
 + (UInt32) file:(NSString *)filePath;
 + (UInt32) data:(NSData *)data;

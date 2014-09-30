@@ -14,9 +14,9 @@
 		DF2CDE5D19DAC6A400CE01FB /* QNBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5019DAC6A400CE01FB /* QNBase64.m */; };
 		DF2CDE5E19DAC6A400CE01FB /* QNBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5019DAC6A400CE01FB /* QNBase64.m */; };
 		DF2CDE5F19DAC6A400CE01FB /* QNConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = DF2CDE5119DAC6A400CE01FB /* QNConfig.h */; };
-		DF2CDE6019DAC6A400CE01FB /* QNCrc.h in Headers */ = {isa = PBXBuildFile; fileRef = DF2CDE5219DAC6A400CE01FB /* QNCrc.h */; };
-		DF2CDE6119DAC6A400CE01FB /* QNCrc.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5319DAC6A400CE01FB /* QNCrc.m */; };
-		DF2CDE6219DAC6A400CE01FB /* QNCrc.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5319DAC6A400CE01FB /* QNCrc.m */; };
+		DF2CDE6019DAC6A400CE01FB /* QNCrc32.h in Headers */ = {isa = PBXBuildFile; fileRef = DF2CDE5219DAC6A400CE01FB /* QNCrc32.h */; };
+		DF2CDE6119DAC6A400CE01FB /* QNCrc32.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5319DAC6A400CE01FB /* QNCrc32.m */; };
+		DF2CDE6219DAC6A400CE01FB /* QNCrc32.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5319DAC6A400CE01FB /* QNCrc32.m */; };
 		DF2CDE6319DAC6A400CE01FB /* QNTask.h in Headers */ = {isa = PBXBuildFile; fileRef = DF2CDE5419DAC6A400CE01FB /* QNTask.h */; };
 		DF2CDE6419DAC6A400CE01FB /* QNUserAgent.h in Headers */ = {isa = PBXBuildFile; fileRef = DF2CDE5519DAC6A400CE01FB /* QNUserAgent.h */; };
 		DF2CDE6519DAC6A400CE01FB /* QNUserAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5619DAC6A400CE01FB /* QNUserAgent.m */; };
@@ -29,11 +29,11 @@
 		DF2CDE7119DAE90300CE01FB /* QNBase64Test.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE7019DAE90300CE01FB /* QNBase64Test.m */; };
 		DF2CDE7219DAE90300CE01FB /* QNBase64Test.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE7019DAE90300CE01FB /* QNBase64Test.m */; };
 		DF2CDE7419DAF65800CE01FB /* QNBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5019DAC6A400CE01FB /* QNBase64.m */; };
-		DF2CDE7719DAF65800CE01FB /* QNCrc.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5319DAC6A400CE01FB /* QNCrc.m */; };
+		DF2CDE7719DAF65800CE01FB /* QNCrc32.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5319DAC6A400CE01FB /* QNCrc32.m */; };
 		DF2CDE7A19DAF65800CE01FB /* QNUserAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5619DAC6A400CE01FB /* QNUserAgent.m */; };
 		DF2CDE7E19DAF65800CE01FB /* QNUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5B19DAC6A400CE01FB /* QNUploader.m */; };
 		DF2CDE8019DAF67F00CE01FB /* QNBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5019DAC6A400CE01FB /* QNBase64.m */; };
-		DF2CDE8319DAF67F00CE01FB /* QNCrc.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5319DAC6A400CE01FB /* QNCrc.m */; };
+		DF2CDE8319DAF67F00CE01FB /* QNCrc32.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5319DAC6A400CE01FB /* QNCrc32.m */; };
 		DF2CDE8619DAF67F00CE01FB /* QNUserAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5619DAC6A400CE01FB /* QNUserAgent.m */; };
 		DF2CDE8A19DAF67F00CE01FB /* QNUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5B19DAC6A400CE01FB /* QNUploader.m */; };
 		EE76B381AF33E356C2C8FC56 /* libPods-QiniuSDK MacTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EB0B4B6BA4EEC2DEF421644 /* libPods-QiniuSDK MacTests.a */; };
@@ -71,8 +71,8 @@
 		DF2CDE4F19DAC6A400CE01FB /* QNBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNBase64.h; sourceTree = "<group>"; };
 		DF2CDE5019DAC6A400CE01FB /* QNBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNBase64.m; sourceTree = "<group>"; };
 		DF2CDE5119DAC6A400CE01FB /* QNConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNConfig.h; sourceTree = "<group>"; };
-		DF2CDE5219DAC6A400CE01FB /* QNCrc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNCrc.h; sourceTree = "<group>"; };
-		DF2CDE5319DAC6A400CE01FB /* QNCrc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNCrc.m; sourceTree = "<group>"; };
+		DF2CDE5219DAC6A400CE01FB /* QNCrc32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNCrc32.h; sourceTree = "<group>"; };
+		DF2CDE5319DAC6A400CE01FB /* QNCrc32.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNCrc32.m; sourceTree = "<group>"; };
 		DF2CDE5419DAC6A400CE01FB /* QNTask.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNTask.h; sourceTree = "<group>"; };
 		DF2CDE5519DAC6A400CE01FB /* QNUserAgent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNUserAgent.h; sourceTree = "<group>"; };
 		DF2CDE5619DAC6A400CE01FB /* QNUserAgent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNUserAgent.m; sourceTree = "<group>"; };
@@ -183,8 +183,8 @@
 				DF2CDE4F19DAC6A400CE01FB /* QNBase64.h */,
 				DF2CDE5019DAC6A400CE01FB /* QNBase64.m */,
 				DF2CDE5119DAC6A400CE01FB /* QNConfig.h */,
-				DF2CDE5219DAC6A400CE01FB /* QNCrc.h */,
-				DF2CDE5319DAC6A400CE01FB /* QNCrc.m */,
+				DF2CDE5219DAC6A400CE01FB /* QNCrc32.h */,
+				DF2CDE5319DAC6A400CE01FB /* QNCrc32.m */,
 				DF2CDE5419DAC6A400CE01FB /* QNTask.h */,
 				DF2CDE5519DAC6A400CE01FB /* QNUserAgent.h */,
 				DF2CDE5619DAC6A400CE01FB /* QNUserAgent.m */,
@@ -219,7 +219,7 @@
 			files = (
 				DF2CDE6719DAC6A400CE01FB /* QNVersion.h in Headers */,
 				DF2CDE6319DAC6A400CE01FB /* QNTask.h in Headers */,
-				DF2CDE6019DAC6A400CE01FB /* QNCrc.h in Headers */,
+				DF2CDE6019DAC6A400CE01FB /* QNCrc32.h in Headers */,
 				DF2CDE5C19DAC6A400CE01FB /* QNBase64.h in Headers */,
 				DF2CDE6819DAC6A400CE01FB /* QiniuSDK.h in Headers */,
 				DF2CDE6919DAC6A400CE01FB /* QNUploader.h in Headers */,
@@ -496,7 +496,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DF2CDE5D19DAC6A400CE01FB /* QNBase64.m in Sources */,
-				DF2CDE6119DAC6A400CE01FB /* QNCrc.m in Sources */,
+				DF2CDE6119DAC6A400CE01FB /* QNCrc32.m in Sources */,
 				DF2CDE6A19DAC6A400CE01FB /* QNUploader.m in Sources */,
 				DF2CDE6519DAC6A400CE01FB /* QNUserAgent.m in Sources */,
 			);
@@ -507,7 +507,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DF2CDE8019DAF67F00CE01FB /* QNBase64.m in Sources */,
-				DF2CDE8319DAF67F00CE01FB /* QNCrc.m in Sources */,
+				DF2CDE8319DAF67F00CE01FB /* QNCrc32.m in Sources */,
 				DF2CDE8619DAF67F00CE01FB /* QNUserAgent.m in Sources */,
 				DF2CDE8A19DAF67F00CE01FB /* QNUploader.m in Sources */,
 				DF2CDE7119DAE90300CE01FB /* QNBase64Test.m in Sources */,
@@ -519,7 +519,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DF2CDE5E19DAC6A400CE01FB /* QNBase64.m in Sources */,
-				DF2CDE6219DAC6A400CE01FB /* QNCrc.m in Sources */,
+				DF2CDE6219DAC6A400CE01FB /* QNCrc32.m in Sources */,
 				DF2CDE6B19DAC6A400CE01FB /* QNUploader.m in Sources */,
 				DF2CDE6619DAC6A400CE01FB /* QNUserAgent.m in Sources */,
 			);
@@ -530,7 +530,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DF2CDE7419DAF65800CE01FB /* QNBase64.m in Sources */,
-				DF2CDE7719DAF65800CE01FB /* QNCrc.m in Sources */,
+				DF2CDE7719DAF65800CE01FB /* QNCrc32.m in Sources */,
 				DF2CDE7A19DAF65800CE01FB /* QNUserAgent.m in Sources */,
 				DF2CDE7E19DAF65800CE01FB /* QNUploader.m in Sources */,
 				DF2CDE7219DAE90300CE01FB /* QNBase64Test.m in Sources */,
@@ -622,6 +622,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -634,6 +635,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				EXECUTABLE_PREFIX = lib;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

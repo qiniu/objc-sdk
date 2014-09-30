@@ -6,9 +6,11 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-#import "QNCrc.h"
+#import <zlib.h>
 
-@implementation QNCrc
+#import "QNCrc32.h"
+
+@implementation QNCrc32
 
 + (UInt32) file:(NSString *)filePath{
     return 0;
