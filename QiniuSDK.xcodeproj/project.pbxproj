@@ -28,29 +28,13 @@
 		DF2CDE6B19DAC6A400CE01FB /* QNUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5B19DAC6A400CE01FB /* QNUploader.m */; };
 		DF2CDE7119DAE90300CE01FB /* QNBase64Test.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE7019DAE90300CE01FB /* QNBase64Test.m */; };
 		DF2CDE7219DAE90300CE01FB /* QNBase64Test.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE7019DAE90300CE01FB /* QNBase64Test.m */; };
-		DF2CDE7319DAF65800CE01FB /* QNBase64.h in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE4F19DAC6A400CE01FB /* QNBase64.h */; };
 		DF2CDE7419DAF65800CE01FB /* QNBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5019DAC6A400CE01FB /* QNBase64.m */; };
-		DF2CDE7519DAF65800CE01FB /* QNConfig.h in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5119DAC6A400CE01FB /* QNConfig.h */; };
-		DF2CDE7619DAF65800CE01FB /* QNCrc.h in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5219DAC6A400CE01FB /* QNCrc.h */; };
 		DF2CDE7719DAF65800CE01FB /* QNCrc.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5319DAC6A400CE01FB /* QNCrc.m */; };
-		DF2CDE7819DAF65800CE01FB /* QNTask.h in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5419DAC6A400CE01FB /* QNTask.h */; };
-		DF2CDE7919DAF65800CE01FB /* QNUserAgent.h in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5519DAC6A400CE01FB /* QNUserAgent.h */; };
 		DF2CDE7A19DAF65800CE01FB /* QNUserAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5619DAC6A400CE01FB /* QNUserAgent.m */; };
-		DF2CDE7B19DAF65800CE01FB /* QNVersion.h in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5719DAC6A400CE01FB /* QNVersion.h */; };
-		DF2CDE7C19DAF65800CE01FB /* QiniuSDK.h in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5819DAC6A400CE01FB /* QiniuSDK.h */; };
-		DF2CDE7D19DAF65800CE01FB /* QNUploader.h in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5A19DAC6A400CE01FB /* QNUploader.h */; };
 		DF2CDE7E19DAF65800CE01FB /* QNUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5B19DAC6A400CE01FB /* QNUploader.m */; };
-		DF2CDE7F19DAF67F00CE01FB /* QNBase64.h in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE4F19DAC6A400CE01FB /* QNBase64.h */; };
 		DF2CDE8019DAF67F00CE01FB /* QNBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5019DAC6A400CE01FB /* QNBase64.m */; };
-		DF2CDE8119DAF67F00CE01FB /* QNConfig.h in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5119DAC6A400CE01FB /* QNConfig.h */; };
-		DF2CDE8219DAF67F00CE01FB /* QNCrc.h in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5219DAC6A400CE01FB /* QNCrc.h */; };
 		DF2CDE8319DAF67F00CE01FB /* QNCrc.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5319DAC6A400CE01FB /* QNCrc.m */; };
-		DF2CDE8419DAF67F00CE01FB /* QNTask.h in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5419DAC6A400CE01FB /* QNTask.h */; };
-		DF2CDE8519DAF67F00CE01FB /* QNUserAgent.h in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5519DAC6A400CE01FB /* QNUserAgent.h */; };
 		DF2CDE8619DAF67F00CE01FB /* QNUserAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5619DAC6A400CE01FB /* QNUserAgent.m */; };
-		DF2CDE8719DAF67F00CE01FB /* QNVersion.h in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5719DAC6A400CE01FB /* QNVersion.h */; };
-		DF2CDE8819DAF67F00CE01FB /* QiniuSDK.h in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5819DAC6A400CE01FB /* QiniuSDK.h */; };
-		DF2CDE8919DAF67F00CE01FB /* QNUploader.h in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5A19DAC6A400CE01FB /* QNUploader.h */; };
 		DF2CDE8A19DAF67F00CE01FB /* QNUploader.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5B19DAC6A400CE01FB /* QNUploader.m */; };
 		EE76B381AF33E356C2C8FC56 /* libPods-QiniuSDK MacTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EB0B4B6BA4EEC2DEF421644 /* libPods-QiniuSDK MacTests.a */; };
 /* End PBXBuildFile section */
@@ -522,17 +506,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DF2CDE7F19DAF67F00CE01FB /* QNBase64.h in Sources */,
 				DF2CDE8019DAF67F00CE01FB /* QNBase64.m in Sources */,
-				DF2CDE8119DAF67F00CE01FB /* QNConfig.h in Sources */,
-				DF2CDE8219DAF67F00CE01FB /* QNCrc.h in Sources */,
 				DF2CDE8319DAF67F00CE01FB /* QNCrc.m in Sources */,
-				DF2CDE8419DAF67F00CE01FB /* QNTask.h in Sources */,
-				DF2CDE8519DAF67F00CE01FB /* QNUserAgent.h in Sources */,
 				DF2CDE8619DAF67F00CE01FB /* QNUserAgent.m in Sources */,
-				DF2CDE8719DAF67F00CE01FB /* QNVersion.h in Sources */,
-				DF2CDE8819DAF67F00CE01FB /* QiniuSDK.h in Sources */,
-				DF2CDE8919DAF67F00CE01FB /* QNUploader.h in Sources */,
 				DF2CDE8A19DAF67F00CE01FB /* QNUploader.m in Sources */,
 				DF2CDE7119DAE90300CE01FB /* QNBase64Test.m in Sources */,
 			);
@@ -553,17 +529,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DF2CDE7319DAF65800CE01FB /* QNBase64.h in Sources */,
 				DF2CDE7419DAF65800CE01FB /* QNBase64.m in Sources */,
-				DF2CDE7519DAF65800CE01FB /* QNConfig.h in Sources */,
-				DF2CDE7619DAF65800CE01FB /* QNCrc.h in Sources */,
 				DF2CDE7719DAF65800CE01FB /* QNCrc.m in Sources */,
-				DF2CDE7819DAF65800CE01FB /* QNTask.h in Sources */,
-				DF2CDE7919DAF65800CE01FB /* QNUserAgent.h in Sources */,
 				DF2CDE7A19DAF65800CE01FB /* QNUserAgent.m in Sources */,
-				DF2CDE7B19DAF65800CE01FB /* QNVersion.h in Sources */,
-				DF2CDE7C19DAF65800CE01FB /* QiniuSDK.h in Sources */,
-				DF2CDE7D19DAF65800CE01FB /* QNUploader.h in Sources */,
 				DF2CDE7E19DAF65800CE01FB /* QNUploader.m in Sources */,
 				DF2CDE7219DAE90300CE01FB /* QNBase64Test.m in Sources */,
 			);
