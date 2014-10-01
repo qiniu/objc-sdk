@@ -12,19 +12,18 @@
 #import <Foundation/Foundation.h>
 #import "../Http/QNHttpManager.h"
 
-@class QNUploadOption;
+    @class QNUploadOption;
 
-@interface QNResumeUpload : NSObject
+    @interface QNResumeUpload : NSObject
 
-- (instancetype) initWithData: (NSData *)data
-                     withSize: (UInt32) size
-              withKey: (NSString *)key
-            withToken: (NSString *)token
-    withCompleteBlock: (QNCompleteBlock)block
-           withOption: (QNUploadOption*)option;
+    - (instancetype)initWithData        :(NSData *)data
+                    withSize            :(UInt32)size
+                    withKey             :(NSString *)key
+                    withToken           :(NSString *)token
+                    withCompleteBlock   :(QNCompleteBlock)block
+                    withOption          :(QNUploadOption *)option;
 
-- (NSError *) run;
+    - (NSError *)run;
 
-@end
-
+    @end
 #endif

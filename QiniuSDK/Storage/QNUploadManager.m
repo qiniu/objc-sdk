@@ -20,8 +20,10 @@
 
 @implementation QNUploadOption
 
-- (NSMutableDictionary *)convertToPostParams{
+- (NSMutableDictionary *)convertToPostParams
+{
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:self.params];
+
     return params;
 }
 
@@ -31,86 +33,92 @@
 @property  QNHttpManager *httpManager;
 @end
 
-
-
 @implementation QNUploadManager
 
-+ (instancetype) create /*(persistent)*/{
++ (instancetype)create  /*(persistent)*/
+{
     return [[QNUploadManager alloc] init];
 }
 
-- (instancetype)init{
+- (instancetype)init
+{
     if (self = [super init]) {
         self.httpManager = [[QNHttpManager alloc] init];
     }
+
     return self;
 }
 
-- (NSError *) putData: (NSData *)data
-              withKey:(NSString*)key
-            withToken:(NSString*)token
-    withCompleteBlock:(QNCompleteBlock)block
-           withOption:(QNUploadOption*)option{
-    
+- (NSError *)   putData             :(NSData *)data
+                withKey             :(NSString *)key
+                withToken           :(NSString *)token
+                withCompleteBlock   :(QNCompleteBlock)block
+                withOption          :(QNUploadOption *)option
+{
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    
+
     if (key && ![key isEqualToString:kQiniuUndefinedKey]) {
         parameters[@"key"] = key;
     }
+
     if (!key) {
         key = kQiniuUndefinedKey;
     }
-    
+
     parameters[@"token"] = token;
-    
+
     if (option.params) {
         [parameters addEntriesFromDictionary:option.convertToPostParams];
     }
-    
+
     NSString *mimeType = option.mimeType;
+
     if (!mimeType) {
         mimeType = @"application/octet-stream";
     }
-    
+
     QNProgressBlock p = nil;
+
     if (option && option.progress) {
         p = option.progress;
     }
-    
+
     return [self.httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kUpHost]
-                           withData: data
-                         withParams: parameters
-                       withFileName: key
-                       withMimeType: mimeType
-                  withCompleteBlock: block
-                  withProgressBlock: p];
+            withData            :data
+            withParams          :parameters
+            withFileName        :key
+            withMimeType        :mimeType
+            withCompleteBlock   :block
+            withProgressBlock   :p];
 }
 
-- (NSError *) putFile: (NSString *)filePath
-              withKey:(NSString*)key
-            withToken:(NSString*)token
-    withCompleteBlock:(QNCompleteBlock)block
-           withOption:(QNUploadOption*)option{
+- (NSError *)   putFile             :(NSString *)filePath
+                withKey             :(NSString *)key
+                withToken           :(NSString *)token
+                withCompleteBlock   :(QNCompleteBlock)block
+                withOption          :(QNUploadOption *)option
+{
     NSError *error = nil;
-    
+
     @autoreleasepool {
-    NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
-    if (error != nil) {
-        return error;
-    }
-    
-    NSNumber *fileSizeNumber = [fileAttr objectForKey:NSFileSize];
-    UInt32 fileSize = [fileSizeNumber intValue];
-    NSData * data = nil;
-    QNResumeUpload *up = [[QNResumeUpload alloc]
-                          initWithData: data
-                          withSize: fileSize
-                          withKey: key
-                          withToken: token
-                          withCompleteBlock: block
-                          withOption:option];
-    
-    error = [up run];
+        NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
+
+        if (error != nil) {
+            return error;
+        }
+
+        NSNumber        *fileSizeNumber = [fileAttr objectForKey:NSFileSize];
+        UInt32          fileSize = [fileSizeNumber intValue];
+        NSData          *data = nil;
+        QNResumeUpload  *up = [[QNResumeUpload alloc]
+            initWithData:data
+            withSize            :fileSize
+            withKey             :key
+            withToken           :token
+            withCompleteBlock   :block
+            withOption          :option];
+
+        error = [up run];
     }
     return error;
 }

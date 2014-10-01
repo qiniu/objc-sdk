@@ -9,10 +9,9 @@
 #import <Foundation/Foundation.h>
 
 #ifndef _QINIUSDK_H
-#define _QINIUSDK_H
+  #define _QINIUSDK_H
 
-#import "Common/QNBase64.h"
-#import "Common/QNCrc32.h"
-#import "Storage/QNUploadManager.h"
-
+  #import "Common/QNBase64.h"
+  #import "Common/QNCrc32.h"
+  #import "Storage/QNUploadManager.h"
 #endif /*_QINIUSDK_H*/

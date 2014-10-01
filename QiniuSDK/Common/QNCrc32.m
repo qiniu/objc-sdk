@@ -12,20 +12,26 @@
 
 @implementation QNCrc32
 
-+ (UInt32) data:(NSData *)data{
++ (UInt32)data:(NSData *)data
+{
     uLong crc = crc32(0L, Z_NULL, 0);
+
     crc = crc32(crc, [data bytes], (uInt)[data length]);
     return (UInt32)crc;
 }
 
-+ (UInt32) file:(NSString *)filePath{
-    uLong crc = crc32(0L, Z_NULL, 0);
++ (UInt32)file:(NSString *)filePath
+{
+    uLong   crc = crc32(0L, Z_NULL, 0);
     NSError *error = nil;
+
     @autoreleasepool {
         NSData *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
+
         if (error != nil) {
             return (UInt32)crc;
         }
+
         crc = crc32(crc, [data bytes], (uInt)[data length]);
     }
     return (UInt32)crc;

@@ -10,6 +10,6 @@
 
 @interface QNBase64 : NSObject
 
-+ (NSString *) encode:(NSString *) source;
++ (NSString *)encode:(NSString *)source;
 
 @end

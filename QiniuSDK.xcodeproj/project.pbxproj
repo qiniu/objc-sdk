@@ -10,6 +10,12 @@
 		22019FE04FB937FAB13FDFFD /* libPods-QiniuSDK iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 389DF9365782A14F70933C3E /* libPods-QiniuSDK iOS.a */; };
 		5F0FFE6A946BAEFF741BC23E /* libPods-QiniuSDK Mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8924D07F6E137C6379C173D4 /* libPods-QiniuSDK Mac.a */; };
 		7277FD17389341BDCAD29727 /* libPods-QiniuSDK iOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D41D651AEAB89853C760E3A /* libPods-QiniuSDK iOSTests.a */; };
+		DF0D23C619DCC57500D6B68F /* QNResumeUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = DF293CAA19DC0E5300799011 /* QNResumeUpload.m */; };
+		DF0D23C719DCC58000D6B68F /* QNResumeUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = DF293CAA19DC0E5300799011 /* QNResumeUpload.m */; };
+		DF0D23C819DCC5B200D6B68F /* QNHttpManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DF293CA519DC05B800799011 /* QNHttpManager.m */; };
+		DF0D23C919DCC5B800D6B68F /* QNUserAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = DF293C9D19DBC2AE00799011 /* QNUserAgent.m */; };
+		DF0D23CA19DCC5CF00D6B68F /* QNUserAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = DF293C9D19DBC2AE00799011 /* QNUserAgent.m */; };
+		DF0D23CB19DCC5D300D6B68F /* QNHttpManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DF293CA519DC05B800799011 /* QNHttpManager.m */; };
 		DF293C9119DB85CB00799011 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DF293C9019DB85CB00799011 /* libz.dylib */; };
 		DF293C9219DB85EB00799011 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DF293C9019DB85CB00799011 /* libz.dylib */; };
 		DF293C9719DB865800799011 /* QNCrc32Test.m in Sources */ = {isa = PBXBuildFile; fileRef = DF293C9619DB865800799011 /* QNCrc32Test.m */; };
@@ -542,6 +548,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF0D23C919DCC5B800D6B68F /* QNUserAgent.m in Sources */,
+				DF0D23C819DCC5B200D6B68F /* QNHttpManager.m in Sources */,
+				DF0D23C719DCC58000D6B68F /* QNResumeUpload.m in Sources */,
 				DF2CDE8019DAF67F00CE01FB /* QNBase64.m in Sources */,
 				DF2CDE8319DAF67F00CE01FB /* QNCrc32.m in Sources */,
 				DF293C9719DB865800799011 /* QNCrc32Test.m in Sources */,
@@ -567,6 +576,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF0D23CB19DCC5D300D6B68F /* QNHttpManager.m in Sources */,
+				DF0D23CA19DCC5CF00D6B68F /* QNUserAgent.m in Sources */,
+				DF0D23C619DCC57500D6B68F /* QNResumeUpload.m in Sources */,
 				DF2CDE7419DAF65800CE01FB /* QNBase64.m in Sources */,
 				DF2CDE7719DAF65800CE01FB /* QNCrc32.m in Sources */,
 				DF293C9819DB865800799011 /* QNCrc32Test.m in Sources */,
