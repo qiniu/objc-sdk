@@ -8,10 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-@interface QNTask : NSObject
+@interface QNRequestInfo : NSObject
 
-- (void)onComplete;
-- (void)onSuccess;
-- (void)onError;
+@property int stausCode;
+@property NSString *remoteIp;
+@property NSString *ReqId;
+@property NSError *error;
 
 @end

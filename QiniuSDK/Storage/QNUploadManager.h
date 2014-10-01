@@ -8,7 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+@class QNRequestInfo;
 typedef void (^QNProgressBlock)(float percent);
+typedef void (^QNCompleteBlock)(QNRequestInfo* info, NSDictionary* resp);
 typedef BOOL (^QNCancelBlock)(void);
 
 @class QNTask;
@@ -23,18 +25,20 @@ typedef BOOL (^QNCancelBlock)(void);
 
 @end
 
-@interface QNUploader : NSObject
+@interface QNUploadManager : NSObject
 
 + (instancetype) create /*(persistent)*/;
 
-- (QNTask *) putData: (NSData *)data
+- (NSError *) putData: (NSData *)data
              withKey:(NSString*)key
            withToken:(NSString*)token
-          withOption:(QNUploadOption*)option;
+    withCompleteBlock:(QNCompleteBlock)block
+           withOption:(QNUploadOption*)option;
 
-- (QNTask *) putFile: (NSString *)filePath
+- (NSError *) putFile: (NSString *)filePath
              withKey:(NSString*)key
            withToken:(NSString*)token
+    withCompleteBlock:(QNCompleteBlock)block
           withOption:(QNUploadOption*)option;
 
 //- (QNTask *) putRecord;
