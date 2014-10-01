@@ -8,12 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@class QNRequestInfo;
-typedef void (^QNProgressBlock)(float percent);
-typedef void (^QNCompleteBlock)(QNRequestInfo* info, NSDictionary* resp);
-typedef BOOL (^QNCancelBlock)(void);
-
-@class QNTask;
+#import "../Http/QNHttpManager.h"
 
 @interface QNUploadOption : NSObject
 
@@ -27,8 +22,6 @@ typedef BOOL (^QNCancelBlock)(void);
 
 @interface QNUploadManager : NSObject
 
-+ (instancetype) create /*(persistent)*/;
-
 - (NSError *) putData: (NSData *)data
              withKey:(NSString*)key
            withToken:(NSString*)token
@@ -41,6 +34,5 @@ typedef BOOL (^QNCancelBlock)(void);
     withCompleteBlock:(QNCompleteBlock)block
           withOption:(QNUploadOption*)option;
 
-//- (QNTask *) putRecord;
 @end
 

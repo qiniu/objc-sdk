@@ -8,11 +8,11 @@
 
 #import <Foundation/Foundation.h>
 
-#import <AFNetworking/AFNetworking.h>
-
-#import "../Http/QNRequestInfo.h"
 #import "../Common/QNConfig.h"
+#import "../Http/QNHttpManager.h"
+
 #import "QNUploadManager.h"
+#import "QNResumeUpload.h"
 
 @interface QNUploadOption ()
 - (NSDictionary *)convertToPostParams;
@@ -28,8 +28,7 @@
 @end
 
 @interface QNUploadManager ()
-@property  AFHTTPRequestOperationManager *httpManager;
-@property  AFHTTPSessionManager *sesssionManager;
+@property  QNHttpManager *httpManager;
 @end
 
 
@@ -42,9 +41,7 @@
 
 - (instancetype)init{
     if (self = [super init]) {
-        self.httpManager = [[AFHTTPRequestOperationManager alloc] init];
-        self.httpManager.responseSerializer = [AFJSONResponseSerializer serializer];
-        self.sesssionManager = [[AFHTTPSessionManager alloc] init];
+        self.httpManager = [[QNHttpManager alloc] init];
     }
     return self;
 }
@@ -57,12 +54,12 @@
     
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
     
-//    if (key && ![key isEqualToString:kQiniuUndefinedKey]) {
-//        parameters[@"key"] = key;
-//    }
-//    if (!key) {
-//        key = kQiniuUndefinedKey;
-//    }
+    if (key && ![key isEqualToString:kQiniuUndefinedKey]) {
+        parameters[@"key"] = key;
+    }
+    if (!key) {
+        key = kQiniuUndefinedKey;
+    }
     
     parameters[@"token"] = token;
     
@@ -74,35 +71,19 @@
     if (!mimeType) {
         mimeType = @"application/octet-stream";
     }
-    AFHTTPRequestOperationManager* manager = self.httpManager;
-    NSMutableURLRequest *request = [manager.requestSerializer
-        multipartFormRequestWithMethod:@"POST"
-                            URLString: [NSString stringWithFormat:@"http://%@", kUpHost]
-                            parameters:parameters
-            constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-    [formData appendPartWithFileData:data
-                                name:@"file"
-                            fileName:key
-                            mimeType:mimeType];}
-                                error:nil];
     
+    QNProgressBlock p = nil;
+    if (option && option.progress) {
+        p = option.progress;
+    }
     
-    AFHTTPRequestOperation *operation = [manager
-                HTTPRequestOperationWithRequest:request
-                                         success:^(AFHTTPRequestOperation *operation, id responseObject) {block(nil,nil);}
-                                         failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-                                             block(nil,nil);}
-                                         ];
-    
-    [operation setUploadProgressBlock:^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-        if (option && option.progress) {
-            option.progress((float)totalBytesWritten / (float)totalBytesExpectedToWrite);
-        }
-    }];
-    
-    [manager.operationQueue addOperation:operation];
-    
-    return nil;
+    return [self.httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kUpHost]
+                           withData: data
+                         withParams: parameters
+                       withFileName: key
+                       withMimeType: mimeType
+                  withCompleteBlock: block
+                  withProgressBlock: p];
 }
 
 - (NSError *) putFile: (NSString *)filePath
@@ -110,7 +91,28 @@
             withToken:(NSString*)token
     withCompleteBlock:(QNCompleteBlock)block
            withOption:(QNUploadOption*)option{
-    return nil;
+    NSError *error = nil;
+    
+    @autoreleasepool {
+    NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
+    if (error != nil) {
+        return error;
+    }
+    
+    NSNumber *fileSizeNumber = [fileAttr objectForKey:NSFileSize];
+    UInt32 fileSize = [fileSizeNumber intValue];
+    NSData * data = nil;
+    QNResumeUpload *up = [[QNResumeUpload alloc]
+                          initWithData: data
+                          withSize: fileSize
+                          withKey: key
+                          withToken: token
+                          withCompleteBlock: block
+                          withOption:option];
+    
+    error = [up run];
+    }
+    return error;
 }
 
 @end
