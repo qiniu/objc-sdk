@@ -10,6 +10,12 @@
 		22019FE04FB937FAB13FDFFD /* libPods-QiniuSDK iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 389DF9365782A14F70933C3E /* libPods-QiniuSDK iOS.a */; };
 		5F0FFE6A946BAEFF741BC23E /* libPods-QiniuSDK Mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8924D07F6E137C6379C173D4 /* libPods-QiniuSDK Mac.a */; };
 		7277FD17389341BDCAD29727 /* libPods-QiniuSDK iOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D41D651AEAB89853C760E3A /* libPods-QiniuSDK iOSTests.a */; };
+		DF293C9119DB85CB00799011 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DF293C9019DB85CB00799011 /* libz.dylib */; };
+		DF293C9219DB85EB00799011 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DF293C9019DB85CB00799011 /* libz.dylib */; };
+		DF293C9719DB865800799011 /* QNCrc32Test.m in Sources */ = {isa = PBXBuildFile; fileRef = DF293C9619DB865800799011 /* QNCrc32Test.m */; };
+		DF293C9819DB865800799011 /* QNCrc32Test.m in Sources */ = {isa = PBXBuildFile; fileRef = DF293C9619DB865800799011 /* QNCrc32Test.m */; };
+		DF293C9919DBAE3E00799011 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DF293C9319DB860200799011 /* libz.dylib */; };
+		DF293C9A19DBC09400799011 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DF293C9319DB860200799011 /* libz.dylib */; };
 		DF2CDE5C19DAC6A400CE01FB /* QNBase64.h in Headers */ = {isa = PBXBuildFile; fileRef = DF2CDE4F19DAC6A400CE01FB /* QNBase64.h */; };
 		DF2CDE5D19DAC6A400CE01FB /* QNBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5019DAC6A400CE01FB /* QNBase64.m */; };
 		DF2CDE5E19DAC6A400CE01FB /* QNBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5019DAC6A400CE01FB /* QNBase64.m */; };
@@ -64,6 +70,9 @@
 		C24CE1990894CD3CA9A17042 /* Pods-QiniuSDK iOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK iOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK iOSTests/Pods-QiniuSDK iOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		DB8C25D8ADEC1AAEAFE9BB8A /* Pods-QiniuSDK iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK iOS/Pods-QiniuSDK iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		DEC82F60B1102AD44ABC9284 /* Pods-QiniuSDK Mac.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK Mac.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK Mac/Pods-QiniuSDK Mac.debug.xcconfig"; sourceTree = "<group>"; };
+		DF293C9019DB85CB00799011 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
+		DF293C9319DB860200799011 /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.0.sdk/usr/lib/libz.dylib; sourceTree = DEVELOPER_DIR; };
+		DF293C9619DB865800799011 /* QNCrc32Test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNCrc32Test.m; sourceTree = "<group>"; };
 		DF2CDDFF19DAC05500CE01FB /* libQiniuSDK Mac.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libQiniuSDK Mac.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF2CDE0A19DAC05500CE01FB /* QiniuSDK MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "QiniuSDK MacTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF2CDE1A19DAC08400CE01FB /* libQiniuSDK iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libQiniuSDK iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -88,6 +97,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF293C9119DB85CB00799011 /* libz.dylib in Frameworks */,
 				5F0FFE6A946BAEFF741BC23E /* libPods-QiniuSDK Mac.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -96,6 +106,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF293C9219DB85EB00799011 /* libz.dylib in Frameworks */,
 				EE76B381AF33E356C2C8FC56 /* libPods-QiniuSDK MacTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -104,6 +115,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF293C9919DBAE3E00799011 /* libz.dylib in Frameworks */,
 				22019FE04FB937FAB13FDFFD /* libPods-QiniuSDK iOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -112,6 +124,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DF293C9A19DBC09400799011 /* libz.dylib in Frameworks */,
 				7277FD17389341BDCAD29727 /* libPods-QiniuSDK iOSTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -137,6 +150,8 @@
 		A955AABD20BF51BFE5032419 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DF293C9319DB860200799011 /* libz.dylib */,
+				DF293C9019DB85CB00799011 /* libz.dylib */,
 				8924D07F6E137C6379C173D4 /* libPods-QiniuSDK Mac.a */,
 				0EB0B4B6BA4EEC2DEF421644 /* libPods-QiniuSDK MacTests.a */,
 				389DF9365782A14F70933C3E /* libPods-QiniuSDK iOS.a */,
@@ -206,6 +221,7 @@
 			isa = PBXGroup;
 			children = (
 				DF2CDE7019DAE90300CE01FB /* QNBase64Test.m */,
+				DF293C9619DB865800799011 /* QNCrc32Test.m */,
 			);
 			path = QiniuSDKTests;
 			sourceTree = SOURCE_ROOT;
@@ -508,6 +524,7 @@
 			files = (
 				DF2CDE8019DAF67F00CE01FB /* QNBase64.m in Sources */,
 				DF2CDE8319DAF67F00CE01FB /* QNCrc32.m in Sources */,
+				DF293C9719DB865800799011 /* QNCrc32Test.m in Sources */,
 				DF2CDE8619DAF67F00CE01FB /* QNUserAgent.m in Sources */,
 				DF2CDE8A19DAF67F00CE01FB /* QNUploader.m in Sources */,
 				DF2CDE7119DAE90300CE01FB /* QNBase64Test.m in Sources */,
@@ -531,6 +548,7 @@
 			files = (
 				DF2CDE7419DAF65800CE01FB /* QNBase64.m in Sources */,
 				DF2CDE7719DAF65800CE01FB /* QNCrc32.m in Sources */,
+				DF293C9819DB865800799011 /* QNCrc32Test.m in Sources */,
 				DF2CDE7A19DAF65800CE01FB /* QNUserAgent.m in Sources */,
 				DF2CDE7E19DAF65800CE01FB /* QNUploader.m in Sources */,
 				DF2CDE7219DAE90300CE01FB /* QNBase64Test.m in Sources */,
@@ -684,7 +702,9 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				MACH_O_TYPE = mh_dylib;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -696,7 +716,9 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 75127E9F1F2BA68C9D5B463F /* Pods-QiniuSDK iOS.release.xcconfig */;
 			buildSettings = {
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
+				MACH_O_TYPE = mh_dylib;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -718,8 +740,9 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = QiniuSDKTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
@@ -735,8 +758,9 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = QiniuSDKTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;

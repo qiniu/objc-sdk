@@ -13,6 +13,7 @@
 
 #import "Common/QNTask.h"
 #import "Common/QNBase64.h"
+#import "Common/QNCrc32.h"
 #import "Storage/QNUploader.h"
 
 #endif /*_QINIUSDK_H*/
