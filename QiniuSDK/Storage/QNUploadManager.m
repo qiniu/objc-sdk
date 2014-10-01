@@ -28,7 +28,8 @@
 @end
 
 @interface QNUploadManager ()
-@property  AFHTTPRequestOperationManager* httpManager;
+@property  AFHTTPRequestOperationManager *httpManager;
+@property  AFHTTPSessionManager *sesssionManager;
 @end
 
 
@@ -43,6 +44,7 @@
     if (self = [super init]) {
         self.httpManager = [[AFHTTPRequestOperationManager alloc] init];
         self.httpManager.responseSerializer = [AFJSONResponseSerializer serializer];
+        self.sesssionManager = [[AFHTTPSessionManager alloc] init];
     }
     return self;
 }

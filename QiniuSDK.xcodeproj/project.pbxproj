@@ -666,6 +666,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 948F5D59B2BD6CACC644FA14 /* Pods-QiniuSDK MacTests.debug.xcconfig */;
 			buildSettings = {
+				BUNDLE_LOADER = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
@@ -678,6 +679,15 @@
 				INFOPLIST_FILE = QiniuSDKTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-l\"Pods-QiniuSDK Mac-AFNetworking\"",
+					"-l\"Pods-QiniuSDK MacTests-OHHTTPStubs\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"Foundation\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -686,6 +696,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7EFD2A2AD31548D6BD3FD007 /* Pods-QiniuSDK MacTests.release.xcconfig */;
 			buildSettings = {
+				BUNDLE_LOADER = "";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
@@ -694,6 +705,15 @@
 				INFOPLIST_FILE = QiniuSDKTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-l\"Pods-QiniuSDK Mac-AFNetworking\"",
+					"-l\"Pods-QiniuSDK MacTests-OHHTTPStubs\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"Foundation\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -735,6 +755,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = C24CE1990894CD3CA9A17042 /* Pods-QiniuSDK iOSTests.debug.xcconfig */;
 			buildSettings = {
+				BUNDLE_LOADER = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -748,6 +769,15 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-l\"Pods-QiniuSDK iOS-AFNetworking\"",
+					"-l\"Pods-QiniuSDK iOSTests-OHHTTPStubs\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"Foundation\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 			};
@@ -757,6 +787,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9A0CE9E3B1F13E790C38CB75 /* Pods-QiniuSDK iOSTests.release.xcconfig */;
 			buildSettings = {
+				BUNDLE_LOADER = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
@@ -766,6 +797,15 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = NO;
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"-l\"Pods-QiniuSDK iOS-AFNetworking\"",
+					"-l\"Pods-QiniuSDK iOSTests-OHHTTPStubs\"",
+					"-framework",
+					"\"CFNetwork\"",
+					"-framework",
+					"\"Foundation\"",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
