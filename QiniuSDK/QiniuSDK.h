@@ -11,7 +11,6 @@
 #ifndef _QINIUSDK_H
 #define _QINIUSDK_H
 
-#import "Http/QNRequestInfo.h"
 #import "Common/QNBase64.h"
 #import "Common/QNCrc32.h"
 #import "Storage/QNUploadManager.h"
