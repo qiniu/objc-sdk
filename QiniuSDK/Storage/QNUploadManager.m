@@ -20,113 +20,109 @@
 
 @implementation QNUploadOption
 
-- (NSMutableDictionary *)convertToPostParams
-{
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:self.params];
+- (NSMutableDictionary *)convertToPostParams {
+	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:self.params];
 
-    return params;
+	return params;
 }
 
 @end
 
 @interface QNUploadManager ()
-@property  QNHttpManager *httpManager;
+@property QNHttpManager *httpManager;
 @end
 
 @implementation QNUploadManager
 
 + (instancetype)create  /*(persistent)*/
 {
-    return [[QNUploadManager alloc] init];
+	return [[QNUploadManager alloc] init];
 }
 
-- (instancetype)init
-{
-    if (self = [super init]) {
-        self.httpManager = [[QNHttpManager alloc] init];
-    }
+- (instancetype)init {
+	if (self = [super init]) {
+		self.httpManager = [[QNHttpManager alloc] init];
+	}
 
-    return self;
+	return self;
 }
 
-- (NSError *)   putData             :(NSData *)data
-                withKey             :(NSString *)key
-                withToken           :(NSString *)token
-                withCompleteBlock   :(QNCompleteBlock)block
-                withOption          :(QNUploadOption *)option
-{
-    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+- (NSError *) putData:(NSData *)data
+              withKey:(NSString *)key
+            withToken:(NSString *)token
+    withCompleteBlock:(QNCompleteBlock)block
+           withOption:(QNUploadOption *)option {
+	NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
 
-    if (key && ![key isEqualToString:kQiniuUndefinedKey]) {
-        parameters[@"key"] = key;
-    }
+	if (key && ![key isEqualToString:kQiniuUndefinedKey]) {
+		parameters[@"key"] = key;
+	}
 
-    if (!key) {
-        key = kQiniuUndefinedKey;
-    }
+	if (!key) {
+		key = kQiniuUndefinedKey;
+	}
 
-    parameters[@"token"] = token;
+	parameters[@"token"] = token;
 
-    if (option.params) {
-        [parameters addEntriesFromDictionary:option.convertToPostParams];
-    }
+	if (option.params) {
+		[parameters addEntriesFromDictionary:option.convertToPostParams];
+	}
 
-    NSString *mimeType = option.mimeType;
+	NSString *mimeType = option.mimeType;
 
-    if (!mimeType) {
-        mimeType = @"application/octet-stream";
-    }
+	if (!mimeType) {
+		mimeType = @"application/octet-stream";
+	}
 
-    QNProgressBlock p = nil;
+	QNProgressBlock p = nil;
 
-    if (option && option.progress) {
-        p = option.progress;
-    }
+	if (option && option.progress) {
+		p = option.progress;
+	}
 
-    return [self.httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kUpHost]
-            withData            :data
-            withParams          :parameters
-            withFileName        :key
-            withMimeType        :mimeType
-            withCompleteBlock   :block
-            withProgressBlock   :p];
+	return [self.httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kUpHost]
+	                              withData:data
+	                            withParams:parameters
+	                          withFileName:key
+	                          withMimeType:mimeType
+	                     withCompleteBlock:block
+	                     withProgressBlock:p];
 }
 
-- (NSError *)   putFile             :(NSString *)filePath
-                withKey             :(NSString *)key
-                withToken           :(NSString *)token
-                withCompleteBlock   :(QNCompleteBlock)block
-                withOption          :(QNUploadOption *)option
-{
-    NSError *error = nil;
+- (NSError *) putFile:(NSString *)filePath
+              withKey:(NSString *)key
+            withToken:(NSString *)token
+    withCompleteBlock:(QNCompleteBlock)block
+           withOption:(QNUploadOption *)option {
+	NSError *error = nil;
 
-    @autoreleasepool {
-        NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
+	@autoreleasepool {
+		NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
 
-        if (error) {
-            return error;
-        }
+		if (error) {
+			return error;
+		}
 
-        NSNumber        *fileSizeNumber = fileAttr[NSFileSize];
-        UInt32          fileSize = [fileSizeNumber intValue];
-        NSData           *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
-        if (error) {
-            return error;
-        }
-        if (fileSize <= kPutThreshHold) {
-            return [self putData:data withKey:key withToken:token withCompleteBlock:block withOption:option];
-        }
-        QNResumeUpload  *up = [[QNResumeUpload alloc]
-            initWithData:data
-            withSize            :fileSize
-            withKey             :key
-            withToken           :token
-            withCompleteBlock   :block
-            withOption          :option];
+		NSNumber *fileSizeNumber = fileAttr[NSFileSize];
+		UInt32 fileSize = [fileSizeNumber intValue];
+		NSData *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
+		if (error) {
+			return error;
+		}
+		if (fileSize <= kPutThreshHold) {
+			return [self putData:data withKey:key withToken:token withCompleteBlock:block withOption:option];
+		}
+		QNResumeUpload *up = [[QNResumeUpload alloc]
+		                      initWithData:data
+		                                  withSize:fileSize
+		                                   withKey:key
+		                                 withToken:token
+		                         withCompleteBlock:block
+		                                withOption:option];
 
-        error = [up run];
-    }
-    return error;
+		error = [up run];
+	}
+	return error;
 }
 
 @end

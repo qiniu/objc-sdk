@@ -10,18 +10,18 @@
 
 @interface QNResponseInfo : NSObject
 
-@property int       stausCode;
-@property NSString  *ReqId;
-@property NSString  *xlog;
-@property NSString  *remoteIp;
-@property NSError   *error;
+@property int stausCode;
+@property NSString *ReqId;
+@property NSString *xlog;
+@property NSString *remoteIp;
+@property NSError *error;
 
--(instancetype) initWithError:(NSError*) error;
+- (instancetype)initWithError:(NSError *)error;
 
--(instancetype) init:(int) status
- withReqId:(NSString *)reqId
-  withXLog:(NSString *)xlog
-withRemote:(NSString *)ip
- withBody:(id)body;
+- (instancetype)init:(int)status
+           withReqId:(NSString *)reqId
+            withXLog:(NSString *)xlog
+          withRemote:(NSString *)ip
+            withBody:(id)body;
 
 @end
