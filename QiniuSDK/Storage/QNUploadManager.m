@@ -50,7 +50,7 @@
 - (NSError *) putData:(NSData *)data
               withKey:(NSString *)key
             withToken:(NSString *)token
-    withCompleteBlock:(QNCompleteBlock)block
+    withCompleteBlock:(QNUpCompleteBlock)block
            withOption:(QNUploadOption *)option {
 	NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
 
@@ -77,22 +77,29 @@
 	QNProgressBlock p = nil;
 
 	if (option && option.progress) {
-		p = option.progress;
+        p = ^(float percent){
+            option.progress(key, percent);
+        };
 	}
+    
+    QNCompleteBlock _block = ^(QNResponseInfo *info, NSDictionary* resp)
+    {
+        block(info, key, resp);
+    };
 
 	return [self.httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kUpHost]
 	                              withData:data
 	                            withParams:parameters
 	                          withFileName:key
 	                          withMimeType:mimeType
-	                     withCompleteBlock:block
+	                     withCompleteBlock:_block
 	                     withProgressBlock:p];
 }
 
 - (NSError *) putFile:(NSString *)filePath
               withKey:(NSString *)key
             withToken:(NSString *)token
-    withCompleteBlock:(QNCompleteBlock)block
+    withCompleteBlock:(QNUpCompleteBlock)block
            withOption:(QNUploadOption *)option {
 	NSError *error = nil;
 
@@ -112,12 +119,18 @@
 		if (fileSize <= kPutThreshHold) {
 			return [self putData:data withKey:key withToken:token withCompleteBlock:block withOption:option];
 		}
+        
+        QNCompleteBlock _block = ^(QNResponseInfo *info, NSDictionary* resp)
+        {
+            block(info, key, resp);
+        };
+        
 		QNResumeUpload *up = [[QNResumeUpload alloc]
 		                      initWithData:data
 		                                  withSize:fileSize
 		                                   withKey:key
 		                                 withToken:token
-		                         withCompleteBlock:block
+		                         withCompleteBlock:_block
 		                                withOption:option];
 
 		error = [up run];
