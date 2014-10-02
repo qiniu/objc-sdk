@@ -10,6 +10,7 @@
 
 #import "QNHttpManager.h"
 #import "QNUserAgent.h"
+#import "QNResponseInfo.h"
 
 @interface QNHttpManager ()
 @property  AFHTTPRequestOperationManager *httpManager;
@@ -28,6 +29,23 @@
     return self;
 }
 
++ (QNResponseInfo *) buildResponseInfo:(AFHTTPRequestOperation *)operation
+                             withError:(NSError *)error{
+    QNResponseInfo *info;
+    if (operation.response) {
+        NSDictionary * headers = [operation.response allHeaderFields];
+        NSString *reqId = headers[@"X-Reqid"];
+        NSString *xlog = headers[@"XLog"];
+        int status =  (int) [operation.response statusCode];
+        info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withRemote:nil withBody:nil];
+        
+    }else {
+        info = [[QNResponseInfo alloc] initWithError:error];
+    }
+    return info;
+    
+}
+
 - (NSError *)   sendRequest         :(NSMutableURLRequest *)request
                 withCompleteBlock   :(QNCompleteBlock)completeBlock
                 withProgressBlock   :(QNProgressBlock)progressBlock
@@ -35,10 +53,18 @@
     AFHTTPRequestOperationManager   *manager = self.httpManager;
     AFHTTPRequestOperation          *operation = [manager
         HTTPRequestOperationWithRequest:request
-        success :^(AFHTTPRequestOperation *operation, id responseObject) {completeBlock(nil, nil); }
+        success :^(AFHTTPRequestOperation *operation, id responseObject) {
+            QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil];
+            NSDictionary * resp = nil;
+            if (info.stausCode == 200) {
+                resp = responseObject;
+            }
+            completeBlock(info, responseObject);
+        }
 
         failure :^(AFHTTPRequestOperation *operation, NSError *error) {
-            completeBlock(nil, nil);
+            QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:error];
+            completeBlock(info, nil);
         }
 
         ];

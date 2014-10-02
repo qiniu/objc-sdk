@@ -8,18 +8,10 @@
 
 #import <Foundation/Foundation.h>
 
-@interface QNRequestInfo : NSObject
-
-@property int       stausCode;
-@property NSString  *remoteIp;
-@property NSString  *ReqId;
-@property NSString  *xlog;
-@property NSError   *error;
-
-@end
+@class QNResponseInfo;
 
 typedef void (^ QNProgressBlock)(float percent);
-typedef void (^ QNCompleteBlock)(QNRequestInfo *info, NSDictionary *resp);
+typedef void (^ QNCompleteBlock)(QNResponseInfo *info, NSDictionary *resp);
 typedef BOOL (^ QNCancelBlock)(void);
 
 @interface QNHttpManager : NSObject

@@ -15,7 +15,7 @@
 #import "QNResumeUpload.h"
 
 @interface QNUploadOption ()
-- (NSDictionary *)convertToPostParams;
+@property (nonatomic, readonly, copy) NSDictionary *convertToPostParams;
 @end
 
 @implementation QNUploadOption
@@ -103,13 +103,19 @@
     @autoreleasepool {
         NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
 
-        if (error != nil) {
+        if (error) {
             return error;
         }
 
-        NSNumber        *fileSizeNumber = [fileAttr objectForKey:NSFileSize];
+        NSNumber        *fileSizeNumber = fileAttr[NSFileSize];
         UInt32          fileSize = [fileSizeNumber intValue];
-        NSData          *data = nil;
+        NSData           *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
+        if (error) {
+            return error;
+        }
+        if (fileSize <= kPutThreshHold) {
+            return [self putData:data withKey:key withToken:token withCompleteBlock:block withOption:option];
+        }
         QNResumeUpload  *up = [[QNResumeUpload alloc]
             initWithData:data
             withSize            :fileSize

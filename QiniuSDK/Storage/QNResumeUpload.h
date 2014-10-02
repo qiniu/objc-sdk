@@ -6,9 +6,6 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-#ifndef QiniuSDK_QNResumeUpload_h
-#define QiniuSDK_QNResumeUpload_h
-
 #import <Foundation/Foundation.h>
 #import "../Http/QNHttpManager.h"
 
@@ -23,7 +20,7 @@
                     withCompleteBlock   :(QNCompleteBlock)block
                     withOption          :(QNUploadOption *)option;
 
-    - (NSError *)run;
+    @property (nonatomic, readonly, copy) NSError *run;
 
     @end
-#endif
+
