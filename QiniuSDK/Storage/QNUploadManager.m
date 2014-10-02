@@ -34,11 +34,6 @@
 
 @implementation QNUploadManager
 
-+ (instancetype)create  /*(persistent)*/
-{
-	return [[QNUploadManager alloc] init];
-}
-
 - (instancetype)init {
 	if (self = [super init]) {
 		self.httpManager = [[QNHttpManager alloc] init];

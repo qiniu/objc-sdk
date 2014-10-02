@@ -55,7 +55,9 @@
 	    NSDictionary *resp = nil;
 	    if (info.stausCode == 200) {
 	        resp = responseObject;
-		}
+        } else {
+            
+        }
 	    completeBlock(info, responseObject);
 	}
 

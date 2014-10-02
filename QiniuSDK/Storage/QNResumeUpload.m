@@ -23,6 +23,8 @@
 @property (nonatomic, strong) QNUploadOption *option;
 @property (nonatomic, strong) QNCompleteBlock block;
 @property (nonatomic, strong) NSArray *contexts;
+@property (nonatomic, readonly) UInt32 count;
+@property (nonatomic, readonly) BOOL reachEnd;
 
 - (void)makeBlock:(NSString *)uphost
            offset:(UInt32)offset
@@ -70,16 +72,15 @@
 }
 
 - (void)increaseCount {
-	//todo aotmic ++
-	self.uploadedCount++;
+    OSAtomicIncrement32(&(self->_uploadedCount));
 }
 
 - (BOOL)reachEnd {
-	return self.uploadedCount == [self count];
+	return self.uploadedCount == (int)self.count;
 }
 
-- (int)count {
-	return (int)((self.size + kBlockSize - 1) / kBlockSize);
+- (UInt32)count {
+	return (self.size + kBlockSize - 1) / kBlockSize;
 }
 
 - (void)makeBlock:(NSString *)uphost
@@ -198,7 +199,7 @@
 		QNProgressBlock __block __weak weakProgressBlock = progressBlock = ^(float percent) {
 		};
 
-		int blockCount = [self count];
+		int blockCount = self.count;
 
 		for (int blockIndex = 0; blockIndex < blockCount; blockIndex++) {
 			UInt32 offbase = blockIndex * kBlockSize;
