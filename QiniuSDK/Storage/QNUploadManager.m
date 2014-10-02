@@ -77,15 +77,15 @@
 	QNProgressBlock p = nil;
 
 	if (option && option.progress) {
-        p = ^(float percent){
-            option.progress(key, percent);
-        };
+		p = ^(float percent) {
+			option.progress(key, percent);
+		};
 	}
-    
-    QNCompleteBlock _block = ^(QNResponseInfo *info, NSDictionary* resp)
-    {
-        block(info, key, resp);
-    };
+
+	QNCompleteBlock _block = ^(QNResponseInfo *info, NSDictionary *resp)
+	{
+		block(info, key, resp);
+	};
 
 	return [self.httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kUpHost]
 	                              withData:data
@@ -119,12 +119,12 @@
 		if (fileSize <= kPutThreshHold) {
 			return [self putData:data withKey:key withToken:token withCompleteBlock:block withOption:option];
 		}
-        
-        QNCompleteBlock _block = ^(QNResponseInfo *info, NSDictionary* resp)
-        {
-            block(info, key, resp);
-        };
-        
+
+		QNCompleteBlock _block = ^(QNResponseInfo *info, NSDictionary *resp)
+		{
+			block(info, key, resp);
+		};
+
 		QNResumeUpload *up = [[QNResumeUpload alloc]
 		                      initWithData:data
 		                                  withSize:fileSize

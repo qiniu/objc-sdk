@@ -63,26 +63,23 @@
 		self.token = token;
 		self.option = option;
 		self.block = block;
-        self.uploadedCount = 0;
+		self.uploadedCount = 0;
 	}
 
 	return self;
 }
 
-- (void) increaseCount
-{
-    //todo aotmic ++
-    self.uploadedCount ++;
+- (void)increaseCount {
+	//todo aotmic ++
+	self.uploadedCount++;
 }
 
-- (BOOL)reachEnd
-{
-    return self.uploadedCount == [self count];
+- (BOOL)reachEnd {
+	return self.uploadedCount == [self count];
 }
 
-- (int)count
-{
-    return (int)((self.size + kBlockSize - 1)/kBlockSize);
+- (int)count {
+	return (int)((self.size + kBlockSize - 1) / kBlockSize);
 }
 
 - (void)makeBlock:(NSString *)uphost
@@ -110,11 +107,10 @@
 	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
 }
 
-+ (UInt32) calcChunkSize:(UInt32) blockSize
-                  offset:(UInt32) offset
-{
-    UInt32 remainLength = blockSize - offset;
-    return (UInt32)(kChunkSize < remainLength ? kChunkSize : remainLength);
++ (UInt32)calcChunkSize:(UInt32)blockSize
+                 offset:(UInt32)offset {
+	UInt32 remainLength = blockSize - offset;
+	return (UInt32)(kChunkSize < remainLength ? kChunkSize : remainLength);
 }
 
 - (void)putBlock:(NSString *)uphost
@@ -122,34 +118,33 @@
             size:(UInt32)size
         progress:(QNProgressBlock)progressBlock
         complete:(QNCompleteBlock)complete {
-    
-        QNCompleteBlock __block __weak weakChunkComplete;
-        QNCompleteBlock chunkComplete;
-    __block BOOL isMakeBlock = YES;
-    QNProgressBlock _progressBlock =  ^(float percent) {
-    };
-    
-	weakChunkComplete = chunkComplete =  ^(QNResponseInfo *info, NSDictionary *resp) {
-        if (info.error) {
-//            if (isMakeBlock || info.stausCode == 701) {
-                complete(info, nil);
-                return;
-//            }
-        }else {
-                        if (progressBlock != nil) {
-                            // calculate
-                        }
-                        isMakeBlock = NO;
-        NSString* context = [resp valueForKey:@"ctx"];
-        UInt32 chunkOffset = [[resp valueForKey:@"offset"] intValue];
-            if (chunkOffset == size) {
-                complete(info, nil);
-                return;
-            }
-            UInt32 chunkSize = [QNResumeUpload calcChunkSize:size offset:chunkOffset];
-            [self putChunk:uphost offset: offset+chunkOffset size:chunkSize context:context progress:nil complete:weakChunkComplete];
+	QNCompleteBlock __block __weak weakChunkComplete;
+	QNCompleteBlock chunkComplete;
+	__block BOOL isMakeBlock = YES;
+	QNProgressBlock _progressBlock =  ^(float percent) {
+	};
 
-        }
+	weakChunkComplete = chunkComplete =  ^(QNResponseInfo *info, NSDictionary *resp) {
+		if (info.error) {
+//            if (isMakeBlock || info.stausCode == 701) {
+			complete(info, nil);
+			return;
+//            }
+		}
+		else {
+			if (progressBlock != nil) {
+				// calculate
+			}
+			isMakeBlock = NO;
+			NSString *context = [resp valueForKey:@"ctx"];
+			UInt32 chunkOffset = [[resp valueForKey:@"offset"] intValue];
+			if (chunkOffset == size) {
+				complete(info, nil);
+				return;
+			}
+			UInt32 chunkSize = [QNResumeUpload calcChunkSize:size offset:chunkOffset];
+			[self putChunk:uphost offset:offset + chunkOffset size:chunkSize context:context progress:nil complete:weakChunkComplete];
+		}
 	};
 
 	UInt32 makeBlockSize = size;
@@ -198,48 +193,46 @@
 }
 
 - (NSError *)run {
-	   @autoreleasepool {
-           QNProgressBlock __block progressBlock;
-           QNProgressBlock __block __weak weakProgressBlock = progressBlock = ^(float percent) {
-           };
-           
-           int blockCount = [self count];
-           
-           for (int blockIndex=0; blockIndex<blockCount; blockIndex++) {
-               
-               UInt32 offbase = blockIndex * kBlockSize;
-               __block UInt32 blockSize;
-               
-               blockSize = kBlockSize;
-               if (blockIndex == blockCount - 1) {
-                   blockSize = self.size - offbase;
-               }
-               
-               QNCompleteBlock __block __weak weakBlockComplete;
-               QNCompleteBlock blockComplete;
-               weakBlockComplete = blockComplete = ^(QNResponseInfo *info, NSDictionary* resp)
-               {
-                   if (info.error != nil) {
-                   self.block(info, nil);
-                       return;
-                   }
-                   
-                   if ([self reachEnd]) {
-                       
-                       QNCompleteBlock __block completeBlock;
-                       QNCompleteBlock __block __weak weakCompleteBlock = completeBlock = ^(QNResponseInfo *info, NSDictionary* resp) {
-                           self.block(info, resp);
-                       };
-                       
-                       [self makeFile:kUpHost complete:completeBlock];
-                       return;
-                   }
-               };
-               
-               [self putBlock:kUpHost offset:offbase size:blockSize progress:weakProgressBlock complete:weakBlockComplete];
-           }
-       }
-    return nil;
+	@autoreleasepool {
+		QNProgressBlock __block progressBlock;
+		QNProgressBlock __block __weak weakProgressBlock = progressBlock = ^(float percent) {
+		};
+
+		int blockCount = [self count];
+
+		for (int blockIndex = 0; blockIndex < blockCount; blockIndex++) {
+			UInt32 offbase = blockIndex * kBlockSize;
+			__block UInt32 blockSize;
+
+			blockSize = kBlockSize;
+			if (blockIndex == blockCount - 1) {
+				blockSize = self.size - offbase;
+			}
+
+			QNCompleteBlock __block __weak weakBlockComplete;
+			QNCompleteBlock blockComplete;
+			weakBlockComplete = blockComplete = ^(QNResponseInfo *info, NSDictionary *resp)
+			{
+				if (info.error != nil) {
+					self.block(info, nil);
+					return;
+				}
+
+				if ([self reachEnd]) {
+					QNCompleteBlock __block completeBlock;
+					QNCompleteBlock __block __weak weakCompleteBlock = completeBlock = ^(QNResponseInfo *info, NSDictionary *resp) {
+						self.block(info, resp);
+					};
+
+					[self makeFile:kUpHost complete:completeBlock];
+					return;
+				}
+			};
+
+			[self putBlock:kUpHost offset:offbase size:blockSize progress:weakProgressBlock complete:weakBlockComplete];
+		}
+	}
+	return nil;
 }
 
 @end
