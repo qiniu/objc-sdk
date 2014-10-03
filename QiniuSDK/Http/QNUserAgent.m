@@ -28,7 +28,7 @@ static NSString *_userAgent = nil;
 
 NSString *QNUserAgent(void) {
 	if (_userAgent) {
-		return _userAgent;
+		return [_userAgent copy];
 	}
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
@@ -36,5 +36,5 @@ NSString *QNUserAgent(void) {
 #else
 	_userAgent = [NSString stringWithFormat:@"QiniuObject-C/%@ (Mac OS X %@; %@)", kQiniuVersion, [[NSProcessInfo processInfo] operatingSystemVersionString], clientId()];
 #endif
-	return _userAgent;
+	return [_userAgent copy];
 }

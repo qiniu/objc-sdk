@@ -37,7 +37,7 @@
 
 - (instancetype)init {
 	if (self = [super init]) {
-		self.httpManager = [[QNHttpManager alloc] init];
+		_httpManager = [[QNHttpManager alloc] init];
 	}
 
 	return self;
@@ -90,7 +90,7 @@
 		block(info, key, resp);
 	};
 
-	[self.httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kQNUpHost]
+	[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kQNUpHost]
 	                       withData:data
 	                     withParams:parameters
 	                   withFileName:key
@@ -110,7 +110,6 @@
 		NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
 
 		if (error) {
-			//error;
 			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
 			    QNResponseInfo *info = [[QNResponseInfo alloc] initWithError:error];
 			    block(info, key, nil);

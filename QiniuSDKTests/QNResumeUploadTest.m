@@ -20,31 +20,30 @@
 
 - (void)setUp {
     [super setUp];
-    self.upManager = [[QNUploadManager alloc] init];
+    _upManager = [[QNUploadManager alloc] init];
 }
 
 - (void)tearDown {
     [super tearDown];
 }
 
-- (void)testUp2 {
-    __block QNResponseInfo *testInfo;
-    NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
-    NSString *token = @"6UOyH0xzsnOF-uKmsHgpi7AhGWdfvI8glyYV3uPg:m-8jeXMWC-4kstLEHEMCfZAZnWc=:eyJkZWFkbGluZSI6MTQyNDY4ODYxOCwic2NvcGUiOiJ0ZXN0MzY5In0=";
-    NSError *error = [self.upManager putData:data withKey:@"hello" withToken:token withCompleteBlock: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        testInfo = info;
-        if (!info.error) {
-            NSLog(@"%@", info.ReqId);
-        }
-        else {
-        }
-    } withOption:nil];
-    XCTAssert(error==nil, @"Pass");
-    AGWW_WAIT_WHILE(testInfo!=nil, 10.0);
-    XCTAssert(testInfo.stausCode == 200, @"Pass");
-    
-    XCTAssert(testInfo.ReqId != nil, @"Pass");
-    XCTAssert(YES, @"Pass");
+- (void)testOneBlock {
+//    __block QNResponseInfo *testInfo = nil;
+//    NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
+//    NSString *token = @"6UOyH0xzsnOF-uKmsHgpi7AhGWdfvI8glyYV3uPg:m-8jeXMWC-4kstLEHEMCfZAZnWc=:eyJkZWFkbGluZSI6MTQyNDY4ODYxOCwic2NvcGUiOiJ0ZXN0MzY5In0=";
+//    [self.upManager putData:data withKey:@"hello" withToken:token withCompleteBlock: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//        testInfo = info;
+//         NSLog(@"error %@", info.error);
+//        if (!info.error) {
+//            NSLog(@"%@", info.reqId);
+//        }
+//        else {
+//        }
+//    } withOption:nil];
+//    AGWW_WAIT_WHILE(testInfo, 10.0);
+//    NSLog(@"%@", testInfo);
+//    
+//    XCTAssert(testInfo.reqId != nil, @"Pass");
 }
 
 @end

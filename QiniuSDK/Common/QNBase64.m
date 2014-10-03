@@ -20,7 +20,7 @@ static uint8_t const kBase64EncodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 }
 
 + (NSError *)decodeError:(int)pos {
-	NSString *s = [[NSString alloc] initWithFormat:@"illegal url safe base64 data at input byte %d", pos];
+//    NSString *s = [[NSString alloc] initWithFormat:@"illegal url safe base64 data at input byte %d", pos];
 	return nil;
 }
 

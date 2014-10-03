@@ -104,7 +104,7 @@
         complete:(QNCompleteBlock)complete {
 	NSData *data = [self.data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
 	UInt32 chunkOffset = offset % kQNBlockSize;
-	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/bput/%@/%u", uphost, context, chunkOffset];
+	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/bput/%@/%u", uphost, context, (unsigned int)chunkOffset];
 
 	// Todo: check crc
 	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
@@ -165,7 +165,7 @@
 		mime = [[NSString alloc] initWithFormat:@"/mimetype/%@", [QNBase64 encodeString:self.option.mimeType]];
 	}
 
-	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/mkfile/%u%@", uphost, self.size, mime];
+	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/mkfile/%u%@", uphost, (unsigned int)self.size, mime];
 
 	if (self.key != nil) {
 		NSString *keyStr = [[NSString alloc] initWithFormat:@"/key/%@", [QNBase64 encodeString:self.key]];

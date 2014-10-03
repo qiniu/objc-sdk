@@ -13,7 +13,7 @@
 #import "QNResponseInfo.h"
 
 @interface QNHttpManager ()
-@property AFHTTPRequestOperationManager *httpManager;
+@property(nonatomic) AFHTTPRequestOperationManager *httpManager;
 // @property  AFHTTPSessionManager *sesssionManager;
 @end
 
@@ -21,8 +21,8 @@
 
 - (instancetype)init {
 	if (self = [super init]) {
-		self.httpManager = [[AFHTTPRequestOperationManager alloc] init];
-		self.httpManager.responseSerializer = [AFJSONResponseSerializer serializer];
+		_httpManager = [[AFHTTPRequestOperationManager alloc] init];
+		_httpManager.responseSerializer = [AFJSONResponseSerializer serializer];
 	}
 
 	return self;
@@ -36,7 +36,7 @@
 		NSString *reqId = headers[@"X-Reqid"];
 		NSString *xlog = headers[@"XLog"];
 		int status =  (int)[operation.response statusCode];
-		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withRemote:nil withBody:nil];
+		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withBody:nil];
 	}
 	else {
 		info = [[QNResponseInfo alloc] initWithError:error];
@@ -47,8 +47,7 @@
 - (void)  sendRequest:(NSMutableURLRequest *)request
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock {
-	AFHTTPRequestOperationManager *manager = self.httpManager;
-	AFHTTPRequestOperation *operation = [manager
+	AFHTTPRequestOperation *operation = [_httpManager
 	                                     HTTPRequestOperationWithRequest:request
 	                                                             success: ^(AFHTTPRequestOperation *operation, id responseObject) {
 	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil];
@@ -59,9 +58,8 @@
 	    else {
 	        //todo judge id is dictionary
 		}
-	    completeBlock(info, responseObject);
+	    completeBlock(info, resp);
 	}
-
 	                                                             failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
 	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:error];
 	    completeBlock(info, nil);
@@ -69,14 +67,17 @@
 
 	    ];
 
-	NSLog(@"%@", operation);
 	if (progressBlock) {
 		[operation setUploadProgressBlock: ^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
 		    progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
 		}];
 	}
 
-	[manager.operationQueue addOperation:operation];
+    [request setValue:QNUserAgent() forHTTPHeaderField:@"User-Agent"];
+    [request setValue:nil forHTTPHeaderField:@"Accept-Language"];
+    NSLog(@"%@", operation);
+	[_httpManager.operationQueue addOperation:operation];
+    NSLog(@"%@", _httpManager);
 }
 
 - (void)multipartPost:(NSString *)url
@@ -87,8 +88,8 @@
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock {
-	AFHTTPRequestOperationManager *manager = self.httpManager;
-	NSMutableURLRequest *request = [manager.requestSerializer
+	
+	NSMutableURLRequest *request = [_httpManager.requestSerializer
 	                                multipartFormRequestWithMethod:@"POST"
 	                                                     URLString:url
 	                                                    parameters:params
@@ -98,7 +99,6 @@
 
 	                                                         error:nil];
 
-	[request setValue:QNUserAgent() forHTTPHeaderField:@"User-Agent"];
 	[self sendRequest:request
 	    withCompleteBlock:completeBlock
 	    withProgressBlock:progressBlock];
@@ -117,7 +117,6 @@
 		[request setAllHTTPHeaderFields:headers];
 	}
 
-	[request setValue:QNUserAgent() forHTTPHeaderField:@"User-Agent"];
 	[request setHTTPMethod:@"POST"];
 
 	if (params) {

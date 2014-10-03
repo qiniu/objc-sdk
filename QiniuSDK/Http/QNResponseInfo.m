@@ -13,7 +13,8 @@
 
 - (instancetype)initWithError:(NSError *)error {
 	if (self = [super init]) {
-		self.error = error;
+        _stausCode = -1;
+		_error = [error copy];
 	}
 	return self;
 }
@@ -21,15 +22,17 @@
 - (instancetype)init:(int)status
            withReqId:(NSString *)reqId
             withXLog:(NSString *)xlog
-          withRemote:(NSString *)ip
             withBody:(id)body {
 	if (self = [super init]) {
-		self.stausCode = status;
-		self.ReqId = reqId;
-		self.xlog = xlog;
-		self.remoteIp = ip;
+		_stausCode = status;
+		_reqId = [reqId copy];
+		_xlog = [xlog copy];
 	}
 	return self;
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"<%@: %p, status: %d, requestId: %@, xlog: %@, error: %@>", NSStringFromClass([self class]), self, _stausCode, _reqId, _xlog, _error];
 }
 
 @end

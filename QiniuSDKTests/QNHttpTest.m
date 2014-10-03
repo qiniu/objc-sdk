@@ -8,7 +8,10 @@
 
 #import <XCTest/XCTest.h>
 
+#import <AGAsyncTestHelper.h>
+
 #import "QNHttpManager.h"
+#import "QNResponseInfo.h"
 
 @interface QNHttpTest : XCTestCase
 @property QNHttpManager *httpManager;
@@ -18,24 +21,33 @@
 
 - (void)setUp {
     [super setUp];
-    // Put setup code here. This method is called before the invocation of each test method in the class.
+    _httpManager = [[QNHttpManager alloc] init];
 }
 
 - (void)tearDown {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
     [super tearDown];
 }
 
-- (void)testExample {
-    // This is an example of a functional test case.
-    XCTAssert(YES, @"Pass");
-}
-
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
-    }];
+- (void)testPost {
+    __block QNResponseInfo *testInfo = nil;
+    NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
+    [_httpManager post:@"http://www.baidu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp){
+        testInfo = info;
+    }withProgressBlock:nil withCancelBlock:nil];
+    AGWW_WAIT_WHILE(testInfo==nil, 100.0);
+    NSLog(@"%@", testInfo);
+    
+    XCTAssert(testInfo.reqId == nil, @"Pass");
+    
+    testInfo = nil;
+    
+    [_httpManager post:@"http://api.qiniu.com" withData:nil withParams:nil withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp){
+        testInfo = info;
+    }withProgressBlock:nil withCancelBlock:nil];
+    
+    AGWW_WAIT_WHILE(testInfo, 100.0);
+    NSLog(@"%@", testInfo);
+    XCTAssert(testInfo.reqId, @"Pass");
 }
 
 @end
