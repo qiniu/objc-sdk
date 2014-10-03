@@ -44,10 +44,10 @@
 }
 
 - (void)      putData:(NSData *)data
-              withKey:(NSString *)key
-            withToken:(NSString *)token
-    withCompleteBlock:(QNUpCompleteBlock)block
-           withOption:(QNUploadOption *)option {
+                  key:(NSString *)key
+                token:(NSString *)token
+             complete:(QNUpCompleteBlock)block
+               option:(QNUploadOption *)option{
 	NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
 
 	if (key && ![key isEqualToString:kQNUndefinedKey]) {
@@ -101,10 +101,10 @@
 }
 
 - (void)      putFile:(NSString *)filePath
-              withKey:(NSString *)key
-            withToken:(NSString *)token
-    withCompleteBlock:(QNUpCompleteBlock)block
-           withOption:(QNUploadOption *)option {
+                  key:(NSString *)key
+                token:(NSString *)token
+             complete:(QNUpCompleteBlock)block
+               option:(QNUploadOption *)option {
 	@autoreleasepool {
 		NSError *error = nil;
 		NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
@@ -128,7 +128,7 @@
 			return;
 		}
 		if (fileSize <= kQNPutThreshHold) {
-			[self putData:data withKey:key withToken:token withCompleteBlock:block withOption:option];
+			[self putData:data key:key token:token complete:block option:option];
 		}
 
 		QNUpCompleteBlock _block = ^(QNResponseInfo *info, NSString *key, NSDictionary *resp)

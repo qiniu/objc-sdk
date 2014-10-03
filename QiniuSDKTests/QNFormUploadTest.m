@@ -34,10 +34,10 @@
     __block NSDictionary *testResp = nil;
 	NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
 	NSString *token = @"6UOyH0xzsnOF-uKmsHgpi7AhGWdfvI8glyYV3uPg:m-8jeXMWC-4kstLEHEMCfZAZnWc=:eyJkZWFkbGluZSI6MTQyNDY4ODYxOCwic2NvcGUiOiJ0ZXN0MzY5In0=";
-	[self.upManager putData:data withKey:@"hello" withToken:token withCompleteBlock: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+	[self.upManager putData:data key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         testInfo = info;
         testResp = resp;
-	} withOption:nil];
+	} option:nil];
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
