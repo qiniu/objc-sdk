@@ -72,7 +72,8 @@
 }
 
 - (void)increaseCount {
-    OSAtomicIncrement32(&(self->_uploadedCount));
+    //todo sync
+    self->_uploadedCount++;
 }
 
 - (BOOL)reachEnd {
