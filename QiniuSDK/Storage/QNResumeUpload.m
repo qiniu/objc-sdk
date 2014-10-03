@@ -82,7 +82,7 @@
 }
 
 - (UInt32)count {
-	return (self.size + kBlockSize - 1) / kBlockSize;
+	return (self.size + kQNBlockSize - 1) / kQNBlockSize;
 }
 
 - (void)makeBlock:(NSString *)uphost
@@ -103,7 +103,7 @@
         progress:(QNInternalProgressBlock)progressBlock
         complete:(QNCompleteBlock)complete {
 	NSData *data = [self.data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
-	UInt32 chunkOffset = offset % kBlockSize;
+	UInt32 chunkOffset = offset % kQNBlockSize;
 	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/bput/%@/%u", uphost, context, chunkOffset];
 
 	// Todo: check crc
@@ -113,7 +113,7 @@
 + (UInt32)calcChunkSize:(UInt32)blockSize
                  offset:(UInt32)offset {
 	UInt32 remainLength = blockSize - offset;
-	return (UInt32)(kChunkSize < remainLength ? kChunkSize : remainLength);
+	return (UInt32)(kQNChunkSize < remainLength ? kQNChunkSize : remainLength);
 }
 
 - (void)putBlock:(NSString *)uphost
@@ -151,7 +151,7 @@
 	};
 
 	UInt32 makeBlockSize = size;
-	[self makeBlock:kUpHost offset:offset size:makeBlockSize progress:_progressBlock complete:chunkComplete];
+	[self makeBlock:kQNUpHost offset:offset size:makeBlockSize progress:_progressBlock complete:chunkComplete];
 }
 
 - (void)makeFile:(NSString *)uphost
@@ -162,13 +162,13 @@
 		mime = @"";
 	}
 	else {
-		mime = [[NSString alloc] initWithFormat:@"/mimetype/%@", [QNBase64 encode:self.option.mimeType]];
+		mime = [[NSString alloc] initWithFormat:@"/mimetype/%@", [QNBase64 encodeString:self.option.mimeType]];
 	}
 
 	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/mkfile/%u%@", uphost, self.size, mime];
 
 	if (self.key != nil) {
-		NSString *keyStr = [[NSString alloc] initWithFormat:@"/key/%@", [QNBase64 encode:self.key]];
+		NSString *keyStr = [[NSString alloc] initWithFormat:@"/key/%@", [QNBase64 encodeString:self.key]];
 		url = [NSString stringWithFormat:@"%@%@", url, keyStr];
 	}
 
@@ -176,7 +176,7 @@
 		NSEnumerator *e = [self.option.params keyEnumerator];
 
 		for (id key = [e nextObject]; key != nil; key = [e nextObject]) {
-			url = [NSString stringWithFormat:@"%@/%@/%@", url, key, [QNBase64 encode:(self.option.params)[key]]];
+			url = [NSString stringWithFormat:@"%@/%@/%@", url, key, [QNBase64 encodeString:(self.option.params)[key]]];
 		}
 	}
 
@@ -204,10 +204,10 @@
 		int blockCount = self.count;
 
 		for (int blockIndex = 0; blockIndex < blockCount; blockIndex++) {
-			UInt32 offbase = blockIndex * kBlockSize;
+			UInt32 offbase = blockIndex * kQNBlockSize;
 			__block UInt32 blockSize;
 
-			blockSize = kBlockSize;
+			blockSize = kQNBlockSize;
 			if (blockIndex == blockCount - 1) {
 				blockSize = self.size - offbase;
 			}
@@ -227,12 +227,12 @@
 						self.block(info, self.key, resp);
 					};
 
-					[self makeFile:kUpHost complete:completeBlock];
+					[self makeFile:kQNUpHost complete:completeBlock];
 					return;
 				}
 			};
 
-			[self putBlock:kUpHost offset:offbase size:blockSize progress:weakProgressBlock complete:weakBlockComplete];
+			[self putBlock:kQNUpHost offset:offbase size:blockSize progress:weakProgressBlock complete:weakBlockComplete];
 		}
 	}
 	return nil;

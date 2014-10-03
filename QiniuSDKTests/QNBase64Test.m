@@ -20,7 +20,7 @@
     // This is an example of a functional test case.
     NSString *source = @"你好/+=";
 
-    XCTAssert([[QNBase64 encode:source] isEqual:@"5L2g5aW9Lys9"], @"Pass");
+    XCTAssert([[QNBase64 encodeString:source] isEqual:@"5L2g5aW9Lys9"], @"Pass");
 }
 
 @end

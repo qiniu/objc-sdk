@@ -49,12 +49,12 @@
            withOption:(QNUploadOption *)option {
 	NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
 
-	if (key && ![key isEqualToString:kQiniuUndefinedKey]) {
+	if (key && ![key isEqualToString:kQNUndefinedKey]) {
 		parameters[@"key"] = key;
 	}
 
 	if (!key) {
-		key = kQiniuUndefinedKey;
+		key = kQNUndefinedKey;
 	}
 
 	parameters[@"token"] = token;
@@ -82,7 +82,7 @@
 		block(info, key, resp);
 	};
 
-	return [self.httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kUpHost]
+	return [self.httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kQNUpHost]
 	                              withData:data
 	                            withParams:parameters
 	                          withFileName:key
@@ -112,7 +112,7 @@
 		if (error) {
 			return error;
 		}
-		if (fileSize <= kPutThreshHold) {
+		if (fileSize <= kQNPutThreshHold) {
 			return [self putData:data withKey:key withToken:token withCompleteBlock:block withOption:option];
 		}
 

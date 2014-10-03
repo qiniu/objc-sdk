@@ -47,31 +47,23 @@
 - (NSError *)sendRequest:(NSMutableURLRequest *)request
        withCompleteBlock:(QNCompleteBlock)completeBlock
        withProgressBlock:(QNInternalProgressBlock)progressBlock {
-    NSLog(@"1st");
 	AFHTTPRequestOperationManager *manager = self.httpManager;
 	AFHTTPRequestOperation *operation = [manager
 	                                     HTTPRequestOperationWithRequest:request
 	                                                             success: ^(AFHTTPRequestOperation *operation, id responseObject) {
-                                                                      NSLog(@"2nd");
 	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil];
 	    NSDictionary *resp = nil;
 	    if (info.stausCode == 200) {
 	        resp = responseObject;
         } else {
-            // todo analyze error info
+          //todo judge id is dictionary
         }
-                                                                    
-                                                                     
 	    completeBlock(info, responseObject);
 	}
-
 	                                                             failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
-                                                                     NSLog(@"3rd");
 	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:error];
-                                                                     
 	    completeBlock(info, nil);
 	}
-
 	    ];
     
     NSLog(@"%@", operation);

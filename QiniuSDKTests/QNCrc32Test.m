@@ -7,7 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "QiniuSDK.h"
+#import "QNCrc32.h"
 
 @interface QNCrc32Test : XCTestCase
 

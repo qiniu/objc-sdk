@@ -8,9 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-
-  #import "Common/QNBase64.h"
-  #import "Common/QNCrc32.h"
+#import "Common/QNBase64.h"
 #import "Http/QNResponseInfo.h"
-  #import "Storage/QNUploadManager.h"
-
+#import "Storage/QNUploadManager.h"
