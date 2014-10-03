@@ -44,9 +44,9 @@
 	return info;
 }
 
-- (NSError *)sendRequest:(NSMutableURLRequest *)request
-       withCompleteBlock:(QNCompleteBlock)completeBlock
-       withProgressBlock:(QNInternalProgressBlock)progressBlock {
+- (void)  sendRequest:(NSMutableURLRequest *)request
+    withCompleteBlock:(QNCompleteBlock)completeBlock
+    withProgressBlock:(QNInternalProgressBlock)progressBlock {
 	AFHTTPRequestOperationManager *manager = self.httpManager;
 	AFHTTPRequestOperation *operation = [manager
 	                                     HTTPRequestOperationWithRequest:request
@@ -55,18 +55,21 @@
 	    NSDictionary *resp = nil;
 	    if (info.stausCode == 200) {
 	        resp = responseObject;
-        } else {
-          //todo judge id is dictionary
-        }
+		}
+	    else {
+	        //todo judge id is dictionary
+		}
 	    completeBlock(info, responseObject);
 	}
+
 	                                                             failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
 	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:error];
 	    completeBlock(info, nil);
 	}
+
 	    ];
-    
-    NSLog(@"%@", operation);
+
+	NSLog(@"%@", operation);
 	if (progressBlock) {
 		[operation setUploadProgressBlock: ^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
 		    progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
@@ -74,17 +77,16 @@
 	}
 
 	[manager.operationQueue addOperation:operation];
-	return nil;
 }
 
-- (NSError *)multipartPost:(NSString *)url
-                  withData:(NSData *)data
-                withParams:(NSDictionary *)params
-              withFileName:(NSString *)key
-              withMimeType:(NSString *)mime
-         withCompleteBlock:(QNCompleteBlock)completeBlock
-         withProgressBlock:(QNInternalProgressBlock)progressBlock
-           withCancelBlock:(QNCancelBlock)cancelBlock {
+- (void)multipartPost:(NSString *)url
+             withData:(NSData *)data
+           withParams:(NSDictionary *)params
+         withFileName:(NSString *)key
+         withMimeType:(NSString *)mime
+    withCompleteBlock:(QNCompleteBlock)completeBlock
+    withProgressBlock:(QNInternalProgressBlock)progressBlock
+      withCancelBlock:(QNCancelBlock)cancelBlock {
 	AFHTTPRequestOperationManager *manager = self.httpManager;
 	NSMutableURLRequest *request = [manager.requestSerializer
 	                                multipartFormRequestWithMethod:@"POST"
@@ -97,12 +99,12 @@
 	                                                         error:nil];
 
 	[request setValue:QNUserAgent() forHTTPHeaderField:@"User-Agent"];
-	return [self sendRequest:request
-	           withCompleteBlock:completeBlock
-	           withProgressBlock:progressBlock];
+	[self sendRequest:request
+	    withCompleteBlock:completeBlock
+	    withProgressBlock:progressBlock];
 }
 
-- (NSError *)    post:(NSString *)url
+- (void)         post:(NSString *)url
              withData:(NSData *)data
            withParams:(NSDictionary *)params
           withHeaders:(NSDictionary *)headers
@@ -123,9 +125,9 @@
 	}
 
 	[request setHTTPBody:data];
-	return [self sendRequest:request
-	           withCompleteBlock:completeBlock
-	           withProgressBlock:progressBlock];
+	[self sendRequest:request
+	    withCompleteBlock:completeBlock
+	    withProgressBlock:progressBlock];
 }
 
 @end

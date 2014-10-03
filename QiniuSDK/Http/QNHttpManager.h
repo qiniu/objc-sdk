@@ -16,7 +16,7 @@ typedef BOOL (^QNCancelBlock)(void);
 
 @interface QNHttpManager : NSObject
 
-- (NSError *)multipartPost:(NSString *)url
+- (void)multipartPost:(NSString *)url
                   withData:(NSData *)data
                 withParams:(NSDictionary *)params
               withFileName:(NSString *)key
@@ -25,7 +25,7 @@ typedef BOOL (^QNCancelBlock)(void);
          withProgressBlock:(QNInternalProgressBlock)progressBlock
            withCancelBlock:(QNCancelBlock)cancelBlock;
 
-- (NSError *)    post:(NSString *)url
+- (void)    post:(NSString *)url
              withData:(NSData *)data
            withParams:(NSDictionary *)params
           withHeaders:(NSDictionary *)headers

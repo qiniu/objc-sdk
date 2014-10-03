@@ -195,7 +195,7 @@
 	[self.httpManager post:url withData:data withParams:nil withHeaders:headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:nil];
 }
 
-- (NSError *)run {
+- (void)run {
 	@autoreleasepool {
 		QNInternalProgressBlock __block progressBlock;
 		QNInternalProgressBlock __block __weak weakProgressBlock = progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
@@ -235,7 +235,6 @@
 			[self putBlock:kQNUpHost offset:offbase size:blockSize progress:weakProgressBlock complete:weakBlockComplete];
 		}
 	}
-	return nil;
 }
 
 @end

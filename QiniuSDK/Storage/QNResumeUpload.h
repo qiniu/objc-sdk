@@ -18,6 +18,6 @@
            withCompleteBlock:(QNUpCompleteBlock)block
                   withOption:(QNUploadOption *)option;
 
-@property (nonatomic, readonly, copy) NSError *run;
+- (void) run;
 
 @end

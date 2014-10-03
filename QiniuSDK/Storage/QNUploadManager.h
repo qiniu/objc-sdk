@@ -26,13 +26,13 @@ typedef BOOL (^QNUpCancelBlock)(void);
 
 @interface QNUploadManager : NSObject
 
-- (NSError *) putData:(NSData *)data
+- (void) putData:(NSData *)data
               withKey:(NSString *)key
             withToken:(NSString *)token
     withCompleteBlock:(QNUpCompleteBlock)block
            withOption:(QNUploadOption *)option;
 
-- (NSError *) putFile:(NSString *)filePath
+- (void) putFile:(NSString *)filePath
               withKey:(NSString *)key
             withToken:(NSString *)token
     withCompleteBlock:(QNUpCompleteBlock)block
