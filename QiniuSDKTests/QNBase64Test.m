@@ -11,8 +11,6 @@
 
 @interface QNBase64Test : XCTestCase
 
-- (void)testEncode;
-
 @end
 
 @implementation QNBase64Test

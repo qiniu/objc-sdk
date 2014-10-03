@@ -69,11 +69,11 @@
 		mimeType = @"application/octet-stream";
 	}
 
-	QNProgressBlock p = nil;
+	QNInternalProgressBlock p = nil;
 
 	if (option && option.progress) {
-		p = ^(float percent) {
-			option.progress(key, percent);
+		p = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+			option.progress(key, (float)totalBytesWritten/(float)totalBytesExpectedToWrite);
 		};
 	}
 
@@ -88,7 +88,8 @@
 	                          withFileName:key
 	                          withMimeType:mimeType
 	                     withCompleteBlock:_block
-	                     withProgressBlock:p];
+	                     withProgressBlock:p
+                           withCancelBlock:nil];
 }
 
 - (NSError *) putFile:(NSString *)filePath
@@ -115,7 +116,7 @@
 			return [self putData:data withKey:key withToken:token withCompleteBlock:block withOption:option];
 		}
 
-		QNCompleteBlock _block = ^(QNResponseInfo *info, NSDictionary *resp)
+		QNUpCompleteBlock _block = ^(QNResponseInfo *info, NSString *key, NSDictionary *resp)
 		{
 			block(info, key, resp);
 		};

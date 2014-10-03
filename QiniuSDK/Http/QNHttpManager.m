@@ -46,7 +46,7 @@
 
 - (NSError *)sendRequest:(NSMutableURLRequest *)request
        withCompleteBlock:(QNCompleteBlock)completeBlock
-       withProgressBlock:(QNProgressBlock)progressBlock {
+       withProgressBlock:(QNInternalProgressBlock)progressBlock {
     NSLog(@"1st");
 	AFHTTPRequestOperationManager *manager = self.httpManager;
 	AFHTTPRequestOperation *operation = [manager
@@ -77,7 +77,7 @@
     NSLog(@"%@", operation);
 	if (progressBlock) {
 		[operation setUploadProgressBlock: ^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-		    progressBlock((float)totalBytesWritten / (float)totalBytesExpectedToWrite);
+		    progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
 		}];
 	}
 
@@ -91,7 +91,8 @@
               withFileName:(NSString *)key
               withMimeType:(NSString *)mime
          withCompleteBlock:(QNCompleteBlock)completeBlock
-         withProgressBlock:(QNProgressBlock)progressBlock {
+         withProgressBlock:(QNInternalProgressBlock)progressBlock
+           withCancelBlock:(QNCancelBlock)cancelBlock {
 	AFHTTPRequestOperationManager *manager = self.httpManager;
 	NSMutableURLRequest *request = [manager.requestSerializer
 	                                multipartFormRequestWithMethod:@"POST"
@@ -114,7 +115,8 @@
            withParams:(NSDictionary *)params
           withHeaders:(NSDictionary *)headers
     withCompleteBlock:(QNCompleteBlock)completeBlock
-    withProgressBlock:(QNProgressBlock)progressBlock {
+    withProgressBlock:(QNInternalProgressBlock)progressBlock
+      withCancelBlock:(QNCancelBlock)cancelBlock {
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc] initWithString:url]];
 
 	if (headers) {

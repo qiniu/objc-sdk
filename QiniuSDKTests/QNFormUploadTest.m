@@ -8,11 +8,12 @@
 
 #import <XCTest/XCTest.h>
 
+#import <AGAsyncTestHelper.h>
+
 #import "QiniuSDK.h"
 
 @interface QNFormUploadTesT : XCTestCase
 
-- (void)testUp;
 @property QNUploadManager *upManager;
 
 @end
@@ -30,11 +31,9 @@
 
 - (void)testUp {
 	__block QNResponseInfo *testInfo;
-	dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
 	NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
 	NSString *token = @"6UOyH0xzsnOF-uKmsHgpi7AhGWdfvI8glyYV3uPg:m-8jeXMWC-4kstLEHEMCfZAZnWc=:eyJkZWFkbGluZSI6MTQyNDY4ODYxOCwic2NvcGUiOiJ0ZXN0MzY5In0=";
 	NSError *error = [self.upManager putData:data withKey:@"hello" withToken:token withCompleteBlock: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        dispatch_semaphore_signal(semaphore);
 	    testInfo = info;
 	    if (!info.error) {
 	        NSLog(@"%@", info.ReqId);
@@ -42,9 +41,11 @@
 	    else {
 		}
 	} withOption:nil];
-//    sleep(10);
-    XCTAssert(!error, @"Pass");
-//	dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    XCTAssert(error==nil, @"Pass");
+    AGWW_WAIT_WHILE(testInfo!=nil, 10.0);
+    XCTAssert(testInfo.stausCode == 200, @"Pass");
+
+    XCTAssert(testInfo.ReqId != nil, @"Pass");
 	XCTAssert(YES, @"Pass");
 }
 

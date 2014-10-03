@@ -7,9 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "../Http/QNHttpManager.h"
-
-@class QNUploadOption;
+#import "QNUploadManager.h"
 
 @interface QNResumeUpload : NSObject
 
@@ -17,7 +15,7 @@
                     withSize:(UInt32)size
                      withKey:(NSString *)key
                    withToken:(NSString *)token
-           withCompleteBlock:(QNCompleteBlock)block
+           withCompleteBlock:(QNUpCompleteBlock)block
                   withOption:(QNUploadOption *)option;
 
 @property (nonatomic, readonly, copy) NSError *run;

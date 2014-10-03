@@ -11,6 +11,7 @@
 #import "../Common/QNBase64.h"
 #import "../Common/QNConfig.h"
 #import "../Http/QNResponseInfo.h"
+#import "../Http/QNHttpManager.h"
 
 @interface QNResumeUpload ()
 
@@ -21,7 +22,7 @@
 @property (nonatomic, strong) NSString *key;
 @property (nonatomic, strong) NSString *token;
 @property (nonatomic, strong) QNUploadOption *option;
-@property (nonatomic, strong) QNCompleteBlock block;
+@property (nonatomic, strong) QNUpCompleteBlock block;
 @property (nonatomic, strong) NSArray *contexts;
 @property (nonatomic, readonly) UInt32 count;
 @property (nonatomic, readonly) BOOL reachEnd;
@@ -29,20 +30,20 @@
 - (void)makeBlock:(NSString *)uphost
            offset:(UInt32)offset
              size:(UInt32)size
-         progress:(QNProgressBlock)progressBlock
+         progress:(QNInternalProgressBlock)progressBlock
          complete:(QNCompleteBlock)complete;
 
 - (void)putChunk:(NSString *)uphost
           offset:(UInt32)offset
             size:(UInt32)size
          context:(NSString *)context
-        progress:(QNProgressBlock)progressBlock
+        progress:(QNInternalProgressBlock)progressBlock
         complete:(QNCompleteBlock)complete;
 
 - (void)putBlock:(NSString *)uphost
           offset:(UInt32)offset
             size:(UInt32)size
-        progress:(QNProgressBlock)progressBlock
+        progress:(QNInternalProgressBlock)progressBlock
         complete:(QNCompleteBlock)complete;
 
 - (void)makeFile:(NSString *)uphost
@@ -56,7 +57,7 @@
                     withSize:(UInt32)size
                      withKey:(NSString *)key
                    withToken:(NSString *)token
-           withCompleteBlock:(QNCompleteBlock)block
+           withCompleteBlock:(QNUpCompleteBlock)block
                   withOption:(QNUploadOption *)option {
 	if (self = [super init]) {
 		self.data = data;
@@ -87,7 +88,7 @@
 - (void)makeBlock:(NSString *)uphost
            offset:(UInt32)offset
              size:(UInt32)size
-         progress:(QNProgressBlock)progressBlock
+         progress:(QNInternalProgressBlock)progressBlock
          complete:(QNCompleteBlock)complete {
 	NSData *data = [self.data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
 	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/mkblk/%u", uphost, (unsigned int)[data length]];
@@ -99,7 +100,7 @@
           offset:(UInt32)offset
             size:(UInt32)size
          context:(NSString *)context
-        progress:(QNProgressBlock)progressBlock
+        progress:(QNInternalProgressBlock)progressBlock
         complete:(QNCompleteBlock)complete {
 	NSData *data = [self.data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
 	UInt32 chunkOffset = offset % kBlockSize;
@@ -118,12 +119,12 @@
 - (void)putBlock:(NSString *)uphost
           offset:(UInt32)offset
             size:(UInt32)size
-        progress:(QNProgressBlock)progressBlock
+        progress:(QNInternalProgressBlock)progressBlock
         complete:(QNCompleteBlock)complete {
 	QNCompleteBlock __block __weak weakChunkComplete;
 	QNCompleteBlock chunkComplete;
 	__block BOOL isMakeBlock = YES;
-	QNProgressBlock _progressBlock =  ^(float percent) {
+	QNInternalProgressBlock _progressBlock =  ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
 	};
 
 	weakChunkComplete = chunkComplete =  ^(QNResponseInfo *info, NSDictionary *resp) {
@@ -188,16 +189,16 @@
 - (void)         post:(NSString *)url
              withData:(NSData *)data
     withCompleteBlock:(QNCompleteBlock)completeBlock
-    withProgressBlock:(QNProgressBlock)progressBlock {
+    withProgressBlock:(QNInternalProgressBlock)progressBlock {
 	NSDictionary *headers = @{ @"Authorization":self.token, @"Content-Type":@"application/octet-stream" };
 
-	[self.httpManager post:url withData:data withParams:nil withHeaders:headers withCompleteBlock:completeBlock withProgressBlock:progressBlock];
+	[self.httpManager post:url withData:data withParams:nil withHeaders:headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:nil];
 }
 
 - (NSError *)run {
 	@autoreleasepool {
-		QNProgressBlock __block progressBlock;
-		QNProgressBlock __block __weak weakProgressBlock = progressBlock = ^(float percent) {
+		QNInternalProgressBlock __block progressBlock;
+		QNInternalProgressBlock __block __weak weakProgressBlock = progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
 		};
 
 		int blockCount = self.count;
@@ -216,14 +217,14 @@
 			weakBlockComplete = blockComplete = ^(QNResponseInfo *info, NSDictionary *resp)
 			{
 				if (info.error != nil) {
-					self.block(info, nil);
+					self.block(info, self.key, nil);
 					return;
 				}
 
 				if ([self reachEnd]) {
 					QNCompleteBlock __block completeBlock;
 					QNCompleteBlock __block __weak weakCompleteBlock = completeBlock = ^(QNResponseInfo *info, NSDictionary *resp) {
-						self.block(info, resp);
+						self.block(info, self.key, resp);
 					};
 
 					[self makeFile:kUpHost complete:completeBlock];

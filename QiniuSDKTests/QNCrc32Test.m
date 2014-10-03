@@ -11,8 +11,6 @@
 
 @interface QNCrc32Test : XCTestCase
 
-- (void)testData;
-
 @end
 
 @implementation QNCrc32Test
