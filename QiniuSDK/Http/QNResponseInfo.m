@@ -13,7 +13,7 @@
 
 - (instancetype)initWithError:(NSError *)error {
 	if (self = [super init]) {
-        _stausCode = -1;
+		_stausCode = -1;
 		_error = [error copy];
 	}
 	return self;
@@ -32,7 +32,7 @@
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<%@: %p, status: %d, requestId: %@, xlog: %@, error: %@>", NSStringFromClass([self class]), self, _stausCode, _reqId, _xlog, _error];
+	return [NSString stringWithFormat:@"<%@: %p, status: %d, requestId: %@, xlog: %@, error: %@>", NSStringFromClass([self class]), self, _stausCode, _reqId, _xlog, _error];
 }
 
 @end

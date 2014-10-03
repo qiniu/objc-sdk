@@ -13,7 +13,7 @@
 #import "QNResponseInfo.h"
 
 @interface QNHttpManager ()
-@property(nonatomic) AFHTTPRequestOperationManager *httpManager;
+@property (nonatomic) AFHTTPRequestOperationManager *httpManager;
 // @property  AFHTTPSessionManager *sesssionManager;
 @end
 
@@ -60,6 +60,7 @@
 		}
 	    completeBlock(info, resp);
 	}
+
 	                                                             failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
 	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:error];
 	    completeBlock(info, nil);
@@ -73,11 +74,11 @@
 		}];
 	}
 
-    [request setValue:QNUserAgent() forHTTPHeaderField:@"User-Agent"];
-    [request setValue:nil forHTTPHeaderField:@"Accept-Language"];
-    NSLog(@"%@", operation);
+	[request setValue:QNUserAgent() forHTTPHeaderField:@"User-Agent"];
+	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];
+	NSLog(@"%@", operation);
 	[_httpManager.operationQueue addOperation:operation];
-    NSLog(@"%@", _httpManager);
+	NSLog(@"%@", _httpManager);
 }
 
 - (void)multipartPost:(NSString *)url
@@ -88,7 +89,6 @@
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock {
-	
 	NSMutableURLRequest *request = [_httpManager.requestSerializer
 	                                multipartFormRequestWithMethod:@"POST"
 	                                                     URLString:url

@@ -91,13 +91,13 @@
 	};
 
 	[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kQNUpHost]
-	                       withData:data
-	                     withParams:parameters
-	                   withFileName:key
-	                   withMimeType:mimeType
-	              withCompleteBlock:_block
-	              withProgressBlock:p
-	                withCancelBlock:nil];
+	                   withData:data
+	                 withParams:parameters
+	               withFileName:key
+	               withMimeType:mimeType
+	          withCompleteBlock:_block
+	          withProgressBlock:p
+	            withCancelBlock:nil];
 }
 
 - (void)      putFile:(NSString *)filePath

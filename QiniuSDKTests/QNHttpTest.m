@@ -45,9 +45,23 @@
         testInfo = info;
     }withProgressBlock:nil withCancelBlock:nil];
     
-    AGWW_WAIT_WHILE(testInfo, 100.0);
+    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
     XCTAssert(testInfo.reqId, @"Pass");
+}
+
+- (void)testPostFail {
+    __block QNResponseInfo *testInfo = nil;
+    NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
+    [_httpManager post:@"http://1.1.1.1" withData:data withParams:nil withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp){
+        testInfo = info;
+    }withProgressBlock:nil withCancelBlock:nil];
+    AGWW_WAIT_WHILE(testInfo==nil, 100.0);
+    NSLog(@"%@", testInfo);
+    
+    XCTAssert(testInfo.reqId == nil, @"Pass");
+    XCTAssert(testInfo.stausCode == -1, @"Pass");
+    XCTAssert(testInfo.error.code == -1004, @"Pass");
 }
 
 @end
