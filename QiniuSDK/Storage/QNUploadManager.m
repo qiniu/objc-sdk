@@ -43,7 +43,7 @@
 	return self;
 }
 
-- (void) putData:(NSData *)data
+- (void)      putData:(NSData *)data
               withKey:(NSString *)key
             withToken:(NSString *)token
     withCompleteBlock:(QNUpCompleteBlock)block
@@ -74,59 +74,58 @@
 
 	if (option && option.progress) {
 		p = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-            float percent = (float)totalBytesWritten/(float)totalBytesExpectedToWrite;
-            if (percent > 0.95) {
-                percent = 0.95;
-            }
+			float percent = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
+			if (percent > 0.95) {
+				percent = 0.95;
+			}
 			option.progress(key, percent);
 		};
 	}
 
 	QNCompleteBlock _block = ^(QNResponseInfo *info, NSDictionary *resp)
 	{
-        if (p) {
-            option.progress(key, 1.0);
-        }
+		if (p) {
+			option.progress(key, 1.0);
+		}
 		block(info, key, resp);
 	};
 
 	[self.httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kQNUpHost]
-	                              withData:data
-	                            withParams:parameters
-	                          withFileName:key
-	                          withMimeType:mimeType
-	                     withCompleteBlock:_block
-	                     withProgressBlock:p
-                           withCancelBlock:nil];
+	                       withData:data
+	                     withParams:parameters
+	                   withFileName:key
+	                   withMimeType:mimeType
+	              withCompleteBlock:_block
+	              withProgressBlock:p
+	                withCancelBlock:nil];
 }
 
-- (void) putFile:(NSString *)filePath
+- (void)      putFile:(NSString *)filePath
               withKey:(NSString *)key
             withToken:(NSString *)token
     withCompleteBlock:(QNUpCompleteBlock)block
            withOption:(QNUploadOption *)option {
-	
 	@autoreleasepool {
-        NSError *error = nil;
+		NSError *error = nil;
 		NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
 
 		if (error) {
 			//error;
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-                QNResponseInfo *info = [[QNResponseInfo alloc] initWithError:error];
-                block(info, key, nil);
-            });
-            return;
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+			    QNResponseInfo *info = [[QNResponseInfo alloc] initWithError:error];
+			    block(info, key, nil);
+			});
+			return;
 		}
 
 		NSNumber *fileSizeNumber = fileAttr[NSFileSize];
 		UInt32 fileSize = [fileSizeNumber intValue];
 		NSData *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
 		if (error) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-                QNResponseInfo *info = [[QNResponseInfo alloc] initWithError:error];
-                block(info, key, nil);
-            });
+			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+			    QNResponseInfo *info = [[QNResponseInfo alloc] initWithError:error];
+			    block(info, key, nil);
+			});
 			return;
 		}
 		if (fileSize <= kQNPutThreshHold) {

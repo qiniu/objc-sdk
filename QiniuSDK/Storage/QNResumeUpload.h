@@ -18,6 +18,6 @@
            withCompleteBlock:(QNUpCompleteBlock)block
                   withOption:(QNUploadOption *)option;
 
-- (void) run;
+- (void)run;
 
 @end

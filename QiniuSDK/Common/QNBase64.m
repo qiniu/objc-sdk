@@ -16,48 +16,47 @@ static uint8_t const kBase64EncodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 
 + (NSString *)encodeString:(NSString *)sourceString {
 	NSData *data = [NSData dataWithBytes:[sourceString UTF8String] length:[sourceString lengthOfBytesUsingEncoding:NSUTF8StringEncoding]];
-    return [self encodeData:data];
+	return [self encodeData:data];
 }
 
-+ (NSError *)decodeError: (int) pos {
-    NSString *s = [[NSString alloc] initWithFormat:@"illegal url safe base64 data at input byte %d", pos];
-    return nil;
++ (NSError *)decodeError:(int)pos {
+	NSString *s = [[NSString alloc] initWithFormat:@"illegal url safe base64 data at input byte %d", pos];
+	return nil;
 }
 
 + (NSString *)encodeData:(NSData *)data {
-    NSUInteger length = [data length];
-    NSMutableData *mutableData = [NSMutableData dataWithLength:((length + 2) / 3) * 4];
-    
-    uint8_t *input = (uint8_t *)[data bytes];
-    uint8_t *output = (uint8_t *)[mutableData mutableBytes];
-    
-    for (NSUInteger i = 0; i < length; i += 3) {
-        NSUInteger value = 0;
-        
-        for (NSUInteger j = i; j < (i + 3); j++) {
-            value <<= 8;
-            
-            if (j < length) {
-                value |= (0xFF & input[j]);
-            }
-        }
-        
-        
-        
-        NSUInteger idx = (i / 3) * 4;
-        output[idx + 0] = kBase64EncodingTable[(value >> 18) & 0x3F];
-        output[idx + 1] = kBase64EncodingTable[(value >> 12) & 0x3F];
-        output[idx + 2] = (i + 1) < length ? kBase64EncodingTable[(value >> 6) & 0x3F] : '=';
-        output[idx + 3] = (i + 2) < length ? kBase64EncodingTable[(value >> 0) & 0x3F] : '=';
-    }
-    
-    return [[NSString alloc] initWithData:mutableData encoding:NSASCIIStringEncoding];
+	NSUInteger length = [data length];
+	NSMutableData *mutableData = [NSMutableData dataWithLength:((length + 2) / 3) * 4];
+
+	uint8_t *input = (uint8_t *)[data bytes];
+	uint8_t *output = (uint8_t *)[mutableData mutableBytes];
+
+	for (NSUInteger i = 0; i < length; i += 3) {
+		NSUInteger value = 0;
+
+		for (NSUInteger j = i; j < (i + 3); j++) {
+			value <<= 8;
+
+			if (j < length) {
+				value |= (0xFF & input[j]);
+			}
+		}
+
+
+
+		NSUInteger idx = (i / 3) * 4;
+		output[idx + 0] = kBase64EncodingTable[(value >> 18) & 0x3F];
+		output[idx + 1] = kBase64EncodingTable[(value >> 12) & 0x3F];
+		output[idx + 2] = (i + 1) < length ? kBase64EncodingTable[(value >> 6) & 0x3F] : '=';
+		output[idx + 3] = (i + 2) < length ? kBase64EncodingTable[(value >> 0) & 0x3F] : '=';
+	}
+
+	return [[NSString alloc] initWithData:mutableData encoding:NSASCIIStringEncoding];
 }
 
 + (NSData *)decodeString:(NSData *)source
-                   error:(NSError **)perror{
-    
-    return nil;
+                   error:(NSError **)perror {
+	return nil;
 }
 
 @end

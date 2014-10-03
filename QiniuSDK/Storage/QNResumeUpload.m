@@ -73,8 +73,8 @@
 }
 
 - (void)increaseCount {
-    //todo sync
-    self->_uploadedCount++;
+	//todo sync
+	self->_uploadedCount++;
 }
 
 - (BOOL)reachEnd {
