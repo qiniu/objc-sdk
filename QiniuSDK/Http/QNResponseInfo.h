@@ -25,6 +25,6 @@
 - (instancetype)init:(int)status
            withReqId:(NSString *)reqId
             withXLog:(NSString *)xlog
-            withBody:(id)body;
+            withBody:(NSData *)body;
 
 @end

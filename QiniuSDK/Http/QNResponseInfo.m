@@ -40,19 +40,24 @@ static QNResponseInfo *cancelledInfo = nil;
 - (instancetype)init:(int)status
            withReqId:(NSString *)reqId
             withXLog:(NSString *)xlog
-            withBody:(id)body {
+            withBody:(NSData *)body {
 	if (self = [super init]) {
 		_stausCode = status;
 		_reqId = [reqId copy];
 		_xlog = [xlog copy];
-		NSDictionary *uInfo;
-		if ([[body className] isEqualToString:@"NSString"]) {
-			uInfo = @{ @"error":body };
+		if (status != 200) {
+			if (body == nil) {
+				_error = [[NSError alloc] initWithDomain:@"qiniu" code:_stausCode userInfo:nil];
+			}
+			else {
+				NSError *tmp;
+				NSDictionary *uInfo = [NSJSONSerialization JSONObjectWithData:body options:NSJSONReadingMutableLeaves error:&tmp];
+				if (tmp != nil) {
+					uInfo = @{ @"error":[[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding] };
+				}
+				_error = [[NSError alloc] initWithDomain:@"qiniu" code:_stausCode userInfo:uInfo];
+			}
 		}
-		else {
-			uInfo = body;
-		}
-		_error = [[NSError alloc] initWithDomain:@"qiniu" code:_stausCode userInfo:uInfo];
 	}
 	return self;
 }

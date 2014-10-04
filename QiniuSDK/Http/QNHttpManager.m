@@ -51,14 +51,14 @@
 	AFHTTPRequestOperation *operation = [_httpManager
 	                                     HTTPRequestOperationWithRequest:request
 	                                                             success: ^(AFHTTPRequestOperation *operation, id responseObject) {
-	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil withResponse:responseObject];
+	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil withResponse:operation.responseData];
 	    NSDictionary *resp = nil;
 	    if (info.stausCode == 200) {
 	        resp = responseObject;
 		}
 	    completeBlock(info, resp);
 	}                                                                failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
-	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:error withResponse:nil];
+	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:error withResponse:operation.responseData];
 	    completeBlock(info, nil);
 	}
 
@@ -74,7 +74,6 @@
 	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];
 	NSLog(@"%@", operation);
 	[_httpManager.operationQueue addOperation:operation];
-	NSLog(@"%@", _httpManager);
 }
 
 - (void)multipartPost:(NSString *)url
