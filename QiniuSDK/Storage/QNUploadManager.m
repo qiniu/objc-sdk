@@ -43,11 +43,11 @@
 	return self;
 }
 
-- (void)      putData:(NSData *)data
-                  key:(NSString *)key
-                token:(NSString *)token
-             complete:(QNUpCompleteBlock)block
-               option:(QNUploadOption *)option{
+- (void)putData:(NSData *)data
+            key:(NSString *)key
+          token:(NSString *)token
+       complete:(QNUpCompleteBlock)block
+         option:(QNUploadOption *)option {
 	NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
 
 	if (key && ![key isEqualToString:kQNUndefinedKey]) {
@@ -100,11 +100,11 @@
 	            withCancelBlock:nil];
 }
 
-- (void)      putFile:(NSString *)filePath
-                  key:(NSString *)key
-                token:(NSString *)token
-             complete:(QNUpCompleteBlock)block
-               option:(QNUploadOption *)option {
+- (void)putFile:(NSString *)filePath
+            key:(NSString *)key
+          token:(NSString *)token
+       complete:(QNUpCompleteBlock)block
+         option:(QNUploadOption *)option {
 	@autoreleasepool {
 		NSError *error = nil;
 		NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];

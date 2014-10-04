@@ -12,6 +12,6 @@
 
 + (NSString *)encodeString:(NSString *)source;
 + (NSString *)encodeData:(NSData *)source;
-+ (NSData *)decodeString:(NSData *)source
-                   error:(NSError **)error;
+//+ (NSData *)decodeString:(NSData *)source
+//                   error:(NSError **)error;
 @end

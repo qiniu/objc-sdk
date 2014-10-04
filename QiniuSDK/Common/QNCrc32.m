@@ -19,17 +19,14 @@
 	return (UInt32)crc;
 }
 
-+ (UInt32)file:(NSString *)filePath {
++ (UInt32)file:(NSString *)filePath
+         error:(NSError **)error {
 	uLong crc = crc32(0L, Z_NULL, 0);
-	NSError *error = nil;
-
 	@autoreleasepool {
-		NSData *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
-
-		if (error != nil) {
+		NSData *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:error];
+		if (*error != nil) {
 			return (UInt32)crc;
 		}
-
 		crc = crc32(crc, [data bytes], (uInt)[data length]);
 	}
 	return (UInt32)crc;

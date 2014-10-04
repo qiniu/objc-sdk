@@ -27,6 +27,7 @@
 		_stausCode = status;
 		_reqId = [reqId copy];
 		_xlog = [xlog copy];
+		_error = [[NSError alloc] initWithDomain:@"qiniu" code:_stausCode userInfo:body];
 	}
 	return self;
 }

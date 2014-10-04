@@ -31,17 +31,17 @@
 
 - (void)testUp {
 	__block QNResponseInfo *testInfo = nil;
-    __block NSDictionary *testResp = nil;
+	__block NSDictionary *testResp = nil;
 	NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
 	NSString *token = @"6UOyH0xzsnOF-uKmsHgpi7AhGWdfvI8glyYV3uPg:m-8jeXMWC-4kstLEHEMCfZAZnWc=:eyJkZWFkbGluZSI6MTQyNDY4ODYxOCwic2NvcGUiOiJ0ZXN0MzY5In0=";
 	[self.upManager putData:data key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        testInfo = info;
-        testResp = resp;
+	    testInfo = info;
+	    testResp = resp;
 	} option:nil];
 
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.reqId != nil, @"Pass");
+	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+	NSLog(@"%@", testInfo);
+	XCTAssert(testInfo.reqId != nil, @"Pass");
 }
 
 @end

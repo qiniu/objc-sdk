@@ -29,14 +29,15 @@
 }
 
 + (QNResponseInfo *)buildResponseInfo:(AFHTTPRequestOperation *)operation
-                            withError:(NSError *)error {
+                            withError:(NSError *)error
+                         withResponse:(id)responseObject {
 	QNResponseInfo *info;
 	if (operation.response) {
 		NSDictionary *headers = [operation.response allHeaderFields];
 		NSString *reqId = headers[@"X-Reqid"];
 		NSString *xlog = headers[@"XLog"];
 		int status =  (int)[operation.response statusCode];
-		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withBody:nil];
+		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withBody:responseObject];
 	}
 	else {
 		info = [[QNResponseInfo alloc] initWithError:error];
@@ -50,19 +51,14 @@
 	AFHTTPRequestOperation *operation = [_httpManager
 	                                     HTTPRequestOperationWithRequest:request
 	                                                             success: ^(AFHTTPRequestOperation *operation, id responseObject) {
-	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil];
+	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil withResponse:responseObject];
 	    NSDictionary *resp = nil;
 	    if (info.stausCode == 200) {
 	        resp = responseObject;
 		}
-	    else {
-	        //todo judge id is dictionary
-		}
 	    completeBlock(info, resp);
-	}
-
-	                                                             failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
-	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:error];
+	}                                                                failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
+	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:error withResponse:nil];
 	    completeBlock(info, nil);
 	}
 
@@ -98,7 +94,6 @@
 	}
 
 	                                                         error:nil];
-
 	[self sendRequest:request
 	    withCompleteBlock:completeBlock
 	    withProgressBlock:progressBlock];

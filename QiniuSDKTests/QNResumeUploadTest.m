@@ -19,12 +19,12 @@
 @implementation QNResumeUploadTest
 
 - (void)setUp {
-    [super setUp];
-    _upManager = [[QNUploadManager alloc] init];
+	[super setUp];
+	_upManager = [[QNUploadManager alloc] init];
 }
 
 - (void)tearDown {
-    [super tearDown];
+	[super tearDown];
 }
 
 - (void)testOneBlock {
@@ -42,7 +42,7 @@
 //    } withOption:nil];
 //    AGWW_WAIT_WHILE(testInfo, 10.0);
 //    NSLog(@"%@", testInfo);
-//    
+//
 //    XCTAssert(testInfo.reqId != nil, @"Pass");
 }
 
