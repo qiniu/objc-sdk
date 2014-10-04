@@ -45,7 +45,14 @@ static QNResponseInfo *cancelledInfo = nil;
 		_stausCode = status;
 		_reqId = [reqId copy];
 		_xlog = [xlog copy];
-		_error = [[NSError alloc] initWithDomain:@"qiniu" code:_stausCode userInfo:body];
+		NSDictionary *uInfo;
+		if ([[body className] isEqualToString:@"NSString"]) {
+			uInfo = @{ @"error":body };
+		}
+		else {
+			uInfo = body;
+		}
+		_error = [[NSError alloc] initWithDomain:@"qiniu" code:_stausCode userInfo:uInfo];
 	}
 	return self;
 }

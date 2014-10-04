@@ -48,6 +48,26 @@
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
 	XCTAssert(testInfo.reqId, @"Pass");
+
+    testInfo = nil;
+    [_httpManager post:@"http://httpbin.org/status/500" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+        testInfo = info;
+    } withProgressBlock:nil withCancelBlock:nil];
+
+    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+    NSLog(@"%@", testInfo);
+    XCTAssert(testInfo.stausCode == 500, @"Pass");
+    XCTAssert(testInfo.error != nil, @"Pass");
+
+    testInfo = nil;
+    [_httpManager post:@"http://httpbin.org/status/418" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+        testInfo = info;
+    } withProgressBlock:nil withCancelBlock:nil];
+
+    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+    NSLog(@"%@", testInfo);
+    XCTAssert(testInfo.stausCode == 418, @"Pass");
+    XCTAssert(testInfo.error != nil, @"Pass");
 }
 
 @end
