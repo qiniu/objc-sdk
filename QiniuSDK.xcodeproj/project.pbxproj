@@ -69,6 +69,9 @@
 		DFA9B64219DFDA6800A15FD1 /* QNEtag.m in Sources */ = {isa = PBXBuildFile; fileRef = DFA9B63A19DF904000A15FD1 /* QNEtag.m */; };
 		DFA9B64519DFE43500A15FD1 /* QNTempFile.m in Sources */ = {isa = PBXBuildFile; fileRef = DFA9B64419DFE43500A15FD1 /* QNTempFile.m */; };
 		DFA9B64619DFE43500A15FD1 /* QNTempFile.m in Sources */ = {isa = PBXBuildFile; fileRef = DFA9B64419DFE43500A15FD1 /* QNTempFile.m */; };
+		DFA9B64919E0018800A15FD1 /* QNUploadOption.h in Headers */ = {isa = PBXBuildFile; fileRef = DFA9B64719E0018800A15FD1 /* QNUploadOption.h */; };
+		DFA9B64A19E0018800A15FD1 /* QNUploadOption.m in Sources */ = {isa = PBXBuildFile; fileRef = DFA9B64819E0018800A15FD1 /* QNUploadOption.m */; };
+		DFA9B64B19E0018800A15FD1 /* QNUploadOption.m in Sources */ = {isa = PBXBuildFile; fileRef = DFA9B64819E0018800A15FD1 /* QNUploadOption.m */; };
 		DFBC622519DE459800458C4B /* QNHttpTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBC622419DE459800458C4B /* QNHttpTest.m */; };
 		DFBC622619DE459800458C4B /* QNHttpTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBC622419DE459800458C4B /* QNHttpTest.m */; };
 		DFBC622819DE578600458C4B /* QNConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBC622719DE578600458C4B /* QNConfig.m */; };
@@ -135,6 +138,8 @@
 		DFA9B63E19DFD8C900A15FD1 /* QNEtagTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNEtagTest.m; sourceTree = "<group>"; };
 		DFA9B64319DFE43500A15FD1 /* QNTempFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNTempFile.h; sourceTree = "<group>"; };
 		DFA9B64419DFE43500A15FD1 /* QNTempFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNTempFile.m; sourceTree = "<group>"; };
+		DFA9B64719E0018800A15FD1 /* QNUploadOption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNUploadOption.h; sourceTree = "<group>"; };
+		DFA9B64819E0018800A15FD1 /* QNUploadOption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNUploadOption.m; sourceTree = "<group>"; };
 		DFBC622419DE459800458C4B /* QNHttpTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNHttpTest.m; sourceTree = "<group>"; };
 		DFBC622719DE578600458C4B /* QNConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNConfig.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -276,6 +281,8 @@
 				DF2CDE5B19DAC6A400CE01FB /* QNUploadManager.m */,
 				DF293CA819DC0AF000799011 /* QNResumeUpload.h */,
 				DF293CAA19DC0E5300799011 /* QNResumeUpload.m */,
+				DFA9B64719E0018800A15FD1 /* QNUploadOption.h */,
+				DFA9B64819E0018800A15FD1 /* QNUploadOption.m */,
 			);
 			path = Storage;
 			sourceTree = "<group>";
@@ -309,6 +316,7 @@
 				DF2CDE6019DAC6A400CE01FB /* QNCrc32.h in Headers */,
 				DFA9B63B19DF904000A15FD1 /* QNEtag.h in Headers */,
 				DF2CDE5C19DAC6A400CE01FB /* QNBase64.h in Headers */,
+				DFA9B64919E0018800A15FD1 /* QNUploadOption.h in Headers */,
 				DF2CDE6819DAC6A400CE01FB /* QiniuSDK.h in Headers */,
 				DF2CDE6919DAC6A400CE01FB /* QNUploadManager.h in Headers */,
 				DF2CDE5F19DAC6A400CE01FB /* QNConfig.h in Headers */,
@@ -591,6 +599,7 @@
 				DF2CDE6119DAC6A400CE01FB /* QNCrc32.m in Sources */,
 				DF293CA619DC05B800799011 /* QNHttpManager.m in Sources */,
 				DF293CAB19DC0E5300799011 /* QNResumeUpload.m in Sources */,
+				DFA9B64A19E0018800A15FD1 /* QNUploadOption.m in Sources */,
 				DF2CDE6A19DAC6A400CE01FB /* QNUploadManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -630,6 +639,7 @@
 				DF2CDE6219DAC6A400CE01FB /* QNCrc32.m in Sources */,
 				DF293CA719DC05B800799011 /* QNHttpManager.m in Sources */,
 				DF293CAC19DC0E5300799011 /* QNResumeUpload.m in Sources */,
+				DFA9B64B19E0018800A15FD1 /* QNUploadOption.m in Sources */,
 				DF2CDE6B19DAC6A400CE01FB /* QNUploadManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

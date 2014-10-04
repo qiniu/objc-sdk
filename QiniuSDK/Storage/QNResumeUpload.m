@@ -12,6 +12,7 @@
 #import "QNConfig.h"
 #import "QNResponseInfo.h"
 #import "QNHttpManager.h"
+#import "QNUploadOption.h"
 
 @interface QNResumeUpload ()
 
@@ -124,10 +125,7 @@
 }
 
 - (BOOL)isCancelled {
-	if (self.option && self.option.cancelToken) {
-		return self.option.cancelToken();
-	}
-	return false;
+	return self.option && [self.option isCancelled];
 }
 
 - (void)putBlock:(NSString *)uphost

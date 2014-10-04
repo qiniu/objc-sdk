@@ -14,36 +14,7 @@
 
 #import "QNUploadManager.h"
 #import "QNResumeUpload.h"
-
-@interface QNUploadOption ()
-@property (nonatomic, readonly, copy) NSDictionary *convertToPostParams;
-@end
-
-@implementation QNUploadOption
-
-- (NSMutableDictionary *)p_convertToPostParams {
-	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:self.params];
-
-	return params;
-}
-
-- (instancetype)initWithMime:(NSString *)mimeType
-                    progress:(QNUpProgressBlock)progress
-                      params:(NSDictionary *)params
-                    checkCrc:(BOOL)check
-                 cancelToken:(QNUpCancelBlock)cancelBlock {
-	if (self = [super init]) {
-		_mimeType = mimeType;
-		_progress = progress;
-		_params = params;
-		_checkCrc = check;
-		_cancelToken = cancelBlock;
-	}
-
-	return self;
-}
-
-@end
+#import "QNUploadOption.h"
 
 @interface QNUploadManager ()
 @property QNHttpManager *httpManager;
