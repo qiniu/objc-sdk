@@ -10,7 +10,7 @@
 
 @interface QNTempFile : NSObject
 
-+(NSURL *)createTempfileWithSize:(int)size;
-+(void) removeTempfile:(NSURL*)path;
++ (NSURL *)createTempfileWithSize:(int)size;
++ (void)removeTempfile:(NSURL *)path;
 
 @end

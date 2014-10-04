@@ -25,9 +25,9 @@
 }
 
 + (NSString *)data:(NSData *)data {
-    if (data == nil || [data length] == 0) {
-        return @"Fto5o-5ea0sNMlW_75VgGJCv2AcJ";
-    }
+	if (data == nil || [data length] == 0) {
+		return @"Fto5o-5ea0sNMlW_75VgGJCv2AcJ";
+	}
 	int len = (int)[data length];
 	int count = (len + kQNBlockSize - 1) / kQNBlockSize;
 

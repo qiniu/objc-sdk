@@ -23,10 +23,10 @@
 	[super setUp];
 	_upManager = [[QNUploadManager alloc] init];
 #ifndef __IPHONE_OS_VERSION_MIN_REQUIRED
-    NSString *travis = [[[NSProcessInfo processInfo]environment]objectForKey:@"QINIU_TEST_ENV"];
-    if ([travis isEqualToString:@"travis"]) {
-        _inTravis = YES;
-    }
+	NSString *travis = [[[NSProcessInfo processInfo]environment]objectForKey:@"QINIU_TEST_ENV"];
+	if ([travis isEqualToString:@"travis"]) {
+		_inTravis = YES;
+	}
 #endif
 }
 
@@ -35,7 +35,6 @@
 }
 
 - (void)test600k {
-    
 }
 
 #ifndef __IPHONE_OS_VERSION_MIN_REQUIRED
@@ -43,17 +42,17 @@
 - (void)test1M {
 }
 
-- (void)test4M{
-    if (_inTravis) {
-        return;
-    }
-    
+- (void)test4M {
+	if (_inTravis) {
+		return;
+	}
 }
 
-- (void)test8M{
-    if (_inTravis) {
-        return;
-    }
+- (void)test8M {
+	if (_inTravis) {
+		return;
+	}
 }
+
 #endif
 @end
