@@ -14,7 +14,7 @@
 - (instancetype)initWithProgess:(QNUpProgressBlock)progress {
 	if (self = [super init]) {
 		_progress = progress;
-	}g
+	}
 	return self;
 }
 
