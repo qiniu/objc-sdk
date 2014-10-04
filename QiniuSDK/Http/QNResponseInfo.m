@@ -9,7 +9,13 @@
 
 #import "QNResponseInfo.h"
 
+static QNResponseInfo *cancelledInfo = nil;
+
 @implementation QNResponseInfo
+
++ (instancetype)cancel {
+	return [[QNResponseInfo alloc] initWithCancelled];
+}
 
 - (instancetype)initWithError:(NSError *)error {
 	if (self = [super init]) {
@@ -19,7 +25,7 @@
 	return self;
 }
 
-- (instancetype)initWithCancel {
+- (instancetype)initWithCancelled {
 	if (self = [super init]) {
 		_stausCode = -2;
 		_error = [[NSError alloc] initWithDomain:@"qiniu" code:_stausCode userInfo:@{ @"error":@"cancel by user" }];
@@ -27,7 +33,7 @@
 	return self;
 }
 
-- (BOOL)isCancel {
+- (BOOL)isCancelled {
 	return _stausCode == -2;
 }
 

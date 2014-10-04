@@ -18,14 +18,15 @@
 @property (nonatomic, strong) NSData *data;
 @property (nonatomic, weak) QNHttpManager *httpManager;
 @property UInt32 size;
-@property (atomic) int uploadedCount;
+@property (nonatomic) int uploadedCount;
 @property (nonatomic, strong) NSString *key;
 @property (nonatomic, strong) NSString *token;
 @property (nonatomic, strong) QNUploadOption *option;
-@property (nonatomic, strong) QNUpCompleteBlock block;
+@property (nonatomic, strong) QNUpCompleteBlock complete;
 @property (nonatomic, strong) NSArray *contexts;
 @property (nonatomic, readonly) UInt32 count;
 @property (nonatomic, readonly) BOOL reachEnd;
+@property (nonatomic, readonly, getter = isCancelled) BOOL cancelled;
 
 - (void)makeBlock:(NSString *)uphost
            offset:(UInt32)offset
@@ -60,20 +61,20 @@
            withCompleteBlock:(QNUpCompleteBlock)block
                   withOption:(QNUploadOption *)option {
 	if (self = [super init]) {
-		self.data = data;
-		self.size = size;
-		self.key = key;
-		self.token = token;
-		self.option = option;
-		self.block = block;
-		self.uploadedCount = 0;
+		_data = data;
+		_size = size;
+		_key = key;
+		_token = token;
+		_option = option;
+		_complete = block;
+		_uploadedCount = 0;
 	}
 
 	return self;
 }
 
 - (void)increaseCount {
-	//todo sync
+	//single thread, no sync
 	self->_uploadedCount++;
 }
 
@@ -116,6 +117,19 @@
 	return (UInt32)(kQNChunkSize < remainLength ? kQNChunkSize : remainLength);
 }
 
++ (UInt32)calcBlockSize:(UInt32)fileSize
+                 offset:(UInt32)offset {
+	UInt32 remainLength = fileSize - offset;
+	return (UInt32)(kQNBlockSize < remainLength ? kQNBlockSize : remainLength);
+}
+
+- (BOOL)isCancelled {
+	if (self.option && self.option.cancelToken) {
+		return self.option.cancelToken();
+	}
+	return false;
+}
+
 - (void)putBlock:(NSString *)uphost
           offset:(UInt32)offset
             size:(UInt32)size
@@ -128,6 +142,9 @@
 	};
 
 	weakChunkComplete = chunkComplete =  ^(QNResponseInfo *info, NSDictionary *resp) {
+		if (self.isCancelled) {
+			complete([QNResponseInfo cancel], nil);
+		}
 		if (info.error) {
 //            if (isMakeBlock || info.stausCode == 701) {
 			complete(info, nil);
@@ -198,42 +215,49 @@
 - (void)run {
 	@autoreleasepool {
 		QNInternalProgressBlock __block progressBlock;
+		UInt32 __block blockOffset = 0;
 		QNInternalProgressBlock __block __weak weakProgressBlock = progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+			if (self.option && self.option.progress) {
+				float percent = (float)(blockOffset + totalBytesWritten) / (float)self.size;
+				if (percent > 0.95) {
+					percent = 0.95;
+				}
+				self.option.progress(self.key, percent);
+			}
 		};
-
-		int blockCount = self.count;
-
-		for (int blockIndex = 0; blockIndex < blockCount; blockIndex++) {
-			UInt32 offbase = blockIndex * kQNBlockSize;
-			__block UInt32 blockSize;
-
-			blockSize = kQNBlockSize;
-			if (blockIndex == blockCount - 1) {
-				blockSize = self.size - offbase;
+		QNCompleteBlock __block __weak weakBlockComplete;
+		QNCompleteBlock blockComplete;
+		weakBlockComplete = blockComplete = ^(QNResponseInfo *info, NSDictionary *resp)
+		{
+			if (info.isCancelled) {
+				self.complete(info, self.key, nil);
+				return;
+			}
+			if (info.error != nil) {
+				//todo retry
+				self.complete(info, self.key, nil);
+				return;
 			}
 
-			QNCompleteBlock __block __weak weakBlockComplete;
-			QNCompleteBlock blockComplete;
-			weakBlockComplete = blockComplete = ^(QNResponseInfo *info, NSDictionary *resp)
-			{
-				if (info.error != nil) {
-					self.block(info, self.key, nil);
-					return;
-				}
+			if ([self reachEnd]) {
+				QNCompleteBlock __block completeBlock;
+				QNCompleteBlock __block __weak weakCompleteBlock = completeBlock = ^(QNResponseInfo *info, NSDictionary *resp) {
+					if (info.stausCode != 614 && info.stausCode != 200 && info.stausCode >= 500) {
+						//todo retry
+						self.complete(info, _key, resp);
+						return;
+					}
+					if (self.option && self.option.progress) {
+						self.option.progress(_key, 1.0);
+					}
+					self.complete(info, _key, resp);
+				};
 
-				if ([self reachEnd]) {
-					QNCompleteBlock __block completeBlock;
-					QNCompleteBlock __block __weak weakCompleteBlock = completeBlock = ^(QNResponseInfo *info, NSDictionary *resp) {
-						self.block(info, self.key, resp);
-					};
-
-					[self makeFile:kQNUpHost complete:completeBlock];
-					return;
-				}
-			};
-
-			[self putBlock:kQNUpHost offset:offbase size:blockSize progress:weakProgressBlock complete:weakBlockComplete];
-		}
+				[self makeFile:kQNUpHost complete:completeBlock];
+				return;
+			}
+		};
+		[self putBlock:kQNUpHost offset:blockOffset size:[QNResumeUpload calcBlockSize:self.size offset:blockOffset] progress:weakProgressBlock complete:weakBlockComplete];
 	}
 }
 

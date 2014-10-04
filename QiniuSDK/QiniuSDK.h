@@ -9,6 +9,5 @@
 #import <Foundation/Foundation.h>
 
 #import "Common/QNBase64.h"
-//#import "Common/QNEtag.h"
 #import "Http/QNResponseInfo.h"
 #import "Storage/QNUploadManager.h"

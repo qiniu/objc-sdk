@@ -14,11 +14,13 @@
 @property (nonatomic, copy, readonly) NSString *reqId;
 @property (nonatomic, copy, readonly) NSString *xlog;
 @property (nonatomic, copy, readonly) NSError *error;
-@property (nonatomic, readonly, getter = isCancel) BOOL cancel;
+@property (nonatomic, readonly, getter = isCancelled) BOOL canceled;
+
++ (instancetype)cancel;
 
 - (instancetype)initWithError:(NSError *)error;
 
-- (instancetype)initWithCancel;
+- (instancetype)initWithCancelled;
 
 - (instancetype)init:(int)status
            withReqId:(NSString *)reqId
