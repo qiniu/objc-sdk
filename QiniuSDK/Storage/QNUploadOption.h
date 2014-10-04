@@ -29,5 +29,5 @@ typedef BOOL (^QNUpCancelBlock)(void);
 
 - (NSDictionary *)p_convertToPostParams;
 
-- (BOOL) isCancelled;
+- (BOOL)isCancelled;
 @end

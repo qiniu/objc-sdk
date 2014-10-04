@@ -12,11 +12,10 @@
 @implementation QNUploadOption
 
 - (instancetype)initWithProgess:(QNUpProgressBlock)progress {
-    if (self = [super init]) {
-        _progress = progress;
-    }
-    
-    return self;
+	if (self = [super init]) {
+		_progress = progress;
+	}g
+	return self;
 }
 
 - (instancetype)initWithMime:(NSString *)mimeType
@@ -24,23 +23,24 @@
                       params:(NSDictionary *)params
                     checkCrc:(BOOL)check
                  cancelToken:(QNUpCancelBlock)cancelBlock {
-    if (self = [super init]) {
-        _mimeType = mimeType;
-        _progress = progress;
-        _params = params;
-        _checkCrc = check;
-        _cancelToken = cancelBlock;
-    }
-    
-    return self;
+	if (self = [super init]) {
+		_mimeType = mimeType;
+		_progress = progress;
+		_params = params;
+		_checkCrc = check;
+		_cancelToken = cancelBlock;
+	}
+
+	return self;
 }
 
 - (NSDictionary *)p_convertToPostParams {
-    NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:self.params];
-    return params;
+	NSMutableDictionary *params = [NSMutableDictionary dictionaryWithDictionary:self.params];
+	return params;
 }
 
-- (BOOL) isCancelled {
-    return _cancelToken && _cancelToken();
+- (BOOL)isCancelled {
+	return _cancelToken && _cancelToken();
 }
+
 @end
