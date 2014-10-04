@@ -41,7 +41,24 @@
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
-	XCTAssert(testInfo.reqId != nil, @"Pass");
+	XCTAssert(testInfo.stausCode == 200, @"Pass");
+	XCTAssert(testInfo.reqId, @"Pass");
+}
+
+- (void)testUpUnAuth {
+	__block QNResponseInfo *testInfo = nil;
+	__block NSDictionary *testResp = nil;
+	NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
+	NSString *token = @"noauth";
+	[self.upManager putData:data key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+	    testInfo = info;
+	    testResp = resp;
+	} option:nil];
+
+	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+	NSLog(@"%@", testInfo);
+	XCTAssert(testInfo.stausCode == 401, @"Pass");
+	XCTAssert(testInfo.reqId, @"Pass");
 }
 
 @end

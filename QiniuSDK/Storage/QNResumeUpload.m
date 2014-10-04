@@ -8,10 +8,10 @@
 
 #import "QNResumeUpload.h"
 #import "QNUploadManager.h"
-#import "../Common/QNBase64.h"
-#import "../Common/QNConfig.h"
-#import "../Http/QNResponseInfo.h"
-#import "../Http/QNHttpManager.h"
+#import "QNBase64.h"
+#import "QNConfig.h"
+#import "QNResponseInfo.h"
+#import "QNHttpManager.h"
 
 @interface QNResumeUpload ()
 

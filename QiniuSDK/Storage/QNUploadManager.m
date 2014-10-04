@@ -8,9 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
-#import "../Common/QNConfig.h"
-#import "../Http/QNHttpManager.h"
-#import "../Http/QNResponseInfo.h"
+#import "QNConfig.h"
+#import "QNHttpManager.h"
+#import "QNResponseInfo.h"
 
 #import "QNUploadManager.h"
 #import "QNResumeUpload.h"

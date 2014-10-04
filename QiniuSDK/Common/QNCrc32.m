@@ -21,15 +21,13 @@
 
 + (UInt32)file:(NSString *)filePath
          error:(NSError **)error {
-	uLong crc = crc32(0L, Z_NULL, 0);
 	@autoreleasepool {
 		NSData *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:error];
 		if (*error != nil) {
-			return (UInt32)crc;
+			return 0;
 		}
-		crc = crc32(crc, [data bytes], (uInt)[data length]);
+		return [QNCrc32 data:data];
 	}
-	return (UInt32)crc;
 }
 
 @end

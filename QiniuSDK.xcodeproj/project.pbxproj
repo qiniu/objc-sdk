@@ -60,6 +60,9 @@
 		DF3C504819DD7BA6000F548F /* QNFormUploadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DF3C504619DD7BA6000F548F /* QNFormUploadTest.m */; };
 		DF3C504A19DD7D9F000F548F /* QNResumeUploadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DF3C504919DD7D9F000F548F /* QNResumeUploadTest.m */; };
 		DF3C504B19DD7D9F000F548F /* QNResumeUploadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DF3C504919DD7D9F000F548F /* QNResumeUploadTest.m */; };
+		DFA9B63B19DF904000A15FD1 /* QNEtag.h in Headers */ = {isa = PBXBuildFile; fileRef = DFA9B63919DF904000A15FD1 /* QNEtag.h */; };
+		DFA9B63C19DF904000A15FD1 /* QNEtag.m in Sources */ = {isa = PBXBuildFile; fileRef = DFA9B63A19DF904000A15FD1 /* QNEtag.m */; };
+		DFA9B63D19DF904000A15FD1 /* QNEtag.m in Sources */ = {isa = PBXBuildFile; fileRef = DFA9B63A19DF904000A15FD1 /* QNEtag.m */; };
 		DFBC622519DE459800458C4B /* QNHttpTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBC622419DE459800458C4B /* QNHttpTest.m */; };
 		DFBC622619DE459800458C4B /* QNHttpTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBC622419DE459800458C4B /* QNHttpTest.m */; };
 		DFBC622819DE578600458C4B /* QNConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBC622719DE578600458C4B /* QNConfig.m */; };
@@ -121,6 +124,8 @@
 		DF2CDE7019DAE90300CE01FB /* QNBase64Test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNBase64Test.m; sourceTree = "<group>"; };
 		DF3C504619DD7BA6000F548F /* QNFormUploadTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNFormUploadTest.m; sourceTree = "<group>"; };
 		DF3C504919DD7D9F000F548F /* QNResumeUploadTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNResumeUploadTest.m; sourceTree = "<group>"; };
+		DFA9B63919DF904000A15FD1 /* QNEtag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNEtag.h; sourceTree = "<group>"; };
+		DFA9B63A19DF904000A15FD1 /* QNEtag.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNEtag.m; sourceTree = "<group>"; };
 		DFBC622419DE459800458C4B /* QNHttpTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNHttpTest.m; sourceTree = "<group>"; };
 		DFBC622719DE578600458C4B /* QNConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNConfig.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -249,6 +254,8 @@
 				DF2CDE5319DAC6A400CE01FB /* QNCrc32.m */,
 				DF2CDE5719DAC6A400CE01FB /* QNVersion.h */,
 				DFBC622719DE578600458C4B /* QNConfig.m */,
+				DFA9B63919DF904000A15FD1 /* QNEtag.h */,
+				DFA9B63A19DF904000A15FD1 /* QNEtag.m */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -288,6 +295,7 @@
 				DF2CDE6719DAC6A400CE01FB /* QNVersion.h in Headers */,
 				DF293CA419DC04C200799011 /* QNHttpManager.h in Headers */,
 				DF2CDE6019DAC6A400CE01FB /* QNCrc32.h in Headers */,
+				DFA9B63B19DF904000A15FD1 /* QNEtag.h in Headers */,
 				DF2CDE5C19DAC6A400CE01FB /* QNBase64.h in Headers */,
 				DF2CDE6819DAC6A400CE01FB /* QiniuSDK.h in Headers */,
 				DF2CDE6919DAC6A400CE01FB /* QNUploadManager.h in Headers */,
@@ -565,6 +573,7 @@
 			files = (
 				DF2CDE5D19DAC6A400CE01FB /* QNBase64.m in Sources */,
 				DF0D23CF19DCE6E500D6B68F /* QNResponseInfo.m in Sources */,
+				DFA9B63C19DF904000A15FD1 /* QNEtag.m in Sources */,
 				DFBC622819DE578600458C4B /* QNConfig.m in Sources */,
 				DF293C9F19DBC2AE00799011 /* QNUserAgent.m in Sources */,
 				DF2CDE6119DAC6A400CE01FB /* QNCrc32.m in Sources */,
@@ -600,6 +609,7 @@
 			files = (
 				DF2CDE5E19DAC6A400CE01FB /* QNBase64.m in Sources */,
 				DF0D23D019DCE6E500D6B68F /* QNResponseInfo.m in Sources */,
+				DFA9B63D19DF904000A15FD1 /* QNEtag.m in Sources */,
 				DFBC622919DE578600458C4B /* QNConfig.m in Sources */,
 				DF293CA019DBC2AE00799011 /* QNUserAgent.m in Sources */,
 				DF2CDE6219DAC6A400CE01FB /* QNCrc32.m in Sources */,

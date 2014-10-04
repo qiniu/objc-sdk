@@ -19,6 +19,18 @@
 	return self;
 }
 
+- (instancetype)initWithCancel {
+	if (self = [super init]) {
+		_stausCode = -2;
+		_error = [[NSError alloc] initWithDomain:@"qiniu" code:_stausCode userInfo:@{ @"error":@"cancel by user" }];
+	}
+	return self;
+}
+
+- (BOOL)isCancel {
+	return _stausCode == -2;
+}
+
 - (instancetype)init:(int)status
            withReqId:(NSString *)reqId
             withXLog:(NSString *)xlog
