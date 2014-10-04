@@ -14,6 +14,7 @@
 
 @interface QNResumeUploadTest : XCTestCase
 @property QNUploadManager *upManager;
+@property BOOL inTravis;
 @end
 
 @implementation QNResumeUploadTest
@@ -21,29 +22,38 @@
 - (void)setUp {
 	[super setUp];
 	_upManager = [[QNUploadManager alloc] init];
+#ifndef __IPHONE_OS_VERSION_MIN_REQUIRED
+    NSString *travis = [[[NSProcessInfo processInfo]environment]objectForKey:@"QINIU_TEST_ENV"];
+    if ([travis isEqualToString:@"travis"]) {
+        _inTravis = YES;
+    }
+#endif
 }
 
 - (void)tearDown {
 	[super tearDown];
 }
 
-- (void)testOneBlock {
-//    __block QNResponseInfo *testInfo = nil;
-//    NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
-//    NSString *token = @"6UOyH0xzsnOF-uKmsHgpi7AhGWdfvI8glyYV3uPg:m-8jeXMWC-4kstLEHEMCfZAZnWc=:eyJkZWFkbGluZSI6MTQyNDY4ODYxOCwic2NvcGUiOiJ0ZXN0MzY5In0=";
-//    [self.upManager putData:data withKey:@"hello" withToken:token withCompleteBlock: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-//        testInfo = info;
-//         NSLog(@"error %@", info.error);
-//        if (!info.error) {
-//            NSLog(@"%@", info.reqId);
-//        }
-//        else {
-//        }
-//    } withOption:nil];
-//    AGWW_WAIT_WHILE(testInfo, 10.0);
-//    NSLog(@"%@", testInfo);
-//
-//    XCTAssert(testInfo.reqId != nil, @"Pass");
+- (void)test600k {
+    
 }
 
+#ifndef __IPHONE_OS_VERSION_MIN_REQUIRED
+
+- (void)test1M {
+}
+
+- (void)test4M{
+    if (_inTravis) {
+        return;
+    }
+    
+}
+
+- (void)test8M{
+    if (_inTravis) {
+        return;
+    }
+}
+#endif
 @end
