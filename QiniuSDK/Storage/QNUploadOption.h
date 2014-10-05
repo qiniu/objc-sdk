@@ -27,7 +27,4 @@ typedef BOOL (^QNUpCancelBlock)(void);
 
 - (instancetype)initWithProgess:(QNUpProgressBlock)progress;
 
-- (NSDictionary *)p_convertToPostParams;
-
-- (BOOL)isCancelled;
 @end
