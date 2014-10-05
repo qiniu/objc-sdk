@@ -18,16 +18,22 @@
 
 @interface QNUploadManager ()
 @property QNHttpManager *httpManager;
+@property (assign, nonatomic) id<QNRecorderDelegate> recorder;
 @end
 
 @implementation QNUploadManager
 
 - (instancetype)init {
-	if (self = [super init]) {
-		_httpManager = [[QNHttpManager alloc] init];
-	}
+    return [self initWithRecorder:nil];
+}
 
-	return self;
+- (instancetype)initWithRecorder:(id<QNRecorderDelegate>)recorder {
+    if (self = [super init]) {
+        _httpManager = [[QNHttpManager alloc] init];
+        _recorder = recorder;
+    }
+
+    return self;
 }
 
 - (void)putData:(NSData *)data
@@ -129,7 +135,8 @@
 		                                   withKey:key
 		                                 withToken:token
 		                         withCompleteBlock:_block
-		                                withOption:option];
+		                                withOption:option
+                              withRecorder:_recorder];
 
 		[up run];
 	}

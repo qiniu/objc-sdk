@@ -28,6 +28,7 @@
 @property (nonatomic, readonly) UInt32 count;
 @property (nonatomic, readonly) BOOL reachEnd;
 @property (nonatomic, readonly, getter = isCancelled) BOOL cancelled;
+@property (nonatomic, weak) id<QNRecorderDelegate> recorder;
 
 - (void)makeBlock:(NSString *)uphost
            offset:(UInt32)offset
@@ -60,7 +61,8 @@
                      withKey:(NSString *)key
                    withToken:(NSString *)token
            withCompleteBlock:(QNUpCompleteBlock)block
-                  withOption:(QNUploadOption *)option {
+                  withOption:(QNUploadOption *)option
+withRecorder:(id<QNRecorderDelegate>)recorder{
 	if (self = [super init]) {
 		_data = data;
 		_size = size;
@@ -69,6 +71,7 @@
 		_option = option;
 		_complete = block;
 		_uploadedCount = 0;
+        _recorder = recorder;
 	}
 
 	return self;

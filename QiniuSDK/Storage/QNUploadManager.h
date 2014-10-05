@@ -8,12 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
+#import "QNRecorderDelegate.h"
+
 @class QNResponseInfo;
 @class QNUploadOption;
 
 typedef void (^QNUpCompleteBlock)(QNResponseInfo *info, NSString *key, NSDictionary *resp);
 
 @interface QNUploadManager : NSObject
+
+- (instancetype)initWithRecorder:(id<QNRecorderDelegate>)recorder;
 
 - (void)putData:(NSData *)data
             key:(NSString *)key
