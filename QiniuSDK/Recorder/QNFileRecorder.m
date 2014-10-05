@@ -16,8 +16,8 @@
 
 @implementation QNFileRecorder
 
-- (NSString *) pathOfKey:(NSString *)key {
-    return [[NSString alloc] initWithFormat:@"%@/%@", _directory, key];
+- (NSString *)pathOfKey:(NSString *)key {
+	return [[NSString alloc] initWithFormat:@"%@/%@", _directory, key];
 }
 
 - (instancetype)initWithFolder:(NSString *)directory {
@@ -35,18 +35,18 @@
 
 - (NSError *)set:(NSString *)key
             data:(NSData *)value {
-    NSError *error;
-    [value writeToFile:[self pathOfKey:key] options:NSDataWritingAtomic error:&error];
+	NSError *error;
+	[value writeToFile:[self pathOfKey:key] options:NSDataWritingAtomic error:&error];
 	return error;
 }
 
 - (NSData *)get:(NSString *)key {
-    return [NSData dataWithContentsOfFile:[self pathOfKey:key]];
+	return [NSData dataWithContentsOfFile:[self pathOfKey:key]];
 }
 
 - (NSError *)remove:(NSString *)key {
-    NSError *error;
-    [[NSFileManager defaultManager] removeItemAtPath: [self pathOfKey:key] error: &error];
+	NSError *error;
+	[[NSFileManager defaultManager] removeItemAtPath:[self pathOfKey:key] error:&error];
 	return error;
 }
 

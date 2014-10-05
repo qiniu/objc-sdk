@@ -9,8 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "QNRecorderDelegate.h"
 
-@interface QNFileRecorder : NSObject<QNRecorderDelegate>
+@interface QNFileRecorder : NSObject <QNRecorderDelegate>
 
--(instancetype) initWithFolder:(NSString *)directory;
+- (instancetype)initWithFolder:(NSString *)directory;
 
 @end

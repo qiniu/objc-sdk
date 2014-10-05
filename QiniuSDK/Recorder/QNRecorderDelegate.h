@@ -10,14 +10,14 @@
 
 @protocol QNRecorderDelegate <NSObject>
 
--(NSError *) open;
+- (NSError *)open;
 
--(NSError *) set:(NSString *)key
-               data:(NSData *)value;
+- (NSError *)set:(NSString *)key
+            data:(NSData *)value;
 
--(NSData *) get:(NSString *)key;
+- (NSData *)get:(NSString *)key;
 
--(NSError *) remove:(NSString *)key;
--(NSError *) close;
+- (NSError *)remove:(NSString *)key;
+- (NSError *)close;
 
 @end

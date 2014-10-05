@@ -12,7 +12,7 @@
 #import "QNConfig.h"
 #import "QNResponseInfo.h"
 #import "QNHttpManager.h"
-#import "QNUploadOption.h"
+#import "QNUploadOption+Private.h"
 
 @interface QNResumeUpload ()
 
@@ -28,7 +28,7 @@
 @property (nonatomic, readonly) UInt32 count;
 @property (nonatomic, readonly) BOOL reachEnd;
 @property (nonatomic, readonly, getter = isCancelled) BOOL cancelled;
-@property (nonatomic, weak) id<QNRecorderDelegate> recorder;
+@property (nonatomic, weak) id <QNRecorderDelegate> recorder;
 
 - (void)makeBlock:(NSString *)uphost
            offset:(UInt32)offset
@@ -62,7 +62,7 @@
                    withToken:(NSString *)token
            withCompleteBlock:(QNUpCompleteBlock)block
                   withOption:(QNUploadOption *)option
-withRecorder:(id<QNRecorderDelegate>)recorder{
+                withRecorder:(id <QNRecorderDelegate> )recorder {
 	if (self = [super init]) {
 		_data = data;
 		_size = size;
@@ -71,7 +71,7 @@ withRecorder:(id<QNRecorderDelegate>)recorder{
 		_option = option;
 		_complete = block;
 		_uploadedCount = 0;
-        _recorder = recorder;
+		_recorder = recorder;
 	}
 
 	return self;
@@ -141,7 +141,8 @@ withRecorder:(id<QNRecorderDelegate>)recorder{
 	__block BOOL isMakeBlock = YES;
 	QNInternalProgressBlock _progressBlock =  ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
 	};
-
+//todo record
+	__block BOOL first = YES;
 	weakChunkComplete = chunkComplete =  ^(QNResponseInfo *info, NSDictionary *resp) {
 		if (self.isCancelled) {
 			complete([QNResponseInfo cancel], nil);
@@ -215,8 +216,10 @@ withRecorder:(id<QNRecorderDelegate>)recorder{
 
 - (void)run {
 	@autoreleasepool {
+		//todo read from recorder
 		QNInternalProgressBlock __block progressBlock;
 		UInt32 __block blockOffset = 0;
+		UInt32 __block blockSize = [QNResumeUpload calcBlockSize:self.size offset:blockOffset];
 		QNInternalProgressBlock __block __weak weakProgressBlock = progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
 			if (self.option && self.option.progress) {
 				float percent = (float)(blockOffset + totalBytesWritten) / (float)self.size;
@@ -240,12 +243,18 @@ withRecorder:(id<QNRecorderDelegate>)recorder{
 				return;
 			}
 
-			if ([self reachEnd]) {
-				QNCompleteBlock __block completeBlock;
-				QNCompleteBlock __block __weak weakCompleteBlock = completeBlock = ^(QNResponseInfo *info, NSDictionary *resp) {
+			[self increaseCount];
+			if (self.reachEnd) {
+				QNCompleteBlock __block endBlock;
+				__block BOOL retried = NO;
+				QNCompleteBlock __block __weak weakEndBlock = endBlock = ^(QNResponseInfo *info, NSDictionary *resp) {
 					if (info.stausCode != 614 && info.stausCode != 200 && info.stausCode >= 500) {
-						//todo retry
-						self.complete(info, _key, resp);
+						if (retried) {
+							self.complete(info, _key, nil);
+							return;
+						}
+						retried = YES;
+						[self makeFile:kQNUpHostBackup complete:weakEndBlock];
 						return;
 					}
 					if (self.option && self.option.progress) {
@@ -254,11 +263,14 @@ withRecorder:(id<QNRecorderDelegate>)recorder{
 					self.complete(info, _key, resp);
 				};
 
-				[self makeFile:kQNUpHost complete:completeBlock];
+				[self makeFile:kQNUpHost complete:endBlock];
 				return;
 			}
+			blockOffset += blockSize;
+			blockSize = [QNResumeUpload calcBlockSize:self.size offset:blockOffset];
+			[self putBlock:kQNUpHost offset:blockOffset size:blockSize progress:weakProgressBlock complete:weakBlockComplete];
 		};
-		[self putBlock:kQNUpHost offset:blockOffset size:[QNResumeUpload calcBlockSize:self.size offset:blockOffset] progress:weakProgressBlock complete:weakBlockComplete];
+		[self putBlock:kQNUpHost offset:blockOffset size:blockSize progress:weakProgressBlock complete:weakBlockComplete];
 	}
 }
 

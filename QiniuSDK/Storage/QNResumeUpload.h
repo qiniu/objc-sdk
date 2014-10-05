@@ -17,7 +17,7 @@
                    withToken:(NSString *)token
            withCompleteBlock:(QNUpCompleteBlock)block
                   withOption:(QNUploadOption *)option
-                withRecorder:(id<QNRecorderDelegate>)recorder;
+                withRecorder:(id <QNRecorderDelegate> )recorder;
 
 - (void)run;
 

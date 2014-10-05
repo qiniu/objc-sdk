@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-#import "QNUploadOption.h"
+#import "QNUploadOption+Private.h"
 #import "QNUploadManager.h"
 
 @implementation QNUploadOption

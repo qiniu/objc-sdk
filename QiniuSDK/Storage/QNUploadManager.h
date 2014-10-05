@@ -17,7 +17,7 @@ typedef void (^QNUpCompleteBlock)(QNResponseInfo *info, NSString *key, NSDiction
 
 @interface QNUploadManager : NSObject
 
-- (instancetype)initWithRecorder:(id<QNRecorderDelegate>)recorder;
+- (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder;
 
 - (void)putData:(NSData *)data
             key:(NSString *)key
