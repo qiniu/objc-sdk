@@ -148,6 +148,7 @@
 		DFA9B65719E0B53700A15FD1 /* QNFileRecorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNFileRecorder.m; sourceTree = "<group>"; };
 		DFA9B65B19E0B58900A15FD1 /* QNRecorderDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNRecorderDelegate.h; sourceTree = "<group>"; };
 		DFA9B65D19E0EDF100A15FD1 /* QNUploadOption+Private.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "QNUploadOption+Private.h"; sourceTree = "<group>"; };
+		DFA9B65E19E391A100A15FD1 /* QNTestConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNTestConfig.h; sourceTree = "<group>"; };
 		DFBC622419DE459800458C4B /* QNHttpTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNHttpTest.m; sourceTree = "<group>"; };
 		DFBC622719DE578600458C4B /* QNConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNConfig.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -308,6 +309,7 @@
 				DFA9B63E19DFD8C900A15FD1 /* QNEtagTest.m */,
 				DFA9B64319DFE43500A15FD1 /* QNTempFile.h */,
 				DFA9B64419DFE43500A15FD1 /* QNTempFile.m */,
+				DFA9B65E19E391A100A15FD1 /* QNTestConfig.h */,
 			);
 			path = QiniuSDKTests;
 			sourceTree = SOURCE_ROOT;

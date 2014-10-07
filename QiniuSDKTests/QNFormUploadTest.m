@@ -12,6 +12,8 @@
 
 #import "QiniuSDK.h"
 
+#import "QNTestConfig.h"
+
 @interface QNFormUploadTesT : XCTestCase
 
 @property QNUploadManager *upManager;
@@ -34,8 +36,7 @@
 	__block NSDictionary *testResp = nil;
 
 	NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
-	NSString *token = @"6UOyH0xzsnOF-uKmsHgpi7AhGWdfvI8glyYV3uPg:m-8jeXMWC-4kstLEHEMCfZAZnWc=:eyJkZWFkbGluZSI6MTQyNDY4ODYxOCwic2NvcGUiOiJ0ZXN0MzY5In0=";
-	[self.upManager putData:data key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+	[self.upManager putData:data key:@"hello" token:g_token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
 	    testInfo = info;
 	    testResp = resp;
 	} option:nil];
