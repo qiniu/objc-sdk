@@ -136,7 +136,8 @@
 		                                 withToken:token
 		                         withCompleteBlock:_block
 		                                withOption:option
-		                              withRecorder:_recorder];
+		                              withRecorder:_recorder
+                              withHttpManager:_httpManager];
 
 		[up run];
 	}

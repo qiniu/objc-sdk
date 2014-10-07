@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "QNUploadManager.h"
 
+@class QNHttpManager;
 @interface QNResumeUpload : NSObject
 
 - (instancetype)initWithData:(NSData *)data
@@ -17,7 +18,8 @@
                    withToken:(NSString *)token
            withCompleteBlock:(QNUpCompleteBlock)block
                   withOption:(QNUploadOption *)option
-                withRecorder:(id <QNRecorderDelegate> )recorder;
+                withRecorder:(id <QNRecorderDelegate> )recorder
+withHttpManager:(QNHttpManager *)http;
 
 - (void)run;
 

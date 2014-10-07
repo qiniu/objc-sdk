@@ -24,7 +24,7 @@
 @property (nonatomic, strong) NSString *token;
 @property (nonatomic, strong) QNUploadOption *option;
 @property (nonatomic, strong) QNUpCompleteBlock complete;
-@property (nonatomic, strong) NSArray *contexts;
+@property (nonatomic, strong) NSMutableArray *contexts;
 @property (nonatomic, readonly) UInt32 count;
 @property (nonatomic, readonly) BOOL reachEnd;
 @property (nonatomic, readonly, getter = isCancelled) BOOL cancelled;
@@ -62,16 +62,19 @@
                    withToken:(NSString *)token
            withCompleteBlock:(QNUpCompleteBlock)block
                   withOption:(QNUploadOption *)option
-                withRecorder:(id <QNRecorderDelegate> )recorder {
+                withRecorder:(id <QNRecorderDelegate> )recorder
+             withHttpManager:(QNHttpManager *)http {
 	if (self = [super init]) {
 		_data = data;
 		_size = size;
 		_key = key;
-		_token = token;
+        _token = [NSString stringWithFormat:@"UpToken %@", token];
 		_option = option;
 		_complete = block;
 		_uploadedCount = 0;
 		_recorder = recorder;
+        _httpManager = http;
+        _contexts = [[NSMutableArray alloc] initWithCapacity:(size + kQNBlockSize - 1) / kQNBlockSize];
 	}
 
 	return self;
@@ -95,9 +98,9 @@
              size:(UInt32)size
          progress:(QNInternalProgressBlock)progressBlock
          complete:(QNCompleteBlock)complete {
-	NSData *data = [self.data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
-	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/mkblk/%u", uphost, (unsigned int)[data length]];
-
+    UInt32 chunkSize = [QNResumeUpload calcChunkSize:size offset:0];
+	NSData *data = [self.data subdataWithRange:NSMakeRange(offset, (unsigned int)chunkSize)];
+	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/mkblk/%u", uphost, size];
 	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
 }
 
@@ -139,13 +142,18 @@
 	QNCompleteBlock __block __weak weakChunkComplete;
 	QNCompleteBlock chunkComplete;
 	__block BOOL isMakeBlock = YES;
-	QNInternalProgressBlock _progressBlock =  ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+    __block UInt32 chunkOffset = 0;
+    QNInternalProgressBlock _progressBlock;
+    QNInternalProgressBlock weakChunkProgress = _progressBlock =  ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+        if (progressBlock) {
+            progressBlock(chunkOffset + totalBytesWritten, size);
+        }
 	};
-//todo record
-	__block BOOL first = YES;
+	//todo record
 	weakChunkComplete = chunkComplete =  ^(QNResponseInfo *info, NSDictionary *resp) {
 		if (self.isCancelled) {
 			complete([QNResponseInfo cancel], nil);
+			return;
 		}
 		if (info.error) {
 //            if (isMakeBlock || info.stausCode == 701) {
@@ -153,24 +161,21 @@
 			return;
 //            }
 		}
-		else {
-			if (progressBlock != nil) {
-				// calculate
-			}
-			isMakeBlock = NO;
-			NSString *context = [resp valueForKey:@"ctx"];
-			UInt32 chunkOffset = [[resp valueForKey:@"offset"] intValue];
-			if (chunkOffset == size) {
-				complete(info, nil);
-				return;
-			}
-			UInt32 chunkSize = [QNResumeUpload calcChunkSize:size offset:chunkOffset];
-			[self putChunk:uphost offset:offset + chunkOffset size:chunkSize context:context progress:nil complete:weakChunkComplete];
+        NSString *context = [resp valueForKey:@"ctx"];
+        _contexts[offset/kQNBlockSize] = context;
+
+        isMakeBlock = NO;
+
+		chunkOffset = [[resp valueForKey:@"offset"] intValue];
+		if (chunkOffset == size) {
+			complete(info, nil);
+			return;
 		}
+		UInt32 chunkSize = [QNResumeUpload calcChunkSize:size offset:chunkOffset];
+		[self putChunk:uphost offset:offset + chunkOffset size:chunkSize context:context progress:weakChunkProgress complete:weakChunkComplete];
 	};
 
-	UInt32 makeBlockSize = size;
-	[self makeBlock:kQNUpHost offset:offset size:makeBlockSize progress:_progressBlock complete:chunkComplete];
+	[self makeBlock:kQNUpHost offset:offset size:size progress:_progressBlock complete:chunkComplete];
 }
 
 - (void)makeFile:(NSString *)uphost
@@ -210,8 +215,7 @@
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock {
 	NSDictionary *headers = @{ @"Authorization":self.token, @"Content-Type":@"application/octet-stream" };
-
-	[self.httpManager post:url withData:data withParams:nil withHeaders:headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:nil];
+	[_httpManager post:url withData:data withParams:nil withHeaders:headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:nil];
 }
 
 - (void)run {
@@ -257,7 +261,7 @@
 						[self makeFile:kQNUpHostBackup complete:weakEndBlock];
 						return;
 					}
-					if (self.option && self.option.progress) {
+					if (info.stausCode == 200 && self.option && self.option.progress) {
 						self.option.progress(_key, 1.0);
 					}
 					self.complete(info, _key, resp);
@@ -270,6 +274,7 @@
 			blockSize = [QNResumeUpload calcBlockSize:self.size offset:blockOffset];
 			[self putBlock:kQNUpHost offset:blockOffset size:blockSize progress:weakProgressBlock complete:weakBlockComplete];
 		};
+
 		[self putBlock:kQNUpHost offset:blockOffset size:blockSize progress:weakProgressBlock complete:weakBlockComplete];
 	}
 }

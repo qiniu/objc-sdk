@@ -76,6 +76,10 @@
 		DFA9B65919E0B53700A15FD1 /* QNFileRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = DFA9B65719E0B53700A15FD1 /* QNFileRecorder.m */; };
 		DFA9B65A19E0B53700A15FD1 /* QNFileRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = DFA9B65719E0B53700A15FD1 /* QNFileRecorder.m */; };
 		DFA9B65C19E0B58900A15FD1 /* QNRecorderDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = DFA9B65B19E0B58900A15FD1 /* QNRecorderDelegate.h */; };
+		DFA9B65F19E3A4DD00A15FD1 /* QNFileRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = DFA9B65719E0B53700A15FD1 /* QNFileRecorder.m */; };
+		DFA9B66019E3A4E400A15FD1 /* QNUploadOption.m in Sources */ = {isa = PBXBuildFile; fileRef = DFA9B64819E0018800A15FD1 /* QNUploadOption.m */; };
+		DFA9B66119E3A4EE00A15FD1 /* QNFileRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = DFA9B65719E0B53700A15FD1 /* QNFileRecorder.m */; };
+		DFA9B66219E3A4F600A15FD1 /* QNUploadOption.m in Sources */ = {isa = PBXBuildFile; fileRef = DFA9B64819E0018800A15FD1 /* QNUploadOption.m */; };
 		DFBC622519DE459800458C4B /* QNHttpTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBC622419DE459800458C4B /* QNHttpTest.m */; };
 		DFBC622619DE459800458C4B /* QNHttpTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBC622419DE459800458C4B /* QNHttpTest.m */; };
 		DFBC622819DE578600458C4B /* QNConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBC622719DE578600458C4B /* QNConfig.m */; };
@@ -633,6 +637,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DFA9B66019E3A4E400A15FD1 /* QNUploadOption.m in Sources */,
+				DFA9B65F19E3A4DD00A15FD1 /* QNFileRecorder.m in Sources */,
 				DFA9B64219DFDA6800A15FD1 /* QNEtag.m in Sources */,
 				DFBC622A19DE5E2500458C4B /* QNConfig.m in Sources */,
 				DF3C504719DD7BA6000F548F /* QNFormUploadTest.m in Sources */,
@@ -674,6 +680,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DFA9B66219E3A4F600A15FD1 /* QNUploadOption.m in Sources */,
+				DFA9B66119E3A4EE00A15FD1 /* QNFileRecorder.m in Sources */,
 				DFA9B64119DFDA5F00A15FD1 /* QNEtag.m in Sources */,
 				DFBC622B19DE5E3200458C4B /* QNConfig.m in Sources */,
 				DF3C504819DD7BA6000F548F /* QNFormUploadTest.m in Sources */,
