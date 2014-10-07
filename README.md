@@ -17,8 +17,9 @@ pod "Qiniu", "~> 7.0"
 
 先通过服务器端sdk生成token
 ``` objective-c
+QNUploadManager *upManager = [[QNUploadManager alloc] init];
 NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
-[self.upManager putData:data key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+[upManager putData:data key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
     NSLog(@"%@", info);
     NSLog(@"%@", resp);
 } option:nil];
