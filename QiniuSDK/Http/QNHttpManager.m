@@ -11,17 +11,19 @@
 #import "QNHttpManager.h"
 #import "QNUserAgent.h"
 #import "QNResponseInfo.h"
+#import "QNConfig.h"
 
 @interface QNHttpManager ()
-@property (nonatomic) AFHTTPRequestOperationManager *httpManager;
+@property (nonatomic) AFHTTPClient *httpManager;
+@property (nonatomic) NSOperationQueue *operationQueue;
 @end
 
 @implementation QNHttpManager
 
 - (instancetype)init {
 	if (self = [super init]) {
-		_httpManager = [[AFHTTPRequestOperationManager alloc] init];
-		_httpManager.responseSerializer = [AFJSONResponseSerializer serializer];
+        NSString *url = [NSString stringWithFormat:@"http://%@", kQNUpHost];
+        _httpManager = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
 	}
 
 	return self;
@@ -53,7 +55,8 @@
 	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil withResponse:operation.responseData];
 	    NSDictionary *resp = nil;
 	    if (info.stausCode == 200) {
-	        resp = responseObject;
+            NSError *tmp;
+            resp = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&tmp];
 		}
 	    completeBlock(info, resp);
 	}                                                                failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -82,16 +85,15 @@
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock {
-	NSMutableURLRequest *request = [_httpManager.requestSerializer
-	                                multipartFormRequestWithMethod:@"POST"
-	                                                     URLString:url
-	                                                    parameters:params
-	                                     constructingBodyWithBlock: ^(id < AFMultipartFormData > formData) {
-	    [formData appendPartWithFileData:data name:@"file" fileName:key mimeType:mime];
-	}
 
-	                                                         error:nil];
-	[self sendRequest:request
+    NSMutableURLRequest *request = [_httpManager multipartFormRequestWithMethod:@"POST" path:@"/" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
+        [formData appendPartWithFileData:data name:@"file" fileName:key mimeType:mime];
+        for (NSString* k in params) {
+            [formData appendPartWithFormData: [params[k] dataUsingEncoding:NSUTF8StringEncoding] name:k];
+        }
+    }];
+
+    [self sendRequest:request
 	    withCompleteBlock:completeBlock
 	    withProgressBlock:progressBlock];
 }
