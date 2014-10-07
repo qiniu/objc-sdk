@@ -19,8 +19,8 @@ pod "Qiniu", "~> 7.0"
 ``` objective-c
 NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
 [self.upManager putData:data key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-    testInfo = info;
-    testResp = resp;
+    NSLog(@"%@", info);
+    NSLog(@"%@", resp);
 } option:nil];
 
 ```
