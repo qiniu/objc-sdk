@@ -15,6 +15,8 @@ const UInt32 kQNChunkSize = 256 * 1024;
 const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 const UInt32 kQNPutThreshHold = 512 * 1024;
 
+const UInt32 kQNRetryMax = 3;
+
 @implementation QNConfig
 
 @end
