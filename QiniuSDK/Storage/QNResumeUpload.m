@@ -143,8 +143,8 @@
 	QNCompleteBlock chunkComplete;
 	__block BOOL isMakeBlock = YES;
 	__block UInt32 chunkOffset = 0;
-	QNInternalProgressBlock _progressBlock;
-	QNInternalProgressBlock weakChunkProgress = _progressBlock =  ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+	QNInternalProgressBlock in_progressBlock;
+	QNInternalProgressBlock weakChunkProgress = in_progressBlock =  ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
 		if (progressBlock) {
 			progressBlock(chunkOffset + totalBytesWritten, size);
 		}
@@ -175,7 +175,7 @@
 		[self putChunk:uphost offset:offset + chunkOffset size:chunkSize context:context progress:weakChunkProgress complete:weakChunkComplete];
 	};
 
-	[self makeBlock:kQNUpHost offset:offset size:size progress:_progressBlock complete:chunkComplete];
+	[self makeBlock:kQNUpHost offset:offset size:size progress:in_progressBlock complete:chunkComplete];
 }
 
 - (void)makeFile:(NSString *)uphost
@@ -265,6 +265,7 @@
 						self.option.progress(_key, 1.0);
 					}
 					self.complete(info, _key, resp);
+                    return;
 				};
 
 				[self makeFile:kQNUpHost complete:endBlock];
