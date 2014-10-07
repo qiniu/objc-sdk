@@ -137,7 +137,7 @@
 		                         withCompleteBlock:_block
 		                                withOption:option
 		                              withRecorder:_recorder
-                              withHttpManager:_httpManager];
+		                           withHttpManager:_httpManager];
 
 		[up run];
 	}

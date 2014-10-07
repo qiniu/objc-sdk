@@ -68,13 +68,13 @@
 		_data = data;
 		_size = size;
 		_key = key;
-        _token = [NSString stringWithFormat:@"UpToken %@", token];
+		_token = [NSString stringWithFormat:@"UpToken %@", token];
 		_option = option;
 		_complete = block;
 		_uploadedCount = 0;
 		_recorder = recorder;
-        _httpManager = http;
-        _contexts = [[NSMutableArray alloc] initWithCapacity:(size + kQNBlockSize - 1) / kQNBlockSize];
+		_httpManager = http;
+		_contexts = [[NSMutableArray alloc] initWithCapacity:(size + kQNBlockSize - 1) / kQNBlockSize];
 	}
 
 	return self;
@@ -98,7 +98,7 @@
              size:(UInt32)size
          progress:(QNInternalProgressBlock)progressBlock
          complete:(QNCompleteBlock)complete {
-    UInt32 chunkSize = [QNResumeUpload calcChunkSize:size offset:0];
+	UInt32 chunkSize = [QNResumeUpload calcChunkSize:size offset:0];
 	NSData *data = [self.data subdataWithRange:NSMakeRange(offset, (unsigned int)chunkSize)];
 	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/mkblk/%u", uphost, size];
 	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
@@ -142,12 +142,12 @@
 	QNCompleteBlock __block __weak weakChunkComplete;
 	QNCompleteBlock chunkComplete;
 	__block BOOL isMakeBlock = YES;
-    __block UInt32 chunkOffset = 0;
-    QNInternalProgressBlock _progressBlock;
-    QNInternalProgressBlock weakChunkProgress = _progressBlock =  ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-        if (progressBlock) {
-            progressBlock(chunkOffset + totalBytesWritten, size);
-        }
+	__block UInt32 chunkOffset = 0;
+	QNInternalProgressBlock _progressBlock;
+	QNInternalProgressBlock weakChunkProgress = _progressBlock =  ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+		if (progressBlock) {
+			progressBlock(chunkOffset + totalBytesWritten, size);
+		}
 	};
 	//todo record
 	weakChunkComplete = chunkComplete =  ^(QNResponseInfo *info, NSDictionary *resp) {
@@ -161,10 +161,10 @@
 			return;
 //            }
 		}
-        NSString *context = [resp valueForKey:@"ctx"];
-        _contexts[offset/kQNBlockSize] = context;
+		NSString *context = [resp valueForKey:@"ctx"];
+		_contexts[offset / kQNBlockSize] = context;
 
-        isMakeBlock = NO;
+		isMakeBlock = NO;
 
 		chunkOffset = [[resp valueForKey:@"offset"] intValue];
 		if (chunkOffset == size) {

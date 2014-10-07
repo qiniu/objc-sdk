@@ -19,7 +19,7 @@
            withCompleteBlock:(QNUpCompleteBlock)block
                   withOption:(QNUploadOption *)option
                 withRecorder:(id <QNRecorderDelegate> )recorder
-withHttpManager:(QNHttpManager *)http;
+             withHttpManager:(QNHttpManager *)http;
 
 - (void)run;
 
