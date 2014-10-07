@@ -39,7 +39,6 @@ $ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -con
 
 ## 贡献记录
 
-- [qiniu](https://github.com/qiniusdk)
 - [所有贡献者](https://github.com/qiniu/objective-c-sdk/contributors)
 
 
