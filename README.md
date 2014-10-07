@@ -53,6 +53,6 @@ $ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -con
 - [所有贡献者](https://github.com/qiniu/objective-c-sdk/contributors)
 
 
-## License
+## 代码许可
 
-The MIT License (MIT). Please see [License File](https://github.com/qiniu/objective-c-sdk/blob/master/LICENSE) for more information.
+The MIT License (MIT).详情见 [License文件](https://github.com/qiniu/objective-c-sdk/blob/master/LICENSE).
