@@ -37,6 +37,10 @@ static QNResponseInfo *cancelledInfo = nil;
 	return _stausCode == -2;
 }
 
+- (BOOL)couldRetry {
+	return (_stausCode >= 500 && _stausCode < 600 && _stausCode != 579) || _stausCode == -1;
+}
+
 - (instancetype)init:(int)status
            withReqId:(NSString *)reqId
             withXLog:(NSString *)xlog

@@ -22,6 +22,8 @@
 
 - (instancetype)initWithCancelled;
 
+- (BOOL)couldRetry;
+
 - (instancetype)init:(int)status
            withReqId:(NSString *)reqId
             withXLog:(NSString *)xlog
