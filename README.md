@@ -7,16 +7,24 @@
 
 通过CocoaPods
 
-``` ruby
+```ruby
 platform :ios, '6.0'
 pod "Qiniu", "~> 7.0"
 ```
+
+## 运行环境
+
+| Qiniu SDK版本 | 最低 iOS版本   | 最低 OS X 版本  |                                   Notes                                   |
+|:--------------------:|:---------------------------:|:----------------------------:|:-------------------------------------------------------------------------:|
+|          7.x         |            iOS 6            |           OS X 10.8          | Xcode 5 is required.  |
+|          [6.x](https://github.com/qiniu/ios-sdk)         |            iOS 6            |         None        |                                                                           |
+|
 
 
 ## 使用方法
 
 先通过服务器端sdk生成token
-``` objective-c
+```objective-c
 QNUploadManager *upManager = [[QNUploadManager alloc] init];
 NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
 [upManager putData:data key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
