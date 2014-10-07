@@ -23,8 +23,10 @@ pod "Qiniu", "~> 7.0"
 
 ## 使用方法
 
-先通过服务器端sdk生成token
 ```objective-c
+#import <QiniuSDK.h>
+
+NSString token = @"从服务端SDK获取";
 QNUploadManager *upManager = [[QNUploadManager alloc] init];
 NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
 [upManager putData:data key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
