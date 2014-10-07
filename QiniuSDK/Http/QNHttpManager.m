@@ -14,7 +14,6 @@
 
 @interface QNHttpManager ()
 @property (nonatomic) AFHTTPRequestOperationManager *httpManager;
-// @property  AFHTTPSessionManager *sesssionManager;
 @end
 
 @implementation QNHttpManager
@@ -35,7 +34,7 @@
 	if (operation.response) {
 		NSDictionary *headers = [operation.response allHeaderFields];
 		NSString *reqId = headers[@"X-Reqid"];
-		NSString *xlog = headers[@"XLog"];
+		NSString *xlog = headers[@"X-Log"];
 		int status =  (int)[operation.response statusCode];
 		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withBody:responseObject];
 	}
@@ -48,6 +47,7 @@
 - (void)  sendRequest:(NSMutableURLRequest *)request
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock {
+
 	AFHTTPRequestOperation *operation = [_httpManager
 	                                     HTTPRequestOperationWithRequest:request
 	                                                             success: ^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -61,7 +61,6 @@
 	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:error withResponse:operation.responseData];
 	    completeBlock(info, nil);
 	}
-
 	    ];
 
 	if (progressBlock) {
@@ -72,7 +71,6 @@
 
 	[request setValue:QNUserAgent() forHTTPHeaderField:@"User-Agent"];
 	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];
-	NSLog(@"%@", operation);
 	[_httpManager.operationQueue addOperation:operation];
 }
 
@@ -106,7 +104,6 @@
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock {
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc] initWithString:url]];
-
 	if (headers) {
 		[request setAllHTTPHeaderFields:headers];
 	}
@@ -116,7 +113,6 @@
 	if (params) {
 		[request setValuesForKeysWithDictionary:params];
 	}
-
 	[request setHTTPBody:data];
 	[self sendRequest:request
 	    withCompleteBlock:completeBlock
