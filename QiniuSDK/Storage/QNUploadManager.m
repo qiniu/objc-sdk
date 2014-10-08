@@ -39,7 +39,7 @@
 - (void)putData:(NSData *)data
             key:(NSString *)key
           token:(NSString *)token
-       complete:(QNUpCompleteBlock)block
+       complete:(QNUpCompletionHandler)block
          option:(QNUploadOption *)option {
 	NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
 
@@ -65,20 +65,20 @@
 
 	QNInternalProgressBlock p = nil;
 
-	if (option && option.progress) {
+	if (option && option.progressHandler) {
 		p = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
 			float percent = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
 			if (percent > 0.95) {
 				percent = 0.95;
 			}
-			option.progress(key, percent);
+			option.progressHandler(key, percent);
 		};
 	}
 
 	QNCompleteBlock _block = ^(QNResponseInfo *info, NSDictionary *resp)
 	{
 		if (p) {
-			option.progress(key, 1.0);
+			option.progressHandler(key, 1.0);
 		}
 		block(info, key, resp);
 	};
@@ -96,7 +96,7 @@
 - (void)putFile:(NSString *)filePath
             key:(NSString *)key
           token:(NSString *)token
-       complete:(QNUpCompleteBlock)block
+       complete:(QNUpCompletionHandler)block
          option:(QNUploadOption *)option {
 	@autoreleasepool {
 		NSError *error = nil;
@@ -124,7 +124,7 @@
 			[self putData:data key:key token:token complete:block option:option];
 		}
 
-		QNUpCompleteBlock _block = ^(QNResponseInfo *info, NSString *key, NSDictionary *resp)
+		QNUpCompletionHandler _block = ^(QNResponseInfo *info, NSString *key, NSDictionary *resp)
 		{
 			block(info, key, resp);
 		};
@@ -134,7 +134,7 @@
 		                                  withSize:fileSize
 		                                   withKey:key
 		                                 withToken:token
-		                         withCompleteBlock:_block
+		                         withCompletionHandler:_block
 		                                withOption:option
 		                              withRecorder:_recorder
 		                           withHttpManager:_httpManager];

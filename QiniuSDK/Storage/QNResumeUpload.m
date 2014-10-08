@@ -23,7 +23,7 @@
 @property (nonatomic, strong) NSString *key;
 @property (nonatomic, strong) NSString *token;
 @property (nonatomic, strong) QNUploadOption *option;
-@property (nonatomic, strong) QNUpCompleteBlock complete;
+@property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) NSMutableArray *contexts;
 @property (nonatomic, readonly) UInt32 count;
 @property (nonatomic, readonly) BOOL reachEnd;
@@ -60,7 +60,7 @@
                     withSize:(UInt32)size
                      withKey:(NSString *)key
                    withToken:(NSString *)token
-           withCompleteBlock:(QNUpCompleteBlock)block
+           withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option
                 withRecorder:(id <QNRecorderDelegate> )recorder
              withHttpManager:(QNHttpManager *)http {
@@ -225,12 +225,12 @@
 		UInt32 __block blockOffset = 0;
 		UInt32 __block blockSize = [QNResumeUpload calcBlockSize:self.size offset:blockOffset];
 		QNInternalProgressBlock __block __weak weakProgressBlock = progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-			if (self.option && self.option.progress) {
+			if (self.option && self.option.progressHandler) {
 				float percent = (float)(blockOffset + totalBytesWritten) / (float)self.size;
 				if (percent > 0.95) {
 					percent = 0.95;
 				}
-				self.option.progress(self.key, percent);
+				self.option.progressHandler(self.key, percent);
 			}
 		};
 		QNCompleteBlock __block __weak weakBlockComplete;
@@ -261,8 +261,8 @@
 						[self makeFile:kQNUpHostBackup complete:weakEndBlock];
 						return;
 					}
-					if (info.stausCode == 200 && self.option && self.option.progress) {
-						self.option.progress(_key, 1.0);
+					if (info.stausCode == 200 && self.option && self.option.progressHandler) {
+						self.option.progressHandler(_key, 1.0);
 					}
 					self.complete(info, _key, resp);
                     return;

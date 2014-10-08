@@ -13,7 +13,7 @@
 @class QNResponseInfo;
 @class QNUploadOption;
 
-typedef void (^QNUpCompleteBlock)(QNResponseInfo *info, NSString *key, NSDictionary *resp);
+typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDictionary *resp);
 
 @interface QNUploadManager : NSObject
 
@@ -22,13 +22,13 @@ typedef void (^QNUpCompleteBlock)(QNResponseInfo *info, NSString *key, NSDiction
 - (void)putData:(NSData *)data
             key:(NSString *)key
           token:(NSString *)token
-       complete:(QNUpCompleteBlock)block
+       complete:(QNUpCompletionHandler)completionHandler
          option:(QNUploadOption *)option;
 
 - (void)putFile:(NSString *)filePath
             key:(NSString *)key
           token:(NSString *)token
-       complete:(QNUpCompleteBlock)block
+       complete:(QNUpCompletionHandler)completionHandler
          option:(QNUploadOption *)option;
 
 @end

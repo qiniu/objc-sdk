@@ -42,7 +42,7 @@
 	NSString *keyUp = [NSString stringWithFormat:@"%dk", size];
 	__block NSString *key = nil;
 	__block QNResponseInfo *info = nil;
-	QNUploadOption *opt = [[QNUploadOption alloc] initWithProgess: ^(NSString *key, float percent) {
+	QNUploadOption *opt = [[QNUploadOption alloc] initWithProgessHandler: ^(NSString *key, float percent) {
 	    NSLog(@"progress %f", percent);
 	}
 
