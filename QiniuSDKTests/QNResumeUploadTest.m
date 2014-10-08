@@ -44,7 +44,7 @@
     __block NSString *key = nil;
     __block QNResponseInfo *info = nil;
     __block BOOL flag = NO;
-    QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil progressHandler:nil params:nil checkCrc:NO cancelToken:^BOOL(){
+    QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil progressHandler:nil params:nil checkCrc:NO cancellationSignal:^BOOL(){
         return flag;
     }];
     [_upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {

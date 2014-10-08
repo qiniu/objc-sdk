@@ -22,13 +22,13 @@
              progressHandler:(QNUpProgressHandler)progress
                       params:(NSDictionary *)params
                     checkCrc:(BOOL)check
-                 cancelToken:(QNUpCancelToken)cancel {
+                 cancellationSignal:(QNUpCancellationSignal)cancel {
 	if (self = [super init]) {
 		_mimeType = mimeType;
 		_progressHandler = progress;
 		_params = params;
 		_checkCrc = check;
-		_cancelToken = cancel;
+		_cancellationSignal = cancel;
 	}
 
 	return self;
@@ -40,7 +40,7 @@
 }
 
 - (BOOL)isCancelled {
-	return _cancelToken && _cancelToken();
+	return _cancellationSignal && _cancellationSignal();
 }
 
 @end
