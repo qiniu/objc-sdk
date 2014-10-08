@@ -60,6 +60,10 @@
 	[QNTempFile removeTempfile:tempFile];
 }
 
+- (void)test500k {
+    [self template:500];
+}
+
 - (void)test600k {
 	[self template:600];
 }

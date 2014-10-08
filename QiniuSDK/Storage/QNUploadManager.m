@@ -122,6 +122,7 @@
 		}
 		if (fileSize <= kQNPutThreshHold) {
 			[self putData:data key:key token:token complete:block option:option];
+            return;
 		}
 
 		QNUpCompletionHandler _block = ^(QNResponseInfo *info, NSString *key, NSDictionary *resp)
