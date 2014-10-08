@@ -14,7 +14,7 @@ extern NSString *const kQNUpHostBackup;
 extern const UInt32 kQNChunkSize;
 extern const UInt32 kQNBlockSize;
 extern const UInt32 kQNRetryMax;
-extern const UInt32 kQNPutThreshHold;
+extern const UInt32 kQNPutThreshold;
 
 @interface QNConfig : NSObject
 

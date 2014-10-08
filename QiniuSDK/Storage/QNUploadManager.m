@@ -120,7 +120,7 @@
 			});
 			return;
 		}
-		if (fileSize <= kQNPutThreshHold) {
+		if (fileSize <= kQNPutThreshold) {
 			[self putData:data key:key token:token complete:block option:option];
 			return;
 		}
