@@ -37,6 +37,29 @@
 	[super tearDown];
 }
 
+- (void)testCancel {
+    int size = 6*1024;
+    NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
+    NSString *keyUp = [NSString stringWithFormat:@"%dk", size];
+    __block NSString *key = nil;
+    __block QNResponseInfo *info = nil;
+    __block BOOL flag = NO;
+    QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil progressHandler:nil params:nil checkCrc:NO cancelToken:^BOOL(){
+        return flag;
+    }];
+    [_upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+        key = k;
+        info = i;
+    } option:opt];
+    flag = YES;
+    AGWW_WAIT_WHILE(key == nil, 60 * 30);
+    NSLog(@"info %@", info);
+    XCTAssert(info.stausCode == -2, @"Pass");
+    XCTAssert([keyUp isEqualToString:key], @"Pass");
+    
+    [QNTempFile removeTempfile:tempFile];
+}
+
 - (void)template:(int)size {
 	NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
 	NSString *keyUp = [NSString stringWithFormat:@"%dk", size];
