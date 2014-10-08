@@ -10,7 +10,7 @@
 
 @interface QNResponseInfo : NSObject
 
-@property (readonly) int stausCode;
+@property (readonly) int statusCode;
 @property (nonatomic, copy, readonly) NSString *reqId;
 @property (nonatomic, copy, readonly) NSString *xlog;
 @property (nonatomic, copy, readonly) NSError *error;

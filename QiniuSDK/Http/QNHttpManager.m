@@ -52,7 +52,7 @@
 	                                                             success: ^(AFHTTPRequestOperation *operation, id responseObject) {
 	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil withResponse:operation.responseData];
 	    NSDictionary *resp = nil;
-	    if (info.stausCode == 200) {
+	    if (info.statusCode == 200) {
 	        resp = responseObject;
 		}
 	    completeBlock(info, resp);

@@ -19,7 +19,7 @@ static QNResponseInfo *cancelledInfo = nil;
 
 - (instancetype)initWithError:(NSError *)error {
 	if (self = [super init]) {
-		_stausCode = -1;
+		_statusCode = -1;
 		_error = [error copy];
 	}
 	return self;
@@ -27,18 +27,18 @@ static QNResponseInfo *cancelledInfo = nil;
 
 - (instancetype)initWithCancelled {
 	if (self = [super init]) {
-		_stausCode = -2;
-		_error = [[NSError alloc] initWithDomain:@"qiniu" code:_stausCode userInfo:@{ @"error":@"cancel by user" }];
+		_statusCode = -2;
+		_error = [[NSError alloc] initWithDomain:@"qiniu" code:_statusCode userInfo:@{ @"error":@"cancel by user" }];
 	}
 	return self;
 }
 
 - (BOOL)isCancelled {
-	return _stausCode == -2;
+	return _statusCode == -2;
 }
 
 - (BOOL)couldRetry {
-	return (_stausCode >= 500 && _stausCode < 600 && _stausCode != 579) || _stausCode == -1;
+	return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == -1;
 }
 
 - (instancetype)init:(int)status
@@ -46,12 +46,12 @@ static QNResponseInfo *cancelledInfo = nil;
             withXLog:(NSString *)xlog
             withBody:(NSData *)body {
 	if (self = [super init]) {
-		_stausCode = status;
+		_statusCode = status;
 		_reqId = [reqId copy];
 		_xlog = [xlog copy];
 		if (status != 200) {
 			if (body == nil) {
-				_error = [[NSError alloc] initWithDomain:@"qiniu" code:_stausCode userInfo:nil];
+				_error = [[NSError alloc] initWithDomain:@"qiniu" code:_statusCode userInfo:nil];
 			}
 			else {
 				NSError *tmp;
@@ -59,7 +59,7 @@ static QNResponseInfo *cancelledInfo = nil;
 				if (tmp != nil) {
 					uInfo = @{ @"error":[[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding] };
 				}
-				_error = [[NSError alloc] initWithDomain:@"qiniu" code:_stausCode userInfo:uInfo];
+				_error = [[NSError alloc] initWithDomain:@"qiniu" code:_statusCode userInfo:uInfo];
 			}
 		}
 	}
@@ -67,7 +67,7 @@ static QNResponseInfo *cancelledInfo = nil;
 }
 
 - (NSString *)description {
-	return [NSString stringWithFormat:@"<%@: %p, status: %d, requestId: %@, xlog: %@, error: %@>", NSStringFromClass([self class]), self, _stausCode, _reqId, _xlog, _error];
+	return [NSString stringWithFormat:@"<%@: %p, status: %d, requestId: %@, xlog: %@, error: %@>", NSStringFromClass([self class]), self, _statusCode, _reqId, _xlog, _error];
 }
 
 @end

@@ -101,7 +101,7 @@ typedef void (^task)(void);
 	}
 	QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
 		if (info.error != nil) {
-            if (info.stausCode == 701) {
+            if (info.statusCode == 701) {
                 [self nextTask:(offset/kQNBlockSize)*kQNBlockSize];
                 return;
             }

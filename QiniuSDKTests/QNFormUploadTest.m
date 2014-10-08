@@ -45,7 +45,7 @@
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
 	NSLog(@"%@", testResp);
-	XCTAssert(testInfo.stausCode == 200, @"Pass");
+	XCTAssert(testInfo.statusCode == 200, @"Pass");
 	XCTAssert(testInfo.reqId, @"Pass");
 }
 
@@ -61,7 +61,7 @@
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
-	XCTAssert(testInfo.stausCode == 401, @"Pass");
+	XCTAssert(testInfo.statusCode == 401, @"Pass");
 	XCTAssert(testInfo.reqId, @"Pass");
 }
 
