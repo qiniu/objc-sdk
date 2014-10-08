@@ -122,7 +122,7 @@
 		}
 		if (fileSize <= kQNPutThreshHold) {
 			[self putData:data key:key token:token complete:block option:option];
-            return;
+			return;
 		}
 
 		QNUpCompletionHandler _block = ^(QNResponseInfo *info, NSString *key, NSDictionary *resp)
@@ -132,13 +132,13 @@
 
 		QNResumeUpload *up = [[QNResumeUpload alloc]
 		                      initWithData:data
-		                                  withSize:fileSize
-		                                   withKey:key
-		                                 withToken:token
+		                                      withSize:fileSize
+		                                       withKey:key
+		                                     withToken:token
 		                         withCompletionHandler:_block
-		                                withOption:option
-		                              withRecorder:_recorder
-		                           withHttpManager:_httpManager];
+		                                    withOption:option
+		                                  withRecorder:_recorder
+		                               withHttpManager:_httpManager];
 
 		[up run];
 	}

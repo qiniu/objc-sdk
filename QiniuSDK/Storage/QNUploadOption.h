@@ -20,7 +20,7 @@ typedef BOOL (^QNUpCancelToken)(void);
 @property (copy, readonly) QNUpCancelToken cancelToken;
 
 - (instancetype)initWithMime:(NSString *)mimeType
-                    progressHandler:(QNUpProgressHandler)progress
+             progressHandler:(QNUpProgressHandler)progress
                       params:(NSDictionary *)params
                     checkCrc:(BOOL)check
                  cancelToken:(QNUpCancelToken)cancel;

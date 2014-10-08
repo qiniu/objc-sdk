@@ -19,7 +19,7 @@
 }
 
 - (instancetype)initWithMime:(NSString *)mimeType
-                    progressHandler:(QNUpProgressHandler)progress
+             progressHandler:(QNUpProgressHandler)progress
                       params:(NSDictionary *)params
                     checkCrc:(BOOL)check
                  cancelToken:(QNUpCancelToken)cancel {

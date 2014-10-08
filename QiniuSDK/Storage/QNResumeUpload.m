@@ -14,7 +14,7 @@
 #import "QNHttpManager.h"
 #import "QNUploadOption+Private.h"
 
-typedef void(^task)(void);
+typedef void (^task)(void);
 
 @interface QNResumeUpload ()
 
@@ -34,7 +34,7 @@ typedef void(^task)(void);
 - (void)makeBlock:(NSString *)uphost
            offset:(UInt32)offset
         blockSize:(UInt32)blockSize
-             chunkSize:(UInt32)chunkSize
+        chunkSize:(UInt32)chunkSize
          progress:(QNInternalProgressBlock)progressBlock
          complete:(QNCompleteBlock)complete;
 
@@ -56,7 +56,7 @@ typedef void(^task)(void);
                     withSize:(UInt32)size
                      withKey:(NSString *)key
                    withToken:(NSString *)token
-           withCompletionHandler:(QNUpCompletionHandler)block
+       withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option
                 withRecorder:(id <QNRecorderDelegate> )recorder
              withHttpManager:(QNHttpManager *)http {
@@ -75,57 +75,60 @@ typedef void(^task)(void);
 }
 
 - (void)nextTask:(UInt32)offset {
-    if (self.isCancelled) {
-        self.complete([QNResponseInfo cancel], self.key, nil);
-        return;
-    }
-    
-    if(offset == self.size){
-        QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
-            self.complete(info, self.key, resp);
-        };
-        [self makeFile:kQNUpHost complete:completionHandler];
-        return;
-    }
-    
-    UInt32 chunkSize = [self calcPutSize:offset];
-    QNInternalProgressBlock progressBlock = nil;
-    if (self.option && self.option.progressHandler) {
-        progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-                float percent = (float)(offset + totalBytesWritten) / (float)self.size;
-                if (percent > 0.95) {
-                    percent = 0.95;
-                }
-                self.option.progressHandler(self.key, percent);
-        };
-    }
-    QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
-        if (info.error != nil) {
-            self.complete(info, self.key, resp);
-            return;
-        }
-        _contexts[offset/ kQNBlockSize] =  resp[@"ctx"];
-        [self nextTask:offset + chunkSize];
-    };
-    if (offset%kQNBlockSize == 0) {
-        UInt32 blockSize = [self calcBlockSize:offset];
-        [self makeBlock:kQNUpHost offset:offset blockSize:blockSize chunkSize:chunkSize progress:progressBlock complete:completionHandler];
-        return;
-    }
-    NSString *context = _contexts[offset / kQNBlockSize];
-    [self putChunk:kQNUpHost offset:offset size:chunkSize context:context progress:progressBlock complete:completionHandler];
+	if (self.isCancelled) {
+		self.complete([QNResponseInfo cancel], self.key, nil);
+		return;
+	}
+
+	if (offset == self.size) {
+		QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
+			self.complete(info, self.key, resp);
+		};
+		[self makeFile:kQNUpHost complete:completionHandler];
+		return;
+	}
+
+	UInt32 chunkSize = [self calcPutSize:offset];
+	QNInternalProgressBlock progressBlock = nil;
+	if (self.option && self.option.progressHandler) {
+		progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+			float percent = (float)(offset + totalBytesWritten) / (float)self.size;
+			if (percent > 0.95) {
+				percent = 0.95;
+			}
+			self.option.progressHandler(self.key, percent);
+		};
+	}
+	QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
+		if (info.error != nil) {
+            if (info.stausCode == 701) {
+                [self nextTask:(offset/kQNBlockSize)*kQNBlockSize];
+                return;
+            }
+			self.complete(info, self.key, resp);
+			return;
+		}
+		_contexts[offset / kQNBlockSize] =  resp[@"ctx"];
+		[self nextTask:offset + chunkSize];
+	};
+	if (offset % kQNBlockSize == 0) {
+		UInt32 blockSize = [self calcBlockSize:offset];
+		[self makeBlock:kQNUpHost offset:offset blockSize:blockSize chunkSize:chunkSize progress:progressBlock complete:completionHandler];
+		return;
+	}
+	NSString *context = _contexts[offset / kQNBlockSize];
+	[self putChunk:kQNUpHost offset:offset size:chunkSize context:context progress:progressBlock complete:completionHandler];
 }
 
-- (UInt32) calcPutSize:(UInt32)offset{
-    UInt32 left = self.size - offset;
-    return left < kQNChunkSize ? left : kQNChunkSize;
+- (UInt32)calcPutSize:(UInt32)offset {
+	UInt32 left = self.size - offset;
+	return left < kQNChunkSize ? left : kQNChunkSize;
 }
 
-- (UInt32) calcBlockSize:(UInt32)offset{
-    UInt32 left = self.size - offset;
-    return left < kQNBlockSize ? left : kQNBlockSize;
+- (UInt32)calcBlockSize:(UInt32)offset {
+	UInt32 left = self.size - offset;
+	return left < kQNBlockSize ? left : kQNBlockSize;
 }
-
 
 - (void)makeBlock:(NSString *)uphost
            offset:(UInt32)offset
@@ -198,7 +201,7 @@ typedef void(^task)(void);
 
 - (void)run {
 	@autoreleasepool {
-        [self nextTask:0];
+		[self nextTask:0];
 	}
 }
 
