@@ -18,7 +18,7 @@
 
 @interface QNUploadManager ()
 @property QNHttpManager *httpManager;
-@property (assign, nonatomic) id <QNRecorderDelegate> recorder;
+@property (nonatomic) id <QNRecorderDelegate> recorder;
 @end
 
 @implementation QNUploadManager
@@ -32,14 +32,13 @@
 		_httpManager = [[QNHttpManager alloc] init];
 		_recorder = recorder;
 	}
-
 	return self;
 }
 
 - (void)putData:(NSData *)data
             key:(NSString *)key
           token:(NSString *)token
-       complete:(QNUpCompleteBlock)block
+       complete:(QNUpCompletionHandler)block
          option:(QNUploadOption *)option {
 	NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
 
@@ -65,20 +64,20 @@
 
 	QNInternalProgressBlock p = nil;
 
-	if (option && option.progress) {
+	if (option && option.progressHandler) {
 		p = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
 			float percent = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
 			if (percent > 0.95) {
 				percent = 0.95;
 			}
-			option.progress(key, percent);
+			option.progressHandler(key, percent);
 		};
 	}
 
 	QNCompleteBlock _block = ^(QNResponseInfo *info, NSDictionary *resp)
 	{
 		if (p) {
-			option.progress(key, 1.0);
+			option.progressHandler(key, 1.0);
 		}
 		block(info, key, resp);
 	};
@@ -96,7 +95,7 @@
 - (void)putFile:(NSString *)filePath
             key:(NSString *)key
           token:(NSString *)token
-       complete:(QNUpCompleteBlock)block
+       complete:(QNUpCompletionHandler)block
          option:(QNUploadOption *)option {
 	@autoreleasepool {
 		NSError *error = nil;
@@ -120,24 +119,27 @@
 			});
 			return;
 		}
-		if (fileSize <= kQNPutThreshHold) {
+		if (fileSize <= kQNPutThreshold) {
 			[self putData:data key:key token:token complete:block option:option];
+			return;
 		}
 
-		QNUpCompleteBlock _block = ^(QNResponseInfo *info, NSString *key, NSDictionary *resp)
+		QNUpCompletionHandler _block = ^(QNResponseInfo *info, NSString *key, NSDictionary *resp)
 		{
 			block(info, key, resp);
 		};
 
+		NSDate *modifyTime = fileAttr[NSFileModificationDate];
 		QNResumeUpload *up = [[QNResumeUpload alloc]
 		                      initWithData:data
-		                                  withSize:fileSize
-		                                   withKey:key
-		                                 withToken:token
-		                         withCompleteBlock:_block
-		                                withOption:option
-		                              withRecorder:_recorder
-		                           withHttpManager:_httpManager];
+		                                      withSize:fileSize
+		                                       withKey:key
+		                                     withToken:token
+		                         withCompletionHandler:_block
+		                                    withOption:option
+		                                withModifyTime:modifyTime
+		                                  withRecorder:_recorder
+		                               withHttpManager:_httpManager];
 
 		[up run];
 	}

@@ -8,23 +8,23 @@
 
 #import <Foundation/Foundation.h>
 
-typedef void (^QNUpProgressBlock)(NSString *key, float percent);
-typedef BOOL (^QNUpCancelBlock)(void);
+typedef void (^QNUpProgressHandler)(NSString *key, float percent);
+typedef BOOL (^QNUpCancellationSignal)(void);
 
 @interface QNUploadOption : NSObject
 
 @property (copy, nonatomic, readonly) NSDictionary *params;
 @property (copy, nonatomic, readonly) NSString *mimeType;
 @property (readonly) BOOL checkCrc;
-@property (copy, readonly) QNUpProgressBlock progress;
-@property (copy, readonly) QNUpCancelBlock cancelToken;
+@property (copy, readonly) QNUpProgressHandler progressHandler;
+@property (copy, readonly) QNUpCancellationSignal cancellationSignal;
 
 - (instancetype)initWithMime:(NSString *)mimeType
-                    progress:(QNUpProgressBlock)progress
+             progressHandler:(QNUpProgressHandler)progress
                       params:(NSDictionary *)params
                     checkCrc:(BOOL)check
-                 cancelToken:(QNUpCancelBlock)cancelBlock;
+          cancellationSignal:(QNUpCancellationSignal)cancellation;
 
-- (instancetype)initWithProgess:(QNUpProgressBlock)progress;
+- (instancetype)initWithProgessHandler:(QNUpProgressHandler)progress;
 
 @end

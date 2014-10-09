@@ -35,7 +35,7 @@
 	__block QNResponseInfo *testInfo = nil;
 	__block NSDictionary *testResp = nil;
 
-	QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progress:nil params:@{ @"foo":@"bar" } checkCrc:NO cancelToken:nil];
+	QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"foo":@"bar" } checkCrc:NO cancellationSignal:nil];
 	NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
 	[self.upManager putData:data key:@"hello" token:g_token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
 	    testInfo = info;
@@ -45,7 +45,7 @@
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
 	NSLog(@"%@", testResp);
-	XCTAssert(testInfo.stausCode == 200, @"Pass");
+	XCTAssert(testInfo.statusCode == 200, @"Pass");
 	XCTAssert(testInfo.reqId, @"Pass");
 }
 
@@ -61,7 +61,7 @@
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
-	XCTAssert(testInfo.stausCode == 401, @"Pass");
+	XCTAssert(testInfo.statusCode == 401, @"Pass");
 	XCTAssert(testInfo.reqId, @"Pass");
 }
 

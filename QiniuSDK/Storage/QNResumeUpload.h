@@ -16,8 +16,9 @@
                     withSize:(UInt32)size
                      withKey:(NSString *)key
                    withToken:(NSString *)token
-           withCompleteBlock:(QNUpCompleteBlock)block
+       withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option
+              withModifyTime:(NSDate *)time
                 withRecorder:(id <QNRecorderDelegate> )recorder
              withHttpManager:(QNHttpManager *)http;
 

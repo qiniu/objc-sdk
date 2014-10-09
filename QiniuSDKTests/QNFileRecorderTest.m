@@ -1,8 +1,8 @@
 //
-//  QNResumeUploadTest.m
+//  QNFileRecorderTest.m
 //  QiniuSDK
 //
-//  Created by bailong on 14/10/2.
+//  Created by bailong on 14/10/9.
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
@@ -11,20 +11,25 @@
 #import <AGAsyncTestHelper.h>
 
 #import "QiniuSDK.h"
-
-#import "QNTestConfig.h"
+#import "QNFileRecorder.h"
 #import "QNTempFile.h"
+#import "QNTestConfig.h"
+#import "QNConfig.h"
 
-@interface QNResumeUploadTest : XCTestCase
+@interface QNFileRecorderTest : XCTestCase
 @property QNUploadManager *upManager;
 @property BOOL inTravis;
 @end
 
-@implementation QNResumeUploadTest
+@implementation QNFileRecorderTest
 
 - (void)setUp {
 	[super setUp];
-	_upManager = [[QNUploadManager alloc] init];
+	NSError *error = nil;
+	QNFileRecorder *file = [QNFileRecorder createWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniutest"] error:&error];
+	NSLog(@"recoder error %@", error);
+	_upManager = [[QNUploadManager alloc] initWithRecorder:file
+	    ];
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
 	NSString *travis = [[[NSProcessInfo processInfo]environment]objectForKey:@"QINIU_TEST_ENV"];
 	if ([travis isEqualToString:@"travis"]) {
@@ -33,19 +38,17 @@
 #endif
 }
 
-- (void)tearDown {
-	[super tearDown];
-}
-
-- (void)testCancel {
-	int size = 6 * 1024;
+- (void)template:(int)size pos:(float)pos {
 	NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
-	NSString *keyUp = [NSString stringWithFormat:@"%dk", size];
+	NSString *keyUp = [NSString stringWithFormat:@"r-%dk", size];
 	__block NSString *key = nil;
 	__block QNResponseInfo *info = nil;
 	__block BOOL flag = NO;
 	QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil progressHandler: ^(NSString *key, float percent) {
-	    flag = YES;
+	    if (percent >= pos) {
+	        flag = YES;
+		}
+	    NSLog(@"progress %f", percent);
 	} params:nil checkCrc:NO cancellationSignal: ^BOOL () {
 	    return flag;
 	}];
@@ -53,23 +56,21 @@
 	    key = k;
 	    info = i;
 	} option:opt];
-
 	AGWW_WAIT_WHILE(key == nil, 60 * 30);
 	NSLog(@"info %@", info);
-	XCTAssert(info.statusCode == -2, @"Pass");
+	XCTAssert(info.statusCode == kQNRequestCancelled, @"Pass");
 	XCTAssert([keyUp isEqualToString:key], @"Pass");
 
-	[QNTempFile removeTempfile:tempFile];
-}
-
-- (void)template:(int)size {
-	NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
-	NSString *keyUp = [NSString stringWithFormat:@"%dk", size];
-	__block NSString *key = nil;
-	__block QNResponseInfo *info = nil;
-	QNUploadOption *opt = [[QNUploadOption alloc] initWithProgessHandler: ^(NSString *key, float percent) {
-	    NSLog(@"progress %f", percent);
-	}];
+	// continue
+	key = nil;
+	info = nil;
+	__block BOOL failed = NO;
+	opt = [[QNUploadOption alloc] initWithMime:nil progressHandler: ^(NSString *key, float percent) {
+	    if (percent < pos - kQNChunkSize / (size * 1024.0)) {
+	        failed = YES;
+		}
+	    NSLog(@"continue progress %f", percent);
+	} params:nil checkCrc:NO cancellationSignal:nil];
 	[_upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
 	    key = k;
 	    info = i;
@@ -77,18 +78,21 @@
 	AGWW_WAIT_WHILE(key == nil, 60 * 30);
 	NSLog(@"info %@", info);
 	XCTAssert(info.statusCode == 200, @"Pass");
-	XCTAssert(info.reqId, @"Pass");
+	XCTAssert(!failed, @"Pass");
 	XCTAssert([keyUp isEqualToString:key], @"Pass");
-
 	[QNTempFile removeTempfile:tempFile];
 }
 
-- (void)test500k {
-	[self template:500];
+- (void)tearDown {
+	[super tearDown];
 }
 
 - (void)test600k {
-	[self template:600];
+	[self template:600 pos:0.7];
+}
+
+- (void)test700k {
+	[self template:700 pos:0.1];
 }
 
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
@@ -97,22 +101,23 @@
 	if (_inTravis) {
 		return;
 	}
-	[self template:1024];
+	[self template:1024 pos:0.51];
 }
 
 - (void)test4M {
 	if (_inTravis) {
 		return;
 	}
-	[self template:4 * 1024];
+	[self template:4 * 1024 pos:0.9];
 }
 
 - (void)test8M {
 	if (_inTravis) {
 		return;
 	}
-	[self template:8 * 1024 + 1];
+	[self template:8 * 1024 + 1 pos:0.8];
 }
 
 #endif
+
 @end

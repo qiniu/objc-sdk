@@ -11,24 +11,24 @@
 
 @implementation QNUploadOption
 
-- (instancetype)initWithProgess:(QNUpProgressBlock)progress {
+- (instancetype)initWithProgessHandler:(QNUpProgressHandler)progress {
 	if (self = [super init]) {
-		_progress = progress;
+		_progressHandler = progress;
 	}
 	return self;
 }
 
 - (instancetype)initWithMime:(NSString *)mimeType
-                    progress:(QNUpProgressBlock)progress
+             progressHandler:(QNUpProgressHandler)progress
                       params:(NSDictionary *)params
                     checkCrc:(BOOL)check
-                 cancelToken:(QNUpCancelBlock)cancelBlock {
+          cancellationSignal:(QNUpCancellationSignal)cancel {
 	if (self = [super init]) {
 		_mimeType = mimeType;
-		_progress = progress;
+		_progressHandler = progress;
 		_params = params;
 		_checkCrc = check;
-		_cancelToken = cancelBlock;
+		_cancellationSignal = cancel;
 	}
 
 	return self;
@@ -40,7 +40,7 @@
 }
 
 - (BOOL)isCancelled {
-	return _cancelToken && _cancelToken();
+	return _cancellationSignal && _cancellationSignal();
 }
 
 @end
