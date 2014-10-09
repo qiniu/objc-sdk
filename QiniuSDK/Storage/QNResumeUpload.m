@@ -227,7 +227,7 @@ typedef void (^task)(void);
          progress:(QNInternalProgressBlock)progressBlock
          complete:(QNCompleteBlock)complete {
 	NSData *data = [self.data subdataWithRange:NSMakeRange(offset, (unsigned int)chunkSize)];
-	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/mkblk/%u", uphost, blockSize];
+	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/mkblk/%u", uphost, (unsigned int)blockSize];
 	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
 }
 
