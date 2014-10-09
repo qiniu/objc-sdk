@@ -1,5 +1,4 @@
 //
-//  QNUploader.h
 //  QiniuSDK
 //
 //  Created by bailong on 14-9-28.
@@ -8,10 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-@interface QNBase64 : NSObject
+@interface QNUrlSafeBase64 : NSObject
 
 + (NSString *)encodeString:(NSString *)source;
 + (NSString *)encodeData:(NSData *)source;
-//+ (NSData *)decodeString:(NSData *)source
-//                   error:(NSError **)error;
 @end

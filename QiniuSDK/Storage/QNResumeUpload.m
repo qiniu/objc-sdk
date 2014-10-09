@@ -8,7 +8,7 @@
 
 #import "QNResumeUpload.h"
 #import "QNUploadManager.h"
-#import "QNBase64.h"
+#import "QNUrlSafeBase64.h"
 #import "QNConfig.h"
 #import "QNResponseInfo.h"
 #import "QNHttpManager.h"
@@ -167,13 +167,13 @@ typedef void (^task)(void);
 		mime = @"";
 	}
 	else {
-		mime = [[NSString alloc] initWithFormat:@"/mimetype/%@", [QNBase64 encodeString:self.option.mimeType]];
+		mime = [[NSString alloc] initWithFormat:@"/mimetype/%@", [QNUrlSafeBase64 encodeString:self.option.mimeType]];
 	}
 
 	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/mkfile/%u%@", uphost, (unsigned int)self.size, mime];
 
 	if (self.key != nil) {
-		NSString *keyStr = [[NSString alloc] initWithFormat:@"/key/%@", [QNBase64 encodeString:self.key]];
+		NSString *keyStr = [[NSString alloc] initWithFormat:@"/key/%@", [QNUrlSafeBase64 encodeString:self.key]];
 		url = [NSString stringWithFormat:@"%@%@", url, keyStr];
 	}
 
@@ -181,7 +181,7 @@ typedef void (^task)(void);
 		NSEnumerator *e = [self.option.params keyEnumerator];
 
 		for (id key = [e nextObject]; key != nil; key = [e nextObject]) {
-			url = [NSString stringWithFormat:@"%@/%@/%@", url, key, [QNBase64 encodeString:(self.option.params)[key]]];
+			url = [NSString stringWithFormat:@"%@/%@/%@", url, key, [QNUrlSafeBase64 encodeString:(self.option.params)[key]]];
 		}
 	}
 

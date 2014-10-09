@@ -10,7 +10,7 @@
 
 #import "QNEtag.h"
 #import "QNConfig.h"
-#import "QNBase64.h"
+#import "QNUrlSafeBase64.h"
 
 @implementation QNEtag
 + (NSString *)file:(NSString *)filePath
@@ -55,7 +55,7 @@
 		CC_SHA1(pblocksSha1, (CC_LONG)CC_SHA1_DIGEST_LENGTH * count, ret + 1);
 	}
 
-	return [QNBase64 encodeData:retData];
+	return [QNUrlSafeBase64 encodeData:retData];
 }
 
 @end

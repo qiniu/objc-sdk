@@ -9,6 +9,9 @@
 
 #import "QNResponseInfo.h"
 
+const int kQNRequestCancelled = -2;
+const int kQNNetworkError = -1;
+
 static QNResponseInfo *cancelledInfo = nil;
 
 @implementation QNResponseInfo

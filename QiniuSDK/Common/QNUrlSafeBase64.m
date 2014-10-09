@@ -1,5 +1,4 @@
 //
-//  QNUploader.h
 //  QiniuSDK
 //
 //  Created by bailong on 14-9-28.
@@ -8,11 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-#import "QNBase64.h"
+#import "QNUrlSafeBase64.h"
 
 static uint8_t const kBase64EncodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 
-@implementation QNBase64
+@implementation QNUrlSafeBase64
 
 + (NSString *)encodeString:(NSString *)sourceString {
 	NSData *data = [NSData dataWithBytes:[sourceString UTF8String] length:[sourceString lengthOfBytesUsingEncoding:NSUTF8StringEncoding]];
@@ -52,11 +51,6 @@ static uint8_t const kBase64EncodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 	}
 
 	return [[NSString alloc] initWithData:mutableData encoding:NSASCIIStringEncoding];
-}
-
-+ (NSData *)decodeString:(NSData *)source
-                   error:(NSError **)perror {
-	return nil;
 }
 
 @end

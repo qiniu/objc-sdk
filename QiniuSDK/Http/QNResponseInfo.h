@@ -8,6 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+extern const int kQNRequestCancelled;
+extern const int kQNNetworkError;
+
 @interface QNResponseInfo : NSObject
 
 @property (readonly) int statusCode;
