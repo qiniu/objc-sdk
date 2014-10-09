@@ -18,6 +18,8 @@ extern const int kQNNetworkError;
 @property (nonatomic, copy, readonly) NSString *xlog;
 @property (nonatomic, copy, readonly) NSError *error;
 @property (nonatomic, readonly, getter = isCancelled) BOOL canceled;
+@property (nonatomic, readonly, getter = isOK) BOOL ok;
+@property (nonatomic, readonly, getter = isConnectionBroken) BOOL broken;
 
 + (instancetype)cancel;
 

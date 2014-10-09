@@ -11,6 +11,8 @@
 
 @interface QNFileRecorder : NSObject <QNRecorderDelegate>
 
-- (instancetype)initWithFolder:(NSString *)directory;
++ (instancetype)createWithFolder:(NSString *)directory
+                           error:(NSError *__autoreleasing *)error;
+
 
 @end

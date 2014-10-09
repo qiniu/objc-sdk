@@ -20,17 +20,21 @@
 	return [[NSString alloc] initWithFormat:@"%@/%@", _directory, key];
 }
 
++ (instancetype)createWithFolder:(NSString *)directory
+                           error:(NSError *__autoreleasing *)perror {
+	[[NSFileManager defaultManager] createDirectoryAtPath:directory withIntermediateDirectories:YES attributes:nil error:perror];
+	if (*perror != nil) {
+		return nil;
+	}
+
+	return [[QNFileRecorder alloc] initWithFolder:directory];
+}
+
 - (instancetype)initWithFolder:(NSString *)directory {
 	if (self = [super init]) {
 		_directory = directory;
 	}
 	return self;
-}
-
-- (NSError *)open {
-	NSError *error;
-	[[NSFileManager defaultManager] createDirectoryAtPath:_directory withIntermediateDirectories:YES attributes:nil error:&error];
-	return nil;
 }
 
 - (NSError *)set:(NSString *)key
@@ -44,14 +48,14 @@
 	return [NSData dataWithContentsOfFile:[self pathOfKey:key]];
 }
 
-- (NSError *)remove:(NSString *)key {
+- (NSError *)del:(NSString *)key {
 	NSError *error;
 	[[NSFileManager defaultManager] removeItemAtPath:[self pathOfKey:key] error:&error];
 	return error;
 }
 
-- (NSError *)close {
-	return nil;
+- (NSString *)description {
+	return [NSString stringWithFormat:@"<%@: %p, dir: %@>", NSStringFromClass([self class]), self, _directory];
 }
 
 @end

@@ -22,7 +22,7 @@ static QNResponseInfo *cancelledInfo = nil;
 
 - (instancetype)initWithError:(NSError *)error {
 	if (self = [super init]) {
-		_statusCode = -1;
+		_statusCode = kQNNetworkError;
 		_error = [error copy];
 	}
 	return self;
@@ -30,18 +30,26 @@ static QNResponseInfo *cancelledInfo = nil;
 
 - (instancetype)initWithCancelled {
 	if (self = [super init]) {
-		_statusCode = -2;
-		_error = [[NSError alloc] initWithDomain:@"qiniu" code:_statusCode userInfo:@{ @"error":@"cancel by user" }];
+		_statusCode = kQNRequestCancelled;
+		_error = [[NSError alloc] initWithDomain:@"qiniu" code:_statusCode userInfo:@{ @"error":@"cancelled by user" }];
 	}
 	return self;
 }
 
 - (BOOL)isCancelled {
-	return _statusCode == -2;
+	return _statusCode == kQNRequestCancelled;
+}
+
+- (BOOL)isOK {
+	return _statusCode == 200;
+}
+
+- (BOOL)isConnectionBroken {
+	return _statusCode == kQNNetworkError;
 }
 
 - (BOOL)couldRetry {
-	return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == -1;
+	return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == kQNNetworkError;
 }
 
 - (instancetype)init:(int)status

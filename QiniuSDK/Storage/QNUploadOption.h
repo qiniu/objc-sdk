@@ -23,7 +23,7 @@ typedef BOOL (^QNUpCancellationSignal)(void);
              progressHandler:(QNUpProgressHandler)progress
                       params:(NSDictionary *)params
                     checkCrc:(BOOL)check
-                 cancellationSignal:(QNUpCancellationSignal)cancellation;
+          cancellationSignal:(QNUpCancellationSignal)cancellation;
 
 - (instancetype)initWithProgessHandler:(QNUpProgressHandler)progress;
 

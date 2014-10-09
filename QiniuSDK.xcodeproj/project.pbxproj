@@ -86,6 +86,8 @@
 		DFBC622919DE578600458C4B /* QNConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBC622719DE578600458C4B /* QNConfig.m */; };
 		DFBC622A19DE5E2500458C4B /* QNConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBC622719DE578600458C4B /* QNConfig.m */; };
 		DFBC622B19DE5E3200458C4B /* QNConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBC622719DE578600458C4B /* QNConfig.m */; };
+		DFFE0E6019E6575600D7A0FC /* QNFileRecorderTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */; };
+		DFFE0E6119E6575600D7A0FC /* QNFileRecorderTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */; };
 		EE76B381AF33E356C2C8FC56 /* libPods-QiniuSDK MacTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EB0B4B6BA4EEC2DEF421644 /* libPods-QiniuSDK MacTests.a */; };
 /* End PBXBuildFile section */
 
@@ -155,6 +157,7 @@
 		DFA9B65E19E391A100A15FD1 /* QNTestConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNTestConfig.h; sourceTree = "<group>"; };
 		DFBC622419DE459800458C4B /* QNHttpTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNHttpTest.m; sourceTree = "<group>"; };
 		DFBC622719DE578600458C4B /* QNConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNConfig.m; sourceTree = "<group>"; };
+		DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNFileRecorderTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -314,6 +317,7 @@
 				DFA9B64319DFE43500A15FD1 /* QNTempFile.h */,
 				DFA9B64419DFE43500A15FD1 /* QNTempFile.m */,
 				DFA9B65E19E391A100A15FD1 /* QNTestConfig.h */,
+				DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */,
 			);
 			path = QiniuSDKTests;
 			sourceTree = SOURCE_ROOT;
@@ -638,6 +642,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DFA9B66019E3A4E400A15FD1 /* QNUploadOption.m in Sources */,
+				DFFE0E6019E6575600D7A0FC /* QNFileRecorderTest.m in Sources */,
 				DFA9B65F19E3A4DD00A15FD1 /* QNFileRecorder.m in Sources */,
 				DFA9B64219DFDA6800A15FD1 /* QNEtag.m in Sources */,
 				DFBC622A19DE5E2500458C4B /* QNConfig.m in Sources */,
@@ -681,6 +686,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DFA9B66219E3A4F600A15FD1 /* QNUploadOption.m in Sources */,
+				DFFE0E6119E6575600D7A0FC /* QNFileRecorderTest.m in Sources */,
 				DFA9B66119E3A4EE00A15FD1 /* QNFileRecorder.m in Sources */,
 				DFA9B64119DFDA5F00A15FD1 /* QNEtag.m in Sources */,
 				DFBC622B19DE5E3200458C4B /* QNConfig.m in Sources */,

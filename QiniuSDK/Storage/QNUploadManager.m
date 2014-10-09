@@ -18,7 +18,7 @@
 
 @interface QNUploadManager ()
 @property QNHttpManager *httpManager;
-@property (assign, nonatomic) id <QNRecorderDelegate> recorder;
+@property (nonatomic) id <QNRecorderDelegate> recorder;
 @end
 
 @implementation QNUploadManager
@@ -32,7 +32,6 @@
 		_httpManager = [[QNHttpManager alloc] init];
 		_recorder = recorder;
 	}
-
 	return self;
 }
 
@@ -130,6 +129,7 @@
 			block(info, key, resp);
 		};
 
+		NSDate *modifyTime = fileAttr[NSFileModificationDate];
 		QNResumeUpload *up = [[QNResumeUpload alloc]
 		                      initWithData:data
 		                                      withSize:fileSize
@@ -137,6 +137,7 @@
 		                                     withToken:token
 		                         withCompletionHandler:_block
 		                                    withOption:option
+		                                withModifyTime:modifyTime
 		                                  withRecorder:_recorder
 		                               withHttpManager:_httpManager];
 

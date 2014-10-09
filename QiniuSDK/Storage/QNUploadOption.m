@@ -22,7 +22,7 @@
              progressHandler:(QNUpProgressHandler)progress
                       params:(NSDictionary *)params
                     checkCrc:(BOOL)check
-                 cancellationSignal:(QNUpCancellationSignal)cancel {
+          cancellationSignal:(QNUpCancellationSignal)cancel {
 	if (self = [super init]) {
 		_mimeType = mimeType;
 		_progressHandler = progress;

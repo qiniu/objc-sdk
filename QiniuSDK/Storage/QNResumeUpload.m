@@ -13,6 +13,7 @@
 #import "QNResponseInfo.h"
 #import "QNHttpManager.h"
 #import "QNUploadOption+Private.h"
+#import "QNRecorderDelegate.h"
 
 typedef void (^task)(void);
 
@@ -28,6 +29,8 @@ typedef void (^task)(void);
 @property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) NSMutableArray *contexts;
 @property (nonatomic, readonly, getter = isCancelled) BOOL cancelled;
+
+@property UInt64 modifyTime;
 @property (nonatomic, weak) id <QNRecorderDelegate> recorder;
 
 
@@ -58,6 +61,7 @@ typedef void (^task)(void);
                    withToken:(NSString *)token
        withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option
+              withModifyTime:(NSDate *)time
                 withRecorder:(id <QNRecorderDelegate> )recorder
              withHttpManager:(QNHttpManager *)http {
 	if (self = [super init]) {
@@ -67,11 +71,90 @@ typedef void (^task)(void);
 		_token = [NSString stringWithFormat:@"UpToken %@", token];
 		_option = option;
 		_complete = block;
+
 		_recorder = recorder;
 		_httpManager = http;
+		if (time != nil) {
+			_modifyTime = [time timeIntervalSince1970];
+		}
 		_contexts = [[NSMutableArray alloc] initWithCapacity:(size + kQNBlockSize - 1) / kQNBlockSize];
 	}
 	return self;
+}
+
+// save json value
+//{
+//    "size":filesize,
+//    "offset":lastSuccessOffset,
+//    "modify_time": lastFileModifyTime,
+//    "contexts": contexts
+//}
+
+- (void)record:(UInt32)offset {
+	if (offset == 0 || _recorder == nil || self.key == nil || [self.key isEqualToString:@""]) {
+		return;
+	}
+	NSNumber *n_size = [NSNumber numberWithUnsignedInt:self.size];
+	NSNumber *n_offset = [NSNumber numberWithUnsignedInt:offset];
+	NSNumber *n_time = [NSNumber numberWithLongLong:_modifyTime];
+	NSMutableDictionary *rec = [NSMutableDictionary dictionaryWithObjectsAndKeys:n_size, @"size", n_offset, @"offset", n_time, @"modify_time", _contexts, @"contexts", nil];
+
+	NSError *error;
+	NSData *data = [NSJSONSerialization dataWithJSONObject:rec options:NSJSONWritingPrettyPrinted error:&error];
+	if (error != nil) {
+		NSLog(@"up record json error %@ %@", self.key, error);
+		return;
+	}
+	error = [_recorder set:self.key data:data];
+	if (error != nil) {
+		NSLog(@"up record set error %@ %@", self.key, error);
+	}
+}
+
+- (void)removeRecord {
+	if (_recorder == nil) {
+		return;
+	}
+	[_recorder del:self.key];
+}
+
+- (UInt32)recoveryFromRecord {
+	if (_recorder == nil || self.key == nil || [self.key isEqualToString:@""]) {
+		return 0;
+	}
+
+	NSData *data = [_recorder get:self.key];
+	if (data == nil) {
+		return 0;
+	}
+
+	NSError *error;
+	NSDictionary *info = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&error];
+	if (error != nil) {
+		NSLog(@"recovery error %@ %@", self.key, error);
+		[_recorder del:self.key];
+		return 0;
+	}
+	NSNumber *n_offset = info[@"offset"];
+	NSNumber *n_size = info[@"size"];
+	NSNumber *time = info[@"modify_time"];
+	NSArray *contexts = info[@"contexts"];
+	if (n_offset == nil || n_size == nil || time == nil || contexts == nil) {
+		return 0;
+	}
+
+	UInt32 offset = [n_offset unsignedIntValue];
+	UInt32 size = [n_size unsignedIntValue];
+	if (offset > size || size != self.size) {
+		return 0;
+	}
+	UInt64 t = [time unsignedLongLongValue];
+	if (t != _modifyTime) {
+		NSLog(@"modify time changed %llu, %llu", t, _modifyTime);
+		return 0;
+	}
+	_contexts = [[NSMutableArray alloc] initWithArray:contexts copyItems:true];
+	return offset;
 }
 
 - (void)nextTask:(UInt32)offset {
@@ -82,6 +165,12 @@ typedef void (^task)(void);
 
 	if (offset == self.size) {
 		QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
+			if (info.isOK) {
+				[self removeRecord];
+				if (self.option && self.option.progressHandler) {
+					self.option.progressHandler(self.key, 1.0);
+				}
+			}
 			self.complete(info, self.key, resp);
 		};
 		[self makeFile:kQNUpHost complete:completionHandler];
@@ -101,14 +190,15 @@ typedef void (^task)(void);
 	}
 	QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
 		if (info.error != nil) {
-            if (info.statusCode == 701) {
-                [self nextTask:(offset/kQNBlockSize)*kQNBlockSize];
-                return;
-            }
+			if (info.statusCode == 701) {
+				[self nextTask:(offset / kQNBlockSize) * kQNBlockSize];
+				return;
+			}
 			self.complete(info, self.key, resp);
 			return;
 		}
 		_contexts[offset / kQNBlockSize] =  resp[@"ctx"];
+		[self record:offset + chunkSize];
 		[self nextTask:offset + chunkSize];
 	};
 	if (offset % kQNBlockSize == 0) {
@@ -179,7 +269,6 @@ typedef void (^task)(void);
 
 	if (self.option && self.option.params) {
 		NSEnumerator *e = [self.option.params keyEnumerator];
-
 		for (id key = [e nextObject]; key != nil; key = [e nextObject]) {
 			url = [NSString stringWithFormat:@"%@/%@/%@", url, key, [QNUrlSafeBase64 encodeString:(self.option.params)[key]]];
 		}
@@ -201,7 +290,8 @@ typedef void (^task)(void);
 
 - (void)run {
 	@autoreleasepool {
-		[self nextTask:0];
+		UInt32 offset = [self recoveryFromRecord];
+		[self nextTask:offset];
 	}
 }
 

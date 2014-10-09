@@ -18,6 +18,7 @@
                    withToken:(NSString *)token
        withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option
+              withModifyTime:(NSDate *)time
                 withRecorder:(id <QNRecorderDelegate> )recorder
              withHttpManager:(QNHttpManager *)http;
 
