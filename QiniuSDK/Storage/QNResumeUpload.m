@@ -157,7 +157,7 @@ typedef void (^task)(void);
 	return offset;
 }
 
-- (void)nextTask:(UInt32)offset {
+- (void)nextTask:(UInt32)offset retriedTimes:(int)retried host:(NSString *)host{
 	if (self.isCancelled) {
 		self.complete([QNResponseInfo cancel], self.key, nil);
 		return;
@@ -173,7 +173,7 @@ typedef void (^task)(void);
 			}
 			self.complete(info, self.key, resp);
 		};
-		[self makeFile:kQNUpHost complete:completionHandler];
+		[self makeFile:host complete:completionHandler];
 		return;
 	}
 
@@ -191,23 +191,28 @@ typedef void (^task)(void);
 	QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
 		if (info.error != nil) {
 			if (info.statusCode == 701) {
-				[self nextTask:(offset / kQNBlockSize) * kQNBlockSize];
+				[self nextTask:(offset / kQNBlockSize) * kQNBlockSize retriedTimes:0 host:host];
 				return;
 			}
 			self.complete(info, self.key, resp);
 			return;
 		}
-		_contexts[offset / kQNBlockSize] =  resp[@"ctx"];
+        NSString *ctx = resp[@"ctx"];
+        if(ctx == nil){
+            [self nextTask:offset retriedTimes:0 host:host];
+            return;
+        }
+		_contexts[offset / kQNBlockSize] = ctx;
 		[self record:offset + chunkSize];
-		[self nextTask:offset + chunkSize];
+		[self nextTask:offset + chunkSize retriedTimes:0 host:host];
 	};
 	if (offset % kQNBlockSize == 0) {
 		UInt32 blockSize = [self calcBlockSize:offset];
-		[self makeBlock:kQNUpHost offset:offset blockSize:blockSize chunkSize:chunkSize progress:progressBlock complete:completionHandler];
+		[self makeBlock:host offset:offset blockSize:blockSize chunkSize:chunkSize progress:progressBlock complete:completionHandler];
 		return;
 	}
 	NSString *context = _contexts[offset / kQNBlockSize];
-	[self putChunk:kQNUpHost offset:offset size:chunkSize context:context progress:progressBlock complete:completionHandler];
+	[self putChunk:host offset:offset size:chunkSize context:context progress:progressBlock complete:completionHandler];
 }
 
 - (UInt32)calcPutSize:(UInt32)offset {
@@ -291,7 +296,7 @@ typedef void (^task)(void);
 - (void)run {
 	@autoreleasepool {
 		UInt32 offset = [self recoveryFromRecord];
-		[self nextTask:offset];
+		[self nextTask:offset retriedTimes:0 host:kQNUpHost];
 	}
 }
 
