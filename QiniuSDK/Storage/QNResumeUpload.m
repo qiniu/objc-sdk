@@ -24,7 +24,7 @@ typedef void (^task)(void);
 @property UInt32 size;
 @property (nonatomic) int retryTimes;
 @property (nonatomic, strong) NSString *key;
-@property (nonatomic, strong) NSString *token;
+@property (nonatomic) NSDictionary *headers;
 @property (nonatomic, strong) QNUploadOption *option;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) NSMutableArray *contexts;
@@ -68,10 +68,10 @@ typedef void (^task)(void);
 		_data = data;
 		_size = size;
 		_key = key;
-		_token = [NSString stringWithFormat:@"UpToken %@", token];
+		NSString *tok = [NSString stringWithFormat:@"UpToken %@", token];
 		_option = option;
 		_complete = block;
-
+        _headers = @{ @"Authorization":tok, @"Content-Type":@"application/octet-stream"};
 		_recorder = recorder;
 		_httpManager = http;
 		if (time != nil) {
@@ -289,8 +289,7 @@ typedef void (^task)(void);
              withData:(NSData *)data
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock {
-	NSDictionary *headers = @{ @"Authorization":self.token, @"Content-Type":@"application/octet-stream" };
-	[_httpManager post:url withData:data withParams:nil withHeaders:headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:nil];
+	[_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:nil];
 }
 
 - (void)run {
