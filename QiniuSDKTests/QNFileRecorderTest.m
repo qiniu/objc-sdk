@@ -77,7 +77,7 @@
 	} option:opt];
 	AGWW_WAIT_WHILE(key == nil, 60 * 30);
 	NSLog(@"info %@", info);
-	XCTAssert(info.statusCode == 200, @"Pass");
+	XCTAssert(info.isOK, @"Pass");
 	XCTAssert(!failed, @"Pass");
 	XCTAssert([keyUp isEqualToString:key], @"Pass");
 	[QNTempFile removeTempfile:tempFile];

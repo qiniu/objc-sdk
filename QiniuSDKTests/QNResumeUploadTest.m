@@ -56,7 +56,7 @@
 
 	AGWW_WAIT_WHILE(key == nil, 60 * 30);
 	NSLog(@"info %@", info);
-	XCTAssert(info.statusCode == -2, @"Pass");
+	XCTAssert(info.isCancelled, @"Pass");
 	XCTAssert([keyUp isEqualToString:key], @"Pass");
 
 	[QNTempFile removeTempfile:tempFile];
@@ -76,7 +76,7 @@
 	} option:opt];
 	AGWW_WAIT_WHILE(key == nil, 60 * 30);
 	NSLog(@"info %@", info);
-	XCTAssert(info.statusCode == 200, @"Pass");
+	XCTAssert(info.isOK, @"Pass");
 	XCTAssert(info.reqId, @"Pass");
 	XCTAssert([keyUp isEqualToString:key], @"Pass");
 

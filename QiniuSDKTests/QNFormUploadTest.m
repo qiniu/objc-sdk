@@ -45,7 +45,7 @@
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
 	NSLog(@"%@", testResp);
-	XCTAssert(testInfo.statusCode == 200, @"Pass");
+	XCTAssert(testInfo.isOK, @"Pass");
 	XCTAssert(testInfo.reqId, @"Pass");
 }
 
