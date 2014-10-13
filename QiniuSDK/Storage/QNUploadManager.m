@@ -17,20 +17,27 @@
 #import "QNUploadOption+Private.h"
 
 @interface QNUploadManager ()
-@property QNHttpManager *httpManager;
+@property (nonatomic) QNHttpManager *httpManager;
 @property (nonatomic) id <QNRecorderDelegate> recorder;
+@property (nonatomic, strong) QNRecorderKeyGenerator recorderKeyGen;
 @end
 
 @implementation QNUploadManager
 
 - (instancetype)init {
-	return [self initWithRecorder:nil];
+	return [self initWithRecorder:nil recorderKeyGenerator:nil];
 }
 
 - (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder {
+	return [self initWithRecorder:recorder recorderKeyGenerator:nil];
+}
+
+- (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder
+            recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator {
 	if (self = [super init]) {
 		_httpManager = [[QNHttpManager alloc] init];
 		_recorder = recorder;
+		_recorderKeyGen = recorderKeyGenerator;
 	}
 	return self;
 }
@@ -130,6 +137,11 @@
 		};
 
 		NSDate *modifyTime = fileAttr[NSFileModificationDate];
+		NSString *recorderKey = key;
+		if (_recorder != nil && _recorderKeyGen != nil) {
+			recorderKey = _recorderKeyGen(key, filePath);
+		}
+
 		QNResumeUpload *up = [[QNResumeUpload alloc]
 		                      initWithData:data
 		                                      withSize:fileSize
@@ -139,9 +151,11 @@
 		                                    withOption:option
 		                                withModifyTime:modifyTime
 		                                  withRecorder:_recorder
+		                               withRecorderKey:recorderKey
 		                               withHttpManager:_httpManager];
-
-		[up run];
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+		    [up run];
+		});
 	}
 }
 

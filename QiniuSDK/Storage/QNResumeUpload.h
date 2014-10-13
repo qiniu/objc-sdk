@@ -20,6 +20,7 @@
                   withOption:(QNUploadOption *)option
               withModifyTime:(NSDate *)time
                 withRecorder:(id <QNRecorderDelegate> )recorder
+             withRecorderKey:(NSString *)recorderKey
              withHttpManager:(QNHttpManager *)http;
 
 - (void)run;

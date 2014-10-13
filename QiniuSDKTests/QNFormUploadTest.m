@@ -37,7 +37,7 @@
 
 	QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"foo":@"bar" } checkCrc:NO cancellationSignal:nil];
 	NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
-	[self.upManager putData:data key:@"hello" token:g_token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+	[self.upManager putData:data key:@"你好" token:g_token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
 	    testInfo = info;
 	    testResp = resp;
 	} option:opt];

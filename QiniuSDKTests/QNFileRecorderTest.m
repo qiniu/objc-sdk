@@ -26,7 +26,7 @@
 - (void)setUp {
 	[super setUp];
 	NSError *error = nil;
-	QNFileRecorder *file = [QNFileRecorder createWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniutest"] error:&error];
+	QNFileRecorder *file = [QNFileRecorder fileRecorderWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniutest"] error:&error];
 	NSLog(@"recoder error %@", error);
 	_upManager = [[QNUploadManager alloc] initWithRecorder:file
 	    ];

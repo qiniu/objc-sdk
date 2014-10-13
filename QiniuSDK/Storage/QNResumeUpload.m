@@ -24,6 +24,7 @@ typedef void (^task)(void);
 @property UInt32 size;
 @property (nonatomic) int retryTimes;
 @property (nonatomic, strong) NSString *key;
+@property (nonatomic, strong) NSString *recorderKey;
 @property (nonatomic) NSDictionary *headers;
 @property (nonatomic, strong) QNUploadOption *option;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
@@ -63,6 +64,7 @@ typedef void (^task)(void);
                   withOption:(QNUploadOption *)option
               withModifyTime:(NSDate *)time
                 withRecorder:(id <QNRecorderDelegate> )recorder
+             withRecorderKey:(NSString *)recorderKey
              withHttpManager:(QNHttpManager *)http {
 	if (self = [super init]) {
 		_data = data;
@@ -71,12 +73,13 @@ typedef void (^task)(void);
 		NSString *tok = [NSString stringWithFormat:@"UpToken %@", token];
 		_option = option;
 		_complete = block;
-        _headers = @{ @"Authorization":tok, @"Content-Type":@"application/octet-stream"};
+		_headers = @{ @"Authorization":tok, @"Content-Type":@"application/octet-stream" };
 		_recorder = recorder;
 		_httpManager = http;
 		if (time != nil) {
 			_modifyTime = [time timeIntervalSince1970];
 		}
+		_recorderKey = recorderKey;
 		_contexts = [[NSMutableArray alloc] initWithCapacity:(size + kQNBlockSize - 1) / kQNBlockSize];
 	}
 	return self;
@@ -91,7 +94,8 @@ typedef void (^task)(void);
 //}
 
 - (void)record:(UInt32)offset {
-	if (offset == 0 || _recorder == nil || self.key == nil || [self.key isEqualToString:@""]) {
+	NSString *key = self.recorderKey;
+	if (offset == 0 || _recorder == nil || key == nil || [key isEqualToString:@""]) {
 		return;
 	}
 	NSNumber *n_size = [NSNumber numberWithUnsignedInt:self.size];
@@ -102,12 +106,12 @@ typedef void (^task)(void);
 	NSError *error;
 	NSData *data = [NSJSONSerialization dataWithJSONObject:rec options:NSJSONWritingPrettyPrinted error:&error];
 	if (error != nil) {
-		NSLog(@"up record json error %@ %@", self.key, error);
+		NSLog(@"up record json error %@ %@", key, error);
 		return;
 	}
-	error = [_recorder set:self.key data:data];
+	error = [_recorder set:key data:data];
 	if (error != nil) {
-		NSLog(@"up record set error %@ %@", self.key, error);
+		NSLog(@"up record set error %@ %@", key, error);
 	}
 }
 
@@ -115,15 +119,16 @@ typedef void (^task)(void);
 	if (_recorder == nil) {
 		return;
 	}
-	[_recorder del:self.key];
+	[_recorder del:self.recorderKey];
 }
 
 - (UInt32)recoveryFromRecord {
-	if (_recorder == nil || self.key == nil || [self.key isEqualToString:@""]) {
+	NSString *key = self.recorderKey;
+	if (_recorder == nil || key == nil || [key isEqualToString:@""]) {
 		return 0;
 	}
 
-	NSData *data = [_recorder get:self.key];
+	NSData *data = [_recorder get:key];
 	if (data == nil) {
 		return 0;
 	}
@@ -131,7 +136,7 @@ typedef void (^task)(void);
 	NSError *error;
 	NSDictionary *info = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&error];
 	if (error != nil) {
-		NSLog(@"recovery error %@ %@", self.key, error);
+		NSLog(@"recovery error %@ %@", key, error);
 		[_recorder del:self.key];
 		return 0;
 	}
@@ -157,7 +162,7 @@ typedef void (^task)(void);
 	return offset;
 }
 
-- (void)nextTask:(UInt32)offset retriedTimes:(int)retried host:(NSString *)host{
+- (void)nextTask:(UInt32)offset retriedTimes:(int)retried host:(NSString *)host {
 	if (self.isCancelled) {
 		self.complete([QNResponseInfo cancel], self.key, nil);
 		return;
@@ -197,11 +202,11 @@ typedef void (^task)(void);
 			self.complete(info, self.key, resp);
 			return;
 		}
-        NSString *ctx = resp[@"ctx"];
-        if(ctx == nil){
-            [self nextTask:offset retriedTimes:0 host:host];
-            return;
-        }
+		NSString *ctx = resp[@"ctx"];
+		if (ctx == nil) {
+			[self nextTask:offset retriedTimes:0 host:host];
+			return;
+		}
 		_contexts[offset / kQNBlockSize] = ctx;
 		[self record:offset + chunkSize];
 		[self nextTask:offset + chunkSize retriedTimes:0 host:host];

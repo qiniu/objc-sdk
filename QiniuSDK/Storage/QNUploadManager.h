@@ -14,10 +14,13 @@
 @class QNUploadOption;
 
 typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDictionary *resp);
-
+typedef NSString *(^QNRecorderKeyGenerator)(NSString *uploadKey, NSString *filePath);
 @interface QNUploadManager : NSObject
 
 - (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder;
+
+- (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder
+            recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator;
 
 - (void)putData:(NSData *)data
             key:(NSString *)key
