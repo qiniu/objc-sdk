@@ -8,7 +8,6 @@
 通过CocoaPods
 
 ```ruby
-platform :ios, '6.0'
 pod "Qiniu", "~> 7.0"
 ```
 
