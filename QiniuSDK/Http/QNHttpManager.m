@@ -54,7 +54,7 @@
 	                                                             success: ^(AFHTTPRequestOperation *operation, id responseObject) {
 	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil withResponse:operation.responseData];
 	    NSDictionary *resp = nil;
-	    if (info.statusCode == 200) {
+	    if (info.isOK) {
             NSError *tmp;
             resp = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&tmp];
 		}

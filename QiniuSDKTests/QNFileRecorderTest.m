@@ -26,7 +26,7 @@
 - (void)setUp {
 	[super setUp];
 	NSError *error = nil;
-	QNFileRecorder *file = [QNFileRecorder createWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniutest"] error:&error];
+	QNFileRecorder *file = [QNFileRecorder fileRecorderWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniutest"] error:&error];
 	NSLog(@"recoder error %@", error);
 	_upManager = [[QNUploadManager alloc] initWithRecorder:file
 	    ];
@@ -77,7 +77,7 @@
 	} option:opt];
 	AGWW_WAIT_WHILE(key == nil, 60 * 30);
 	NSLog(@"info %@", info);
-	XCTAssert(info.statusCode == 200, @"Pass");
+	XCTAssert(info.isOK, @"Pass");
 	XCTAssert(!failed, @"Pass");
 	XCTAssert([keyUp isEqualToString:key], @"Pass");
 	[QNTempFile removeTempfile:tempFile];

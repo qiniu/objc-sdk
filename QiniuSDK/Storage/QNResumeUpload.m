@@ -24,7 +24,8 @@ typedef void (^task)(void);
 @property UInt32 size;
 @property (nonatomic) int retryTimes;
 @property (nonatomic, strong) NSString *key;
-@property (nonatomic, strong) NSString *token;
+@property (nonatomic, strong) NSString *recorderKey;
+@property (nonatomic) NSDictionary *headers;
 @property (nonatomic, strong) QNUploadOption *option;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) NSMutableArray *contexts;
@@ -63,20 +64,22 @@ typedef void (^task)(void);
                   withOption:(QNUploadOption *)option
               withModifyTime:(NSDate *)time
                 withRecorder:(id <QNRecorderDelegate> )recorder
+             withRecorderKey:(NSString *)recorderKey
              withHttpManager:(QNHttpManager *)http {
 	if (self = [super init]) {
 		_data = data;
 		_size = size;
 		_key = key;
-		_token = [NSString stringWithFormat:@"UpToken %@", token];
+		NSString *tok = [NSString stringWithFormat:@"UpToken %@", token];
 		_option = option;
 		_complete = block;
-
+		_headers = @{ @"Authorization":tok, @"Content-Type":@"application/octet-stream" };
 		_recorder = recorder;
 		_httpManager = http;
 		if (time != nil) {
 			_modifyTime = [time timeIntervalSince1970];
 		}
+		_recorderKey = recorderKey;
 		_contexts = [[NSMutableArray alloc] initWithCapacity:(size + kQNBlockSize - 1) / kQNBlockSize];
 	}
 	return self;
@@ -91,23 +94,24 @@ typedef void (^task)(void);
 //}
 
 - (void)record:(UInt32)offset {
-	if (offset == 0 || _recorder == nil || self.key == nil || [self.key isEqualToString:@""]) {
+	NSString *key = self.recorderKey;
+	if (offset == 0 || _recorder == nil || key == nil || [key isEqualToString:@""]) {
 		return;
 	}
-	NSNumber *n_size = [NSNumber numberWithUnsignedInt:self.size];
-	NSNumber *n_offset = [NSNumber numberWithUnsignedInt:offset];
+	NSNumber *n_size = @(self.size);
+	NSNumber *n_offset = @(offset);
 	NSNumber *n_time = [NSNumber numberWithLongLong:_modifyTime];
 	NSMutableDictionary *rec = [NSMutableDictionary dictionaryWithObjectsAndKeys:n_size, @"size", n_offset, @"offset", n_time, @"modify_time", _contexts, @"contexts", nil];
 
 	NSError *error;
 	NSData *data = [NSJSONSerialization dataWithJSONObject:rec options:NSJSONWritingPrettyPrinted error:&error];
 	if (error != nil) {
-		NSLog(@"up record json error %@ %@", self.key, error);
+		NSLog(@"up record json error %@ %@", key, error);
 		return;
 	}
-	error = [_recorder set:self.key data:data];
+	error = [_recorder set:key data:data];
 	if (error != nil) {
-		NSLog(@"up record set error %@ %@", self.key, error);
+		NSLog(@"up record set error %@ %@", key, error);
 	}
 }
 
@@ -115,15 +119,16 @@ typedef void (^task)(void);
 	if (_recorder == nil) {
 		return;
 	}
-	[_recorder del:self.key];
+	[_recorder del:self.recorderKey];
 }
 
 - (UInt32)recoveryFromRecord {
-	if (_recorder == nil || self.key == nil || [self.key isEqualToString:@""]) {
+	NSString *key = self.recorderKey;
+	if (_recorder == nil || key == nil || [key isEqualToString:@""]) {
 		return 0;
 	}
 
-	NSData *data = [_recorder get:self.key];
+	NSData *data = [_recorder get:key];
 	if (data == nil) {
 		return 0;
 	}
@@ -131,7 +136,7 @@ typedef void (^task)(void);
 	NSError *error;
 	NSDictionary *info = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&error];
 	if (error != nil) {
-		NSLog(@"recovery error %@ %@", self.key, error);
+		NSLog(@"recovery error %@ %@", key, error);
 		[_recorder del:self.key];
 		return 0;
 	}
@@ -157,7 +162,7 @@ typedef void (^task)(void);
 	return offset;
 }
 
-- (void)nextTask:(UInt32)offset {
+- (void)nextTask:(UInt32)offset retriedTimes:(int)retried host:(NSString *)host {
 	if (self.isCancelled) {
 		self.complete([QNResponseInfo cancel], self.key, nil);
 		return;
@@ -171,9 +176,13 @@ typedef void (^task)(void);
 					self.option.progressHandler(self.key, 1.0);
 				}
 			}
+			else if (info.couldRetry && retried < kQNRetryMax) {
+				[self nextTask:offset retriedTimes:retried + 1 host:host];
+				return;
+			}
 			self.complete(info, self.key, resp);
 		};
-		[self makeFile:kQNUpHost complete:completionHandler];
+		[self makeFile:host complete:completionHandler];
 		return;
 	}
 
@@ -191,23 +200,38 @@ typedef void (^task)(void);
 	QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
 		if (info.error != nil) {
 			if (info.statusCode == 701) {
-				[self nextTask:(offset / kQNBlockSize) * kQNBlockSize];
+				[self nextTask:(offset / kQNBlockSize) * kQNBlockSize retriedTimes:0 host:host];
 				return;
 			}
-			self.complete(info, self.key, resp);
+			if (retried >= kQNRetryMax || !info.couldRetry) {
+				self.complete(info, self.key, resp);
+				return;
+			}
+
+			NSString *nextHost = host;
+			if (info.isConnectionBroken) {
+				nextHost = kQNUpHostBackup;
+			}
+
+			[self nextTask:offset retriedTimes:retried + 1 host:nextHost];
 			return;
 		}
-		_contexts[offset / kQNBlockSize] =  resp[@"ctx"];
+		NSString *ctx = resp[@"ctx"];
+		if (ctx == nil) {
+			[self nextTask:offset retriedTimes:retried host:host];
+			return;
+		}
+		_contexts[offset / kQNBlockSize] = ctx;
 		[self record:offset + chunkSize];
-		[self nextTask:offset + chunkSize];
+		[self nextTask:offset + chunkSize retriedTimes:retried host:host];
 	};
 	if (offset % kQNBlockSize == 0) {
 		UInt32 blockSize = [self calcBlockSize:offset];
-		[self makeBlock:kQNUpHost offset:offset blockSize:blockSize chunkSize:chunkSize progress:progressBlock complete:completionHandler];
+		[self makeBlock:host offset:offset blockSize:blockSize chunkSize:chunkSize progress:progressBlock complete:completionHandler];
 		return;
 	}
 	NSString *context = _contexts[offset / kQNBlockSize];
-	[self putChunk:kQNUpHost offset:offset size:chunkSize context:context progress:progressBlock complete:completionHandler];
+	[self putChunk:host offset:offset size:chunkSize context:context progress:progressBlock complete:completionHandler];
 }
 
 - (UInt32)calcPutSize:(UInt32)offset {
@@ -284,14 +308,13 @@ typedef void (^task)(void);
              withData:(NSData *)data
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock {
-	NSDictionary *headers = @{ @"Authorization":self.token, @"Content-Type":@"application/octet-stream" };
-	[_httpManager post:url withData:data withParams:nil withHeaders:headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:nil];
+	[_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:nil];
 }
 
 - (void)run {
 	@autoreleasepool {
 		UInt32 offset = [self recoveryFromRecord];
-		[self nextTask:offset];
+		[self nextTask:offset retriedTimes:0 host:kQNUpHost];
 	}
 }
 

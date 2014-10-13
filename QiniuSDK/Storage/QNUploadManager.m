@@ -17,28 +17,47 @@
 #import "QNUploadOption+Private.h"
 
 @interface QNUploadManager ()
-@property QNHttpManager *httpManager;
+@property (nonatomic) QNHttpManager *httpManager;
 @property (nonatomic) id <QNRecorderDelegate> recorder;
+@property (nonatomic, strong) QNRecorderKeyGenerator recorderKeyGen;
 @end
 
 @implementation QNUploadManager
 
 - (instancetype)init {
-	return [self initWithRecorder:nil];
+	return [self initWithRecorder:nil recorderKeyGenerator:nil];
 }
 
 - (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder {
+	return [self initWithRecorder:recorder recorderKeyGenerator:nil];
+}
+
+- (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder
+            recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator {
 	if (self = [super init]) {
 		_httpManager = [[QNHttpManager alloc] init];
 		_recorder = recorder;
+		_recorderKeyGen = recorderKeyGenerator;
 	}
 	return self;
+}
+
++ (instancetype)sharedInstanceWithRecorder:(id <QNRecorderDelegate> )recorder
+                      recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator {
+	static QNUploadManager *sharedInstance = nil;
+
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+	    sharedInstance = [[self alloc] initWithRecorder:recorder recorderKeyGenerator:recorderKeyGenerator];
+	});
+
+	return sharedInstance;
 }
 
 - (void)putData:(NSData *)data
             key:(NSString *)key
           token:(NSString *)token
-       complete:(QNUpCompletionHandler)block
+       complete:(QNUpCompletionHandler)completionHandler
          option:(QNUploadOption *)option {
 	NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
 
@@ -74,12 +93,35 @@
 		};
 	}
 
-	QNCompleteBlock _block = ^(QNResponseInfo *info, NSDictionary *resp)
+	QNCompleteBlock complete = ^(QNResponseInfo *info, NSDictionary *resp)
 	{
-		if (p) {
+		if (info.isOK && p) {
 			option.progressHandler(key, 1.0);
 		}
-		block(info, key, resp);
+		if (info.isOK || !info.couldRetry) {
+			completionHandler(info, key, resp);
+			return;
+		}
+		NSString *nextHost = kQNUpHost;
+		if (info.isConnectionBroken) {
+			nextHost = kQNUpHostBackup;
+		}
+
+		QNCompleteBlock retriedComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
+			if (info.isOK && p) {
+				option.progressHandler(key, 1.0);
+			}
+			completionHandler(info, key, resp);
+		};
+
+		[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", nextHost]
+		                   withData:data
+		                 withParams:parameters
+		               withFileName:key
+		               withMimeType:mimeType
+		          withCompleteBlock:retriedComplete
+		          withProgressBlock:p
+		            withCancelBlock:nil];
 	};
 
 	[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kQNUpHost]
@@ -87,7 +129,7 @@
 	                 withParams:parameters
 	               withFileName:key
 	               withMimeType:mimeType
-	          withCompleteBlock:_block
+	          withCompleteBlock:complete
 	          withProgressBlock:p
 	            withCancelBlock:nil];
 }
@@ -130,6 +172,11 @@
 		};
 
 		NSDate *modifyTime = fileAttr[NSFileModificationDate];
+		NSString *recorderKey = key;
+		if (_recorder != nil && _recorderKeyGen != nil) {
+			recorderKey = _recorderKeyGen(key, filePath);
+		}
+
 		QNResumeUpload *up = [[QNResumeUpload alloc]
 		                      initWithData:data
 		                                      withSize:fileSize
@@ -139,9 +186,11 @@
 		                                    withOption:option
 		                                withModifyTime:modifyTime
 		                                  withRecorder:_recorder
+		                               withRecorderKey:recorderKey
 		                               withHttpManager:_httpManager];
-
-		[up run];
+		dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+		    [up run];
+		});
 	}
 }
 

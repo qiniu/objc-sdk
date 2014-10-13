@@ -24,15 +24,16 @@ pod "Qiniu", "~> 7.0"
 
 ```objective-c
 #import <QiniuSDK.h>
-
-NSString token = @"从服务端SDK获取";
-QNUploadManager *upManager = [[QNUploadManager alloc] init];
-NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
-[upManager putData:data key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-    NSLog(@"%@", info);
-    NSLog(@"%@", resp);
-} option:nil];
-
+...
+    NSString token = @"从服务端SDK获取";
+    QNUploadManager *upManager = [[QNUploadManager alloc] init];
+    NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
+    [upManager putData:data key:@"hello" token:token
+        complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+        NSLog(@"%@", info);
+        NSLog(@"%@", resp);
+    } option:nil];
+...
 ```
 
 

@@ -27,7 +27,7 @@ extern const int kQNNetworkError;
 
 - (instancetype)initWithCancelled;
 
-- (BOOL)couldRetry;
+@property (nonatomic, readonly) BOOL couldRetry;
 
 - (instancetype)init:(int)status
            withReqId:(NSString *)reqId
