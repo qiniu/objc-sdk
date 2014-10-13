@@ -49,7 +49,7 @@ static QNResponseInfo *cancelledInfo = nil;
 }
 
 - (BOOL)couldRetry {
-	return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == kQNNetworkError;
+	return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == kQNNetworkError || _statusCode == 996;
 }
 
 - (instancetype)init:(int)status

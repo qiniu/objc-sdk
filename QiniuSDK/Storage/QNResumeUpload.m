@@ -175,7 +175,10 @@ typedef void (^task)(void);
 				if (self.option && self.option.progressHandler) {
 					self.option.progressHandler(self.key, 1.0);
 				}
-			}
+            } else if(info.couldRetry && retried<kQNRetryMax){
+                [self nextTask:offset retriedTimes:retried+1 host:host];
+                return;
+            }
 			self.complete(info, self.key, resp);
 		};
 		[self makeFile:host complete:completionHandler];
@@ -195,21 +198,31 @@ typedef void (^task)(void);
 	}
 	QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
 		if (info.error != nil) {
-			if (info.statusCode == 701) {
-				[self nextTask:(offset / kQNBlockSize) * kQNBlockSize retriedTimes:0 host:host];
-				return;
-			}
-			self.complete(info, self.key, resp);
-			return;
+            if (info.statusCode == 701) {
+                [self nextTask:(offset / kQNBlockSize) * kQNBlockSize retriedTimes:0 host:host];
+                return;
+            }
+            if (retried >= kQNRetryMax || !info.couldRetry){
+                self.complete(info, self.key, resp);
+                return;
+            }
+            
+            NSString *nextHost = host;
+            if(info.isConnectionBroken){
+                nextHost = kQNUpHostBackup;
+            }
+			
+			[self nextTask:offset retriedTimes:retried+1 host:nextHost];
+            return;
 		}
 		NSString *ctx = resp[@"ctx"];
 		if (ctx == nil) {
-			[self nextTask:offset retriedTimes:0 host:host];
+			[self nextTask:offset retriedTimes:retried host:host];
 			return;
 		}
 		_contexts[offset / kQNBlockSize] = ctx;
 		[self record:offset + chunkSize];
-		[self nextTask:offset + chunkSize retriedTimes:0 host:host];
+		[self nextTask:offset + chunkSize retriedTimes:retried host:host];
 	};
 	if (offset % kQNBlockSize == 0) {
 		UInt32 blockSize = [self calcBlockSize:offset];

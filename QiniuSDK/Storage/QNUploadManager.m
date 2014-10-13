@@ -45,7 +45,7 @@
 - (void)putData:(NSData *)data
             key:(NSString *)key
           token:(NSString *)token
-       complete:(QNUpCompletionHandler)block
+       complete:(QNUpCompletionHandler)completionHandler
          option:(QNUploadOption *)option {
 	NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
 
@@ -81,12 +81,35 @@
 		};
 	}
 
-	QNCompleteBlock _block = ^(QNResponseInfo *info, NSDictionary *resp)
+	QNCompleteBlock complete = ^(QNResponseInfo *info, NSDictionary *resp)
 	{
-		if (p) {
-			option.progressHandler(key, 1.0);
+		if (info.isOK && p) {
+            option.progressHandler(key, 1.0);
 		}
-		block(info, key, resp);
+        if (info.isOK || !info.couldRetry){
+            completionHandler(info, key, resp);
+            return;
+        }
+        NSString *nextHost = kQNUpHost;
+        if(info.isConnectionBroken){
+            nextHost = kQNUpHostBackup;
+        }
+        
+        QNCompleteBlock retriedComplete = ^(QNResponseInfo *info, NSDictionary *resp){
+            if (info.isOK && p) {
+                option.progressHandler(key, 1.0);
+            }
+            completionHandler(info, key, resp);
+        };
+        
+        [_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", nextHost]
+                           withData:data
+                         withParams:parameters
+                       withFileName:key
+                       withMimeType:mimeType
+                  withCompleteBlock:retriedComplete
+                  withProgressBlock:p
+                    withCancelBlock:nil];
 	};
 
 	[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kQNUpHost]
@@ -94,7 +117,7 @@
 	                 withParams:parameters
 	               withFileName:key
 	               withMimeType:mimeType
-	          withCompleteBlock:_block
+	          withCompleteBlock:complete
 	          withProgressBlock:p
 	            withCancelBlock:nil];
 }
