@@ -42,6 +42,18 @@
 	return self;
 }
 
++ (instancetype)sharedInstanceWithRecorder:(id <QNRecorderDelegate> )recorder
+                      recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator {
+	static QNUploadManager *sharedInstance = nil;
+
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
+	    sharedInstance = [[self alloc] initWithRecorder:recorder recorderKeyGenerator:recorderKeyGenerator];
+	});
+
+	return sharedInstance;
+}
+
 - (void)putData:(NSData *)data
             key:(NSString *)key
           token:(NSString *)token
@@ -84,32 +96,32 @@
 	QNCompleteBlock complete = ^(QNResponseInfo *info, NSDictionary *resp)
 	{
 		if (info.isOK && p) {
-            option.progressHandler(key, 1.0);
+			option.progressHandler(key, 1.0);
 		}
-        if (info.isOK || !info.couldRetry){
-            completionHandler(info, key, resp);
-            return;
-        }
-        NSString *nextHost = kQNUpHost;
-        if(info.isConnectionBroken){
-            nextHost = kQNUpHostBackup;
-        }
-        
-        QNCompleteBlock retriedComplete = ^(QNResponseInfo *info, NSDictionary *resp){
-            if (info.isOK && p) {
-                option.progressHandler(key, 1.0);
-            }
-            completionHandler(info, key, resp);
-        };
-        
-        [_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", nextHost]
-                           withData:data
-                         withParams:parameters
-                       withFileName:key
-                       withMimeType:mimeType
-                  withCompleteBlock:retriedComplete
-                  withProgressBlock:p
-                    withCancelBlock:nil];
+		if (info.isOK || !info.couldRetry) {
+			completionHandler(info, key, resp);
+			return;
+		}
+		NSString *nextHost = kQNUpHost;
+		if (info.isConnectionBroken) {
+			nextHost = kQNUpHostBackup;
+		}
+
+		QNCompleteBlock retriedComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
+			if (info.isOK && p) {
+				option.progressHandler(key, 1.0);
+			}
+			completionHandler(info, key, resp);
+		};
+
+		[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", nextHost]
+		                   withData:data
+		                 withParams:parameters
+		               withFileName:key
+		               withMimeType:mimeType
+		          withCompleteBlock:retriedComplete
+		          withProgressBlock:p
+		            withCancelBlock:nil];
 	};
 
 	[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kQNUpHost]

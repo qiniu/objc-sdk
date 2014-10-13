@@ -19,7 +19,12 @@
 @implementation QNFileRecorder
 
 - (NSString *)pathOfKey:(NSString *)key {
-	return [[NSString alloc] initWithFormat:@"%@/%@", _directory, key];
+	return [QNFileRecorder pathJoin:key path:_directory];
+}
+
++ (NSString *)pathJoin:(NSString *)key
+                  path:(NSString *)path {
+	return [[NSString alloc] initWithFormat:@"%@/%@", path, key];
 }
 
 + (instancetype)fileRecorderWithFolder:(NSString *)directory
@@ -70,6 +75,17 @@
 	}
 	[[NSFileManager defaultManager] removeItemAtPath:[self pathOfKey:key] error:&error];
 	return error;
+}
+
++ (void)removeKey:(NSString *)key
+        directory:(NSString *)dir
+        encodeKey:(BOOL)encode {
+	if (encode) {
+		key = [QNUrlSafeBase64 encodeString:key];
+	}
+	NSError *error;
+	NSString *path = [QNFileRecorder pathJoin:key path:dir];
+	[[NSFileManager defaultManager] removeItemAtPath:path error:&error];
 }
 
 - (NSString *)description {

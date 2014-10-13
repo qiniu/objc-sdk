@@ -98,8 +98,8 @@ typedef void (^task)(void);
 	if (offset == 0 || _recorder == nil || key == nil || [key isEqualToString:@""]) {
 		return;
 	}
-	NSNumber *n_size = [NSNumber numberWithUnsignedInt:self.size];
-	NSNumber *n_offset = [NSNumber numberWithUnsignedInt:offset];
+	NSNumber *n_size = @(self.size);
+	NSNumber *n_offset = @(offset);
 	NSNumber *n_time = [NSNumber numberWithLongLong:_modifyTime];
 	NSMutableDictionary *rec = [NSMutableDictionary dictionaryWithObjectsAndKeys:n_size, @"size", n_offset, @"offset", n_time, @"modify_time", _contexts, @"contexts", nil];
 
@@ -175,10 +175,11 @@ typedef void (^task)(void);
 				if (self.option && self.option.progressHandler) {
 					self.option.progressHandler(self.key, 1.0);
 				}
-            } else if(info.couldRetry && retried<kQNRetryMax){
-                [self nextTask:offset retriedTimes:retried+1 host:host];
-                return;
-            }
+			}
+			else if (info.couldRetry && retried < kQNRetryMax) {
+				[self nextTask:offset retriedTimes:retried + 1 host:host];
+				return;
+			}
 			self.complete(info, self.key, resp);
 		};
 		[self makeFile:host complete:completionHandler];
@@ -198,22 +199,22 @@ typedef void (^task)(void);
 	}
 	QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
 		if (info.error != nil) {
-            if (info.statusCode == 701) {
-                [self nextTask:(offset / kQNBlockSize) * kQNBlockSize retriedTimes:0 host:host];
-                return;
-            }
-            if (retried >= kQNRetryMax || !info.couldRetry){
-                self.complete(info, self.key, resp);
-                return;
-            }
-            
-            NSString *nextHost = host;
-            if(info.isConnectionBroken){
-                nextHost = kQNUpHostBackup;
-            }
-			
-			[self nextTask:offset retriedTimes:retried+1 host:nextHost];
-            return;
+			if (info.statusCode == 701) {
+				[self nextTask:(offset / kQNBlockSize) * kQNBlockSize retriedTimes:0 host:host];
+				return;
+			}
+			if (retried >= kQNRetryMax || !info.couldRetry) {
+				self.complete(info, self.key, resp);
+				return;
+			}
+
+			NSString *nextHost = host;
+			if (info.isConnectionBroken) {
+				nextHost = kQNUpHostBackup;
+			}
+
+			[self nextTask:offset retriedTimes:retried + 1 host:nextHost];
+			return;
 		}
 		NSString *ctx = resp[@"ctx"];
 		if (ctx == nil) {
