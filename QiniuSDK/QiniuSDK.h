@@ -8,7 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "Common/QNUrlSafeBase64.h"
-#import "Http/QNResponseInfo.h"
-#import "Storage/QNUploadOption.h"
-#import "Storage/QNUploadManager.h"
+#import "QNUrlSafeBase64.h"
+#import "QNResponseInfo.h"
+#import "QNUploadOption.h"
+#import "QNUploadManager.h"
+#import "QNFileRecorder.h"

@@ -1,12 +1,12 @@
 Pod::Spec.new do |s|
   s.name         = 'Qiniu'
-  s.version      = '7.0.0'
+  s.version      = '7.0.1'
   s.summary      = 'Qiniu Resource Storage SDK for iOS and Mac'
   s.homepage     = 'https://github.com/qiniu/objective-c-sdk'
   s.social_media_url = 'http://weibo.com/qiniutek'
   s.author       = 'Qiniu => sdk@qiniu.com'
   s.documentation_url = 'http://developer.qiniu.com/docs/v6/sdk/ios-sdk.html'
-  s.source       = {:git => 'https://github.com/qiniu/objective-c-sdk.git', :tag => 'v7.0.0'}
+  s.source       = {:git => 'https://github.com/qiniu/objective-c-sdk.git', :tag => 'v7.0.1'}
 
   s.ios.deployment_target = '6.0'
   s.osx.deployment_target = '10.8'
