@@ -82,7 +82,7 @@
 	}
 
 	if (option && option.checkCrc) {
-		parameters[@"crc32"] = [NSNumber numberWithUnsignedLong:[QNCrc32 data:data]];
+		parameters[@"crc32"] = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:data]];
 	}
 
 	QNInternalProgressBlock p = nil;

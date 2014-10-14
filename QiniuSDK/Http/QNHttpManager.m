@@ -15,6 +15,7 @@
 
 @interface QNHttpManager ()
 @property (nonatomic) AFHTTPClient *httpManager;
+@property (nonatomic) AFHTTPClient *httpManagerBackup;
 @property (nonatomic) NSOperationQueue *operationQueue;
 @end
 
@@ -22,8 +23,10 @@
 
 - (instancetype)init {
 	if (self = [super init]) {
-        NSString *url = [NSString stringWithFormat:@"http://%@", kQNUpHost];
-        _httpManager = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
+		NSString *url = [NSString stringWithFormat:@"http://%@", kQNUpHost];
+		_httpManager = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url]];
+		NSString *url2 = [NSString stringWithFormat:@"http://%@", kQNUpHostBackup];
+		_httpManagerBackup = [[AFHTTPClient alloc] initWithBaseURL:[NSURL URLWithString:url2]];
 	}
 
 	return self;
@@ -49,14 +52,19 @@
 - (void)  sendRequest:(NSMutableURLRequest *)request
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock {
-	AFHTTPRequestOperation *operation = [_httpManager
+	AFHTTPClient *client = _httpManager;
+	if ([kQNUpHostBackup isEqualToString:request.URL.host]) {
+		client = _httpManagerBackup;
+	}
+
+	AFHTTPRequestOperation *operation = [client
 	                                     HTTPRequestOperationWithRequest:request
 	                                                             success: ^(AFHTTPRequestOperation *operation, id responseObject) {
 	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil withResponse:operation.responseData];
 	    NSDictionary *resp = nil;
 	    if (info.isOK) {
-            NSError *tmp;
-            resp = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&tmp];
+	        NSError *tmp;
+	        resp = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&tmp];
 		}
 	    completeBlock(info, resp);
 	}                                                                failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -74,7 +82,7 @@
 
 	[request setValue:QNUserAgent() forHTTPHeaderField:@"User-Agent"];
 	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];
-	[_httpManager.operationQueue addOperation:operation];
+	[client.operationQueue addOperation:operation];
 }
 
 - (void)multipartPost:(NSString *)url
@@ -85,15 +93,19 @@
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock {
+	AFHTTPClient *client = _httpManager;
+	if ([url hasSuffix:kQNUpHostBackup]) {
+		client = _httpManagerBackup;
+	}
 
-    NSMutableURLRequest *request = [_httpManager multipartFormRequestWithMethod:@"POST" path:@"/" parameters:nil constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
-        [formData appendPartWithFileData:data name:@"file" fileName:key mimeType:mime];
-        for (NSString* k in params) {
-            [formData appendPartWithFormData: [params[k] dataUsingEncoding:NSUTF8StringEncoding] name:k];
-        }
-    }];
+	NSMutableURLRequest *request = [client multipartFormRequestWithMethod:@"POST" path:@"/" parameters:nil constructingBodyWithBlock: ^(id < AFMultipartFormData > formData) {
+	    [formData appendPartWithFileData:data name:@"file" fileName:key mimeType:mime];
+	    for (NSString *k in params) {
+	        [formData appendPartWithFormData:[params[k] dataUsingEncoding:NSUTF8StringEncoding] name:k];
+		}
+	}];
 
-    [self sendRequest:request
+	[self sendRequest:request
 	    withCompleteBlock:completeBlock
 	    withProgressBlock:progressBlock];
 }
