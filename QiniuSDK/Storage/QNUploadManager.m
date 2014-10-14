@@ -72,7 +72,7 @@
 	parameters[@"token"] = token;
 
 	if (option && option.params) {
-		[parameters addEntriesFromDictionary:[option p_convertToPostParams]];
+		[parameters addEntriesFromDictionary:option.params];
 	}
 
 	NSString *mimeType = option.mimeType;
