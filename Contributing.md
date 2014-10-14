@@ -2,7 +2,7 @@
 
 我们非常欢迎大家来贡献代码，我们会向贡献者致以最诚挚的敬意。
 
-一般可以通过在Github上提交[Pull Request](https://github.com/qiniu/objective-c)来贡献代码。
+一般可以通过在Github上提交[Pull Request](https://github.com/qiniu/objc-sdk)来贡献代码。
 
 ## Pull Request要求
 
