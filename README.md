@@ -1,7 +1,7 @@
 # Qiniu Objective-C SDK
 
-[![Build Status](https://travis-ci.org/qiniu/objective-c-sdk.svg?branch=master)](https://travis-ci.org/qiniu/objective-c-sdk)
-[![Latest Stable Version](https://badge.fury.io/co/Qiniu.png)](https://github.com/qiniu/objective-c-sdk/releases)
+[![Build Status](https://travis-ci.org/qiniu/objc-sdk.svg?branch=master)](https://travis-ci.org/qiniu/objc-sdk)
+[![Latest Stable Version](https://badge.fury.io/co/Qiniu.png)](https://github.com/qiniu/objc-sdk/releases)
 
 ## 安装
 
@@ -45,13 +45,13 @@ $ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -con
 
 ## 代码贡献
 
-详情参考[代码提交指南](https://github.com/qiniu/objective-c-sdk/blob/master/CONTRIBUTING.md)。
+详情参考[代码提交指南](https://github.com/qiniu/objc-sdk/blob/master/CONTRIBUTING.md)。
 
 ## 贡献记录
 
-- [所有贡献者](https://github.com/qiniu/objective-c-sdk/contributors)
+- [所有贡献者](https://github.com/qiniu/objc-sdk/contributors)
 
 
 ## 代码许可
 
-The MIT License (MIT).详情见 [License文件](https://github.com/qiniu/objective-c-sdk/blob/master/LICENSE).
+The MIT License (MIT).详情见 [License文件](https://github.com/qiniu/objc-sdk/blob/master/LICENSE).
