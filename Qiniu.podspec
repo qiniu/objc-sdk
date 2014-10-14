@@ -5,8 +5,7 @@ Pod::Spec.new do |s|
   s.homepage     = 'https://github.com/qiniu/objc-sdk'
   s.social_media_url = 'http://weibo.com/qiniutek'
   s.author       = 'Qiniu => sdk@qiniu.com'
-  s.documentation_url = 'http://developer.qiniu.com/docs/v6/sdk/ios-sdk.html'
-  s.source       = {:git => 'https://github.com/qiniu/objc-sdk.git', :tag => 'v7.0.2'}
+  s.source       = {:git => 'https://github.com/qiniu/objc-sdk.git', :tag => s.version}
 
   s.ios.deployment_target = '6.0'
   s.osx.deployment_target = '10.8'

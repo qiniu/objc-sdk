@@ -18,11 +18,6 @@ static uint8_t const kBase64EncodingTable[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefg
 	return [self encodeData:data];
 }
 
-+ (NSError *)decodeError:(int)pos {
-//    NSString *s = [[NSString alloc] initWithFormat:@"illegal url safe base64 data at input byte %d", pos];
-	return nil;
-}
-
 + (NSString *)encodeData:(NSData *)data {
 	NSUInteger length = [data length];
 	NSMutableData *mutableData = [NSMutableData dataWithLength:((length + 2) / 3) * 4];
