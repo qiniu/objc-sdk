@@ -81,9 +81,9 @@
 		mimeType = @"application/octet-stream";
 	}
 
-    if (option && option.checkCrc) {
-        parameters[@"crc32"] = [NSNumber numberWithUnsignedLong:[QNCrc32 data:data]];
-    }
+	if (option && option.checkCrc) {
+		parameters[@"crc32"] = [NSNumber numberWithUnsignedLong:[QNCrc32 data:data]];
+	}
 
 	QNInternalProgressBlock p = nil;
 

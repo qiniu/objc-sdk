@@ -27,19 +27,19 @@
 		if (*error != nil) {
 			return 0;
 		}
-        
-        int len = (int)[data length];
-        int count = (len + kQNBlockSize - 1) / kQNBlockSize;
-        
+
+		int len = (int)[data length];
+		int count = (len + kQNBlockSize - 1) / kQNBlockSize;
+
 		uLong crc = crc32(0L, Z_NULL, 0);
-        NSLog(@"%lu %d", crc, count);
+		NSLog(@"%lu %d", crc, count);
 		for (int i = 0; i < count; i++) {
 			int offset = i * kQNBlockSize;
 			int size = (len - offset) > kQNBlockSize ? kQNBlockSize : (len - offset);
 			NSData *d = [data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
-            crc = crc32(crc, [d bytes], (uInt)[d length]);
+			crc = crc32(crc, [d bytes], (uInt)[d length]);
 		}
-        NSLog(@"%lu %d", crc, count);
+		NSLog(@"%lu %d", crc, count);
 		return (UInt32)crc;
 	}
 }
