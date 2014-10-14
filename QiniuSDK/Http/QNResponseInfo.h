@@ -20,14 +20,13 @@ extern const int kQNNetworkError;
 @property (nonatomic, readonly, getter = isCancelled) BOOL canceled;
 @property (nonatomic, readonly, getter = isOK) BOOL ok;
 @property (nonatomic, readonly, getter = isConnectionBroken) BOOL broken;
+@property (nonatomic, readonly) BOOL couldRetry;
 
 + (instancetype)cancel;
 
 - (instancetype)initWithError:(NSError *)error;
 
 - (instancetype)initWithCancelled;
-
-@property (nonatomic, readonly) BOOL couldRetry;
 
 - (instancetype)init:(int)status
            withReqId:(NSString *)reqId
