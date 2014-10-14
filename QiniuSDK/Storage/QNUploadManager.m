@@ -11,7 +11,7 @@
 #import "QNConfig.h"
 #import "QNHttpManager.h"
 #import "QNResponseInfo.h"
-
+#import "QNCrc32.h"
 #import "QNUploadManager.h"
 #import "QNResumeUpload.h"
 #import "QNUploadOption+Private.h"
@@ -71,14 +71,18 @@
 
 	parameters[@"token"] = token;
 
-	if (option.params) {
-		[parameters addEntriesFromDictionary:[option p_convertToPostParams]];
+	if (option && option.params) {
+		[parameters addEntriesFromDictionary:option.params];
 	}
 
 	NSString *mimeType = option.mimeType;
 
 	if (!mimeType) {
 		mimeType = @"application/octet-stream";
+	}
+
+	if (option && option.checkCrc) {
+		parameters[@"crc32"] = [NSNumber numberWithUnsignedLong:[QNCrc32 data:data]];
 	}
 
 	QNInternalProgressBlock p = nil;

@@ -17,6 +17,8 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
 typedef NSString *(^QNRecorderKeyGenerator)(NSString *uploadKey, NSString *filePath);
 @interface QNUploadManager : NSObject
 
+- (instancetype)init;
+
 - (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder;
 
 - (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder

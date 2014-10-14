@@ -24,7 +24,7 @@
 
 - (void)setUp {
 	[super setUp];
-	_upManager = [[QNUploadManager alloc] init];
+	_upManager = [QNUploadManager sharedInstanceWithRecorder:nil recorderKeyGenerator:nil];
 }
 
 - (void)tearDown {
@@ -35,7 +35,7 @@
 	__block QNResponseInfo *testInfo = nil;
 	__block NSDictionary *testResp = nil;
 
-	QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"foo":@"bar" } checkCrc:NO cancellationSignal:nil];
+	QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo":@"bar" } checkCrc:YES cancellationSignal:nil];
 	NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
 	[self.upManager putData:data key:@"你好" token:g_token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
 	    testInfo = info;

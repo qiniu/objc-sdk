@@ -14,6 +14,7 @@
 #import "QNHttpManager.h"
 #import "QNUploadOption+Private.h"
 #import "QNRecorderDelegate.h"
+#import "QNCrc32.h"
 
 typedef void (^task)(void);
 
@@ -34,6 +35,7 @@ typedef void (^task)(void);
 @property UInt64 modifyTime;
 @property (nonatomic, weak) id <QNRecorderDelegate> recorder;
 
+@property UInt32 chunkCrc;
 
 - (void)makeBlock:(NSString *)uphost
            offset:(UInt32)offset
@@ -216,8 +218,15 @@ typedef void (^task)(void);
 			[self nextTask:offset retriedTimes:retried + 1 host:nextHost];
 			return;
 		}
+
+		if (resp == nil) {
+			[self nextTask:offset retriedTimes:retried host:host];
+			return;
+		}
+
 		NSString *ctx = resp[@"ctx"];
-		if (ctx == nil) {
+		NSNumber *crc = resp[@"crc32"];
+		if (ctx == nil || crc == nil || [crc unsignedLongValue] != _chunkCrc) {
 			[self nextTask:offset retriedTimes:retried host:host];
 			return;
 		}
@@ -252,6 +261,7 @@ typedef void (^task)(void);
          complete:(QNCompleteBlock)complete {
 	NSData *data = [self.data subdataWithRange:NSMakeRange(offset, (unsigned int)chunkSize)];
 	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/mkblk/%u", uphost, (unsigned int)blockSize];
+	_chunkCrc = [QNCrc32 data:data];
 	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
 }
 
@@ -264,13 +274,12 @@ typedef void (^task)(void);
 	NSData *data = [self.data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
 	UInt32 chunkOffset = offset % kQNBlockSize;
 	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/bput/%@/%u", uphost, context, (unsigned int)chunkOffset];
-
-	// Todo: check crc
+	_chunkCrc = [QNCrc32 data:data];
 	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
 }
 
 - (BOOL)isCancelled {
-	return self.option && [self.option isCancelled];
+	return self.option && self.option.priv_isCancelled;
 }
 
 - (void)makeFile:(NSString *)uphost

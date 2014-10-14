@@ -46,7 +46,7 @@
 	__block BOOL flag = NO;
 	QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil progressHandler: ^(NSString *key, float percent) {
 	    flag = YES;
-	} params:nil checkCrc:NO cancellationSignal: ^BOOL () {
+	} params:@{ @"x:七牛":@"objc" } checkCrc:NO cancellationSignal: ^BOOL () {
 	    return flag;
 	}];
 	[_upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {

@@ -8,4 +8,4 @@
 
 #import <Foundation/Foundation.h>
 
-static const NSString *kQiniuVersion = @"7.0.0";
+static const NSString *kQiniuVersion = @"7.0.3";
