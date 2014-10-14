@@ -265,7 +265,6 @@ typedef void (^task)(void);
 	UInt32 chunkOffset = offset % kQNBlockSize;
 	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/bput/%@/%u", uphost, context, (unsigned int)chunkOffset];
 
-	// Todo: check crc
 	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
 }
 

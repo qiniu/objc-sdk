@@ -8,6 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #import "QNCrc32.h"
+#import "QNTempFile.h"
 
 @interface QNCrc32Test : XCTestCase
 
@@ -20,6 +21,15 @@
 	UInt32 crc = [QNCrc32 data:buffer];
 
 	XCTAssert(crc == 3964322768, @"Pass");
+}
+
+- (void)testFile {
+    NSError *error;
+    NSURL *file = [QNTempFile createTempfileWithSize:5 * 1024 * 1024];
+    UInt32 u = [QNCrc32 file:[file relativePath] error:&error];
+
+    XCTAssert(u == 3376132981, @"Pass");
+    [QNTempFile removeTempfile:file];
 }
 
 @end
