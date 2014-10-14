@@ -9,6 +9,7 @@
 #import <zlib.h>
 
 #import "QNCrc32.h"
+#import "QNConfig.h"
 
 @implementation QNCrc32
 
@@ -26,7 +27,18 @@
 		if (*error != nil) {
 			return 0;
 		}
-		return [QNCrc32 data:data];
+        
+        int len = (int)[data length];
+        int count = (len + kQNBlockSize - 1) / kQNBlockSize;
+        
+		uLong crc = crc32(0L, Z_NULL, 0);
+		for (int i = 0; i < count; i++) {
+			int offset = i * kQNBlockSize;
+			int size = (len - offset) > kQNBlockSize ? kQNBlockSize : (len - offset);
+			NSData *d = [data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
+            crc = crc32(crc, [d bytes], (uInt)[d length]);
+		}
+		return (UInt32)crc;
 	}
 }
 
