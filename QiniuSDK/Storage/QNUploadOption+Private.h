@@ -10,7 +10,5 @@
 
 @interface QNUploadOption (Private)
 
-@property (nonatomic, readonly, copy) NSDictionary *p_convertToPostParams;
-
-@property (nonatomic, getter = isCancelled, readonly) BOOL cancelled;
+@property (nonatomic, getter = priv_isCancelled, readonly) BOOL cancelled;
 @end

@@ -279,7 +279,7 @@ typedef void (^task)(void);
 }
 
 - (BOOL)isCancelled {
-	return self.option && [self.option isCancelled];
+	return self.option && self.option.priv_isCancelled;
 }
 
 - (void)makeFile:(NSString *)uphost
