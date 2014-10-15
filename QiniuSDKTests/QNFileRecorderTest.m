@@ -38,6 +38,16 @@
 #endif
 }
 
+- (void)testInit {
+	NSError *error = nil;
+	[QNFileRecorder fileRecorderWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniutest"] error:&error];
+	XCTAssert(error == nil, @"Pass");
+	[QNFileRecorder fileRecorderWithFolder:@"/qiniutest" error:&error];
+	NSLog(@"file recorder %@", error);
+	XCTAssert(error != nil, @"Pass");
+	[QNFileRecorder fileRecorderWithFolder:@"/qiniutest" error:nil];
+}
+
 - (void)template:(int)size pos:(float)pos {
 	NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
 	NSString *keyUp = [NSString stringWithFormat:@"r-%dk", size];

@@ -35,8 +35,12 @@
 + (instancetype)fileRecorderWithFolder:(NSString *)directory
                              encodeKey:(BOOL)encode
                                  error:(NSError *__autoreleasing *)perror {
-	[[NSFileManager defaultManager] createDirectoryAtPath:directory withIntermediateDirectories:YES attributes:nil error:perror];
-	if (*perror != nil) {
+	NSError *error;
+	[[NSFileManager defaultManager] createDirectoryAtPath:directory withIntermediateDirectories:YES attributes:nil error:&error];
+	if (error != nil) {
+		if (perror) {
+			*perror = error;
+		}
 		return nil;
 	}
 
