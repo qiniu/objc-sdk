@@ -5,10 +5,10 @@
 
 ## 安装
 
-通过CocoaPods
+通过CocoaPods，AFNetworking 1.x 版本，通过分支安装
 
 ```ruby
-pod "Qiniu", "~> 7.0"
+pod "Qiniu", :git => 'https://github.com/qiniu/objc-sdk.git', :branch => 'AFNetworking-1.x'
 ```
 
 ## 运行环境
