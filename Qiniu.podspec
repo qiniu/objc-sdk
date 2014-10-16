@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.source_files = 'QiniuSDK/**/*.{h,m}'
   s.requires_arc = true
 
-  s.dependency 'AFNetworking', '~> 2.0'
+  s.dependency 'AFNetworking', '~> 1.0'
 
   s.license = { :type => 'MIT', :text => <<-LICENSE
 The MIT License (MIT)
