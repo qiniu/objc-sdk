@@ -65,4 +65,83 @@
 	XCTAssert(testInfo.reqId, @"Pass");
 }
 
+- (void)testNoData {
+    __block QNResponseInfo *testInfo = nil;
+    __block NSDictionary *testResp = nil;
+    NSString *token = @"noauth";
+    [self.upManager putData:nil key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+        testInfo = info;
+        testResp = resp;
+    } option:nil];
+    
+    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+    NSLog(@"%@", testInfo);
+    XCTAssert(testInfo.statusCode == kQNInvalidArgument, @"Pass");
+}
+
+- (void)testNoFile {
+    __block QNResponseInfo *testInfo = nil;
+    __block NSDictionary *testResp = nil;
+    NSString *token = @"noauth";
+    [self.upManager putFile:nil key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+        testInfo = info;
+        testResp = resp;
+    } option:nil];
+    
+    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+    NSLog(@"%@", testInfo);
+    XCTAssert(testInfo.statusCode == kQNInvalidArgument, @"Pass");
+}
+
+
+- (void)testNoToken {
+    __block QNResponseInfo *testInfo = nil;
+    __block NSDictionary *testResp = nil;
+    NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
+    [self.upManager putData:data key:@"hello" token:nil complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+        testInfo = info;
+        testResp = resp;
+    } option:nil];
+    
+    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+    NSLog(@"%@", testInfo);
+    XCTAssert(testInfo.statusCode == kQNInvalidArgument, @"Pass");
+    
+    testInfo = nil;
+    testResp = nil;
+    [self.upManager putData:data key:@"hello" token:@"" complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+        testInfo = info;
+        testResp = resp;
+    } option:nil];
+    
+    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+    NSLog(@"%@", testInfo);
+    XCTAssert(testInfo.statusCode == kQNInvalidArgument, @"Pass");
+    
+    testInfo = nil;
+    testResp = nil;
+    [self.upManager putData:nil key:@"hello" token:nil complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+        testInfo = info;
+        testResp = resp;
+    } option:nil];
+    
+    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+    NSLog(@"%@", testInfo);
+    XCTAssert(testInfo.statusCode == kQNInvalidArgument, @"Pass");
+}
+
+- (void)testNoComplete {
+    NSException *e;
+    @try {
+        [self.upManager putFile:nil key:nil token:nil complete: nil option:nil];    }
+    @catch (NSException *exception) {
+        e = exception;
+    }
+    
+    XCTAssert(e != nil, @"Pass");
+    XCTAssert([e.name isEqualToString:NSInvalidArgumentException], @"Pass");
+}
+
+
+
 @end

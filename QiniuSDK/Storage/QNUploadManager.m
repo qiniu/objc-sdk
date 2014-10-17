@@ -62,8 +62,8 @@
 complete:(QNUpCompletionHandler)completionHandler {
     NSString *desc = nil;
     if (completionHandler == nil) {
-        // todo throe excetpion
-        //NSException *e = [NSEx];
+        @throw [NSException exceptionWithName:NSInvalidArgumentException
+                                       reason:@"no completionHandler" userInfo:nil];
         return YES;
     }
     if (data == nil && file == nil) {
