@@ -10,6 +10,8 @@
 
 extern const int kQNRequestCancelled;
 extern const int kQNNetworkError;
+extern const int kQNInvalidArgument;
+extern const int kQNFileError;
 
 @interface QNResponseInfo : NSObject
 
@@ -24,9 +26,11 @@ extern const int kQNNetworkError;
 
 + (instancetype)cancel;
 
-- (instancetype)initWithError:(NSError *)error;
++ (instancetype)responseInfoWithInvalidArgument:(NSString *)desc;
 
-- (instancetype)initWithCancelled;
++ (instancetype)responseInfoWithNetError:(NSError *)error;
+
++ (instancetype)responseInfoWithFileError:(NSError *)error;
 
 - (instancetype)init:(int)status
            withReqId:(NSString *)reqId

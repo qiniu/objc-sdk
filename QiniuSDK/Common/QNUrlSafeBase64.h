@@ -10,5 +10,7 @@
 @interface QNUrlSafeBase64 : NSObject
 
 + (NSString *)encodeString:(NSString *)source;
+
 + (NSString *)encodeData:(NSData *)source;
+
 @end
