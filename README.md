@@ -1,6 +1,6 @@
 # Qiniu Objective-C SDK
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
-[![Build Status](https://travis-ci.org/qiniu/objc-sdk.svg?branch=master)](https://travis-ci.org/qiniu/objc-sdk)
+[![Build Status](https://travis-ci.org/qiniu/objc-sdk.svg?branch=AFNetworking-1.x)](https://travis-ci.org/qiniu/objc-sdk)
 [![Latest Stable Version](https://badge.fury.io/co/Qiniu.png)](https://github.com/qiniu/objc-sdk/releases)
 
 ## 安装
