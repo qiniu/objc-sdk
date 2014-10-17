@@ -83,6 +83,25 @@
 	[QNTempFile removeTempfile:tempFile];
 }
 
+- (void)testNoKey {
+	NSURL *tempFile = [QNTempFile createTempfileWithSize:600 * 1024];
+	__block QNResponseInfo *info = nil;
+	__block NSDictionary *testResp = nil;
+	__block NSString *key = nil;
+	[_upManager putFile:tempFile.path key:nil token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+	    key = k;
+	    info = i;
+	    testResp = resp;
+	} option:nil];
+	AGWW_WAIT_WHILE(info == nil, 60 * 30);
+	NSLog(@"resp %@", testResp);
+	XCTAssert(info.isOK, @"Pass");
+	XCTAssert(info.reqId, @"Pass");
+	XCTAssert(key == nil, @"Pass");
+	XCTAssert([@"FnwKMB9tve71u37IlABna6j4Gdyr" isEqualToString: testResp[@"key"]], @"Pass");
+	[QNTempFile removeTempfile:tempFile];
+}
+
 - (void)test500k {
 	[self template:500];
 }
