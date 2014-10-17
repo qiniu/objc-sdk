@@ -55,31 +55,31 @@
 	return sharedInstance;
 }
 
-+ (BOOL)checkAndNotifyError:(NSString*)key
-                      token:(NSString*)token
-                      data:(NSData*)data
++ (BOOL)checkAndNotifyError:(NSString *)key
+                      token:(NSString *)token
+                       data:(NSData *)data
                        file:(NSString *)file
-complete:(QNUpCompletionHandler)completionHandler {
-    NSString *desc = nil;
-    if (completionHandler == nil) {
-        @throw [NSException exceptionWithName:NSInvalidArgumentException
-                                       reason:@"no completionHandler" userInfo:nil];
-        return YES;
-    }
-    if (data == nil && file == nil) {
-        desc = @"no input data";
-    }else if (token == nil || [token isEqualToString:@""] ){
-        desc = @"no token";
-    }
-    if (desc != nil) {
-        QNAsyncRun(^{
-            completionHandler([QNResponseInfo responseInfoWithInvalidArgument:desc], key, nil);
-        });
-        return YES;
-    }
-    return NO;
+                   complete:(QNUpCompletionHandler)completionHandler {
+	NSString *desc = nil;
+	if (completionHandler == nil) {
+		@throw [NSException exceptionWithName:NSInvalidArgumentException
+		                               reason:@"no completionHandler" userInfo:nil];
+		return YES;
+	}
+	if (data == nil && file == nil) {
+		desc = @"no input data";
+	}
+	else if (token == nil || [token isEqualToString:@""]) {
+		desc = @"no token";
+	}
+	if (desc != nil) {
+		QNAsyncRun ( ^{
+		    completionHandler([QNResponseInfo responseInfoWithInvalidArgument:desc], key, nil);
+		});
+		return YES;
+	}
+	return NO;
 }
-
 
 - (void)putData:(NSData *)data
             key:(NSString *)key
@@ -87,17 +87,16 @@ complete:(QNUpCompletionHandler)completionHandler {
        complete:(QNUpCompletionHandler)completionHandler
          option:(QNUploadOption *)option {
 	NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    
-    if ([QNUploadManager checkAndNotifyError:key token:token data:data file:nil complete:completionHandler]){
-        return;
-    }
 
-	if (key && ![key isEqualToString:kQNUndefinedKey]) {
+	if ([QNUploadManager checkAndNotifyError:key token:token data:data file:nil complete:completionHandler]) {
+		return;
+	}
+	NSString *fileName = key;
+	if (key) {
 		parameters[@"key"] = key;
 	}
-
-	if (!key) {
-		key = kQNUndefinedKey;
+	else {
+		fileName = @"?";
 	}
 
 	parameters[@"token"] = token;
@@ -152,7 +151,7 @@ complete:(QNUpCompletionHandler)completionHandler {
 		[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", nextHost]
 		                   withData:data
 		                 withParams:parameters
-		               withFileName:key
+		               withFileName:fileName
 		               withMimeType:mimeType
 		          withCompleteBlock:retriedComplete
 		          withProgressBlock:p
@@ -162,7 +161,7 @@ complete:(QNUpCompletionHandler)completionHandler {
 	[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kQNUpHost]
 	                   withData:data
 	                 withParams:parameters
-	               withFileName:key
+	               withFileName:fileName
 	               withMimeType:mimeType
 	          withCompleteBlock:complete
 	          withProgressBlock:p
@@ -174,17 +173,17 @@ complete:(QNUpCompletionHandler)completionHandler {
           token:(NSString *)token
        complete:(QNUpCompletionHandler)completionHandler
          option:(QNUploadOption *)option {
-    if ([QNUploadManager checkAndNotifyError:key token:token data:nil file:filePath complete:completionHandler]){
-        return;
-    }
+	if ([QNUploadManager checkAndNotifyError:key token:token data:nil file:filePath complete:completionHandler]) {
+		return;
+	}
 
 	@autoreleasepool {
 		NSError *error = nil;
 		NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
 
 		if (error) {
-			QNAsyncRun(^{
-                QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+			QNAsyncRun ( ^{
+			    QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
 			    completionHandler(info, key, nil);
 			});
 			return;
@@ -194,7 +193,7 @@ complete:(QNUpCompletionHandler)completionHandler {
 		UInt32 fileSize = [fileSizeNumber intValue];
 		NSData *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
 		if (error) {
-			QNAsyncRun(^{
+			QNAsyncRun ( ^{
 			    QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
 			    completionHandler(info, key, nil);
 			});
@@ -227,9 +226,9 @@ complete:(QNUpCompletionHandler)completionHandler {
 		                                  withRecorder:_recorder
 		                               withRecorderKey:recorderKey
 		                               withHttpManager:_httpManager];
-		QNAsyncRun(^{
-            [up run];
-        });
+		QNAsyncRun ( ^{
+		    [up run];
+		});
 	}
 }
 

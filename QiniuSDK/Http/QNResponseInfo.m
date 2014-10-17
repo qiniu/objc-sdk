@@ -20,38 +20,38 @@ static QNResponseInfo *cancelledInfo = nil;
 @implementation QNResponseInfo
 
 + (instancetype)cancel {
-    return [[QNResponseInfo alloc] initWithCancelled];
+	return [[QNResponseInfo alloc] initWithCancelled];
 }
 
-+ (instancetype)responseInfoWithInvalidArgument:(NSString *)text{
-    return [[QNResponseInfo alloc] initWithStatus:kQNInvalidArgument errorDescription:text];
++ (instancetype)responseInfoWithInvalidArgument:(NSString *)text {
+	return [[QNResponseInfo alloc] initWithStatus:kQNInvalidArgument errorDescription:text];
 }
 
 + (instancetype)responseInfoWithNetError:(NSError *)error {
-    return [[QNResponseInfo alloc] initWithStatus:kQNNetworkError error:error];
+	return [[QNResponseInfo alloc] initWithStatus:kQNNetworkError error:error];
 }
 
 + (instancetype)responseInfoWithFileError:(NSError *)error {
-    return [[QNResponseInfo alloc] initWithStatus:kQNFileError error:error];
+	return [[QNResponseInfo alloc] initWithStatus:kQNFileError error:error];
 }
 
 - (instancetype)initWithCancelled {
-    return [self initWithStatus:kQNRequestCancelled errorDescription:@"cancelled by user"];
+	return [self initWithStatus:kQNRequestCancelled errorDescription:@"cancelled by user"];
 }
 
 - (instancetype)initWithStatus:(int)status
-                         error:(NSError*)error{
-    if (self = [super init]) {
-        _statusCode = status;
-        _error = error;
-    }
-    return self;
+                         error:(NSError *)error {
+	if (self = [super init]) {
+		_statusCode = status;
+		_error = error;
+	}
+	return self;
 }
 
 - (instancetype)initWithStatus:(int)status
-                         errorDescription:(NSString*)text{
-    NSError *error = [[NSError alloc] initWithDomain:@"qiniu" code:status userInfo:@{ @"error":text}];
-    return [self initWithStatus:status error:error];
+              errorDescription:(NSString *)text {
+	NSError *error = [[NSError alloc] initWithDomain:@"qiniu" code:status userInfo:@{ @"error":text }];
+	return [self initWithStatus:status error:error];
 }
 
 - (instancetype)init:(int)status
@@ -84,22 +84,19 @@ static QNResponseInfo *cancelledInfo = nil;
 }
 
 - (BOOL)isCancelled {
-    return _statusCode == kQNRequestCancelled;
+	return _statusCode == kQNRequestCancelled;
 }
 
 - (BOOL)isOK {
-    return _statusCode == 200;
+	return _statusCode == 200;
 }
 
 - (BOOL)isConnectionBroken {
-    return _statusCode == kQNNetworkError;
+	return _statusCode == kQNNetworkError;
 }
 
 - (BOOL)couldRetry {
-    return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == kQNNetworkError || _statusCode == 996 || _statusCode == 406;
+	return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == kQNNetworkError || _statusCode == 996 || _statusCode == 406;
 }
-
-
-
 
 @end

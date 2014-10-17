@@ -9,8 +9,8 @@
 #import <Foundation/Foundation.h>
 #import "QNAsyncRun.h"
 
-void QNAsyncRun(QNRun run){
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
-        run();
-    });
+void QNAsyncRun(QNRun run) {
+	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void) {
+	    run();
+	});
 }

@@ -39,7 +39,7 @@
 		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withBody:responseObject];
 	}
 	else {
-        info = [QNResponseInfo responseInfoWithNetError:error];
+		info = [QNResponseInfo responseInfoWithNetError:error];
 	}
 	return info;
 }

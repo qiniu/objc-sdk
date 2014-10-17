@@ -27,7 +27,10 @@
 		NSEnumerator *e = [params keyEnumerator];
 		for (NSString *key = [e nextObject]; key != nil; key = [e nextObject]) {
 			if ([key hasPrefix:@"x:"]) {
-				ret[key] = params[key];
+				id val = params[key];
+				if (val != nil) {
+					ret[key] = params[key];
+				}
 			}
 		}
 	}
