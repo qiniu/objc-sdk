@@ -57,6 +57,7 @@ $ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -con
 - 如果发现了bug， 欢迎提交 [issue](https://github.com/qiniu/objc-sdk/issues)
 - 如果有功能需求，欢迎提交 [issue](https://github.com/qiniu/objc-sdk/issues)
 - 如果要提交代码，欢迎提交 pull request
+- 关注我们，[微信](http://www.qiniu.com/#weixin) [微博](http://weibo.com/qiniutek)
 
 ## 代码许可
 
