@@ -56,12 +56,10 @@ $ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -con
 
 The MIT License (MIT).详情见 [License文件](https://github.com/qiniu/objc-sdk/blob/master/LICENSE).
 
-
 ## 联系我们
-如果你需要帮助，请 [登录七牛](https://portal.qiniu.com/signin) 提交工单（在protal右侧点击咨询和建议提交工单，或者直接向 support@qiniu.com 发送邮件）
-如果你有什么问题，可以到问答社区提问，[问答社区](http://segmentfault.com/qiniu)
+如果需要帮助，请提交工单（在portal右侧点击咨询和建议提交工单，或者直接向 support@qiniu.com 发送邮件）
+如果有什么问题，可以到问答社区提问，[问答社区](http://segmentfault.com/qiniu)
 更详细的文档，见[文档](http://developer.qiniu.com/)
-如果你发现了bug, 欢迎提交issue
-如果你有功能需求，欢迎提交 issue
-如果你要提交代码，欢迎提交 pull  request
-
+如果发现了bug, 欢迎提交 [issues](https://github.com/qiniu/objc-sdk/issues)
+如果有功能需求，欢迎提交 [issues](https://github.com/qiniu/objc-sdk/issues)
+如果要提交代码，欢迎提交 pull  request
