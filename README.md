@@ -17,8 +17,8 @@ pod "Qiniu", "~> 7.0"
 | Qiniu SDK版本 | 最低 iOS版本   | 最低 OS X 版本  |                                   Notes                                   |
 |:--------------------:|:---------------------------:|:----------------------------:|:-------------------------------------------------------------------------:|
 |          7.x         |            iOS 6            |           OS X 10.8          | Xcode最低版本 5.  |
+|          [7.x/AFNetworking-1.x](https://github.com/qiniu/objc-sdk/tree/AFNetworking-1.x)         |            iOS 5            |         OS X 10.7        |Xcode最低版本 5. |
 |          [6.x](https://github.com/qiniu/ios-sdk)         |            iOS 6            |         None        |Xcode最低版本 5. |
-
 
 ## 使用方法
 
