@@ -42,6 +42,11 @@ pod "Qiniu", "~> 7.0"
 $ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -configuration Release test -test-sdk macosx
 ```
 
+## 常见问题
+
+- 如果碰到crc链接错误，请把libz.dylib加入到项目中去。
+- 如果需要支持iOS 5 或者支持restKit, 请用 AFNetworking 1.x 分支的版本
+
 ## 代码贡献
 
 详情参考[代码提交指南](https://github.com/qiniu/objc-sdk/blob/master/CONTRIBUTING.md)。
