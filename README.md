@@ -46,6 +46,7 @@ $ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -con
 
 - 如果碰到crc链接错误，请把libz.dylib加入到项目中去。
 - 如果需要支持iOS 5 或者支持restKit, 请用 AFNetworking 1.x 分支的版本
+- 如果碰到其他编译错误，请参考 Cocoapods 的 [troubleshooting](http://guides.cocoapods.org/using/troubleshooting.html)
 
 ## 代码贡献
 
