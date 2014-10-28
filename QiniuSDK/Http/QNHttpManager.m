@@ -20,8 +20,8 @@ static NSString *userAgent = nil;
 
 @implementation QNHttpManager
 
-+ (void)initialize{
-    userAgent = QNUserAgent();
++ (void)initialize {
+	userAgent = QNUserAgent();
 }
 
 - (instancetype)init {
