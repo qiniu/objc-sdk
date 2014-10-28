@@ -32,7 +32,7 @@ typedef void (^task)(void);
 @property (nonatomic, strong) NSMutableArray *contexts;
 @property (nonatomic, readonly, getter = isCancelled) BOOL cancelled;
 
-@property UInt64 modifyTime;
+@property int64_t modifyTime;
 @property (nonatomic, strong) id <QNRecorderDelegate> recorder;
 
 @property UInt32 chunkCrc;

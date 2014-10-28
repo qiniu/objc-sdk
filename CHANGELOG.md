@@ -1,5 +1,12 @@
 #Changelog
 
+## 7.0.4 (2014-10-28)
+
+### 修正
+* ResumeUpload中httpManager weak引用造成nil
+* 重构代码，更符合objc 现代方式
+
+
 ## 7.0.4 (2014-10-17)
 
 ### 增加
