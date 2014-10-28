@@ -1,6 +1,6 @@
 #Changelog
 
-## 7.0.4 (2014-10-28)
+## 7.0.5 (2014-10-28)
 
 ### 修正
 * ResumeUpload中httpManager weak引用造成nil
