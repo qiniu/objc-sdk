@@ -21,7 +21,7 @@ typedef void (^task)(void);
 @interface QNResumeUpload ()
 
 @property (nonatomic, strong) NSData *data;
-@property (nonatomic, weak) QNHttpManager *httpManager;
+@property (nonatomic, strong) QNHttpManager *httpManager;
 @property UInt32 size;
 @property (nonatomic) int retryTimes;
 @property (nonatomic, strong) NSString *key;
@@ -32,8 +32,8 @@ typedef void (^task)(void);
 @property (nonatomic, strong) NSMutableArray *contexts;
 @property (nonatomic, readonly, getter = isCancelled) BOOL cancelled;
 
-@property UInt64 modifyTime;
-@property (nonatomic, weak) id <QNRecorderDelegate> recorder;
+@property int64_t modifyTime;
+@property (nonatomic, strong) id <QNRecorderDelegate> recorder;
 
 @property UInt32 chunkCrc;
 
@@ -293,7 +293,7 @@ typedef void (^task)(void);
 		mime = [[NSString alloc] initWithFormat:@"/mimetype/%@", [QNUrlSafeBase64 encodeString:self.option.mimeType]];
 	}
 
-	NSString *url = [[NSString alloc] initWithFormat:@"http://%@/mkfile/%u%@", uphost, (unsigned int)self.size, mime];
+	__block NSString *url = [[NSString alloc] initWithFormat:@"http://%@/mkfile/%u%@", uphost, (unsigned int)self.size, mime];
 
 	if (self.key != nil) {
 		NSString *keyStr = [[NSString alloc] initWithFormat:@"/key/%@", [QNUrlSafeBase64 encodeString:self.key]];
@@ -301,10 +301,9 @@ typedef void (^task)(void);
 	}
 
 	if (self.option && self.option.params) {
-		NSEnumerator *e = [self.option.params keyEnumerator];
-		for (id key = [e nextObject]; key != nil; key = [e nextObject]) {
-			url = [NSString stringWithFormat:@"%@/%@/%@", url, key, [QNUrlSafeBase64 encodeString:(self.option.params)[key]]];
-		}
+		[self.option.params enumerateKeysAndObjectsUsingBlock: ^(NSString *key, NSString *obj, BOOL *stop) {
+		    url = [NSString stringWithFormat:@"%@/%@/%@", url, key, [QNUrlSafeBase64 encodeString:obj]];
+		}];
 	}
 
 	NSMutableData *postData = [NSMutableData data];

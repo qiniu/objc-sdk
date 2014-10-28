@@ -20,21 +20,13 @@
 static NSString *clientId(void) {
 	long long now_timestamp = [[NSDate date] timeIntervalSince1970] * 1000;
 	int r = arc4random() % 1000;
-
 	return [NSString stringWithFormat:@"%lld%u", now_timestamp, r];
 }
 
-static NSString *_userAgent = nil;
-
 NSString *QNUserAgent(void) {
-	if (_userAgent) {
-		return [_userAgent copy];
-	}
-
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
-	_userAgent = [NSString stringWithFormat:@"QiniuObject-C/%@ (%@; iOS %@; %@)", kQiniuVersion, [[UIDevice currentDevice] model], [[UIDevice currentDevice] systemVersion], clientId()];
+	return [NSString stringWithFormat:@"QiniuObject-C/%@ (%@; iOS %@; %@)", kQiniuVersion, [[UIDevice currentDevice] model], [[UIDevice currentDevice] systemVersion], clientId()];
 #else
-	_userAgent = [NSString stringWithFormat:@"QiniuObject-C/%@ (Mac OS X %@; %@)", kQiniuVersion, [[NSProcessInfo processInfo] operatingSystemVersionString], clientId()];
+	return [NSString stringWithFormat:@"QiniuObject-C/%@ (Mac OS X %@; %@)", kQiniuVersion, [[NSProcessInfo processInfo] operatingSystemVersionString], clientId()];
 #endif
-	return [_userAgent copy];
 }
