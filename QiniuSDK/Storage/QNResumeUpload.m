@@ -21,7 +21,7 @@ typedef void (^task)(void);
 @interface QNResumeUpload ()
 
 @property (nonatomic, strong) NSData *data;
-@property (nonatomic, weak) QNHttpManager *httpManager;
+@property (nonatomic, strong) QNHttpManager *httpManager;
 @property UInt32 size;
 @property (nonatomic) int retryTimes;
 @property (nonatomic, strong) NSString *key;
@@ -33,7 +33,7 @@ typedef void (^task)(void);
 @property (nonatomic, readonly, getter = isCancelled) BOOL cancelled;
 
 @property UInt64 modifyTime;
-@property (nonatomic, weak) id <QNRecorderDelegate> recorder;
+@property (nonatomic, strong) id <QNRecorderDelegate> recorder;
 
 @property UInt32 chunkCrc;
 
