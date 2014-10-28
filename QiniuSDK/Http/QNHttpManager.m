@@ -16,7 +16,13 @@
 @property (nonatomic) AFHTTPRequestOperationManager *httpManager;
 @end
 
+static NSString *userAgent = nil;
+
 @implementation QNHttpManager
+
++ (void)initialize{
+    userAgent = QNUserAgent();
+}
 
 - (instancetype)init {
 	if (self = [super init]) {
@@ -69,7 +75,7 @@
 		}];
 	}
 
-	[request setValue:QNUserAgent() forHTTPHeaderField:@"User-Agent"];
+	[request setValue:userAgent forHTTPHeaderField:@"User-Agent"];
 	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];
 	[_httpManager.operationQueue addOperation:operation];
 }
