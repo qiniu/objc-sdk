@@ -17,6 +17,8 @@ const int kQNNetworkError = -1;
 
 static QNResponseInfo *cancelledInfo = nil;
 
+static NSString *domain = @"qiniu.com";
+
 @implementation QNResponseInfo
 
 + (instancetype)cancel {
@@ -50,7 +52,7 @@ static QNResponseInfo *cancelledInfo = nil;
 
 - (instancetype)initWithStatus:(int)status
               errorDescription:(NSString *)text {
-	NSError *error = [[NSError alloc] initWithDomain:@"qiniu" code:status userInfo:@{ @"error":text }];
+	NSError *error = [[NSError alloc] initWithDomain:domain code:status userInfo:@{ @"error":text }];
 	return [self initWithStatus:status error:error];
 }
 
@@ -64,7 +66,7 @@ static QNResponseInfo *cancelledInfo = nil;
 		_xlog = [xlog copy];
 		if (status != 200) {
 			if (body == nil) {
-				_error = [[NSError alloc] initWithDomain:@"qiniu" code:_statusCode userInfo:nil];
+				_error = [[NSError alloc] initWithDomain:domain code:_statusCode userInfo:nil];
 			}
 			else {
 				NSError *tmp;
@@ -72,8 +74,12 @@ static QNResponseInfo *cancelledInfo = nil;
 				if (tmp != nil) {
 					uInfo = @{ @"error":[[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding] };
 				}
-				_error = [[NSError alloc] initWithDomain:@"qiniu" code:_statusCode userInfo:uInfo];
+				_error = [[NSError alloc] initWithDomain:domain code:_statusCode userInfo:uInfo];
 			}
+		}
+		else if (body == nil || body.length == 0) {
+			NSDictionary *uInfo = @{ @"error":@"no response json" };
+			_error = [[NSError alloc] initWithDomain:domain code:_statusCode userInfo:uInfo];
 		}
 	}
 	return self;
@@ -88,15 +94,16 @@ static QNResponseInfo *cancelledInfo = nil;
 }
 
 - (BOOL)isOK {
-	return _statusCode == 200;
+	return _statusCode == 200 && _error == nil && _reqId != nil;
 }
 
 - (BOOL)isConnectionBroken {
-	return _statusCode == kQNNetworkError;
+	// reqId is nill means the server is not qiniu
+	return _statusCode == kQNNetworkError || _reqId == nil;
 }
 
 - (BOOL)couldRetry {
-	return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == kQNNetworkError || _statusCode == 996 || _statusCode == 406;
+	return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == kQNNetworkError || _statusCode == 996 || _statusCode == 406 || (_statusCode == 200 && _error != nil);
 }
 
 @end

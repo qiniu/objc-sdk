@@ -23,17 +23,13 @@
 		return nil;
 	}
 	NSMutableDictionary *ret = [NSMutableDictionary dictionary];
-	@autoreleasepool {
-		NSEnumerator *e = [params keyEnumerator];
-		for (NSString *key = [e nextObject]; key != nil; key = [e nextObject]) {
-			if ([key hasPrefix:@"x:"]) {
-				id val = params[key];
-				if (val != nil) {
-					ret[key] = params[key];
-				}
-			}
+
+	[params enumerateKeysAndObjectsUsingBlock: ^(NSString *key, NSString *obj, BOOL *stop) {
+	    if ([key hasPrefix:@"x:"]) {
+	        ret[key] = obj;
 		}
-	}
+	}];
+
 	return ret;
 }
 

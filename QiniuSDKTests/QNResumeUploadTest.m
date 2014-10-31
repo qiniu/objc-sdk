@@ -26,7 +26,7 @@
 	[super setUp];
 	_upManager = [[QNUploadManager alloc] init];
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
-	NSString *travis = [[[NSProcessInfo processInfo]environment]objectForKey:@"QINIU_TEST_ENV"];
+	NSString *travis = [[NSProcessInfo processInfo]environment][@"QINIU_TEST_ENV"];
 	if ([travis isEqualToString:@"travis"]) {
 		_inTravis = YES;
 	}

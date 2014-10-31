@@ -8,6 +8,7 @@
 
 #import <AFNetworking/AFNetworking.h>
 
+#import "QNConfig.h"
 #import "QNHttpManager.h"
 #import "QNUserAgent.h"
 #import "QNResponseInfo.h"
@@ -19,7 +20,13 @@
 @property (nonatomic) NSOperationQueue *operationQueue;
 @end
 
+static NSString *userAgent = nil;
+
 @implementation QNHttpManager
+
++ (void)initialize {
+	userAgent = QNUserAgent();
+}
 
 - (instancetype)init {
 	if (self = [super init]) {
@@ -79,8 +86,9 @@
 		    progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
 		}];
 	}
+	[request setTimeoutInterval:kQNTimeoutInterval];
 
-	[request setValue:QNUserAgent() forHTTPHeaderField:@"User-Agent"];
+	[request setValue:userAgent forHTTPHeaderField:@"User-Agent"];
 	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];
 	[client.operationQueue addOperation:operation];
 }
