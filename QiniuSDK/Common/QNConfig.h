@@ -19,3 +19,5 @@ extern const UInt32 kQNBlockSize;
 extern const UInt32 kQNRetryMax;
 
 extern const UInt32 kQNPutThreshold;
+
+extern const float kQNTimeoutInterval;

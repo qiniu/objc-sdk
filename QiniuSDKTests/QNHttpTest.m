@@ -68,6 +68,17 @@
 	NSLog(@"%@", testInfo);
 	XCTAssert(testInfo.statusCode == 418, @"Pass");
 	XCTAssert(testInfo.error != nil, @"Pass");
+
+	testInfo = nil;
+	[_httpManager post:@"http://httpbin.org/status/200" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+	    testInfo = info;
+	} withProgressBlock:nil withCancelBlock:nil];
+
+	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+	NSLog(@"%@", testInfo);
+	XCTAssert(testInfo.statusCode == 200, @"Pass");
+    XCTAssert(!testInfo.isOK, @"Pass");
+	XCTAssert(testInfo.error != nil, @"Pass");
 }
 
 @end
