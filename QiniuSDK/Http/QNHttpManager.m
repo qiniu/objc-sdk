@@ -8,6 +8,7 @@
 
 #import <AFNetworking/AFNetworking.h>
 
+#import "QNConfig.h"
 #import "QNHttpManager.h"
 #import "QNUserAgent.h"
 #import "QNResponseInfo.h"
@@ -74,6 +75,7 @@ static NSString *userAgent = nil;
 		    progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
 		}];
 	}
+	[request setTimeoutInterval:kQNTimeoutInterval];
 
 	[request setValue:userAgent forHTTPHeaderField:@"User-Agent"];
 	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];
