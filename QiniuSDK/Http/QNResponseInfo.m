@@ -98,6 +98,7 @@ static NSString *domain = @"qiniu.com";
 }
 
 - (BOOL)isConnectionBroken {
+    // reqId is nill means the server is not qiniu
 	return _statusCode == kQNNetworkError || _reqId == nil;
 }
 
