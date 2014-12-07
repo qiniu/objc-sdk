@@ -8,4 +8,9 @@
 
 #import <Foundation/Foundation.h>
 
+/**
+ *    UserAgent 生成函数
+ *
+ *    @return UserAgent 字串
+ */
 NSString *QNUserAgent(void);
