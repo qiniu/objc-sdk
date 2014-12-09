@@ -105,10 +105,10 @@
 		[parameters addEntriesFromDictionary:option.params];
 	}
 
-	NSString *mimeType = option.mimeType;
+	NSString *mimeType = @"application/octet-stream";
 
-	if (!mimeType) {
-		mimeType = @"application/octet-stream";
+	if (option && option.mimeType) {
+		mimeType = option.mimeType;
 	}
 
 	if (option && option.checkCrc) {
