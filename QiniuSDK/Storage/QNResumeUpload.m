@@ -290,7 +290,7 @@ typedef void (^task)(void);
 		mime = @"";
 	}
 	else {
-		mime = [[NSString alloc] initWithFormat:@"/mimetype/%@", [QNUrlSafeBase64 encodeString:self.option.mimeType]];
+		mime = [[NSString alloc] initWithFormat:@"/mimeType/%@", [QNUrlSafeBase64 encodeString:self.option.mimeType]];
 	}
 
 	__block NSString *url = [[NSString alloc] initWithFormat:@"http://%@/mkfile/%u%@", uphost, (unsigned int)self.size, mime];
