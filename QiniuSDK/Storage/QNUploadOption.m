@@ -25,7 +25,7 @@
 	NSMutableDictionary *ret = [NSMutableDictionary dictionary];
 
 	[params enumerateKeysAndObjectsUsingBlock: ^(NSString *key, NSString *obj, BOOL *stop) {
-	    if ([key hasPrefix:@"x:"]) {
+	    if ([key hasPrefix:@"x:"] && ![obj isEqualToString:@""]) {
 	        ret[key] = obj;
 		}
 	}];
