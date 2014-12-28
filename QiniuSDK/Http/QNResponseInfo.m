@@ -29,8 +29,8 @@ static NSString *domain = @"qiniu.com";
 	return [[QNResponseInfo alloc] initWithStatus:kQNInvalidArgument errorDescription:text];
 }
 
-+ (instancetype)responseInfoWithNetError:(NSError *)error {
-	return [[QNResponseInfo alloc] initWithStatus:kQNNetworkError error:error];
++ (instancetype)responseInfoWithNetError:(NSError *)error host:(NSString *)host duration:(double)duration {
+	return [[QNResponseInfo alloc] initWithStatus:kQNNetworkError error:error host:host duration:duration];
 }
 
 + (instancetype)responseInfoWithFileError:(NSError *)error {
@@ -43,9 +43,18 @@ static NSString *domain = @"qiniu.com";
 
 - (instancetype)initWithStatus:(int)status
                          error:(NSError *)error {
+	return [self initWithStatus:status error:error host:nil duration:0];
+}
+
+- (instancetype)initWithStatus:(int)status
+                         error:(NSError *)error
+                          host:(NSString *)host
+                      duration:(double)duration {
 	if (self = [super init]) {
 		_statusCode = status;
 		_error = error;
+		_host = host;
+		_duration = duration;
 	}
 	return self;
 }
@@ -59,11 +68,15 @@ static NSString *domain = @"qiniu.com";
 - (instancetype)init:(int)status
            withReqId:(NSString *)reqId
             withXLog:(NSString *)xlog
+            withHost:(NSString *)host
+        withDuration:(double)duration
             withBody:(NSData *)body {
 	if (self = [super init]) {
 		_statusCode = status;
 		_reqId = [reqId copy];
 		_xlog = [xlog copy];
+		_host = [host copy];
+		_duration = duration;
 		if (status != 200) {
 			if (body == nil) {
 				_error = [[NSError alloc] initWithDomain:domain code:_statusCode userInfo:nil];
@@ -86,7 +99,7 @@ static NSString *domain = @"qiniu.com";
 }
 
 - (NSString *)description {
-	return [NSString stringWithFormat:@"<%@: %p, status: %d, requestId: %@, xlog: %@, error: %@>", NSStringFromClass([self class]), self, _statusCode, _reqId, _xlog, _error];
+	return [NSString stringWithFormat:@"<%@: %p, status: %d, requestId: %@, xlog: %@, host: %@ duration:%f s error: %@>", NSStringFromClass([self class]), self, _statusCode, _reqId, _xlog, _host, _duration, _error];
 }
 
 - (BOOL)isCancelled {
