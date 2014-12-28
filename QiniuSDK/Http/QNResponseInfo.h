@@ -54,6 +54,16 @@ extern const int kQNFileError;
 @property (nonatomic, copy, readonly) NSError *error;
 
 /**
+ *    服务器域名
+ */
+@property (nonatomic, copy, readonly) NSString *host;
+
+/**
+ *    请求消耗的时间
+ */
+@property (nonatomic, readonly) double duration;
+
+/**
  *    是否取消
  */
 @property (nonatomic, readonly, getter = isCancelled) BOOL canceled;
@@ -96,7 +106,9 @@ extern const int kQNFileError;
  *
  *    @return 网络错误实例
  */
-+ (instancetype)responseInfoWithNetError:(NSError *)error;
++ (instancetype)responseInfoWithNetError:(NSError *)error
+                                    host:(NSString *)host
+                                duration:(double)duration;
 
 /**
  *    工厂函数，内部使用
@@ -120,6 +132,8 @@ extern const int kQNFileError;
 - (instancetype)init:(int)status
            withReqId:(NSString *)reqId
             withXLog:(NSString *)xlog
+            withHost:(NSString *)host
+        withDuration:(double)duration
             withBody:(NSData *)body;
 
 @end

@@ -1,5 +1,14 @@
 #Changelog
 
+## 7.0.8 ()
+
+### 增加
+* QNResponseInfo 时间开销及host 记录
+
+### 修正
+* 上传时指定mimeType无效的问题
+* 忽略上传时，value 为 空字串的key
+
 ## 7.0.7 (2014-12-24)
 
 ### 修正
