@@ -59,7 +59,7 @@ extern const int kQNFileError;
 @property (nonatomic, copy, readonly) NSString *host;
 
 /**
- *    请求消耗的时间
+ *    请求消耗的时间，单位 秒
  */
 @property (nonatomic, readonly) double duration;
 
@@ -103,6 +103,8 @@ extern const int kQNFileError;
  *    工厂函数，内部使用
  *
  *    @param error 错误信息
+ *    @param host 服务器域名
+ *    @param duration 请求完成时间，单位秒
  *
  *    @return 网络错误实例
  */
@@ -126,6 +128,8 @@ extern const int kQNFileError;
  *    @param reqId  七牛服务器请求id
  *    @param xlog   七牛服务器记录
  *    @param body   服务器返回内容
+ *    @param host   服务器域名
+ *    @param duration 请求完成时间，单位秒
  *
  *    @return 实例
  */
