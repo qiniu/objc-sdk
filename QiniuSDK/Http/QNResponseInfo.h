@@ -64,6 +64,16 @@ extern const int kQNFileError;
 @property (nonatomic, readonly) double duration;
 
 /**
+ *    服务器IP
+ */
+@property (nonatomic, readonly) NSString *serverIp;
+
+/**
+ *    服务器IP
+ */
+@property (nonatomic, readonly) NSString *networkType;
+
+/**
  *    是否取消
  */
 @property (nonatomic, readonly, getter = isCancelled) BOOL canceled;

@@ -14,6 +14,7 @@
 #import "QNCrc32.h"
 #import "QNUploadManager.h"
 #import "QNResumeUpload.h"
+#import "QNFormUpload.h"
 #import "QNUploadOption+Private.h"
 #import "QNAsyncRun.h"
 
@@ -86,86 +87,19 @@
           token:(NSString *)token
        complete:(QNUpCompletionHandler)completionHandler
          option:(QNUploadOption *)option {
-	NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-
 	if ([QNUploadManager checkAndNotifyError:key token:token data:data file:nil complete:completionHandler]) {
 		return;
 	}
-	NSString *fileName = key;
-	if (key) {
-		parameters[@"key"] = key;
-	}
-	else {
-		fileName = @"?";
-	}
-
-	parameters[@"token"] = token;
-
-	if (option && option.params) {
-		[parameters addEntriesFromDictionary:option.params];
-	}
-
-	NSString *mimeType = @"application/octet-stream";
-
-	if (option && option.mimeType) {
-		mimeType = option.mimeType;
-	}
-
-	if (option && option.checkCrc) {
-		parameters[@"crc32"] = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:data]];
-	}
-
-	QNInternalProgressBlock p = nil;
-
-	if (option && option.progressHandler) {
-		p = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-			float percent = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
-			if (percent > 0.95) {
-				percent = 0.95;
-			}
-			option.progressHandler(key, percent);
-		};
-	}
-
-	QNCompleteBlock complete = ^(QNResponseInfo *info, NSDictionary *resp)
-	{
-		if (info.isOK && p) {
-			option.progressHandler(key, 1.0);
-		}
-		if (info.isOK || !info.couldRetry) {
-			completionHandler(info, key, resp);
-			return;
-		}
-		NSString *nextHost = kQNUpHost;
-		if (info.isConnectionBroken) {
-			nextHost = kQNUpHostBackup;
-		}
-
-		QNCompleteBlock retriedComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
-			if (info.isOK && p) {
-				option.progressHandler(key, 1.0);
-			}
-			completionHandler(info, key, resp);
-		};
-
-		[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", nextHost]
-		                   withData:data
-		                 withParams:parameters
-		               withFileName:fileName
-		               withMimeType:mimeType
-		          withCompleteBlock:retriedComplete
-		          withProgressBlock:p
-		            withCancelBlock:nil];
-	};
-
-	[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kQNUpHost]
-	                   withData:data
-	                 withParams:parameters
-	               withFileName:fileName
-	               withMimeType:mimeType
-	          withCompleteBlock:complete
-	          withProgressBlock:p
-	            withCancelBlock:nil];
+	QNFormUpload *up = [[QNFormUpload alloc]
+	                    initWithData:data
+	                                     withKey:key
+	                                   withToken:token
+	                       withCompletionHandler:completionHandler
+	                                  withOption:option
+	                             withHttpManager:_httpManager];
+	QNAsyncRun ( ^{
+	    [up put];
+	});
 }
 
 - (void)putFile:(NSString *)filePath
