@@ -27,7 +27,7 @@
 	[super setUp];
 	NSError *error = nil;
 	QNFileRecorder *file = [QNFileRecorder fileRecorderWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniutest"] error:&error];
-	NSLog(@"recoder error %@", error);
+	NSLog(@"recorder error %@", error);
 	_upManager = [[QNUploadManager alloc] initWithRecorder:file
 	    ];
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED

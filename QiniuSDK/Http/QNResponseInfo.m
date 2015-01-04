@@ -8,7 +8,7 @@
 
 
 #import "QNResponseInfo.h"
-
+#import "QNDns.h"
 
 const int kQNFileError = -4;
 const int kQNInvalidArgument = -3;
@@ -30,6 +30,8 @@ static NSString *domain = @"qiniu.com";
 }
 
 + (instancetype)responseInfoWithNetError:(NSError *)error host:(NSString *)host duration:(double)duration {
+	if (error.code != -1003) {
+	}
 	return [[QNResponseInfo alloc] initWithStatus:kQNNetworkError error:error host:host duration:duration];
 }
 
@@ -55,6 +57,9 @@ static NSString *domain = @"qiniu.com";
 		_error = error;
 		_host = host;
 		_duration = duration;
+		if (error.code != -1003) {
+			_serverIp = [QNDns getAddressesString:host];
+		}
 	}
 	return self;
 }
@@ -78,6 +83,7 @@ static NSString *domain = @"qiniu.com";
 		_host = [host copy];
 		_duration = duration;
 		if (status != 200) {
+			_serverIp = [QNDns getAddressesString:host];
 			if (body == nil) {
 				_error = [[NSError alloc] initWithDomain:domain code:_statusCode userInfo:nil];
 			}
@@ -99,7 +105,7 @@ static NSString *domain = @"qiniu.com";
 }
 
 - (NSString *)description {
-	return [NSString stringWithFormat:@"<%@: %p, status: %d, requestId: %@, xlog: %@, host: %@ duration:%f s error: %@>", NSStringFromClass([self class]), self, _statusCode, _reqId, _xlog, _host, _duration, _error];
+	return [NSString stringWithFormat:@"<%@: %p, status: %d, requestId: %@, xlog: %@, host: %@ duration:%f s serverIp:%@ error: %@>", NSStringFromClass([self class]), self, _statusCode, _reqId, _xlog, _host, _duration, _serverIp, _error];
 }
 
 - (BOOL)isCancelled {

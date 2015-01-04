@@ -12,6 +12,7 @@
 #import "QNHttpManager.h"
 #import "QNUserAgent.h"
 #import "QNResponseInfo.h"
+#import "QNDns.h"
 
 @interface QNHttpManager ()
 @property (nonatomic) AFHTTPRequestOperationManager *httpManager;
@@ -40,6 +41,8 @@ static NSString *userAgent = nil;
                          withResponse:(id)responseObject {
 	QNResponseInfo *info;
 	NSString *host = operation.request.URL.host;
+//    NSArray *hostIp = [QNDns getAddresses:host];
+
 	if (operation.response) {
 		NSDictionary *headers = [operation.response allHeaderFields];
 		NSString *reqId = headers[@"X-Reqid"];
