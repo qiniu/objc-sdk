@@ -21,7 +21,8 @@
 	__block NSMutableArray *ret = [[NSMutableArray alloc] init];
 	[addresses enumerateObjectsUsingBlock: ^(id obj, NSUInteger idx, BOOL *stop) {
 	    struct in_addr *data = (__bridge struct in_addr *)obj;
-	    char *p = inet_ntoa(*data);
+	    char buf[32];
+	    const char *p = inet_ntop(AF_INET, (void *)data, buf, 32);
 	    NSString *ip = [NSString stringWithUTF8String:p];
 	    [ret addObject:ip];
 //        NSLog(@"Resolved %lu->%@", (unsigned long)idx, ip);
