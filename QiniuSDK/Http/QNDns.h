@@ -12,4 +12,6 @@
 
 + (NSArray *)getAddresses:(NSString *)hostName;
 
++ (NSString *)getAddressesString:(NSString *)hostName;
+
 @end

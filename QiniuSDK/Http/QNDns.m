@@ -29,4 +29,12 @@
 	return ret;
 }
 
++ (NSString *)getAddressesString:(NSString *)hostName {
+	NSArray *result = [QNDns getAddresses:hostName];
+	if (result.count == 0) {
+		return @"";
+	}
+	return [result componentsJoinedByString:@";"];
+}
+
 @end
