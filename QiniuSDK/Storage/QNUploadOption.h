@@ -72,4 +72,11 @@ typedef BOOL (^QNUpCancellationSignal)(void);
 
 - (instancetype)initWithProgessHandler:(QNUpProgressHandler)progress;
 
+/**
+ *    内部使用，默认的参数实例
+ *
+ *    @return 可选参数类实例
+ */
++ (instancetype)defaultOptions;
+
 @end

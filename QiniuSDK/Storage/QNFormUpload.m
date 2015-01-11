@@ -41,7 +41,7 @@
 		_data = data;
 		_key = key;
 		_token = token;
-		_option = option;
+		_option = option != nil ? option : [QNUploadOption defaultOptions];
 		_complete = block;
 		_httpManager = http;
 	}
@@ -60,35 +60,24 @@
 
 	parameters[@"token"] = _token;
 
-	if (_option && _option.params) {
-		[parameters addEntriesFromDictionary:_option.params];
-	}
+	[parameters addEntriesFromDictionary:_option.params];
 
-	NSString *mimeType = @"application/octet-stream";
-
-	if (_option && _option.mimeType) {
-		mimeType = _option.mimeType;
-	}
-
-	if (_option && _option.checkCrc) {
+	if (_option.checkCrc) {
 		parameters[@"crc32"] = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:_data]];
 	}
 
-	QNInternalProgressBlock p = nil;
+	QNInternalProgressBlock p = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+		float percent = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
+		if (percent > 0.95) {
+			percent = 0.95;
+		}
+		_option.progressHandler(_key, percent);
+	};
 
-	if (_option && _option.progressHandler) {
-		p = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-			float percent = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
-			if (percent > 0.95) {
-				percent = 0.95;
-			}
-			_option.progressHandler(_key, percent);
-		};
-	}
 
 	QNCompleteBlock complete = ^(QNResponseInfo *info, NSDictionary *resp)
 	{
-		if (info.isOK && p) {
+		if (info.isOK) {
 			_option.progressHandler(_key, 1.0);
 		}
 		if (info.isOK || !info.couldRetry) {
@@ -101,7 +90,7 @@
 		}
 
 		QNCompleteBlock retriedComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
-			if (info.isOK && p) {
+			if (info.isOK) {
 				_option.progressHandler(_key, 1.0);
 			}
 			_complete(info, _key, resp);
@@ -111,7 +100,7 @@
 		                   withData:_data
 		                 withParams:parameters
 		               withFileName:fileName
-		               withMimeType:mimeType
+		               withMimeType:_option.mimeType
 		          withCompleteBlock:retriedComplete
 		          withProgressBlock:p
 		            withCancelBlock:nil];
@@ -121,7 +110,7 @@
 	                   withData:_data
 	                 withParams:parameters
 	               withFileName:fileName
-	               withMimeType:mimeType
+	               withMimeType:_option.mimeType
 	          withCompleteBlock:complete
 	          withProgressBlock:p
 	            withCancelBlock:nil];

@@ -73,7 +73,7 @@ typedef void (^task)(void);
 		_size = size;
 		_key = key;
 		NSString *tok = [NSString stringWithFormat:@"UpToken %@", token];
-		_option = option;
+		_option = option != nil ? option : [QNUploadOption defaultOptions];
 		_complete = block;
 		_headers = @{ @"Authorization":tok, @"Content-Type":@"application/octet-stream" };
 		_recorder = recorder;
@@ -174,9 +174,7 @@ typedef void (^task)(void);
 		QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
 			if (info.isOK) {
 				[self removeRecord];
-				if (self.option && self.option.progressHandler) {
-					self.option.progressHandler(self.key, 1.0);
-				}
+				self.option.progressHandler(self.key, 1.0);
 			}
 			else if (info.couldRetry && retried < kQNRetryMax) {
 				[self nextTask:offset retriedTimes:retried + 1 host:host];
@@ -189,16 +187,14 @@ typedef void (^task)(void);
 	}
 
 	UInt32 chunkSize = [self calcPutSize:offset];
-	QNInternalProgressBlock progressBlock = nil;
-	if (self.option && self.option.progressHandler) {
-		progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-			float percent = (float)(offset + totalBytesWritten) / (float)self.size;
-			if (percent > 0.95) {
-				percent = 0.95;
-			}
-			self.option.progressHandler(self.key, percent);
-		};
-	}
+	QNInternalProgressBlock progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+		float percent = (float)(offset + totalBytesWritten) / (float)self.size;
+		if (percent > 0.95) {
+			percent = 0.95;
+		}
+		self.option.progressHandler(self.key, percent);
+	};
+
 	QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
 		if (info.error != nil) {
 			if (info.statusCode == 701) {
@@ -279,19 +275,12 @@ typedef void (^task)(void);
 }
 
 - (BOOL)isCancelled {
-	return self.option && self.option.priv_isCancelled;
+	return self.option.priv_isCancelled;
 }
 
 - (void)makeFile:(NSString *)uphost
         complete:(QNCompleteBlock)complete {
-	NSString *mime;
-
-	if (!self.option || !self.option.mimeType) {
-		mime = @"";
-	}
-	else {
-		mime = [[NSString alloc] initWithFormat:@"/mimeType/%@", [QNUrlSafeBase64 encodeString:self.option.mimeType]];
-	}
+	NSString *mime = [[NSString alloc] initWithFormat:@"/mimeType/%@", [QNUrlSafeBase64 encodeString:self.option.mimeType]];
 
 	__block NSString *url = [[NSString alloc] initWithFormat:@"http://%@/mkfile/%u%@", uphost, (unsigned int)self.size, mime];
 
@@ -300,11 +289,10 @@ typedef void (^task)(void);
 		url = [NSString stringWithFormat:@"%@%@", url, keyStr];
 	}
 
-	if (self.option && self.option.params) {
-		[self.option.params enumerateKeysAndObjectsUsingBlock: ^(NSString *key, NSString *obj, BOOL *stop) {
-		    url = [NSString stringWithFormat:@"%@/%@/%@", url, key, [QNUrlSafeBase64 encodeString:obj]];
-		}];
-	}
+	[self.option.params enumerateKeysAndObjectsUsingBlock: ^(NSString *key, NSString *obj, BOOL *stop) {
+	    url = [NSString stringWithFormat:@"%@/%@/%@", url, key, [QNUrlSafeBase64 encodeString:obj]];
+	}];
+
 
 	NSMutableData *postData = [NSMutableData data];
 	NSString *bodyStr = [self.contexts componentsJoinedByString:@","];

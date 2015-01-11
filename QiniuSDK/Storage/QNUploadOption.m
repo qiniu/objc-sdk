@@ -9,20 +9,20 @@
 #import "QNUploadOption+Private.h"
 #import "QNUploadManager.h"
 
-@implementation QNUploadOption
-
-- (instancetype)initWithProgessHandler:(QNUpProgressHandler)progress {
-	if (self = [super init]) {
-		_progressHandler = progress;
+static NSString *mime(NSString *mimeType) {
+	if (mimeType == nil || [mimeType isEqualToString:@""]) {
+		return @"application/octet-stream";
 	}
-	return self;
+	return mimeType;
 }
 
+@implementation QNUploadOption
+
 + (NSDictionary *)filteParam:(NSDictionary *)params {
-	if (params == nil) {
-		return nil;
-	}
 	NSMutableDictionary *ret = [NSMutableDictionary dictionary];
+	if (params == nil) {
+		return ret;
+	}
 
 	[params enumerateKeysAndObjectsUsingBlock: ^(NSString *key, NSString *obj, BOOL *stop) {
 	    if ([key hasPrefix:@"x:"] && ![obj isEqualToString:@""]) {
@@ -33,17 +33,24 @@
 	return ret;
 }
 
+- (instancetype)initWithProgessHandler:(QNUpProgressHandler)progress {
+	return [self initWithMime:nil progressHandler:progress params:nil checkCrc:NO cancellationSignal:nil];
+}
+
 - (instancetype)initWithMime:(NSString *)mimeType
              progressHandler:(QNUpProgressHandler)progress
                       params:(NSDictionary *)params
                     checkCrc:(BOOL)check
           cancellationSignal:(QNUpCancellationSignal)cancel {
 	if (self = [super init]) {
-		_mimeType = mimeType;
-		_progressHandler = progress;
+		_mimeType = mime(mimeType);
+		_progressHandler = progress != nil ? progress : ^(NSString *key, float percent) {
+		};
 		_params = [QNUploadOption filteParam:params];
 		_checkCrc = check;
-		_cancellationSignal = cancel;
+		_cancellationSignal = cancel != nil ? cancel : ^BOOL () {
+			return NO;
+		};
 	}
 
 	return self;
@@ -51,6 +58,10 @@
 
 - (BOOL)priv_isCancelled {
 	return _cancellationSignal && _cancellationSignal();
+}
+
++ (instancetype)defaultOptions {
+	return [[QNUploadOption alloc] initWithMime:nil progressHandler:nil params:nil checkCrc:NO cancellationSignal:nil];
 }
 
 @end
