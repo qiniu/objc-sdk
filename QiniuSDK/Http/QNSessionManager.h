@@ -1,11 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "QNHttpDelegate.h"
 
-@class QNResponseInfo;
-
-typedef void (^QNInternalProgressBlock)(long long totalBytesWritten, long long totalBytesExpectedToWrite);
-typedef void (^QNCompleteBlock)(QNResponseInfo *info, NSDictionary *resp);
-typedef BOOL (^QNCancelBlock)(void);
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 
 @interface QNSessionManager : NSObject <QNHttpDelegate>
 
@@ -29,3 +25,5 @@ typedef BOOL (^QNCancelBlock)(void);
       withCancelBlock:(QNCancelBlock)cancelBlock;
 
 @end
+
+#endif

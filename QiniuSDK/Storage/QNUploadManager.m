@@ -10,6 +10,7 @@
 
 #import "QNConfig.h"
 #import "QNHttpManager.h"
+#import "QNSessionManager.h"
 #import "QNResponseInfo.h"
 #import "QNCrc32.h"
 #import "QNUploadManager.h"
@@ -19,7 +20,7 @@
 #import "QNAsyncRun.h"
 
 @interface QNUploadManager ()
-@property (nonatomic) QNHttpManager *httpManager;
+@property (nonatomic) id <QNHttpDelegate> httpManager;
 @property (nonatomic) id <QNRecorderDelegate> recorder;
 @property (nonatomic, strong) QNRecorderKeyGenerator recorderKeyGen;
 @end
@@ -36,8 +37,18 @@
 
 - (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder
             recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator {
+	return [self initWithRecorder:recorder recorderKeyGenerator:recorderKeyGenerator proxy:nil];
+}
+
+- (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder
+            recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator
+                           proxy:(NSDictionary *)proxyDict {
 	if (self = [super init]) {
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
+		_httpManager = [[QNSessionManager alloc] initWithProxy:proxyDict];
+#else
 		_httpManager = [[QNHttpManager alloc] init];
+#endif
 		_recorder = recorder;
 		_recorderKeyGen = recorderKeyGenerator;
 	}
