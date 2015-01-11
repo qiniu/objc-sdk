@@ -1,15 +1,15 @@
-//
-//  HttpManager.h
-//  QiniuSDK
-//
-//  Created by bailong on 14/10/1.
-//  Copyright (c) 2014年 Qiniu. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
-#import "QNhttpDelegate.h"
+#import "QNHttpDelegate.h"
 
-@interface QNHttpManager : NSObject <QNHttpDelegate>
+@class QNResponseInfo;
+
+typedef void (^QNInternalProgressBlock)(long long totalBytesWritten, long long totalBytesExpectedToWrite);
+typedef void (^QNCompleteBlock)(QNResponseInfo *info, NSDictionary *resp);
+typedef BOOL (^QNCancelBlock)(void);
+
+@interface QNSessionManager : NSObject <QNHttpDelegate>
+
+- (instancetype)initWithProxy:(NSDictionary *)proxyDict;
 
 - (void)multipartPost:(NSString *)url
              withData:(NSData *)data

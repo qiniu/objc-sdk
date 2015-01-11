@@ -9,44 +9,48 @@
 #import <AFNetworking/AFNetworking.h>
 
 #import "QNConfig.h"
-#import "QNHttpManager.h"
+#import "QNSessionManager.h"
 #import "QNUserAgent.h"
 #import "QNResponseInfo.h"
 #import "QNDns.h"
 
-@interface QNHttpManager ()
-@property (nonatomic) AFHTTPRequestOperationManager *httpManager;
+@interface QNSessionManager ()
+@property (nonatomic) AFHTTPSessionManager *httpManager;
 @end
 
 static NSString *userAgent = nil;
 
-@implementation QNHttpManager
+@implementation QNSessionManager
 
 + (void)initialize {
 	userAgent = QNUserAgent();
 }
 
-- (instancetype)init {
+- (instancetype)initWithProxy:(NSDictionary *)proxyDict {
 	if (self = [super init]) {
-		_httpManager = [[AFHTTPRequestOperationManager alloc] init];
+		NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+		if (proxyDict != nil) {
+			configuration.connectionProxyDictionary = proxyDict;
+		}
+		_httpManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
 		_httpManager.responseSerializer = [AFJSONResponseSerializer serializer];
 	}
 
 	return self;
 }
 
-+ (QNResponseInfo *)buildResponseInfo:(AFHTTPRequestOperation *)operation
++ (QNResponseInfo *)buildResponseInfo:(NSHTTPURLResponse *)response
                             withError:(NSError *)error
                          withDuration:(double)duration
-                         withResponse:(id)responseObject {
+                         withResponse:(id)responseObject
+                             withHost:(NSString *)host {
 	QNResponseInfo *info;
-	NSString *host = operation.request.URL.host;
 
-	if (operation.response) {
-		NSDictionary *headers = [operation.response allHeaderFields];
+	if (response) {
+		NSDictionary *headers = [response allHeaderFields];
 		NSString *reqId = headers[@"X-Reqid"];
 		NSString *xlog = headers[@"X-Log"];
-		int status =  (int)[operation.response statusCode];
+		int status =  (int)[response statusCode];
 		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withHost:host withDuration:duration withBody:responseObject];
 	}
 	else {
@@ -59,34 +63,30 @@ static NSString *userAgent = nil;
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock {
 	__block NSDate *startTime = [NSDate date];
-	AFHTTPRequestOperation *operation = [_httpManager
-	                                     HTTPRequestOperationWithRequest:request
-	                                                             success: ^(AFHTTPRequestOperation *operation, id responseObject) {
+	NSProgress *progress = nil;
+	__block NSString *host = request.URL.host;
+	NSURLSessionUploadTask *uploadTask = [_httpManager uploadTaskWithStreamedRequest:request progress:&progress completionHandler: ^(NSURLResponse *response, id responseObject, NSError *error) {
+	    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
 	    double duration = [[NSDate date] timeIntervalSinceDate:startTime];
-	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil withDuration:duration withResponse:operation.responseData];
+	    QNResponseInfo *info;
 	    NSDictionary *resp = nil;
-	    if (info.isOK) {
-	        resp = responseObject;
+	    if (error == nil) {
+	        info = [QNSessionManager buildResponseInfo:httpResponse withError:nil withDuration:duration withResponse:responseObject withHost:host];
+	        if (info.isOK) {
+	            resp = responseObject;
+			}
+		}
+	    else {
+	        info = [QNSessionManager buildResponseInfo:httpResponse withError:error withDuration:duration withResponse:responseObject withHost:host];
 		}
 	    completeBlock(info, resp);
-	}                                                                failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
-	    double duration = [[NSDate date] timeIntervalSinceDate:startTime];
-	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:error withDuration:duration withResponse:operation.responseData];
-	    completeBlock(info, nil);
-	}
+	}];
 
-	    ];
-
-	if (progressBlock) {
-		[operation setUploadProgressBlock: ^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-		    progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
-		}];
-	}
 	[request setTimeoutInterval:kQNTimeoutInterval];
 
 	[request setValue:userAgent forHTTPHeaderField:@"User-Agent"];
 	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];
-	[_httpManager.operationQueue addOperation:operation];
+	[uploadTask resume];
 }
 
 - (void)multipartPost:(NSString *)url

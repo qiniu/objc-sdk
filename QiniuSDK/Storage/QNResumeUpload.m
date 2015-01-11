@@ -21,7 +21,7 @@ typedef void (^task)(void);
 @interface QNResumeUpload ()
 
 @property (nonatomic, strong) NSData *data;
-@property (nonatomic, strong) QNHttpManager *httpManager;
+@property (nonatomic, strong) id <QNHttpDelegate> httpManager;
 @property UInt32 size;
 @property (nonatomic) int retryTimes;
 @property (nonatomic, strong) NSString *key;
@@ -77,7 +77,7 @@ typedef void (^task)(void);
 		_complete = block;
 		_headers = @{ @"Authorization":tok, @"Content-Type":@"application/octet-stream" };
 		_recorder = recorder;
-		_httpManager = http;
+		_httpManager = [[QNHttpManager alloc] init];
 		if (time != nil) {
 			_modifyTime = [time timeIntervalSince1970];
 		}
