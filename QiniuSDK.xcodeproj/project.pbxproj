@@ -109,6 +109,8 @@
 		DFF525341A6235D100D02BA1 /* QNSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DFF525301A6235D100D02BA1 /* QNSessionManager.m */; };
 		DFF525351A6235D100D02BA1 /* QNSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DFF525301A6235D100D02BA1 /* QNSessionManager.m */; };
 		DFF525371A626A3700D02BA1 /* QNhttpDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = DFF525361A626A3700D02BA1 /* QNhttpDelegate.h */; };
+		DFF525391A64079B00D02BA1 /* QNSessionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFF525381A64079B00D02BA1 /* QNSessionTest.m */; };
+		DFF5253A1A64079B00D02BA1 /* QNSessionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFF525381A64079B00D02BA1 /* QNSessionTest.m */; };
 		DFFE0E6019E6575600D7A0FC /* QNFileRecorderTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */; };
 		DFFE0E6119E6575600D7A0FC /* QNFileRecorderTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */; };
 		EE76B381AF33E356C2C8FC56 /* libPods-QiniuSDK MacTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EB0B4B6BA4EEC2DEF421644 /* libPods-QiniuSDK MacTests.a */; };
@@ -190,6 +192,7 @@
 		DFF5252F1A6235D100D02BA1 /* QNSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNSessionManager.h; sourceTree = "<group>"; };
 		DFF525301A6235D100D02BA1 /* QNSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNSessionManager.m; sourceTree = "<group>"; };
 		DFF525361A626A3700D02BA1 /* QNhttpDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNhttpDelegate.h; sourceTree = "<group>"; };
+		DFF525381A64079B00D02BA1 /* QNSessionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNSessionTest.m; sourceTree = "<group>"; };
 		DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNFileRecorderTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -361,6 +364,7 @@
 				DFA9B65E19E391A100A15FD1 /* QNTestConfig.h */,
 				DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */,
 				DF609A001A5839B400AC7297 /* QNDnsTest.m */,
+				DFF525381A64079B00D02BA1 /* QNSessionTest.m */,
 			);
 			path = QiniuSDKTests;
 			sourceTree = SOURCE_ROOT;
@@ -711,6 +715,7 @@
 				DF2CDE8319DAF67F00CE01FB /* QNCrc32.m in Sources */,
 				DF293C9719DB865800799011 /* QNCrc32Test.m in Sources */,
 				DFA9B64519DFE43500A15FD1 /* QNTempFile.m in Sources */,
+				DFF525391A64079B00D02BA1 /* QNSessionTest.m in Sources */,
 				DF609A071A58E39D00AC7297 /* QNFormUpload.m in Sources */,
 				DFF525331A6235D100D02BA1 /* QNSessionManager.m in Sources */,
 				DFA9B63F19DFD8C900A15FD1 /* QNEtagTest.m in Sources */,
@@ -764,6 +769,7 @@
 				DF2CDE7719DAF65800CE01FB /* QNCrc32.m in Sources */,
 				DF293C9819DB865800799011 /* QNCrc32Test.m in Sources */,
 				DFA9B64619DFE43500A15FD1 /* QNTempFile.m in Sources */,
+				DFF5253A1A64079B00D02BA1 /* QNSessionTest.m in Sources */,
 				DF609A091A58E39D00AC7297 /* QNFormUpload.m in Sources */,
 				DFF525351A6235D100D02BA1 /* QNSessionManager.m in Sources */,
 				DFA9B64019DFD8C900A15FD1 /* QNEtagTest.m in Sources */,

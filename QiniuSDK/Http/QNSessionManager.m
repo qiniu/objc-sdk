@@ -35,7 +35,7 @@ static NSString *userAgent = nil;
 			configuration.connectionProxyDictionary = proxyDict;
 		}
 		_httpManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
-		_httpManager.responseSerializer = [AFJSONResponseSerializer serializer];
+		_httpManager.responseSerializer = [AFHTTPResponseSerializer serializer];
 	}
 
 	return self;
@@ -44,7 +44,7 @@ static NSString *userAgent = nil;
 + (QNResponseInfo *)buildResponseInfo:(NSHTTPURLResponse *)response
                             withError:(NSError *)error
                          withDuration:(double)duration
-                         withResponse:(id)responseObject
+                         withResponse:(NSData *)body
                              withHost:(NSString *)host {
 	QNResponseInfo *info;
 
@@ -53,7 +53,7 @@ static NSString *userAgent = nil;
 		NSString *reqId = headers[@"X-Reqid"];
 		NSString *xlog = headers[@"X-Log"];
 		int status =  (int)[response statusCode];
-		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withHost:host withDuration:duration withBody:responseObject];
+		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withHost:host withDuration:duration withBody:body];
 	}
 	else {
 		info = [QNResponseInfo responseInfoWithNetError:error host:host duration:duration];
@@ -67,28 +67,46 @@ static NSString *userAgent = nil;
 	__block NSDate *startTime = [NSDate date];
 	NSProgress *progress = nil;
 	__block NSString *host = request.URL.host;
+
 	NSURLSessionUploadTask *uploadTask = [_httpManager uploadTaskWithStreamedRequest:request progress:&progress completionHandler: ^(NSURLResponse *response, id responseObject, NSError *error) {
+	    NSData *data = responseObject;
 	    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
 	    double duration = [[NSDate date] timeIntervalSinceDate:startTime];
 	    QNResponseInfo *info;
 	    NSDictionary *resp = nil;
 	    if (error == nil) {
-	        info = [QNSessionManager buildResponseInfo:httpResponse withError:nil withDuration:duration withResponse:responseObject withHost:host];
+	        info = [QNSessionManager buildResponseInfo:httpResponse withError:nil withDuration:duration withResponse:data withHost:host];
 	        if (info.isOK) {
-	            resp = responseObject;
+	            NSError *tmp;
+	            resp = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&tmp];
 			}
 		}
 	    else {
-	        info = [QNSessionManager buildResponseInfo:httpResponse withError:error withDuration:duration withResponse:responseObject withHost:host];
+	        info = [QNSessionManager buildResponseInfo:httpResponse withError:error withDuration:duration withResponse:data withHost:host];
 		}
+	    [progress removeObserver:self forKeyPath:@"fractionCompleted" context:(__bridge void *)(progressBlock)];
 	    completeBlock(info, resp);
 	}];
+	[progress addObserver:self forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionNew context:(__bridge void *)(progressBlock)];
 
 	[request setTimeoutInterval:kQNTimeoutInterval];
 
 	[request setValue:userAgent forHTTPHeaderField:@"User-Agent"];
 	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];
 	[uploadTask resume];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+	if ([keyPath isEqualToString:@"fractionCompleted"]) {
+		NSProgress *progress = (NSProgress *)object;
+		QNInternalProgressBlock progressBlock = (__bridge QNInternalProgressBlock)context;
+		if (progress != nil && progressBlock != nil) {
+			progressBlock(progress.completedUnitCount, progress.totalUnitCount);
+		}
+	}
+	else {
+		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	}
 }
 
 - (void)multipartPost:(NSString *)url

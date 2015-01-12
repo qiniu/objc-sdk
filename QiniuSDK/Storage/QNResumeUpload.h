@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "QNUploadManager.h"
+#import "QNhttpDelegate.h"
 
 @class QNHttpManager;
 @interface QNResumeUpload : NSObject
@@ -21,7 +22,7 @@
               withModifyTime:(NSDate *)time
                 withRecorder:(id <QNRecorderDelegate> )recorder
              withRecorderKey:(NSString *)recorderKey
-             withHttpManager:(QNHttpManager *)http;
+             withHttpManager:(id <QNHttpDelegate> )http;
 
 - (void)run;
 

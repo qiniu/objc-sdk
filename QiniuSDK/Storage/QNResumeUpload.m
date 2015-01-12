@@ -67,7 +67,7 @@ typedef void (^task)(void);
               withModifyTime:(NSDate *)time
                 withRecorder:(id <QNRecorderDelegate> )recorder
              withRecorderKey:(NSString *)recorderKey
-             withHttpManager:(QNHttpManager *)http {
+             withHttpManager:(id <QNHttpDelegate> )http {
 	if (self = [super init]) {
 		_data = data;
 		_size = size;
@@ -77,7 +77,7 @@ typedef void (^task)(void);
 		_complete = block;
 		_headers = @{ @"Authorization":tok, @"Content-Type":@"application/octet-stream" };
 		_recorder = recorder;
-		_httpManager = [[QNHttpManager alloc] init];
+		_httpManager = http;
 		if (time != nil) {
 			_modifyTime = [time timeIntervalSince1970];
 		}

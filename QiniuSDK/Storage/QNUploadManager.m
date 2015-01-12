@@ -45,7 +45,25 @@
                            proxy:(NSDictionary *)proxyDict {
 	if (self = [super init]) {
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
-		_httpManager = [[QNSessionManager alloc] initWithProxy:proxyDict];
+		BOOL lowVersion = NO;
+	#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
+		float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
+		if (sysVersion < 7.0) {
+			lowVersion = YES;
+		}
+	#else
+		NSOperatingSystemVersion sysVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
+
+		if ((sysVersion.majorVersion = 10 && sysVersion.minorVersion < 9)) {
+			lowVersion = YES;
+		}
+	#endif
+		if (lowVersion) {
+			_httpManager = [[QNHttpManager alloc] init];
+		}
+		else {
+			_httpManager = [[QNSessionManager alloc] initWithProxy:proxyDict];
+		}
 #else
 		_httpManager = [[QNHttpManager alloc] init];
 #endif
