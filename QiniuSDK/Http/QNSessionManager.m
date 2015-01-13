@@ -84,10 +84,10 @@ static NSString *userAgent = nil;
 	    else {
 	        info = [QNSessionManager buildResponseInfo:httpResponse withError:error withDuration:duration withResponse:data withHost:host];
 		}
-	    [progress removeObserver:self forKeyPath:@"fractionCompleted" context:(__bridge void *)(progressBlock)];
 	    completeBlock(info, resp);
+        [progress removeObserver:self forKeyPath:@"completedUnitCount" context:(__bridge void *)(progressBlock)];
 	}];
-	[progress addObserver:self forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionNew context:(__bridge void *)(progressBlock)];
+	[progress addObserver:self forKeyPath:@"completedUnitCount" options:NSKeyValueObservingOptionNew context:(__bridge void *)(progressBlock)];
 
 	[request setTimeoutInterval:kQNTimeoutInterval];
 
@@ -97,15 +97,13 @@ static NSString *userAgent = nil;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-	if ([keyPath isEqualToString:@"fractionCompleted"]) {
-		NSProgress *progress = (NSProgress *)object;
-		QNInternalProgressBlock progressBlock = (__bridge QNInternalProgressBlock)context;
-		if (progress != nil && progressBlock != nil) {
-			progressBlock(progress.completedUnitCount, progress.totalUnitCount);
-		}
+	if (context == nil) {
+		return;
 	}
-	else {
-		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	NSProgress *progress = (NSProgress *)object;
+	QNInternalProgressBlock progressBlock = (__bridge QNInternalProgressBlock)context;
+	if (progress != nil && progressBlock != nil) {
+		progressBlock(progress.completedUnitCount, progress.totalUnitCount);
 	}
 }
 
