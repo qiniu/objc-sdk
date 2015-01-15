@@ -118,7 +118,11 @@ static NSString *domain = @"qiniu.com";
 
 - (BOOL)isConnectionBroken {
 	// reqId is nill means the server is not qiniu
-	return _statusCode == kQNNetworkError || _reqId == nil;
+	return _statusCode == kQNNetworkError;
+}
+
+- (BOOL)needSwitchServer {
+	return _statusCode == kQNNetworkError || (_statusCode / 100 == 5 && _statusCode != 579);
 }
 
 - (BOOL)couldRetry {

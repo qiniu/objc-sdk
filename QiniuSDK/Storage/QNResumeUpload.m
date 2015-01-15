@@ -207,7 +207,7 @@ typedef void (^task)(void);
 			}
 
 			NSString *nextHost = host;
-			if (info.isConnectionBroken) {
+			if (info.isConnectionBroken || info.needSwitchServer) {
 				nextHost = kQNUpHostBackup;
 			}
 
