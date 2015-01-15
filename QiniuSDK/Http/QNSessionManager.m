@@ -13,8 +13,41 @@
 #import "QNUserAgent.h"
 #import "QNResponseInfo.h"
 #import "QNDns.h"
+#import "QNAsyncRun.h"
 
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
+
+@interface QNProgessDelegate : NSObject
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
+@property (nonatomic, strong) QNInternalProgressBlock progressBlock;
+- (instancetype) initWithProgress:(QNInternalProgressBlock)progressBlock;
+@end
+
+@implementation QNProgessDelegate
+- (instancetype) initWithProgress:(QNInternalProgressBlock)progressBlock{
+    if (self = [super init]) {
+        _progressBlock = progressBlock;
+    }
+    
+    return self;
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context; {
+    NSLog(@"log %@ %@, %@, %p", keyPath, object, change, context);
+    if (context == nil || object == nil) {
+        return;
+    }
+    
+    NSProgress *progress = (NSProgress *)object;
+    
+    void *p = (__bridge void *)(self);
+    if (p != context) {
+        return;
+    }
+    _progressBlock(progress.completedUnitCount, progress.totalUnitCount);
+}
+
+@end
 
 @interface QNSessionManager ()
 @property (nonatomic) AFHTTPSessionManager *httpManager;
@@ -67,8 +100,15 @@ static NSString *userAgent = nil;
 	__block NSDate *startTime = [NSDate date];
 	NSProgress *progress = nil;
 	__block NSString *host = request.URL.host;
+    
+    __block QNProgessDelegate *delegate = nil;
+    if (progressBlock == nil) {
+        progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+        };
+    }
+    delegate = [[QNProgessDelegate alloc] initWithProgress:progressBlock];
 
-	NSURLSessionUploadTask *uploadTask = [_httpManager uploadTaskWithStreamedRequest:request progress:&progress completionHandler: ^(NSURLResponse *response, id responseObject, NSError *error) {
+    NSURLSessionUploadTask *uploadTask = [_httpManager uploadTaskWithStreamedRequest:request progress:&progress completionHandler: ^(NSURLResponse *response, id responseObject, NSError *error) {
 	    NSData *data = responseObject;
 	    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
 	    double duration = [[NSDate date] timeIntervalSinceDate:startTime];
@@ -84,27 +124,17 @@ static NSString *userAgent = nil;
 	    else {
 	        info = [QNSessionManager buildResponseInfo:httpResponse withError:error withDuration:duration withResponse:data withHost:host];
 		}
-	    completeBlock(info, resp);
-        [progress removeObserver:self forKeyPath:@"completedUnitCount" context:(__bridge void *)(progressBlock)];
+        NSLog(@"finish %p %p", progress, delegate);
+        [progress removeObserver:delegate forKeyPath:@"fractionCompleted" context:(__bridge void *)(delegate)];
+        completeBlock(info, resp);
 	}];
-	[progress addObserver:self forKeyPath:@"completedUnitCount" options:NSKeyValueObservingOptionNew context:(__bridge void *)(progressBlock)];
+    [progress addObserver:delegate forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionNew context:(__bridge void *)(progressBlock)];
 
 	[request setTimeoutInterval:kQNTimeoutInterval];
 
 	[request setValue:userAgent forHTTPHeaderField:@"User-Agent"];
 	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];
 	[uploadTask resume];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-	if (context == nil) {
-		return;
-	}
-	NSProgress *progress = (NSProgress *)object;
-	QNInternalProgressBlock progressBlock = (__bridge QNInternalProgressBlock)context;
-	if (progress != nil && progressBlock != nil) {
-		progressBlock(progress.completedUnitCount, progress.totalUnitCount);
-	}
 }
 
 - (void)multipartPost:(NSString *)url
@@ -147,10 +177,16 @@ static NSString *userAgent = nil;
 		[request setValuesForKeysWithDictionary:params];
 	}
 	[request setHTTPBody:data];
-	[self sendRequest:request
-	    withCompleteBlock:completeBlock
-	    withProgressBlock:progressBlock];
+    QNAsyncRun(^{
+        [self sendRequest:request
+        withCompleteBlock:completeBlock
+        withProgressBlock:progressBlock];
+    });
 }
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context; {
+}
+
 
 @end
 
