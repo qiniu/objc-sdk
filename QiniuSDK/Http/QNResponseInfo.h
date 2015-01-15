@@ -94,6 +94,12 @@ extern const int kQNFileError;
 @property (nonatomic, readonly) BOOL couldRetry;
 
 /**
+ *    是否需要换备用server，内部使用
+ */
+@property (nonatomic, readonly) BOOL needSwitchServer;
+
+
+/**
  *    工厂函数，内部使用
  *
  *    @return 取消的实例

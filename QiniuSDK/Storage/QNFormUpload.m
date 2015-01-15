@@ -85,7 +85,7 @@
 			return;
 		}
 		NSString *nextHost = kQNUpHost;
-		if (info.isConnectionBroken) {
+		if (info.isConnectionBroken || info.needSwitchServer) {
 			nextHost = kQNUpHostBackup;
 		}
 
