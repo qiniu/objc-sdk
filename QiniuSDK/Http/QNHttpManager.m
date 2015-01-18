@@ -18,13 +18,7 @@
 @property (nonatomic) AFHTTPRequestOperationManager *httpManager;
 @end
 
-static NSString *userAgent = nil;
-
 @implementation QNHttpManager
-
-+ (void)initialize {
-	userAgent = QNUserAgent();
-}
 
 - (instancetype)init {
 	if (self = [super init]) {
@@ -41,14 +35,17 @@ static NSString *userAgent = nil;
                          withResponse:(id)responseObject {
 	QNResponseInfo *info;
 	NSString *host = operation.request.URL.host;
-//    NSArray *hostIp = [QNDns getAddresses:host];
 
 	if (operation.response) {
 		NSDictionary *headers = [operation.response allHeaderFields];
 		NSString *reqId = headers[@"X-Reqid"];
 		NSString *xlog = headers[@"X-Log"];
+		NSString *xvia = headers[@"X-Via"];
+		if (xvia == nil) {
+			xvia = headers[@"X-Px"];
+		}
 		int status =  (int)[operation.response statusCode];
-		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withHost:host withDuration:duration withBody:responseObject];
+		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withXVia:xvia withHost:host withDuration:duration withBody:responseObject];
 	}
 	else {
 		info = [QNResponseInfo responseInfoWithNetError:error host:host duration:duration];
@@ -69,10 +66,12 @@ static NSString *userAgent = nil;
 	    if (info.isOK) {
 	        resp = responseObject;
 		}
+	    NSLog(@"success %@", info);
 	    completeBlock(info, resp);
 	}                                                                failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
 	    double duration = [[NSDate date] timeIntervalSinceDate:startTime];
 	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:error withDuration:duration withResponse:operation.responseData];
+	    NSLog(@"failure %@", info);
 	    completeBlock(info, nil);
 	}
 
@@ -85,7 +84,7 @@ static NSString *userAgent = nil;
 	}
 	[request setTimeoutInterval:kQNTimeoutInterval];
 
-	[request setValue:userAgent forHTTPHeaderField:@"User-Agent"];
+	[request setValue:QNUserAgent() forHTTPHeaderField:@"User-Agent"];
 	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];
 	[_httpManager.operationQueue addOperation:operation];
 }
