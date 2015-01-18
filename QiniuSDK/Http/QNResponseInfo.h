@@ -49,6 +49,11 @@ extern const int kQNFileError;
 @property (nonatomic, copy, readonly) NSString *xlog;
 
 /**
+ *    cdn服务器内部跟踪记录
+ */
+@property (nonatomic, copy, readonly) NSString *xvia;
+
+/**
  *    错误信息，出错时请反馈此记录
  */
 @property (nonatomic, copy, readonly) NSError *error;
@@ -69,9 +74,9 @@ extern const int kQNFileError;
 @property (nonatomic, readonly) NSString *serverIp;
 
 /**
- *    服务器IP
+ *    网络类型
  */
-@property (nonatomic, readonly) NSString *networkType;
+//@property (nonatomic, readonly) NSString *networkType;
 
 /**
  *    是否取消
@@ -152,6 +157,7 @@ extern const int kQNFileError;
 - (instancetype)init:(int)status
            withReqId:(NSString *)reqId
             withXLog:(NSString *)xlog
+            withXVia:(NSString *)xvia
             withHost:(NSString *)host
         withDuration:(double)duration
             withBody:(NSData *)body;

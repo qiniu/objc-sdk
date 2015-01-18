@@ -73,6 +73,7 @@ static NSString *domain = @"qiniu.com";
 - (instancetype)init:(int)status
            withReqId:(NSString *)reqId
             withXLog:(NSString *)xlog
+            withXVia:(NSString *)xvia
             withHost:(NSString *)host
         withDuration:(double)duration
             withBody:(NSData *)body {
@@ -80,6 +81,7 @@ static NSString *domain = @"qiniu.com";
 		_statusCode = status;
 		_reqId = [reqId copy];
 		_xlog = [xlog copy];
+		_xvia = [xvia copy];
 		_host = [host copy];
 		_duration = duration;
 		if (status != 200) {
@@ -105,7 +107,7 @@ static NSString *domain = @"qiniu.com";
 }
 
 - (NSString *)description {
-	return [NSString stringWithFormat:@"<%@: %p, status: %d, requestId: %@, xlog: %@, host: %@ duration:%f s serverIp:%@ error: %@>", NSStringFromClass([self class]), self, _statusCode, _reqId, _xlog, _host, _duration, _serverIp, _error];
+	return [NSString stringWithFormat:@"<%@: %p, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ duration:%f s serverIp:%@ error: %@>", NSStringFromClass([self class]), self, _statusCode, _reqId, _xlog, _xvia, _host, _duration, _serverIp, _error];
 }
 
 - (BOOL)isCancelled {
