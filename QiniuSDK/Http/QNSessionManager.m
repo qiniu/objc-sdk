@@ -20,31 +20,34 @@
 @interface QNProgessDelegate : NSObject
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
 @property (nonatomic, strong) QNInternalProgressBlock progressBlock;
-- (instancetype) initWithProgress:(QNInternalProgressBlock)progressBlock;
+@property (nonatomic, strong) NSProgress *progress;
+- (instancetype)initWithProgress:(QNInternalProgressBlock)progressBlock;
 @end
 
 @implementation QNProgessDelegate
-- (instancetype) initWithProgress:(QNInternalProgressBlock)progressBlock{
-    if (self = [super init]) {
-        _progressBlock = progressBlock;
-    }
-    
-    return self;
+- (instancetype)initWithProgress:(QNInternalProgressBlock)progressBlock {
+	if (self = [super init]) {
+		_progressBlock = progressBlock;
+		_progress = nil;
+	}
+
+	return self;
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context; {
-    NSLog(@"log %@ %@, %@, %p", keyPath, object, change, context);
-    if (context == nil || object == nil) {
-        return;
-    }
-    
-    NSProgress *progress = (NSProgress *)object;
-    
-    void *p = (__bridge void *)(self);
-    if (p != context) {
-        return;
-    }
-    _progressBlock(progress.completedUnitCount, progress.totalUnitCount);
+	if (context == nil || object == nil) {
+		return;
+	}
+
+	NSProgress *progress = (NSProgress *)object;
+
+	void *p = (__bridge void *)(self);
+	if (p == context) {
+		_progressBlock(progress.completedUnitCount, progress.totalUnitCount);
+	}
+	else {
+		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+	}
 }
 
 @end
@@ -82,11 +85,18 @@ static NSString *userAgent = nil;
 	QNResponseInfo *info;
 
 	if (response) {
+		int status =  (int)[response statusCode];
 		NSDictionary *headers = [response allHeaderFields];
 		NSString *reqId = headers[@"X-Reqid"];
 		NSString *xlog = headers[@"X-Log"];
-		int status =  (int)[response statusCode];
-		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withHost:host withDuration:duration withBody:body];
+		NSString *xvia = headers[@"X-Via"];
+		if (xvia == nil) {
+			xvia = headers[@"X-Px"];
+		}
+		if (xvia == nil) {
+			xvia = headers[@"Fw-Via"];
+		}
+		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withXVia:xvia withHost:host withDuration:duration withBody:body];
 	}
 	else {
 		info = [QNResponseInfo responseInfoWithNetError:error host:host duration:duration];
@@ -100,15 +110,14 @@ static NSString *userAgent = nil;
 	__block NSDate *startTime = [NSDate date];
 	NSProgress *progress = nil;
 	__block NSString *host = request.URL.host;
-    
-    __block QNProgessDelegate *delegate = nil;
-    if (progressBlock == nil) {
-        progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-        };
-    }
-    delegate = [[QNProgessDelegate alloc] initWithProgress:progressBlock];
 
-    NSURLSessionUploadTask *uploadTask = [_httpManager uploadTaskWithStreamedRequest:request progress:&progress completionHandler: ^(NSURLResponse *response, id responseObject, NSError *error) {
+	if (progressBlock == nil) {
+		progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+		};
+	}
+	__block QNProgessDelegate *delegate = [[QNProgessDelegate alloc] initWithProgress:progressBlock];
+
+	NSURLSessionUploadTask *uploadTask = [_httpManager uploadTaskWithStreamedRequest:request progress:&progress completionHandler: ^(NSURLResponse *response, id responseObject, NSError *error) {
 	    NSData *data = responseObject;
 	    NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
 	    double duration = [[NSDate date] timeIntervalSinceDate:startTime];
@@ -124,11 +133,17 @@ static NSString *userAgent = nil;
 	    else {
 	        info = [QNSessionManager buildResponseInfo:httpResponse withError:error withDuration:duration withResponse:data withHost:host];
 		}
-        NSLog(@"finish %p %p", progress, delegate);
-        [progress removeObserver:delegate forKeyPath:@"fractionCompleted" context:(__bridge void *)(delegate)];
-        completeBlock(info, resp);
+
+	    if (delegate.progress != nil) {
+	        [delegate.progress removeObserver:delegate forKeyPath:@"fractionCompleted" context:(__bridge void *)(delegate)];
+	        delegate.progress = nil;
+		}
+	    completeBlock(info, resp);
 	}];
-    [progress addObserver:delegate forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionNew context:(__bridge void *)(progressBlock)];
+	if (progress != nil) {
+		[progress addObserver:delegate forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionNew context:(__bridge void *)delegate];
+		delegate.progress = progress;
+	}
 
 	[request setTimeoutInterval:kQNTimeoutInterval];
 
@@ -177,16 +192,12 @@ static NSString *userAgent = nil;
 		[request setValuesForKeysWithDictionary:params];
 	}
 	[request setHTTPBody:data];
-    QNAsyncRun(^{
-        [self sendRequest:request
-        withCompleteBlock:completeBlock
-        withProgressBlock:progressBlock];
-    });
+	QNAsyncRun( ^{
+		[self sendRequest:request
+		    withCompleteBlock:completeBlock
+		    withProgressBlock:progressBlock];
+	});
 }
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context; {
-}
-
 
 @end
 

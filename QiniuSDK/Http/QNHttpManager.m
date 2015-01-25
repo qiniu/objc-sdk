@@ -37,6 +37,7 @@
 	NSString *host = operation.request.URL.host;
 
 	if (operation.response) {
+		int status =  (int)[operation.response statusCode];
 		NSDictionary *headers = [operation.response allHeaderFields];
 		NSString *reqId = headers[@"X-Reqid"];
 		NSString *xlog = headers[@"X-Log"];
@@ -44,7 +45,6 @@
 		if (xvia == nil) {
 			xvia = headers[@"X-Px"];
 		}
-		int status =  (int)[operation.response statusCode];
 		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withXVia:xvia withHost:host withDuration:duration withBody:responseObject];
 	}
 	else {

@@ -43,7 +43,7 @@
     
     testInfo = nil;
     
-    [_httpManager post:@"http://up.qiniu.com" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+    [_httpManager post:@"http://up.qiniu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
         testInfo = info;
     } withProgressBlock:nil withCancelBlock:nil];
     
@@ -52,7 +52,7 @@
     XCTAssert(testInfo.reqId, @"Pass");
     
     testInfo = nil;
-    [_httpManager post:@"http://httpbin.org/status/500" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+    [_httpManager post:@"http://httpbin.org/status/500" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
         testInfo = info;
     } withProgressBlock:nil withCancelBlock:nil];
     
@@ -62,7 +62,7 @@
     XCTAssert(testInfo.error != nil, @"Pass");
     
     testInfo = nil;
-    [_httpManager post:@"http://httpbin.org/status/418" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+    [_httpManager post:@"http://httpbin.org/status/418" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
         testInfo = info;
     } withProgressBlock:nil withCancelBlock:nil];
     
@@ -72,7 +72,7 @@
     XCTAssert(testInfo.error != nil, @"Pass");
     
     testInfo = nil;
-    [_httpManager post:@"http://httpbin.org/status/200" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+    [_httpManager post:@"http://httpbin.org/status/200" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
         testInfo = info;
     } withProgressBlock:nil withCancelBlock:nil];
     

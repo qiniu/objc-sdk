@@ -79,7 +79,7 @@
 
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
-	    sharedInstance = [[self alloc] initWithRecorder:recorder recorderKeyGenerator:recorderKeyGenerator];
+		sharedInstance = [[self alloc] initWithRecorder:recorder recorderKeyGenerator:recorderKeyGenerator];
 	});
 
 	return sharedInstance;
@@ -103,8 +103,8 @@
 		desc = @"no token";
 	}
 	if (desc != nil) {
-		QNAsyncRun ( ^{
-		    completionHandler([QNResponseInfo responseInfoWithInvalidArgument:desc], key, nil);
+		QNAsyncRun( ^{
+			completionHandler([QNResponseInfo responseInfoWithInvalidArgument:desc], key, nil);
 		});
 		return YES;
 	}
@@ -121,13 +121,13 @@
 	}
 	QNFormUpload *up = [[QNFormUpload alloc]
 	                    initWithData:data
-	                                     withKey:key
-	                                   withToken:token
-	                       withCompletionHandler:completionHandler
-	                                  withOption:option
-	                             withHttpManager:_httpManager];
-	QNAsyncRun ( ^{
-	    [up put];
+	                            withKey:key
+	                          withToken:token
+	              withCompletionHandler:completionHandler
+	                         withOption:option
+	                    withHttpManager:_httpManager];
+	QNAsyncRun( ^{
+		[up put];
 	});
 }
 
@@ -145,9 +145,9 @@
 		NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
 
 		if (error) {
-			QNAsyncRun ( ^{
-			    QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
-			    completionHandler(info, key, nil);
+			QNAsyncRun( ^{
+				QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+				completionHandler(info, key, nil);
 			});
 			return;
 		}
@@ -156,9 +156,9 @@
 		UInt32 fileSize = [fileSizeNumber intValue];
 		NSData *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
 		if (error) {
-			QNAsyncRun ( ^{
-			    QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
-			    completionHandler(info, key, nil);
+			QNAsyncRun( ^{
+				QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+				completionHandler(info, key, nil);
 			});
 			return;
 		}
@@ -180,17 +180,17 @@
 
 		QNResumeUpload *up = [[QNResumeUpload alloc]
 		                      initWithData:data
-		                                      withSize:fileSize
-		                                       withKey:key
-		                                     withToken:token
-		                         withCompletionHandler:complete
-		                                    withOption:option
-		                                withModifyTime:modifyTime
-		                                  withRecorder:_recorder
-		                               withRecorderKey:recorderKey
-		                               withHttpManager:_httpManager];
-		QNAsyncRun ( ^{
-		    [up run];
+		                             withSize:fileSize
+		                              withKey:key
+		                            withToken:token
+		                withCompletionHandler:complete
+		                           withOption:option
+		                       withModifyTime:modifyTime
+		                         withRecorder:_recorder
+		                      withRecorderKey:recorderKey
+		                      withHttpManager:_httpManager];
+		QNAsyncRun( ^{
+			[up run];
 		});
 	}
 }
