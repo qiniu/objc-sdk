@@ -19,7 +19,7 @@
 @interface QNFormUpload ()
 
 @property (nonatomic, strong) NSData *data;
-@property (nonatomic, strong) QNHttpManager *httpManager;
+@property (nonatomic, strong) id <QNHttpDelegate> httpManager;
 @property (nonatomic) int retryTimes;
 @property (nonatomic, strong) NSString *key;
 @property (nonatomic, strong) NSString *token;
@@ -36,7 +36,7 @@
                    withToken:(NSString *)token
        withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option
-             withHttpManager:(QNHttpManager *)http {
+             withHttpManager:(id <QNHttpDelegate> )http {
 	if (self = [super init]) {
 		_data = data;
 		_key = key;

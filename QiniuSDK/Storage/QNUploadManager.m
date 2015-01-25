@@ -8,8 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+#import <MobileCoreServices/MobileCoreServices.h>
+#import <UIKit/UIKit.h>
+#else
+#import <CoreServices/CoreServices.h>
+#endif
+
 #import "QNConfig.h"
 #import "QNHttpManager.h"
+#import "QNSessionManager.h"
 #import "QNResponseInfo.h"
 #import "QNCrc32.h"
 #import "QNUploadManager.h"
@@ -19,7 +27,7 @@
 #import "QNAsyncRun.h"
 
 @interface QNUploadManager ()
-@property (nonatomic) QNHttpManager *httpManager;
+@property (nonatomic) id <QNHttpDelegate> httpManager;
 @property (nonatomic) id <QNRecorderDelegate> recorder;
 @property (nonatomic, strong) QNRecorderKeyGenerator recorderKeyGen;
 @end
@@ -36,8 +44,36 @@
 
 - (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder
             recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator {
+	return [self initWithRecorder:recorder recorderKeyGenerator:recorderKeyGenerator proxy:nil];
+}
+
+- (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder
+            recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator
+                           proxy:(NSDictionary *)proxyDict {
 	if (self = [super init]) {
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
+		BOOL lowVersion = NO;
+	#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
+		float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
+		if (sysVersion < 7.0) {
+			lowVersion = YES;
+		}
+	#else
+		NSOperatingSystemVersion sysVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
+
+		if ((sysVersion.majorVersion = 10 && sysVersion.minorVersion < 9)) {
+			lowVersion = YES;
+		}
+	#endif
+		if (lowVersion) {
+			_httpManager = [[QNHttpManager alloc] init];
+		}
+		else {
+			_httpManager = [[QNSessionManager alloc] initWithProxy:proxyDict];
+		}
+#else
 		_httpManager = [[QNHttpManager alloc] init];
+#endif
 		_recorder = recorder;
 		_recorderKeyGen = recorderKeyGenerator;
 	}
@@ -50,7 +86,7 @@
 
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
-	    sharedInstance = [[self alloc] initWithRecorder:recorder recorderKeyGenerator:recorderKeyGenerator];
+		sharedInstance = [[self alloc] initWithRecorder:recorder recorderKeyGenerator:recorderKeyGenerator];
 	});
 
 	return sharedInstance;
@@ -74,8 +110,8 @@
 		desc = @"no token";
 	}
 	if (desc != nil) {
-		QNAsyncRun ( ^{
-		    completionHandler([QNResponseInfo responseInfoWithInvalidArgument:desc], key, nil);
+		QNAsyncRun( ^{
+			completionHandler([QNResponseInfo responseInfoWithInvalidArgument:desc], key, nil);
 		});
 		return YES;
 	}
@@ -92,13 +128,13 @@
 	}
 	QNFormUpload *up = [[QNFormUpload alloc]
 	                    initWithData:data
-	                                     withKey:key
-	                                   withToken:token
-	                       withCompletionHandler:completionHandler
-	                                  withOption:option
-	                             withHttpManager:_httpManager];
-	QNAsyncRun ( ^{
-	    [up put];
+	                            withKey:key
+	                          withToken:token
+	              withCompletionHandler:completionHandler
+	                         withOption:option
+	                    withHttpManager:_httpManager];
+	QNAsyncRun( ^{
+		[up put];
 	});
 }
 
@@ -116,9 +152,9 @@
 		NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
 
 		if (error) {
-			QNAsyncRun ( ^{
-			    QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
-			    completionHandler(info, key, nil);
+			QNAsyncRun( ^{
+				QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+				completionHandler(info, key, nil);
 			});
 			return;
 		}
@@ -127,9 +163,9 @@
 		UInt32 fileSize = [fileSizeNumber intValue];
 		NSData *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
 		if (error) {
-			QNAsyncRun ( ^{
-			    QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
-			    completionHandler(info, key, nil);
+			QNAsyncRun( ^{
+				QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+				completionHandler(info, key, nil);
 			});
 			return;
 		}
@@ -151,17 +187,17 @@
 
 		QNResumeUpload *up = [[QNResumeUpload alloc]
 		                      initWithData:data
-		                                      withSize:fileSize
-		                                       withKey:key
-		                                     withToken:token
-		                         withCompletionHandler:complete
-		                                    withOption:option
-		                                withModifyTime:modifyTime
-		                                  withRecorder:_recorder
-		                               withRecorderKey:recorderKey
-		                               withHttpManager:_httpManager];
-		QNAsyncRun ( ^{
-		    [up run];
+		                             withSize:fileSize
+		                              withKey:key
+		                            withToken:token
+		                withCompletionHandler:complete
+		                           withOption:option
+		                       withModifyTime:modifyTime
+		                         withRecorder:_recorder
+		                      withRecorderKey:recorderKey
+		                      withHttpManager:_httpManager];
+		QNAsyncRun( ^{
+			[up run];
 		});
 	}
 }

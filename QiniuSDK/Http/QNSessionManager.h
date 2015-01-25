@@ -1,15 +1,11 @@
-//
-//  HttpManager.h
-//  QiniuSDK
-//
-//  Created by bailong on 14/10/1.
-//  Copyright (c) 2014年 Qiniu. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
-#import "QNhttpDelegate.h"
+#import "QNHttpDelegate.h"
 
-@interface QNHttpManager : NSObject <QNHttpDelegate>
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
+
+@interface QNSessionManager : NSObject <QNHttpDelegate>
+
+- (instancetype)initWithProxy:(NSDictionary *)proxyDict;
 
 - (void)multipartPost:(NSString *)url
              withData:(NSData *)data
@@ -29,3 +25,5 @@
       withCancelBlock:(QNCancelBlock)cancelBlock;
 
 @end
+
+#endif

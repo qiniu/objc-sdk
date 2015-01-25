@@ -65,6 +65,20 @@ typedef NSString *(^QNRecorderKeyGenerator)(NSString *uploadKey, NSString *fileP
             recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator;
 
 /**
+ *    使用持久化记录接口以及持久化key生成函数的构造方法，默认情况下使用上传存储的key, 如果key为nil或者有特殊字符比如/，建议使用自己的生成函数
+ *
+ *    @param recorder             持久化记录接口实现
+ *    @param recorderKeyGenerator 持久化记录key生成函数
+ *    @param proxyDict            代理，NSURLSession 的代理，使用参考Apple的文档
+ *
+ *    @return 上传管理类实例
+ */
+- (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder
+            recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator
+                           proxy:(NSDictionary *)proxyDict;
+
+
+/**
  *    方便使用的单例方法
  *
  *    @param recorder             持久化记录接口实现

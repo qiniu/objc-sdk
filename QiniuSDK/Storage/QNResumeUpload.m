@@ -21,7 +21,7 @@ typedef void (^task)(void);
 @interface QNResumeUpload ()
 
 @property (nonatomic, strong) NSData *data;
-@property (nonatomic, strong) QNHttpManager *httpManager;
+@property (nonatomic, strong) id <QNHttpDelegate> httpManager;
 @property UInt32 size;
 @property (nonatomic) int retryTimes;
 @property (nonatomic, strong) NSString *key;
@@ -67,7 +67,7 @@ typedef void (^task)(void);
               withModifyTime:(NSDate *)time
                 withRecorder:(id <QNRecorderDelegate> )recorder
              withRecorderKey:(NSString *)recorderKey
-             withHttpManager:(QNHttpManager *)http {
+             withHttpManager:(id <QNHttpDelegate> )http {
 	if (self = [super init]) {
 		_data = data;
 		_size = size;
