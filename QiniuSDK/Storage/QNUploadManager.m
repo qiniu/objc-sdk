@@ -8,6 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+#import <MobileCoreServices/MobileCoreServices.h>
+#import <UIKit/UIKit.h>
+#else
+#import <CoreServices/CoreServices.h>
+#endif
+
 #import "QNConfig.h"
 #import "QNHttpManager.h"
 #import "QNSessionManager.h"
