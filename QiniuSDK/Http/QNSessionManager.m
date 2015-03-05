@@ -145,7 +145,7 @@ static NSString *userAgent = nil;
 		delegate.progress = progress;
 	}
 
-//	[request setTimeoutInterval:kQNTimeoutInterval];
+	[request setTimeoutInterval:kQNTimeoutInterval];
 
 	[request setValue:userAgent forHTTPHeaderField:@"User-Agent"];
 	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];
