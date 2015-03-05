@@ -82,7 +82,7 @@
 		    progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
 		}];
 	}
-	[request setTimeoutInterval:kQNTimeoutInterval];
+//	[request setTimeoutInterval:kQNTimeoutInterval];
 
 	[request setValue:QNUserAgent() forHTTPHeaderField:@"User-Agent"];
 	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];
