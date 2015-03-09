@@ -25,4 +25,4 @@ const UInt32 kQNPutThreshold = 512 * 1024;
 
 const UInt32 kQNRetryMax = 3;
 
-const float kQNTimeoutInterval = 30.0;
+const float kQNTimeoutInterval = 60.0;

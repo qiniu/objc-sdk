@@ -93,7 +93,12 @@ static NSString *domain = @"qiniu.com";
 				NSError *tmp;
 				NSDictionary *uInfo = [NSJSONSerialization JSONObjectWithData:body options:NSJSONReadingMutableLeaves error:&tmp];
 				if (tmp != nil) {
-					uInfo = @{ @"error":[[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding] };
+					// 出现错误时，如果信息是非UTF8编码会失败，返回nil
+					NSString *str = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding];
+					if (str == nil) {
+						str = @"";
+					}
+					uInfo = @{ @"error": str };
 				}
 				_error = [[NSError alloc] initWithDomain:domain code:_statusCode userInfo:uInfo];
 			}
