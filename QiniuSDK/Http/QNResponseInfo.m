@@ -81,7 +81,6 @@ static NSString *domain = @"qiniu.com";
 		_host = [host copy];
 		_duration = duration;
 		if (status != 200) {
-			_serverIp = [QNDns getAddressesString:host];
 			if (body == nil) {
 				_error = [[NSError alloc] initWithDomain:domain code:_statusCode userInfo:nil];
 			}
