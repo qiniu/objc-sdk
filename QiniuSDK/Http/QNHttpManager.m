@@ -12,7 +12,6 @@
 #import "QNHttpManager.h"
 #import "QNUserAgent.h"
 #import "QNResponseInfo.h"
-#import "QNDns.h"
 
 @interface QNHttpManager ()
 @property (nonatomic) AFHTTPRequestOperationManager *httpManager;

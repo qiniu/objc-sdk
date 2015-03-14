@@ -42,8 +42,17 @@ pod "Qiniu", "~> 7.0"
 
 ## 测试
 
+### 所有测试
+
 ``` bash
 $ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -configuration Release test -test-sdk macosx
+```
+### 指定测试
+
+可以在单元测试上修改，熟悉SDK
+
+``` bash
+$ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -configuration Debug test -test-sdk macosx -only "QiniuSDK MacTests:QNResumeUploadTest/test500k"
 ```
 
 ## 常见问题

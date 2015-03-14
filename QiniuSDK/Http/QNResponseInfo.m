@@ -8,7 +8,6 @@
 
 
 #import "QNResponseInfo.h"
-#import "QNDns.h"
 
 const int kQNFileError = -4;
 const int kQNInvalidArgument = -3;
@@ -57,9 +56,6 @@ static NSString *domain = @"qiniu.com";
 		_error = error;
 		_host = host;
 		_duration = duration;
-		if (error.code != -1003) {
-			_serverIp = [QNDns getAddressesString:host];
-		}
 	}
 	return self;
 }
@@ -112,7 +108,7 @@ static NSString *domain = @"qiniu.com";
 }
 
 - (NSString *)description {
-	return [NSString stringWithFormat:@"<%@: %p, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ duration:%f s serverIp:%@ error: %@>", NSStringFromClass([self class]), self, _statusCode, _reqId, _xlog, _xvia, _host, _duration, _serverIp, _error];
+	return [NSString stringWithFormat:@"<%@: %p, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ duration:%f s error: %@>", NSStringFromClass([self class]), self, _statusCode, _reqId, _xlog, _xvia, _host, _duration, _error];
 }
 
 - (BOOL)isCancelled {
