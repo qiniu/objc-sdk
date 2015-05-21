@@ -14,6 +14,37 @@ const int kQNInvalidArgument = -3;
 const int kQNRequestCancelled = -2;
 const int kQNNetworkError = -1;
 
+/**
+   kCFURLErrorUnknown   = -998,
+   kCFURLErrorCancelled = -999,
+   kCFURLErrorBadURL    = -1000,
+   kCFURLErrorTimedOut  = -1001,
+   kCFURLErrorUnsupportedURL = -1002,
+   kCFURLErrorCannotFindHost = -1003,
+   kCFURLErrorCannotConnectToHost    = -1004,
+   kCFURLErrorNetworkConnectionLost  = -1005,
+   kCFURLErrorDNSLookupFailed        = -1006,
+   kCFURLErrorHTTPTooManyRedirects   = -1007,
+   kCFURLErrorResourceUnavailable    = -1008,
+   kCFURLErrorNotConnectedToInternet = -1009,
+   kCFURLErrorRedirectToNonExistentLocation = -1010,
+   kCFURLErrorBadServerResponse             = -1011,
+   kCFURLErrorUserCancelledAuthentication   = -1012,
+   kCFURLErrorUserAuthenticationRequired    = -1013,
+   kCFURLErrorZeroByteResource        = -1014,
+   kCFURLErrorCannotDecodeRawData     = -1015,
+   kCFURLErrorCannotDecodeContentData = -1016,
+   kCFURLErrorCannotParseResponse     = -1017,
+   kCFURLErrorInternationalRoamingOff = -1018,
+   kCFURLErrorCallIsActive               = -1019,
+   kCFURLErrorDataNotAllowed             = -1020,
+   kCFURLErrorRequestBodyStreamExhausted = -1021,
+   kCFURLErrorFileDoesNotExist           = -1100,
+   kCFURLErrorFileIsDirectory            = -1101,
+   kCFURLErrorNoPermissionsToReadFile    = -1102,
+   kCFURLErrorDataLengthExceedsMaximum   = -1103,
+ */
+
 static QNResponseInfo *cancelledInfo = nil;
 
 static NSString *domain = @"qiniu.com";
@@ -29,9 +60,11 @@ static NSString *domain = @"qiniu.com";
 }
 
 + (instancetype)responseInfoWithNetError:(NSError *)error host:(NSString *)host duration:(double)duration {
-	if (error.code != -1003) {
+	int code = kQNNetworkError;
+	if (error != nil) {
+		code = (int)error.code;
 	}
-	return [[QNResponseInfo alloc] initWithStatus:kQNNetworkError error:error host:host duration:duration];
+	return [[QNResponseInfo alloc] initWithStatus:code error:error host:host duration:duration];
 }
 
 + (instancetype)responseInfoWithFileError:(NSError *)error {
@@ -124,11 +157,11 @@ static NSString *domain = @"qiniu.com";
 }
 
 - (BOOL)needSwitchServer {
-	return _statusCode == kQNNetworkError || (_statusCode / 100 == 5 && _statusCode != 579);
+	return _statusCode == kQNNetworkError || (_statusCode < -1000 && _statusCode != -1003) || (_statusCode / 100 == 5 && _statusCode != 579);
 }
 
 - (BOOL)couldRetry {
-	return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == kQNNetworkError || _statusCode == 996 || _statusCode == 406 || (_statusCode == 200 && _error != nil);
+	return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == kQNNetworkError || _statusCode == 996 || _statusCode == 406 || (_statusCode == 200 && _error != nil) || _statusCode < -1000;
 }
 
 @end
