@@ -9,7 +9,7 @@
 #import "QNFormUpload.h"
 #import "QNUploadManager.h"
 #import "QNUrlSafeBase64.h"
-#import "QNConfig.h"
+#import "QNConfiguration.h"
 #import "QNResponseInfo.h"
 #import "QNHttpManager.h"
 #import "QNUploadOption+Private.h"
@@ -25,7 +25,7 @@
 @property (nonatomic, strong) NSString *token;
 @property (nonatomic, strong) QNUploadOption *option;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
-
+@property (nonatomic, strong) QNConfiguration *config;
 
 @end
 
@@ -36,7 +36,8 @@
                    withToken:(NSString *)token
        withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option
-             withHttpManager:(id <QNHttpDelegate> )http {
+             withHttpManager:(id <QNHttpDelegate> )http
+           withConfiguration:(QNConfiguration *)config {
 	if (self = [super init]) {
 		_data = data;
 		_key = key;
@@ -44,6 +45,7 @@
 		_option = option != nil ? option : [QNUploadOption defaultOptions];
 		_complete = block;
 		_httpManager = http;
+		_config = config;
 	}
 	return self;
 }
@@ -84,9 +86,9 @@
 			_complete(info, _key, resp);
 			return;
 		}
-		NSString *nextHost = kQNUpHost;
+		NSString *nextHost = _config.upHost;
 		if (info.isConnectionBroken || info.needSwitchServer) {
-			nextHost = kQNUpHostBackup;
+			nextHost = _config.upHostBackup;
 		}
 
 		QNCompleteBlock retriedComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
@@ -106,7 +108,7 @@
 		            withCancelBlock:nil];
 	};
 
-	[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kQNUpHost]
+	[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", _config.upHost]
 	                   withData:_data
 	                 withParams:parameters
 	               withFileName:fileName

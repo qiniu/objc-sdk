@@ -30,7 +30,7 @@
 
 - (void)testPost {
 	__block QNResponseInfo *testInfo = nil;
-	NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
+	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	[_httpManager post:@"http://www.baidu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	    testInfo = info;
 	} withProgressBlock:nil withCancelBlock:nil];

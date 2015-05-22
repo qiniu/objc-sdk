@@ -49,6 +49,15 @@
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       allowLocationSimulation = "YES">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "DF2CDDFE19DAC05500CE01FB"
+            BuildableName = "libQiniuSDK Mac.dylib"
+            BlueprintName = "QiniuSDK Mac"
+            ReferencedContainer = "container:QiniuSDK.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <AdditionalOptions>
       </AdditionalOptions>
    </LaunchAction>

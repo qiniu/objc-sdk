@@ -17,7 +17,7 @@
 @implementation QNCrc32Test
 
 - (void)testData {
-	NSData *buffer = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
+	NSData *buffer = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	UInt32 crc = [QNCrc32 data:buffer];
 
 	XCTAssert(crc == 3964322768, @"Pass");

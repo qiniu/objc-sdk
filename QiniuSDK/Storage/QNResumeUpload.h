@@ -22,7 +22,8 @@
               withModifyTime:(NSDate *)time
                 withRecorder:(id <QNRecorderDelegate> )recorder
              withRecorderKey:(NSString *)recorderKey
-             withHttpManager:(id <QNHttpDelegate> )http;
+             withHttpManager:(id <QNHttpDelegate> )http
+           withConfiguration:(QNConfiguration *)config;
 
 - (void)run;
 

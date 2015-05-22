@@ -8,7 +8,7 @@
 
 #import <AFNetworking/AFNetworking.h>
 
-#import "QNConfig.h"
+#import "QNConfiguration.h"
 #import "QNSessionManager.h"
 #import "QNUserAgent.h"
 #import "QNResponseInfo.h"
@@ -53,6 +53,7 @@
 
 @interface QNSessionManager ()
 @property (nonatomic) AFHTTPSessionManager *httpManager;
+@property UInt32 timeout;
 @end
 
 static NSString *userAgent = nil;
@@ -63,7 +64,8 @@ static NSString *userAgent = nil;
 	userAgent = QNUserAgent();
 }
 
-- (instancetype)initWithProxy:(NSDictionary *)proxyDict {
+- (instancetype)initWithProxy:(NSDictionary *)proxyDict
+                      timeout:(UInt32)timeout {
 	if (self = [super init]) {
 		NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
 		if (proxyDict != nil) {
@@ -71,9 +73,14 @@ static NSString *userAgent = nil;
 		}
 		_httpManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
 		_httpManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+		_timeout = timeout;
 	}
 
 	return self;
+}
+
+- (instancetype)init {
+	return [self initWithProxy:nil timeout:60];
 }
 
 + (QNResponseInfo *)buildResponseInfo:(NSHTTPURLResponse *)response
@@ -144,7 +151,7 @@ static NSString *userAgent = nil;
 		delegate.progress = progress;
 	}
 
-	[request setTimeoutInterval:kQNTimeoutInterval];
+	[request setTimeoutInterval:_timeout];
 
 	[request setValue:userAgent forHTTPHeaderField:@"User-Agent"];
 	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];

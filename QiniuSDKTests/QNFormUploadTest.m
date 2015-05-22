@@ -24,7 +24,7 @@
 
 - (void)setUp {
 	[super setUp];
-	_upManager = [QNUploadManager sharedInstanceWithRecorder:nil recorderKeyGenerator:nil];
+	_upManager = [QNUploadManager sharedInstanceWithConfiguration:nil];
 }
 
 - (void)tearDown {
@@ -36,7 +36,7 @@
 	__block NSDictionary *testResp = nil;
 
 	QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo":@"bar" } checkCrc:YES cancellationSignal:nil];
-	NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
+	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	[self.upManager putData:data key:@"你好" token:g_token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
 	    testInfo = info;
 	    testResp = resp;
@@ -52,7 +52,7 @@
 - (void)testUpUnAuth {
 	__block QNResponseInfo *testInfo = nil;
 	__block NSDictionary *testResp = nil;
-	NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
+	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	NSString *token = @"noauth";
 	[self.upManager putData:data key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
 	    testInfo = info;
@@ -96,7 +96,7 @@
 - (void)testNoToken {
 	__block QNResponseInfo *testInfo = nil;
 	__block NSDictionary *testResp = nil;
-	NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
+	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	[self.upManager putData:data key:@"hello" token:nil complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
 	    testInfo = info;
 	    testResp = resp;
@@ -148,7 +148,7 @@
 	__block NSDictionary *testResp = nil;
 	__block NSString *key = nil;
 
-	NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
+	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	[self.upManager putData:data key:nil token:g_token complete: ^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
 	    key = k;
 	    testInfo = info;
@@ -161,7 +161,41 @@
 	XCTAssert(key == nil, @"Pass");
 	XCTAssert(testInfo.isOK, @"Pass");
 	XCTAssert(testInfo.reqId, @"Pass");
-	XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString: testResp[@"key"]], @"Pass");
+	XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");
+}
+
+- (void)testProxy {
+	__block QNResponseInfo *testInfo = nil;
+	__block NSDictionary *testResp = nil;
+	__block NSString *key = nil;
+
+	NSDictionary *proxyDict = @{
+		@"HTTPEnable"  : [NSNumber numberWithInt:1],
+		(NSString *)kCFStreamPropertyHTTPProxyHost  : @"183.136.139.16",
+		(NSString *)kCFStreamPropertyHTTPProxyPort  : @8888,
+	};
+
+	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
+	    builder.proxy = proxyDict;
+	    builder.zone = [[QNZone alloc] initWithUpHost:@"upnono.qiniu.com" upHostBackup:@"" upIp:@""];
+	}];
+
+	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
+
+	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
+	[upManager putData:data key:nil token:g_token complete: ^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
+	    key = k;
+	    testInfo = info;
+	    testResp = resp;
+	} option:nil];
+
+	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+	NSLog(@"%@", testInfo);
+	NSLog(@"%@", testResp);
+	XCTAssert(key == nil, @"Pass");
+	XCTAssert(testInfo.isOK, @"Pass");
+	XCTAssert(testInfo.reqId, @"Pass");
+	XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");
 }
 
 @end

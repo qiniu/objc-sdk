@@ -26,12 +26,12 @@
 	NSURL *file = [QNTempFile createTempfileWithSize:5 * 1024 * 1024];
 	NSString *x = [QNEtag file:[file relativePath] error:&error];
 	NSLog(@"%@", x);
-	XCTAssert([@"lrMhp7oU8rzWSRlmUeGJ73Q2pVa-" isEqualToString: x], @"Pass");
+	XCTAssert([@"lrMhp7oU8rzWSRlmUeGJ73Q2pVa-" isEqualToString:x], @"Pass");
 	[QNTempFile removeTempfile:file];
 }
 
 - (void)testData {
-	NSData *data = [@"etag" dataUsingEncoding : NSUTF8StringEncoding];
+	NSData *data = [@"etag" dataUsingEncoding:NSUTF8StringEncoding];
 	NSLog(@"%@", [QNEtag data:data]);
 	XCTAssert([@"FpLiADEaVoALPkdb8tJEJyRTXoe_" isEqualToString:[QNEtag data:data]], @"Pass");
 }

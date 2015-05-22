@@ -9,7 +9,7 @@
 #import "QNResumeUpload.h"
 #import "QNUploadManager.h"
 #import "QNUrlSafeBase64.h"
-#import "QNConfig.h"
+#import "QNConfiguration.h"
 #import "QNResponseInfo.h"
 #import "QNHttpManager.h"
 #import "QNUploadOption+Private.h"
@@ -34,6 +34,8 @@ typedef void (^task)(void);
 
 @property int64_t modifyTime;
 @property (nonatomic, strong) id <QNRecorderDelegate> recorder;
+
+@property (nonatomic, strong) QNConfiguration *config;
 
 @property UInt32 chunkCrc;
 
@@ -67,7 +69,8 @@ typedef void (^task)(void);
               withModifyTime:(NSDate *)time
                 withRecorder:(id <QNRecorderDelegate> )recorder
              withRecorderKey:(NSString *)recorderKey
-             withHttpManager:(id <QNHttpDelegate> )http {
+             withHttpManager:(id <QNHttpDelegate> )http
+           withConfiguration:(QNConfiguration *)config {
 	if (self = [super init]) {
 		_data = data;
 		_size = size;
@@ -83,6 +86,7 @@ typedef void (^task)(void);
 		}
 		_recorderKey = recorderKey;
 		_contexts = [[NSMutableArray alloc] initWithCapacity:(size + kQNBlockSize - 1) / kQNBlockSize];
+		_config = config;
 	}
 	return self;
 }
@@ -176,7 +180,7 @@ typedef void (^task)(void);
 				[self removeRecord];
 				self.option.progressHandler(self.key, 1.0);
 			}
-			else if (info.couldRetry && retried < kQNRetryMax) {
+			else if (info.couldRetry && retried < _config.retryMax) {
 				[self nextTask:offset retriedTimes:retried + 1 host:host];
 				return;
 			}
@@ -201,14 +205,14 @@ typedef void (^task)(void);
 				[self nextTask:(offset / kQNBlockSize) * kQNBlockSize retriedTimes:0 host:host];
 				return;
 			}
-			if (retried >= kQNRetryMax || !info.couldRetry) {
+			if (retried >= _config.retryMax || !info.couldRetry) {
 				self.complete(info, self.key, resp);
 				return;
 			}
 
 			NSString *nextHost = host;
 			if (info.isConnectionBroken || info.needSwitchServer) {
-				nextHost = kQNUpHostBackup;
+				nextHost = _config.upHostBackup;
 			}
 
 			[self nextTask:offset retriedTimes:retried + 1 host:nextHost];
@@ -241,7 +245,7 @@ typedef void (^task)(void);
 
 - (UInt32)calcPutSize:(UInt32)offset {
 	UInt32 left = self.size - offset;
-	return left < kQNChunkSize ? left : kQNChunkSize;
+	return left < _config.chunkSize ? left : _config.chunkSize;
 }
 
 - (UInt32)calcBlockSize:(UInt32)offset {
@@ -310,7 +314,7 @@ typedef void (^task)(void);
 - (void)run {
 	@autoreleasepool {
 		UInt32 offset = [self recoveryFromRecord];
-		[self nextTask:offset retriedTimes:0 host:kQNUpHost];
+		[self nextTask:offset retriedTimes:0 host:_config.upHost];
 	}
 }
 
