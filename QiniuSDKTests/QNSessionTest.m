@@ -83,6 +83,25 @@
 	XCTAssert(testInfo.error != nil, @"Pass");
 }
 
+- (void)testProxy {
+	NSDictionary *proxyDict = @{
+		@"HTTPEnable"  : [NSNumber numberWithInt:1],
+		(NSString *)kCFStreamPropertyHTTPProxyHost  : @"183.136.139.16",
+		(NSString *)kCFStreamPropertyHTTPProxyPort  : @8888,
+	};
+
+	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:proxyDict timeout:60];
+	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
+	__block QNResponseInfo *testInfo = nil;
+	[httpManager post:@"http://up123.qiniu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+	    testInfo = info;
+	} withProgressBlock:nil withCancelBlock:nil];
+
+	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+	NSLog(@"%@", testInfo);
+	XCTAssert(testInfo.reqId, @"Pass");
+}
+
 @end
 
 #endif

@@ -13,3 +13,4 @@
 #import "QNUploadOption.h"
 #import "QNUploadManager.h"
 #import "QNFileRecorder.h"
+#import "QNConfiguration.h"

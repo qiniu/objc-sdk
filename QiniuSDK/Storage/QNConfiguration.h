@@ -64,12 +64,11 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (readonly) UInt32 timeoutInterval;
 
 
-@property (nonatomic, strong, readonly) id <QNRecorderDelegate> recorder;
+@property (nonatomic, readonly) id <QNRecorderDelegate> recorder;
 
-@property (nonatomic, strong, readonly) QNRecorderKeyGenerator recorderKeyGen;
+@property (nonatomic, readonly) QNRecorderKeyGenerator recorderKeyGen;
 
-@property (nonatomic, strong, readonly)  NSDictionary *proxy;
-
+@property (nonatomic, readonly)  NSDictionary *proxy;
 
 + (instancetype)build:(QNConfigurationBuilderBlock)block;
 

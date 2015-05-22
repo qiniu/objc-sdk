@@ -27,6 +27,11 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 		_putThreshold = builder.putThreshold;
 		_retryMax = builder.retryMax;
 		_timeoutInterval = builder.timeoutInterval;
+
+		_recorder = builder.recorder;
+		_recorderKeyGen = builder.recorderKeyGen;
+
+		_proxy = builder.proxy;
 	}
 	return self;
 }

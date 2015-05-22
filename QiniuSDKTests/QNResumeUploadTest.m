@@ -133,5 +133,37 @@
 	[self template:8 * 1024 + 1];
 }
 
+- (void)testProxy {
+	NSDictionary *proxyDict = @{
+		@"HTTPEnable"  : [NSNumber numberWithInt:1],
+		(NSString *)kCFStreamPropertyHTTPProxyHost  : @"183.136.139.16",
+		(NSString *)kCFStreamPropertyHTTPProxyPort  : @8888,
+	};
+
+	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
+	    builder.proxy = proxyDict;
+	    builder.zone = [[QNZone alloc] initWithUpHost:@"upnono.qiniu.com" upHostBackup:@"" upIp:@""];
+	}];
+
+	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
+
+	int size = 6 * 1024;
+	NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
+	NSString *keyUp = [NSString stringWithFormat:@"%dkproxy", size];
+	__block QNResponseInfo *info = nil;
+	__block NSString *key = nil;
+	[upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+	    key = k;
+	    info = i;
+	} option:nil];
+
+	AGWW_WAIT_WHILE(key == nil, 60 * 30);
+	NSLog(@"info %@", info);
+	XCTAssert(info.isOK, @"Pass");
+	XCTAssert([keyUp isEqualToString:key], @"Pass");
+
+	[QNTempFile removeTempfile:tempFile];
+}
+
 #endif
 @end
