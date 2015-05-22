@@ -14,7 +14,7 @@
 #import "QNFileRecorder.h"
 #import "QNTempFile.h"
 #import "QNTestConfig.h"
-#import "QNConfig.h"
+#import "QNConfiguration.h"
 
 @interface QNFileRecorderTest : XCTestCase
 @property QNUploadManager *upManager;
@@ -76,7 +76,7 @@
 	info = nil;
 	__block BOOL failed = NO;
 	opt = [[QNUploadOption alloc] initWithMime:nil progressHandler: ^(NSString *key, float percent) {
-	    if (percent < pos - kQNChunkSize / (size * 1024.0)) {
+	    if (percent < pos - 256*1024 / (size * 1024.0)) {
 	        failed = YES;
 		}
 	    NSLog(@"continue progress %f", percent);

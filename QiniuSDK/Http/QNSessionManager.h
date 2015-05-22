@@ -5,7 +5,8 @@
 
 @interface QNSessionManager : NSObject <QNHttpDelegate>
 
-- (instancetype)initWithProxy:(NSDictionary *)proxyDict;
+- (instancetype)initWithProxy:(NSDictionary *)proxyDict
+timeout:(UInt32)timeout;
 
 - (void)multipartPost:(NSString *)url
              withData:(NSData *)data

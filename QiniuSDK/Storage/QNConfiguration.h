@@ -8,12 +8,25 @@
 
 #import <Foundation/Foundation.h>
 
+#import "QNRecorderDelegate.h"
+
+/**
+ *    断点上传时的分块大小
+ */
+extern const UInt32 kQNBlockSize;
+
+
+@class QNConfigurationBuilder;
+
+/**
+ *    Builder block
+ *
+ *    @param builder builder实例
+ */
+typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
+
+
 @interface QNConfiguration : NSObject
-
-@end
-
-
-@interface QNZone : NSObject
 
 /**
  *    默认上传服务器地址
@@ -31,6 +44,56 @@
 @property (copy, nonatomic, readonly) NSString *upIp;
 
 /**
+ *    断点上传时的分片大小
+ */
+@property (readonly) UInt32 chunkSize;
+
+/**
+ *    如果大于此值就使用断点上传，否则使用form上传
+ */
+@property (readonly) UInt32 putThreshold;
+
+/**
+ *    上传失败的重试次数
+ */
+@property (readonly) UInt32 retryMax;
+
+/**
+ *    超时时间 单位 秒
+ */
+@property (readonly) UInt32 timeoutInterval;
+
+
+@property (nonatomic, strong, readonly) id <QNRecorderDelegate> recorder;
+
+@property (nonatomic, strong, readonly) QNRecorderKeyGenerator recorderKeyGen;
+
+@property (nonatomic, strong, readonly)  NSDictionary *proxy;
+
+
++(instancetype) build:(QNConfigurationBuilderBlock)block;
+
+@end
+
+
+@interface QNZone : NSObject
+
+/**
+ *    默认上传服务器地址
+ */
+@property (nonatomic, readonly) NSString *upHost;
+
+/**
+ *    备用上传服务器地址
+ */
+@property (nonatomic, readonly) NSString *upHostBackup;
+
+/**
+ *    备用上传IP
+ */
+@property (nonatomic, readonly) NSString *upIp;
+
+/**
  *    Zone初始化方法
  *
  *    @param upHost     默认上传服务器地址
@@ -40,8 +103,8 @@
  *    @return Zone实例
  */
 - (instancetype)initWithUpHost:(NSString *)upHost
-             upHostBackup:(NSString *)upHostBackup
-                      upIp:(NSString *)upIp;
+                  upHostBackup:(NSString *)upHostBackup
+                          upIp:(NSString *)upIp;
 
 /**
  *    zone 0
@@ -56,5 +119,42 @@
  *    @return 实例
  */
 + (instancetype)zone1;
+
+@end
+
+@interface QNConfigurationBuilder : NSObject
+
+/**
+ *    默认上传服务器地址
+ */
+@property (nonatomic, strong) QNZone *zone;
+
+
+/**
+ *    断点上传时的分片大小
+ */
+@property (assign) UInt32 chunkSize;
+
+/**
+ *    如果大于此值就使用断点上传，否则使用form上传
+ */
+@property (assign) UInt32 putThreshold;
+
+/**
+ *    上传失败的重试次数
+ */
+@property (assign) UInt32 retryMax;
+
+/**
+ *    超时时间 单位 秒
+ */
+@property (assign) UInt32 timeoutInterval;
+
+@property (nonatomic, assign) id <QNRecorderDelegate> recorder;
+
+@property (nonatomic, assign) QNRecorderKeyGenerator recorderKeyGen;
+
+@property (nonatomic, assign)  NSDictionary *proxy;
+
 
 @end

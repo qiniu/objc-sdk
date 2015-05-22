@@ -8,25 +8,32 @@
 
 #import <AFNetworking/AFNetworking.h>
 
-#import "QNConfig.h"
+#import "QNConfiguration.h"
 #import "QNHttpManager.h"
 #import "QNUserAgent.h"
 #import "QNResponseInfo.h"
 
 @interface QNHttpManager ()
 @property (nonatomic) AFHTTPRequestOperationManager *httpManager;
+@property UInt32 timeout;
 @end
 
 @implementation QNHttpManager
 
-- (instancetype)init {
+- (instancetype)initWithTimeout:(UInt32) timeout {
 	if (self = [super init]) {
 		_httpManager = [[AFHTTPRequestOperationManager alloc] init];
 		_httpManager.responseSerializer = [AFJSONResponseSerializer serializer];
+        _timeout = timeout;
 	}
 
 	return self;
 }
+
+- (instancetype)init {
+    return [self initWithTimeout:60];
+}
+
 
 + (QNResponseInfo *)buildResponseInfo:(AFHTTPRequestOperation *)operation
                             withError:(NSError *)error
@@ -81,7 +88,7 @@
 		    progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
 		}];
 	}
-	[request setTimeoutInterval:kQNTimeoutInterval];
+	[request setTimeoutInterval:_timeout];
 
 	[request setValue:QNUserAgent() forHTTPHeaderField:@"User-Agent"];
 	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];

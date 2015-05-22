@@ -9,7 +9,7 @@
 #import <zlib.h>
 
 #import "QNCrc32.h"
-#import "QNConfig.h"
+#import "QNConfiguration.h"
 
 @implementation QNCrc32
 

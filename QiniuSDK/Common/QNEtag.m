@@ -9,7 +9,7 @@
 #include <CommonCrypto/CommonCrypto.h>
 
 #import "QNEtag.h"
-#import "QNConfig.h"
+#import "QNConfiguration.h"
 #import "QNUrlSafeBase64.h"
 
 @implementation QNEtag

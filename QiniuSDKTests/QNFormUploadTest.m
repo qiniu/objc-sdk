@@ -24,7 +24,7 @@
 
 - (void)setUp {
 	[super setUp];
-	_upManager = [QNUploadManager sharedInstanceWithRecorder:nil recorderKeyGenerator:nil];
+	_upManager = [QNUploadManager sharedInstanceWithConfiguration:nil];
 }
 
 - (void)tearDown {

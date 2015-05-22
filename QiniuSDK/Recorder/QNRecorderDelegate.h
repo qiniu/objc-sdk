@@ -9,6 +9,17 @@
 #import <Foundation/Foundation.h>
 
 /**
+ *    为持久化上传记录，根据上传的key以及文件名 生成持久化的记录key
+ *
+ *    @param uploadKey 上传的key
+ *    @param filePath  文件名
+ *
+ *    @return 根据uploadKey, filepath 算出的记录key
+ */
+typedef NSString *(^QNRecorderKeyGenerator)(NSString *uploadKey, NSString *filePath);
+
+
+/**
  *    持久化记录接口，可以实现将记录持久化到文件，数据库等
  */
 @protocol QNRecorderDelegate <NSObject>

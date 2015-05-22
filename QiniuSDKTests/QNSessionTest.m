@@ -23,7 +23,7 @@
 
 - (void)setUp {
     [super setUp];
-    _httpManager = [[QNSessionManager alloc] initWithProxy:nil];
+    _httpManager = [[QNSessionManager alloc] init];
 }
 
 - (void)tearDown {
