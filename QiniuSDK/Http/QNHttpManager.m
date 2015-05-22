@@ -20,20 +20,19 @@
 
 @implementation QNHttpManager
 
-- (instancetype)initWithTimeout:(UInt32) timeout {
+- (instancetype)initWithTimeout:(UInt32)timeout {
 	if (self = [super init]) {
 		_httpManager = [[AFHTTPRequestOperationManager alloc] init];
 		_httpManager.responseSerializer = [AFJSONResponseSerializer serializer];
-        _timeout = timeout;
+		_timeout = timeout;
 	}
 
 	return self;
 }
 
 - (instancetype)init {
-    return [self initWithTimeout:60];
+	return [self initWithTimeout:60];
 }
-
 
 + (QNResponseInfo *)buildResponseInfo:(AFHTTPRequestOperation *)operation
                             withError:(NSError *)error

@@ -35,7 +35,7 @@ typedef void (^task)(void);
 @property int64_t modifyTime;
 @property (nonatomic, strong) id <QNRecorderDelegate> recorder;
 
-@property (nonatomic, strong) QNConfiguration* config;
+@property (nonatomic, strong) QNConfiguration *config;
 
 @property UInt32 chunkCrc;
 
@@ -70,7 +70,7 @@ typedef void (^task)(void);
                 withRecorder:(id <QNRecorderDelegate> )recorder
              withRecorderKey:(NSString *)recorderKey
              withHttpManager:(id <QNHttpDelegate> )http
-withConfiguration:(QNConfiguration *)config{
+           withConfiguration:(QNConfiguration *)config {
 	if (self = [super init]) {
 		_data = data;
 		_size = size;
@@ -86,7 +86,7 @@ withConfiguration:(QNConfiguration *)config{
 		}
 		_recorderKey = recorderKey;
 		_contexts = [[NSMutableArray alloc] initWithCapacity:(size + kQNBlockSize - 1) / kQNBlockSize];
-        _config = config;
+		_config = config;
 	}
 	return self;
 }

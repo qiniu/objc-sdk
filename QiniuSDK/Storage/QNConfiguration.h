@@ -71,7 +71,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (nonatomic, strong, readonly)  NSDictionary *proxy;
 
 
-+(instancetype) build:(QNConfigurationBuilderBlock)block;
++ (instancetype)build:(QNConfigurationBuilderBlock)block;
 
 @end
 

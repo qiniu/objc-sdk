@@ -23,7 +23,7 @@
                 withRecorder:(id <QNRecorderDelegate> )recorder
              withRecorderKey:(NSString *)recorderKey
              withHttpManager:(id <QNHttpDelegate> )http
-           withConfiguration:(QNConfiguration*)config;
+           withConfiguration:(QNConfiguration *)config;
 
 - (void)run;
 

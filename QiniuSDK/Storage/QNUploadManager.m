@@ -40,24 +40,24 @@
 }
 
 - (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder {
-    return [self initWithRecorder:recorder recorderKeyGenerator:nil];
+	return [self initWithRecorder:recorder recorderKeyGenerator:nil];
 }
 
 - (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder
             recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator {
-    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        builder.recorder = recorder;
-        builder.recorderKeyGen = recorderKeyGenerator;
-    }];
+	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
+	    builder.recorder = recorder;
+	    builder.recorderKeyGen = recorderKeyGenerator;
+	}];
 	return [self initWithConfiguration:config];
 }
 
 - (instancetype)initWithConfiguration:(QNConfiguration *)config {
 	if (self = [super init]) {
-        if (config == nil) {
-            config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-            }];
-        }
+		if (config == nil) {
+			config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
+			}];
+		}
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 		BOOL lowVersion = NO;
 	#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
@@ -81,7 +81,7 @@
 #else
 		_httpManager = [[QNHttpManager alloc] initWithTimeout:_config.timeoutInterval];
 #endif
-        _config = config;
+		_config = config;
 	}
 	return self;
 }
@@ -133,12 +133,12 @@
 	}
 	QNFormUpload *up = [[QNFormUpload alloc]
 	                    initWithData:data
-	                            withKey:key
-	                          withToken:token
-	              withCompletionHandler:completionHandler
-	                         withOption:option
-	                    withHttpManager:_httpManager
-                        withConfiguration:_config];
+	                              withKey:key
+	                            withToken:token
+	                withCompletionHandler:completionHandler
+	                           withOption:option
+	                      withHttpManager:_httpManager
+	                    withConfiguration:_config];
 	QNAsyncRun( ^{
 		[up put];
 	});
@@ -193,16 +193,16 @@
 
 		QNResumeUpload *up = [[QNResumeUpload alloc]
 		                      initWithData:data
-		                             withSize:fileSize
-		                              withKey:key
-		                            withToken:token
-		                withCompletionHandler:complete
-		                           withOption:option
-		                       withModifyTime:modifyTime
-		                         withRecorder:_config.recorder
-		                      withRecorderKey:recorderKey
-		                      withHttpManager:_httpManager
-                              withConfiguration:_config];
+		                               withSize:fileSize
+		                                withKey:key
+		                              withToken:token
+		                  withCompletionHandler:complete
+		                             withOption:option
+		                         withModifyTime:modifyTime
+		                           withRecorder:_config.recorder
+		                        withRecorderKey:recorderKey
+		                        withHttpManager:_httpManager
+		                      withConfiguration:_config];
 		QNAsyncRun( ^{
 			[up run];
 		});

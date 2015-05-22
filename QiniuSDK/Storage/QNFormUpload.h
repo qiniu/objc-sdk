@@ -19,7 +19,7 @@
        withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option
              withHttpManager:(id <QNHttpDelegate> )http
-withConfiguration:(QNConfiguration*) config;
+           withConfiguration:(QNConfiguration *)config;
 
 - (void)put;
 

@@ -98,7 +98,7 @@
 	XCTAssert(info.isOK, @"Pass");
 	XCTAssert(info.reqId, @"Pass");
 	XCTAssert(key == nil, @"Pass");
-	XCTAssert([@"FnwKMB9tve71u37IlABna6j4Gdyr" isEqualToString: testResp[@"key"]], @"Pass");
+	XCTAssert([@"FnwKMB9tve71u37IlABna6j4Gdyr" isEqualToString:testResp[@"key"]], @"Pass");
 	[QNTempFile removeTempfile:tempFile];
 }
 

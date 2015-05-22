@@ -11,7 +11,7 @@
 
 @interface QNHttpManager : NSObject <QNHttpDelegate>
 
-- (instancetype)initWithTimeout:(UInt32) timeout;
+- (instancetype)initWithTimeout:(UInt32)timeout;
 
 - (void)multipartPost:(NSString *)url
              withData:(NSData *)data

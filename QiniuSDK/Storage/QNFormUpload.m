@@ -25,7 +25,7 @@
 @property (nonatomic, strong) NSString *token;
 @property (nonatomic, strong) QNUploadOption *option;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
-@property (nonatomic, strong) QNConfiguration* config;
+@property (nonatomic, strong) QNConfiguration *config;
 
 @end
 
@@ -37,7 +37,7 @@
        withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option
              withHttpManager:(id <QNHttpDelegate> )http
-           withConfiguration:(QNConfiguration*) config{
+           withConfiguration:(QNConfiguration *)config {
 	if (self = [super init]) {
 		_data = data;
 		_key = key;
@@ -45,7 +45,7 @@
 		_option = option != nil ? option : [QNUploadOption defaultOptions];
 		_complete = block;
 		_httpManager = http;
-        _config = config;
+		_config = config;
 	}
 	return self;
 }

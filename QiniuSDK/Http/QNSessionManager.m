@@ -65,7 +65,7 @@ static NSString *userAgent = nil;
 }
 
 - (instancetype)initWithProxy:(NSDictionary *)proxyDict
-                      timeout:(UInt32)timeout{
+                      timeout:(UInt32)timeout {
 	if (self = [super init]) {
 		NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
 		if (proxyDict != nil) {
@@ -73,14 +73,14 @@ static NSString *userAgent = nil;
 		}
 		_httpManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
 		_httpManager.responseSerializer = [AFHTTPResponseSerializer serializer];
-        _timeout = timeout;
+		_timeout = timeout;
 	}
 
 	return self;
 }
 
 - (instancetype)init {
-    return [self initWithProxy:nil timeout:60];
+	return [self initWithProxy:nil timeout:60];
 }
 
 + (QNResponseInfo *)buildResponseInfo:(NSHTTPURLResponse *)response
