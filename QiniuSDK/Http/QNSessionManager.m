@@ -54,18 +54,14 @@
 @interface QNSessionManager ()
 @property (nonatomic) AFHTTPSessionManager *httpManager;
 @property UInt32 timeout;
+@property (nonatomic, strong) QNUrlConvert converter;
 @end
-
-static NSString *userAgent = nil;
 
 @implementation QNSessionManager
 
-+ (void)initialize {
-	userAgent = QNUserAgent();
-}
-
 - (instancetype)initWithProxy:(NSDictionary *)proxyDict
-                      timeout:(UInt32)timeout {
+                      timeout:(UInt32)timeout
+                 urlConverter:(QNUrlConvert)converter {
 	if (self = [super init]) {
 		NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
 		if (proxyDict != nil) {
@@ -74,13 +70,14 @@ static NSString *userAgent = nil;
 		_httpManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
 		_httpManager.responseSerializer = [AFHTTPResponseSerializer serializer];
 		_timeout = timeout;
+		_converter = converter;
 	}
 
 	return self;
 }
 
 - (instancetype)init {
-	return [self initWithProxy:nil timeout:60];
+	return [self initWithProxy:nil timeout:60 urlConverter:nil];
 }
 
 + (QNResponseInfo *)buildResponseInfo:(NSHTTPURLResponse *)response
@@ -153,7 +150,7 @@ static NSString *userAgent = nil;
 
 	[request setTimeoutInterval:_timeout];
 
-	[request setValue:userAgent forHTTPHeaderField:@"User-Agent"];
+	[request setValue:QNUserAgent() forHTTPHeaderField:@"User-Agent"];
 	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];
 	[uploadTask resume];
 }
@@ -166,6 +163,10 @@ static NSString *userAgent = nil;
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock {
+	if (_converter != nil) {
+		url = _converter(url);
+	}
+
 	NSMutableURLRequest *request = [_httpManager.requestSerializer
 	                                multipartFormRequestWithMethod:@"POST"
 	                                                     URLString:url
@@ -187,6 +188,10 @@ static NSString *userAgent = nil;
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock {
+	if (_converter != nil) {
+		url = _converter(url);
+	}
+
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc] initWithString:url]];
 	if (headers) {
 		[request setAllHTTPHeaderFields:headers];

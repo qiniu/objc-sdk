@@ -58,6 +58,7 @@
 			config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
 			}];
 		}
+		_config = config;
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 		BOOL lowVersion = NO;
 	#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
@@ -73,15 +74,15 @@
 		}
 	#endif
 		if (lowVersion) {
-			_httpManager = [[QNHttpManager alloc] initWithTimeout:_config.timeoutInterval];
+			_httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter];
 		}
 		else {
-			_httpManager = [[QNSessionManager alloc] initWithProxy:config.proxy timeout:_config.timeoutInterval];
+			_httpManager = [[QNSessionManager alloc] initWithProxy:config.proxy timeout:config.timeoutInterval
+			                                          urlConverter:config.converter];
 		}
 #else
-		_httpManager = [[QNHttpManager alloc] initWithTimeout:_config.timeoutInterval];
+		_httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter];
 #endif
-		_config = config;
 	}
 	return self;
 }
