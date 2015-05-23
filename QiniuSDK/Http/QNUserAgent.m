@@ -24,9 +24,14 @@ static NSString *clientId(void) {
 }
 
 NSString *QNUserAgent(void) {
+	static NSString *ua = nil;
+	static dispatch_once_t onceToken;
+	dispatch_once(&onceToken, ^{
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
-	return [NSString stringWithFormat:@"QiniuObject-C/%@ (%@; iOS %@; %@)", kQiniuVersion, [[UIDevice currentDevice] model], [[UIDevice currentDevice] systemVersion], clientId()];
+		ua =  [NSString stringWithFormat:@"QiniuObject-C/%@ (%@; iOS %@; %@)", kQiniuVersion, [[UIDevice currentDevice] model], [[UIDevice currentDevice] systemVersion], clientId()];
 #else
-	return [NSString stringWithFormat:@"QiniuObject-C/%@ (Mac OS X %@; %@)", kQiniuVersion, [[NSProcessInfo processInfo] operatingSystemVersionString], clientId()];
+		ua = [NSString stringWithFormat:@"QiniuObject-C/%@ (Mac OS X %@; %@)", kQiniuVersion, [[NSProcessInfo processInfo] operatingSystemVersionString], clientId()];
 #endif
+	});
+	return ua;
 }

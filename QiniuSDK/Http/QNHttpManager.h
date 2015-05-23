@@ -9,9 +9,12 @@
 #import <Foundation/Foundation.h>
 #import "QNhttpDelegate.h"
 
+#import "QNConfiguration.h"
+
 @interface QNHttpManager : NSObject <QNHttpDelegate>
 
-- (instancetype)initWithTimeout:(UInt32)timeout;
+- (instancetype)initWithTimeout:(UInt32)timeout
+                   urlConverter:(QNUrlConvert)converter;
 
 - (void)multipartPost:(NSString *)url
              withData:(NSData *)data

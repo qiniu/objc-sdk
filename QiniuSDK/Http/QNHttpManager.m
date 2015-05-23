@@ -16,22 +16,25 @@
 @interface QNHttpManager ()
 @property (nonatomic) AFHTTPRequestOperationManager *httpManager;
 @property UInt32 timeout;
+@property (nonatomic, strong) QNUrlConvert converter;
 @end
 
 @implementation QNHttpManager
 
-- (instancetype)initWithTimeout:(UInt32)timeout {
+- (instancetype)initWithTimeout:(UInt32)timeout
+                   urlConverter:(QNUrlConvert)converter {
 	if (self = [super init]) {
 		_httpManager = [[AFHTTPRequestOperationManager alloc] init];
 		_httpManager.responseSerializer = [AFJSONResponseSerializer serializer];
 		_timeout = timeout;
+		_converter = converter;
 	}
 
 	return self;
 }
 
 - (instancetype)init {
-	return [self initWithTimeout:60];
+	return [self initWithTimeout:60 urlConverter:nil];
 }
 
 + (QNResponseInfo *)buildResponseInfo:(AFHTTPRequestOperation *)operation
@@ -102,6 +105,9 @@
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock {
+	if (_converter != nil) {
+		url = _converter(url);
+	}
 	NSMutableURLRequest *request = [_httpManager.requestSerializer
 	                                multipartFormRequestWithMethod:@"POST"
 	                                                     URLString:url
@@ -123,6 +129,10 @@
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock {
+	if (_converter != nil) {
+		url = _converter(url);
+	}
+
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc] initWithString:url]];
 	if (headers) {
 		[request setAllHTTPHeaderFields:headers];

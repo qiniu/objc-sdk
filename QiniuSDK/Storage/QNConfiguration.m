@@ -32,6 +32,8 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 		_recorderKeyGen = builder.recorderKeyGen;
 
 		_proxy = builder.proxy;
+
+		_converter = builder.converter;
 	}
 	return self;
 }
@@ -47,6 +49,12 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 		_putThreshold = 512 * 1024;
 		_retryMax = 5;
 		_timeoutInterval = 60;
+
+		_recorder = nil;
+		_recorderKeyGen = nil;
+
+		_proxy = nil;
+		_converter = nil;
 	}
 	return self;
 }

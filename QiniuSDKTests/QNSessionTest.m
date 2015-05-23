@@ -15,6 +15,8 @@
 #import "QNSessionManager.h"
 #import "QNResponseInfo.h"
 
+#import "QNConfiguration.h"
+
 @interface QNSessionTest : XCTestCase
 @property QNSessionManager *httpManager;
 @end
@@ -90,7 +92,7 @@
 		(NSString *)kCFStreamPropertyHTTPProxyPort  : @8888,
 	};
 
-	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:proxyDict timeout:60];
+	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:proxyDict timeout:60 urlConverter:nil];
 	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	__block QNResponseInfo *testInfo = nil;
 	[httpManager post:@"http://up123.qiniu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
@@ -100,6 +102,24 @@
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
 	XCTAssert(testInfo.reqId, @"Pass");
+}
+
+- (void)testUrlConvert {
+	QNUrlConvert c = ^NSString *(NSString *url) {
+		return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
+	};
+
+	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:c];
+	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
+	__block QNResponseInfo *testInfo = nil;
+	[httpManager post:@"http://upnono.qiniu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+	    testInfo = info;
+	} withProgressBlock:nil withCancelBlock:nil];
+
+	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+	NSLog(@"%@", testInfo);
+	XCTAssert(testInfo.reqId, @"Pass");
+	XCTAssert([testInfo.host isEqual:@"up.qiniu.com"], @"Pass");
 }
 
 @end

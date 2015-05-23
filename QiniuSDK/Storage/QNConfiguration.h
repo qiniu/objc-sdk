@@ -15,6 +15,14 @@
  */
 extern const UInt32 kQNBlockSize;
 
+/**
+ *    转换为用户需要的url
+ *
+ *    @param url  上传url
+ *
+ *    @return 根据上传url算出代理url
+ */
+typedef NSString *(^QNUrlConvert)(NSString *url);
 
 @class QNConfigurationBuilder;
 
@@ -63,12 +71,13 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  */
 @property (readonly) UInt32 timeoutInterval;
 
-
 @property (nonatomic, readonly) id <QNRecorderDelegate> recorder;
 
 @property (nonatomic, readonly) QNRecorderKeyGenerator recorderKeyGen;
 
 @property (nonatomic, readonly)  NSDictionary *proxy;
+
+@property (nonatomic, readonly) QNUrlConvert converter;
 
 + (instancetype)build:(QNConfigurationBuilderBlock)block;
 
@@ -155,5 +164,6 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @property (nonatomic, assign)  NSDictionary *proxy;
 
+@property (nonatomic, assign) QNUrlConvert converter;
 
 @end
