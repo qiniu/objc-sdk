@@ -17,12 +17,14 @@
 @property (nonatomic) AFHTTPRequestOperationManager *httpManager;
 @property UInt32 timeout;
 @property (nonatomic, strong) QNUrlConvert converter;
+@property (nonatomic) NSString *backupIp;
 @end
 
 @implementation QNHttpManager
 
 - (instancetype)initWithTimeout:(UInt32)timeout
-                   urlConverter:(QNUrlConvert)converter {
+                   urlConverter:(QNUrlConvert)converter
+                       backupIp:(NSString *)ip {
 	if (self = [super init]) {
 		_httpManager = [[AFHTTPRequestOperationManager alloc] init];
 		_httpManager.responseSerializer = [AFJSONResponseSerializer serializer];
@@ -34,7 +36,7 @@
 }
 
 - (instancetype)init {
-	return [self initWithTimeout:60 urlConverter:nil];
+	return [self initWithTimeout:60 urlConverter:nil backupIp:nil];
 }
 
 + (QNResponseInfo *)buildResponseInfo:(AFHTTPRequestOperation *)operation

@@ -55,13 +55,15 @@
 @property (nonatomic) AFHTTPSessionManager *httpManager;
 @property UInt32 timeout;
 @property (nonatomic, strong) QNUrlConvert converter;
+@property (nonatomic) NSString *backupIp;
 @end
 
 @implementation QNSessionManager
 
 - (instancetype)initWithProxy:(NSDictionary *)proxyDict
                       timeout:(UInt32)timeout
-                 urlConverter:(QNUrlConvert)converter {
+                 urlConverter:(QNUrlConvert)converter
+                     backupIp:(NSString *)ip {
 	if (self = [super init]) {
 		NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
 		if (proxyDict != nil) {
@@ -71,13 +73,14 @@
 		_httpManager.responseSerializer = [AFHTTPResponseSerializer serializer];
 		_timeout = timeout;
 		_converter = converter;
+		_backupIp = ip;
 	}
 
 	return self;
 }
 
 - (instancetype)init {
-	return [self initWithProxy:nil timeout:60 urlConverter:nil];
+	return [self initWithProxy:nil timeout:60 urlConverter:nil backupIp:nil];
 }
 
 + (QNResponseInfo *)buildResponseInfo:(NSHTTPURLResponse *)response
