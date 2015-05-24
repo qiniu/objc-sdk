@@ -122,6 +122,19 @@
 	XCTAssert([testInfo.host isEqual:@"up.qiniu.com"], @"Pass");
 }
 
+- (void)testPostIp {
+	__block QNResponseInfo *testInfo = nil;
+	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
+	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:nil backupIp:[QNZone zone0].upIp];
+	[httpManager post:@"http://upnonono.qiniu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+	    testInfo = info;
+	} withProgressBlock:nil withCancelBlock:nil];
+
+	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+	NSLog(@"%@", testInfo);
+	XCTAssert(testInfo.reqId, @"Pass");
+}
+
 @end
 
 #endif

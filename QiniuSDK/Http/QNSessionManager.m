@@ -57,6 +57,7 @@
 @property UInt32 timeout;
 @property (nonatomic, strong) QNUrlConvert converter;
 @property (nonatomic) NSString *backupIp;
+@property bool noProxy;
 @end
 
 @implementation QNSessionManager
@@ -69,6 +70,10 @@
 		NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
 		if (proxyDict != nil) {
 			configuration.connectionProxyDictionary = proxyDict;
+			_noProxy = NO;
+		}
+		else {
+			_noProxy = YES;
 		}
 		_httpManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
 		_httpManager.responseSerializer = [AFHTTPResponseSerializer serializer];
@@ -89,7 +94,7 @@
                          withDuration:(double)duration
                          withResponse:(NSData *)body
                              withHost:(NSString *)host
-                               withIp:(NSString *)ip{
+                               withIp:(NSString *)ip {
 	QNResponseInfo *info;
 
 	if (response) {
@@ -104,7 +109,7 @@
 		if (xvia == nil) {
 			xvia = headers[@"Fw-Via"];
 		}
-        info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withXVia:xvia withHost:host withIp:ip withDuration:duration withBody:body];
+		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withXVia:xvia withHost:host withIp:ip withDuration:duration withBody:body];
 	}
 	else {
 		info = [QNResponseInfo responseInfoWithNetError:error host:host duration:duration];
@@ -118,28 +123,30 @@
 	__block NSDate *startTime = [NSDate date];
 	NSProgress *progress = nil;
 	__block NSString *host = request.URL.host;
-    __block NSString *ip = nil;
-    NSString *u = request.URL.absoluteString;
-    NSURL *url = request.URL;
-    if (_converter != nil) {
-        url = [[NSURL alloc] initWithString:_converter(u)];
-        host = url.host;
-    }else {
-        if (_backupIp != nil && ![_backupIp isEqualToString:@""]) {
-            NSString *host = url.host;
-            ip = [QNDns getAddress:host];
-            if ([ip isEqualToString:@""]) {
-                ip = _backupIp;
-            }
-            NSString *path = url.path;
-            if (path == nil || [@"" isEqualToString:path]) {
-                path = @"/";
-            }
-            url = [[NSURL alloc] initWithScheme:url.scheme host:ip path: path];
-            [request setValue:host forHTTPHeaderField:@"Host"];
-        }
-    }
-    request.URL = url;
+	__block NSString *ip = nil;
+	NSString *u = request.URL.absoluteString;
+	NSURL *url = request.URL;
+	if (_converter != nil) {
+		url = [[NSURL alloc] initWithString:_converter(u)];
+		host = url.host;
+	}
+	else {
+		if (_noProxy && _backupIp != nil && ![_backupIp isEqualToString:@""]) {
+			NSString *host = url.host;
+			ip = [QNDns getAddress:host];
+			if ([ip isEqualToString:@""]) {
+				ip = _backupIp;
+			}
+			NSString *path = url.path;
+			if (path == nil || [@"" isEqualToString:path]) {
+				path = @"/";
+			}
+			url = [[NSURL alloc] initWithScheme:url.scheme host:ip path:path];
+			NSLog(@"%@", url);
+			[request setValue:host forHTTPHeaderField:@"Host"];
+		}
+	}
+	request.URL = url;
 
 	if (progressBlock == nil) {
 		progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
@@ -190,7 +197,6 @@
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock {
-
 	NSMutableURLRequest *request = [_httpManager.requestSerializer
 	                                multipartFormRequestWithMethod:@"POST"
 	                                                     URLString:url
@@ -212,7 +218,6 @@
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock {
-
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc] initWithString:url]];
 	if (headers) {
 		[request setAllHTTPHeaderFields:headers];

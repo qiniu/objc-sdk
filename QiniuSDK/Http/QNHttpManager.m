@@ -31,6 +31,7 @@
 		_httpManager.responseSerializer = [AFJSONResponseSerializer serializer];
 		_timeout = timeout;
 		_converter = converter;
+		_backupIp = ip;
 	}
 
 	return self;
@@ -44,7 +45,7 @@
                             withError:(NSError *)error
                          withDuration:(double)duration
                          withResponse:(id)responseObject
-                               withIp:(NSString *)ip{
+                               withIp:(NSString *)ip {
 	QNResponseInfo *info;
 	NSString *host = operation.request.URL.host;
 
@@ -57,7 +58,7 @@
 		if (xvia == nil) {
 			xvia = headers[@"X-Px"];
 		}
-        info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withXVia:xvia withHost:host withIp:ip withDuration:duration withBody:responseObject];
+		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withXVia:xvia withHost:host withIp:ip withDuration:duration withBody:responseObject];
 	}
 	else {
 		info = [QNResponseInfo responseInfoWithNetError:error host:host duration:duration];
@@ -68,35 +69,35 @@
 - (void)  sendRequest:(NSMutableURLRequest *)request
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock {
-    
-    NSString *u = request.URL.absoluteString;
-    NSURL *url = request.URL;
-    __block NSString *ip = nil;
-    if (_converter != nil) {
-        url = [[NSURL alloc] initWithString:_converter(u)];
-    }else {
-        if (_backupIp != nil && ![_backupIp isEqualToString:@""]) {
-            NSString *host = url.host;
-            ip = [QNDns getAddress:host];
-            if ([ip isEqualToString:@""]) {
-                ip = _backupIp;
-            }
-            NSString *path = url.path;
-            if (path == nil || [@"" isEqualToString:path]) {
-                path = @"/";
-            }
-            url = [[NSURL alloc] initWithScheme:url.scheme host:ip path: path];
-            [request setValue:host forHTTPHeaderField:@"Host"];
-        }
-    }
-    request.URL = url;
+	NSString *u = request.URL.absoluteString;
+	NSURL *url = request.URL;
+	__block NSString *ip = nil;
+	if (_converter != nil) {
+		url = [[NSURL alloc] initWithString:_converter(u)];
+	}
+	else {
+		if (_backupIp != nil && ![_backupIp isEqualToString:@""]) {
+			NSString *host = url.host;
+			ip = [QNDns getAddress:host];
+			if ([ip isEqualToString:@""]) {
+				ip = _backupIp;
+			}
+			NSString *path = url.path;
+			if (path == nil || [@"" isEqualToString:path]) {
+				path = @"/";
+			}
+			url = [[NSURL alloc] initWithScheme:url.scheme host:ip path:path];
+			[request setValue:host forHTTPHeaderField:@"Host"];
+		}
+	}
+	request.URL = url;
 
 	__block NSDate *startTime = [NSDate date];
 	AFHTTPRequestOperation *operation = [_httpManager
 	                                     HTTPRequestOperationWithRequest:request
 	                                                             success: ^(AFHTTPRequestOperation *operation, id responseObject) {
 	    double duration = [[NSDate date] timeIntervalSinceDate:startTime];
-	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil withDuration:duration withResponse:operation.responseData  withIp:ip];
+	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil withDuration:duration withResponse:operation.responseData withIp:ip];
 	    NSDictionary *resp = nil;
 	    if (info.isOK) {
 	        resp = responseObject;
@@ -131,7 +132,6 @@
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock {
-	
 	NSMutableURLRequest *request = [_httpManager.requestSerializer
 	                                multipartFormRequestWithMethod:@"POST"
 	                                                     URLString:url
@@ -153,7 +153,6 @@
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock {
-
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc] initWithString:url]];
 	if (headers) {
 		[request setAllHTTPHeaderFields:headers];
