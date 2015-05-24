@@ -9,7 +9,8 @@
 
 - (instancetype)initWithProxy:(NSDictionary *)proxyDict
                       timeout:(UInt32)timeout
-                 urlConverter:(QNUrlConvert)converter;
+                 urlConverter:(QNUrlConvert)converter
+                     backupIp:(NSString *)ip;
 
 - (void)multipartPost:(NSString *)url
              withData:(NSData *)data

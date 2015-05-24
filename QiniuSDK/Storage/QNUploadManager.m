@@ -74,14 +74,14 @@
 		}
 	#endif
 		if (lowVersion) {
-			_httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter];
+			_httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter backupIp:config.upIp];
 		}
 		else {
 			_httpManager = [[QNSessionManager alloc] initWithProxy:config.proxy timeout:config.timeoutInterval
-			                                          urlConverter:config.converter];
+			                                          urlConverter:config.converter backupIp:config.upIp];
 		}
 #else
-		_httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter];
+		_httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter backupIp:config.upIp];
 #endif
 	}
 	return self;
