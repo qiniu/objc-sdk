@@ -13,6 +13,7 @@
 #import "QNUserAgent.h"
 #import "QNResponseInfo.h"
 #import "QNAsyncRun.h"
+#import "QNDns.h"
 
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 
@@ -87,7 +88,8 @@
                             withError:(NSError *)error
                          withDuration:(double)duration
                          withResponse:(NSData *)body
-                             withHost:(NSString *)host {
+                             withHost:(NSString *)host
+                               withIp:(NSString *)ip{
 	QNResponseInfo *info;
 
 	if (response) {
@@ -102,7 +104,7 @@
 		if (xvia == nil) {
 			xvia = headers[@"Fw-Via"];
 		}
-		info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withXVia:xvia withHost:host withDuration:duration withBody:body];
+        info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withXVia:xvia withHost:host withIp:ip withDuration:duration withBody:body];
 	}
 	else {
 		info = [QNResponseInfo responseInfoWithNetError:error host:host duration:duration];
@@ -116,6 +118,28 @@
 	__block NSDate *startTime = [NSDate date];
 	NSProgress *progress = nil;
 	__block NSString *host = request.URL.host;
+    __block NSString *ip = nil;
+    NSString *u = request.URL.absoluteString;
+    NSURL *url = request.URL;
+    if (_converter != nil) {
+        url = [[NSURL alloc] initWithString:_converter(u)];
+        host = url.host;
+    }else {
+        if (_backupIp != nil && ![_backupIp isEqualToString:@""]) {
+            NSString *host = url.host;
+            ip = [QNDns getAddress:host];
+            if ([ip isEqualToString:@""]) {
+                ip = _backupIp;
+            }
+            NSString *path = url.path;
+            if (path == nil || [@"" isEqualToString:path]) {
+                path = @"/";
+            }
+            url = [[NSURL alloc] initWithScheme:url.scheme host:ip path: path];
+            [request setValue:host forHTTPHeaderField:@"Host"];
+        }
+    }
+    request.URL = url;
 
 	if (progressBlock == nil) {
 		progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
@@ -130,14 +154,14 @@
 	    QNResponseInfo *info;
 	    NSDictionary *resp = nil;
 	    if (error == nil) {
-	        info = [QNSessionManager buildResponseInfo:httpResponse withError:nil withDuration:duration withResponse:data withHost:host];
+	        info = [QNSessionManager buildResponseInfo:httpResponse withError:nil withDuration:duration withResponse:data withHost:host withIp:ip];
 	        if (info.isOK) {
 	            NSError *tmp;
 	            resp = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&tmp];
 			}
 		}
 	    else {
-	        info = [QNSessionManager buildResponseInfo:httpResponse withError:error withDuration:duration withResponse:data withHost:host];
+	        info = [QNSessionManager buildResponseInfo:httpResponse withError:error withDuration:duration withResponse:data withHost:host withIp:ip];
 		}
 
 	    if (delegate.progress != nil) {
@@ -166,9 +190,6 @@
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock {
-	if (_converter != nil) {
-		url = _converter(url);
-	}
 
 	NSMutableURLRequest *request = [_httpManager.requestSerializer
 	                                multipartFormRequestWithMethod:@"POST"
@@ -191,9 +212,6 @@
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock {
-	if (_converter != nil) {
-		url = _converter(url);
-	}
 
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc] initWithString:url]];
 	if (headers) {

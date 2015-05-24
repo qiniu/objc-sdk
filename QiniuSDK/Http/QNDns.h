@@ -14,4 +14,6 @@
 
 + (NSString *)getAddressesString:(NSString *)hostName;
 
++ (NSString *)getAddress:(NSString *)hostName;
+
 @end

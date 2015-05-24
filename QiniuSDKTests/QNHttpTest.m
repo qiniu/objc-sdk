@@ -81,4 +81,22 @@
 	XCTAssert(testInfo.error != nil, @"Pass");
 }
 
+- (void)testUrlConvert {
+    QNUrlConvert c = ^NSString *(NSString *url) {
+        return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
+    };
+    
+    QNHttpManager *httpManager = [[QNHttpManager alloc] initWithTimeout:60 urlConverter:c backupIp:nil];
+    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
+    __block QNResponseInfo *testInfo = nil;
+    [httpManager post:@"http://upnono.qiniu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+        testInfo = info;
+    } withProgressBlock:nil withCancelBlock:nil];
+    
+    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+    NSLog(@"%@", testInfo);
+    XCTAssert(testInfo.reqId, @"Pass");
+    XCTAssert([testInfo.host isEqual:@"up.qiniu.com"], @"Pass");
+}
+
 @end

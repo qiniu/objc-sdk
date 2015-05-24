@@ -159,6 +159,7 @@ extern const int kQNFileError;
             withXLog:(NSString *)xlog
             withXVia:(NSString *)xvia
             withHost:(NSString *)host
+              withIp:(NSString *)ip
         withDuration:(double)duration
             withBody:(NSData *)body;
 

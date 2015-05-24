@@ -54,6 +54,14 @@ static NSArray *getAddresses(CFHostRef hostRef) {
 	return ret;
 }
 
++ (NSString *)getAddress:(NSString *)hostName {
+    NSArray *result = [QNDns getAddresses:hostName];
+    if (result == nil || result.count == 0) {
+        return @"";
+    }
+    return result[0];
+}
+
 + (NSString *)getAddressesString:(NSString *)hostName {
 	NSArray *result = [QNDns getAddresses:hostName];
 	if (result == nil || result.count == 0) {
