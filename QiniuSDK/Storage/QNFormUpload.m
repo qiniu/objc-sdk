@@ -98,7 +98,7 @@
 			_complete(info, _key, resp);
 		};
 
-		[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", nextHost]
+		[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@:%u/", nextHost, (unsigned int)_config.upPort]
 		                   withData:_data
 		                 withParams:parameters
 		               withFileName:fileName
@@ -108,7 +108,7 @@
 		            withCancelBlock:nil];
 	};
 
-	[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", _config.upHost]
+	[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@:%u/", _config.upHost, (unsigned int)_config.upPort]
 	                   withData:_data
 	                 withParams:parameters
 	               withFileName:fileName

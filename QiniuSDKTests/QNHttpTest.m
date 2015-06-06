@@ -113,4 +113,16 @@
 	XCTAssert(testInfo.reqId, @"Pass");
 }
 
+- (void)testPostNoPort {
+	__block QNResponseInfo *testInfo = nil;
+	QNHttpManager *httpManager = [[QNHttpManager alloc] initWithTimeout:60 urlConverter:nil backupIp:nil];
+	[httpManager post:@"http://up.qiniu.com:12345/" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+	    testInfo = info;
+	} withProgressBlock:nil withCancelBlock:nil];
+
+	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+	NSLog(@"%@", testInfo);
+	XCTAssert(testInfo.statusCode < 0, @"Pass");
+}
+
 @end
