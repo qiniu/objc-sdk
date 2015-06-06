@@ -23,6 +23,8 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 		_upHost = builder.zone.upHost;
 		_upHostBackup = builder.zone.upHostBackup;
 
+		_upPort = builder.upPort;
+
 		_chunkSize = builder.chunkSize;
 		_putThreshold = builder.putThreshold;
 		_retryMax = builder.retryMax;
@@ -58,6 +60,8 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 
 		_proxy = nil;
 		_converter = nil;
+
+		_upPort = 80;
 	}
 	return self;
 }

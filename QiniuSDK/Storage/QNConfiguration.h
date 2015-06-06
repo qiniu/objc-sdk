@@ -52,6 +52,11 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (copy, nonatomic, readonly) NSString *upIp;
 
 /**
+ *    上传端口
+ */
+@property (nonatomic, readonly) UInt32 upPort;
+
+/**
  *    断点上传时的分片大小
  */
 @property (readonly) UInt32 chunkSize;
@@ -137,6 +142,10 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  */
 @property (nonatomic, strong) QNZone *zone;
 
+/**
+ *    上传端口
+ */
+@property (nonatomic, readonly) UInt32 upPort;
 
 /**
  *    断点上传时的分片大小

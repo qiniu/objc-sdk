@@ -24,6 +24,13 @@
 - (instancetype)initWithProgress:(QNInternalProgressBlock)progressBlock;
 @end
 
+static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
+    port = port == nil? [NSNumber numberWithInt:80]:port;
+    NSString *p = [[NSString alloc] initWithFormat:@"http://%@:%@%@", host, port, path];
+    return [[NSURL alloc] initWithString:p];
+}
+
+
 @implementation QNProgessDelegate
 - (instancetype)initWithProgress:(QNInternalProgressBlock)progressBlock {
 	if (self = [super init]) {
@@ -142,6 +149,7 @@
 				path = @"/";
 			}
 			url = [[NSURL alloc] initWithScheme:url.scheme host:ip path:path];
+            url = buildUrl(ip, url.port, path);
 			NSLog(@"%@", url);
 			[request setValue:host forHTTPHeaderField:@"Host"];
 		}
