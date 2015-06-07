@@ -59,6 +59,18 @@
 		DF3C504819DD7BA6000F548F /* QNFormUploadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DF3C504619DD7BA6000F548F /* QNFormUploadTest.m */; };
 		DF3C504A19DD7D9F000F548F /* QNResumeUploadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DF3C504919DD7D9F000F548F /* QNResumeUploadTest.m */; };
 		DF3C504B19DD7D9F000F548F /* QNResumeUploadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DF3C504919DD7D9F000F548F /* QNResumeUploadTest.m */; };
+		DF437CD21B2426270099587B /* GTM_Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = DF437CD01B2426270099587B /* GTM_Base64.h */; };
+		DF437CD31B2426270099587B /* GTM_Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = DF437CD11B2426270099587B /* GTM_Base64.m */; };
+		DF437CD41B2426270099587B /* GTM_Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = DF437CD11B2426270099587B /* GTM_Base64.m */; };
+		DF437CD51B2426270099587B /* GTM_Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = DF437CD11B2426270099587B /* GTM_Base64.m */; };
+		DF437CD61B2426270099587B /* GTM_Base64.m in Sources */ = {isa = PBXBuildFile; fileRef = DF437CD11B2426270099587B /* GTM_Base64.m */; };
+		DF437CD91B2429E10099587B /* QNUpToken.h in Headers */ = {isa = PBXBuildFile; fileRef = DF437CD71B2429E10099587B /* QNUpToken.h */; };
+		DF437CDA1B2429E10099587B /* QNUpToken.m in Sources */ = {isa = PBXBuildFile; fileRef = DF437CD81B2429E10099587B /* QNUpToken.m */; };
+		DF437CDB1B2429E10099587B /* QNUpToken.m in Sources */ = {isa = PBXBuildFile; fileRef = DF437CD81B2429E10099587B /* QNUpToken.m */; };
+		DF437CDC1B2429E10099587B /* QNUpToken.m in Sources */ = {isa = PBXBuildFile; fileRef = DF437CD81B2429E10099587B /* QNUpToken.m */; };
+		DF437CDD1B2429E10099587B /* QNUpToken.m in Sources */ = {isa = PBXBuildFile; fileRef = DF437CD81B2429E10099587B /* QNUpToken.m */; };
+		DF437CDF1B243A2C0099587B /* QNUpTokenTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DF437CDE1B243A2C0099587B /* QNUpTokenTest.m */; };
+		DF437CE01B243A2C0099587B /* QNUpTokenTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DF437CDE1B243A2C0099587B /* QNUpTokenTest.m */; };
 		DF482FD81B0DA8A2000DAD98 /* QNConfiguration.h in Headers */ = {isa = PBXBuildFile; fileRef = DF482FD61B0DA8A2000DAD98 /* QNConfiguration.h */; };
 		DF482FD91B0DA8A2000DAD98 /* QNConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = DF482FD71B0DA8A2000DAD98 /* QNConfiguration.m */; };
 		DF482FDA1B0DA8A2000DAD98 /* QNConfiguration.m in Sources */ = {isa = PBXBuildFile; fileRef = DF482FD71B0DA8A2000DAD98 /* QNConfiguration.m */; };
@@ -167,6 +179,11 @@
 		DF2CDE7019DAE90300CE01FB /* QNBase64Test.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNBase64Test.m; sourceTree = "<group>"; };
 		DF3C504619DD7BA6000F548F /* QNFormUploadTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNFormUploadTest.m; sourceTree = "<group>"; };
 		DF3C504919DD7D9F000F548F /* QNResumeUploadTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNResumeUploadTest.m; sourceTree = "<group>"; };
+		DF437CD01B2426270099587B /* GTM_Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GTM_Base64.h; sourceTree = "<group>"; };
+		DF437CD11B2426270099587B /* GTM_Base64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GTM_Base64.m; sourceTree = "<group>"; };
+		DF437CD71B2429E10099587B /* QNUpToken.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNUpToken.h; sourceTree = "<group>"; };
+		DF437CD81B2429E10099587B /* QNUpToken.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNUpToken.m; sourceTree = "<group>"; };
+		DF437CDE1B243A2C0099587B /* QNUpTokenTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNUpTokenTest.m; sourceTree = "<group>"; };
 		DF482FD61B0DA8A2000DAD98 /* QNConfiguration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNConfiguration.h; sourceTree = "<group>"; };
 		DF482FD71B0DA8A2000DAD98 /* QNConfiguration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNConfiguration.m; sourceTree = "<group>"; };
 		DF6099F91A5676AA00AC7297 /* QNDns.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNDns.h; sourceTree = "<group>"; };
@@ -328,6 +345,8 @@
 				DF2CDE5719DAC6A400CE01FB /* QNVersion.h */,
 				DFA9B63919DF904000A15FD1 /* QNEtag.h */,
 				DFA9B63A19DF904000A15FD1 /* QNEtag.m */,
+				DF437CD01B2426270099587B /* GTM_Base64.h */,
+				DF437CD11B2426270099587B /* GTM_Base64.m */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -346,6 +365,8 @@
 				DF609A041A58E39D00AC7297 /* QNFormUpload.m */,
 				DF482FD61B0DA8A2000DAD98 /* QNConfiguration.h */,
 				DF482FD71B0DA8A2000DAD98 /* QNConfiguration.m */,
+				DF437CD71B2429E10099587B /* QNUpToken.h */,
+				DF437CD81B2429E10099587B /* QNUpToken.m */,
 			);
 			path = Storage;
 			sourceTree = "<group>";
@@ -365,6 +386,7 @@
 				DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */,
 				DF609A001A5839B400AC7297 /* QNDnsTest.m */,
 				DFF525381A64079B00D02BA1 /* QNSessionTest.m */,
+				DF437CDE1B243A2C0099587B /* QNUpTokenTest.m */,
 			);
 			path = QiniuSDKTests;
 			sourceTree = SOURCE_ROOT;
@@ -388,9 +410,11 @@
 			files = (
 				DF0D23CD19DCE6C400D6B68F /* QNResponseInfo.h in Headers */,
 				DF6099FA1A5676AA00AC7297 /* QNDns.h in Headers */,
+				DF437CD21B2426270099587B /* GTM_Base64.h in Headers */,
 				DF293C9E19DBC2AE00799011 /* QNUserAgent.h in Headers */,
 				DF2CDE6719DAC6A400CE01FB /* QNVersion.h in Headers */,
 				DF293CA419DC04C200799011 /* QNHttpManager.h in Headers */,
+				DF437CD91B2429E10099587B /* QNUpToken.h in Headers */,
 				DFA9B65819E0B53700A15FD1 /* QNFileRecorder.h in Headers */,
 				DF482FD81B0DA8A2000DAD98 /* QNConfiguration.h in Headers */,
 				DF609A051A58E39D00AC7297 /* QNFormUpload.h in Headers */,
@@ -678,6 +702,7 @@
 				DF2CDE5D19DAC6A400CE01FB /* QNUrlSafeBase64.m in Sources */,
 				DF0D23CF19DCE6E500D6B68F /* QNResponseInfo.m in Sources */,
 				DFA9B63C19DF904000A15FD1 /* QNEtag.m in Sources */,
+				DF437CD31B2426270099587B /* GTM_Base64.m in Sources */,
 				DF482FD91B0DA8A2000DAD98 /* QNConfiguration.m in Sources */,
 				DF609A061A58E39D00AC7297 /* QNFormUpload.m in Sources */,
 				DF293C9F19DBC2AE00799011 /* QNUserAgent.m in Sources */,
@@ -685,6 +710,7 @@
 				DF2CDE6119DAC6A400CE01FB /* QNCrc32.m in Sources */,
 				DF293CA619DC05B800799011 /* QNHttpManager.m in Sources */,
 				DF293CAB19DC0E5300799011 /* QNResumeUpload.m in Sources */,
+				DF437CDA1B2429E10099587B /* QNUpToken.m in Sources */,
 				DFF525321A6235D100D02BA1 /* QNSessionManager.m in Sources */,
 				DFA39AA519F1272800A1A158 /* QNAsyncRun.m in Sources */,
 				DFA9B64A19E0018800A15FD1 /* QNUploadOption.m in Sources */,
@@ -704,11 +730,13 @@
 				DFA9B64219DFDA6800A15FD1 /* QNEtag.m in Sources */,
 				DF3C504719DD7BA6000F548F /* QNFormUploadTest.m in Sources */,
 				DF609A011A5839B400AC7297 /* QNDnsTest.m in Sources */,
+				DF437CDF1B243A2C0099587B /* QNUpTokenTest.m in Sources */,
 				DF0D23D219DCF02C00D6B68F /* QNResponseInfo.m in Sources */,
 				DFBC622519DE459800458C4B /* QNHttpTest.m in Sources */,
 				DF0D23C919DCC5B800D6B68F /* QNUserAgent.m in Sources */,
 				DFA39AA619F1272800A1A158 /* QNAsyncRun.m in Sources */,
 				DF0D23C819DCC5B200D6B68F /* QNHttpManager.m in Sources */,
+				DF437CDB1B2429E10099587B /* QNUpToken.m in Sources */,
 				DF0D23C719DCC58000D6B68F /* QNResumeUpload.m in Sources */,
 				DF2CDE8019DAF67F00CE01FB /* QNUrlSafeBase64.m in Sources */,
 				DF3C504A19DD7D9F000F548F /* QNResumeUploadTest.m in Sources */,
@@ -718,6 +746,7 @@
 				DFF525391A64079B00D02BA1 /* QNSessionTest.m in Sources */,
 				DF609A071A58E39D00AC7297 /* QNFormUpload.m in Sources */,
 				DFF525331A6235D100D02BA1 /* QNSessionManager.m in Sources */,
+				DF437CD41B2426270099587B /* GTM_Base64.m in Sources */,
 				DFA9B63F19DFD8C900A15FD1 /* QNEtagTest.m in Sources */,
 				DF6099FD1A5676CA00AC7297 /* QNDns.m in Sources */,
 				DF2CDE8A19DAF67F00CE01FB /* QNUploadManager.m in Sources */,
@@ -732,6 +761,7 @@
 				DF2CDE5E19DAC6A400CE01FB /* QNUrlSafeBase64.m in Sources */,
 				DF0D23D019DCE6E500D6B68F /* QNResponseInfo.m in Sources */,
 				DFA9B63D19DF904000A15FD1 /* QNEtag.m in Sources */,
+				DF437CD51B2426270099587B /* GTM_Base64.m in Sources */,
 				DF482FDA1B0DA8A2000DAD98 /* QNConfiguration.m in Sources */,
 				DF609A081A58E39D00AC7297 /* QNFormUpload.m in Sources */,
 				DF293CA019DBC2AE00799011 /* QNUserAgent.m in Sources */,
@@ -739,6 +769,7 @@
 				DF2CDE6219DAC6A400CE01FB /* QNCrc32.m in Sources */,
 				DF293CA719DC05B800799011 /* QNHttpManager.m in Sources */,
 				DF293CAC19DC0E5300799011 /* QNResumeUpload.m in Sources */,
+				DF437CDC1B2429E10099587B /* QNUpToken.m in Sources */,
 				DFF525341A6235D100D02BA1 /* QNSessionManager.m in Sources */,
 				DFA39AA719F1272800A1A158 /* QNAsyncRun.m in Sources */,
 				DFA9B64B19E0018800A15FD1 /* QNUploadOption.m in Sources */,
@@ -758,11 +789,13 @@
 				DFA9B64119DFDA5F00A15FD1 /* QNEtag.m in Sources */,
 				DF3C504819DD7BA6000F548F /* QNFormUploadTest.m in Sources */,
 				DF609A021A5839B400AC7297 /* QNDnsTest.m in Sources */,
+				DF437CE01B243A2C0099587B /* QNUpTokenTest.m in Sources */,
 				DF0D23D119DCF02400D6B68F /* QNResponseInfo.m in Sources */,
 				DFBC622619DE459800458C4B /* QNHttpTest.m in Sources */,
 				DF0D23CB19DCC5D300D6B68F /* QNHttpManager.m in Sources */,
 				DFA39AA819F1272800A1A158 /* QNAsyncRun.m in Sources */,
 				DF0D23CA19DCC5CF00D6B68F /* QNUserAgent.m in Sources */,
+				DF437CDD1B2429E10099587B /* QNUpToken.m in Sources */,
 				DF0D23C619DCC57500D6B68F /* QNResumeUpload.m in Sources */,
 				DF2CDE7419DAF65800CE01FB /* QNUrlSafeBase64.m in Sources */,
 				DF3C504B19DD7D9F000F548F /* QNResumeUploadTest.m in Sources */,
@@ -772,6 +805,7 @@
 				DFF5253A1A64079B00D02BA1 /* QNSessionTest.m in Sources */,
 				DF609A091A58E39D00AC7297 /* QNFormUpload.m in Sources */,
 				DFF525351A6235D100D02BA1 /* QNSessionManager.m in Sources */,
+				DF437CD61B2426270099587B /* GTM_Base64.m in Sources */,
 				DFA9B64019DFD8C900A15FD1 /* QNEtagTest.m in Sources */,
 				DF6099FF1A5676CA00AC7297 /* QNDns.m in Sources */,
 				DF2CDE7E19DAF65800CE01FB /* QNUploadManager.m in Sources */,

@@ -61,8 +61,8 @@
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
-	XCTAssert(testInfo.statusCode == 401, @"Pass");
-	XCTAssert(testInfo.reqId, @"Pass");
+	XCTAssert(testInfo.statusCode == kQNInvalidToken, @"Pass");
+	XCTAssert(testInfo.reqId == nil, @"Pass");
 }
 
 - (void)testNoData {

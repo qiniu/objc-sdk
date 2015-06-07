@@ -24,6 +24,11 @@ extern const int kQNNetworkError;
 extern const int kQNInvalidArgument;
 
 /**
+ *    错误token状态码
+ */
+extern const int kQNInvalidToken;
+
+/**
  *    读取文件错误状态码
  */
 extern const int kQNFileError;
@@ -119,6 +124,15 @@ extern const int kQNFileError;
  *    @return 错误参数实例
  */
 + (instancetype)responseInfoWithInvalidArgument:(NSString *)desc;
+
+/**
+ *    工厂函数，内部使用
+ *
+ *    @param desc 错误token描述
+ *
+ *    @return 错误token实例
+ */
++ (instancetype)responseInfoWithInvalidToken:(NSString *)desc;
 
 /**
  *    工厂函数，内部使用

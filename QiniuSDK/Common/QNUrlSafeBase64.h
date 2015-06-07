@@ -30,4 +30,12 @@
  */
 + (NSString *)encodeData:(NSData *)source;
 
+/**
+ *    字符串解码
+ *
+ *    @param base64 字符串
+ *
+ *    @return 数据
+ */
++ (NSData *)decodeString:(NSString *)data;
 @end
