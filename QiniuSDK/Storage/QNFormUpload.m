@@ -22,7 +22,7 @@
 @property (nonatomic, strong) id <QNHttpDelegate> httpManager;
 @property (nonatomic) int retryTimes;
 @property (nonatomic, strong) NSString *key;
-@property (nonatomic, strong) NSString *token;
+@property (nonatomic, strong) QNUpToken *token;
 @property (nonatomic, strong) QNUploadOption *option;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) QNConfiguration *config;
@@ -33,7 +33,7 @@
 
 - (instancetype)initWithData:(NSData *)data
                      withKey:(NSString *)key
-                   withToken:(NSString *)token
+                   withToken:(QNUpToken *)token
        withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option
              withHttpManager:(id <QNHttpDelegate> )http
@@ -60,7 +60,7 @@
 		fileName = @"?";
 	}
 
-	parameters[@"token"] = _token;
+	parameters[@"token"] = _token.token;
 
 	[parameters addEntriesFromDictionary:_option.params];
 

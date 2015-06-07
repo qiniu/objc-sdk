@@ -9,6 +9,7 @@
 
 #import "QNResponseInfo.h"
 
+const int kQNInvalidToken = -5;
 const int kQNFileError = -4;
 const int kQNInvalidArgument = -3;
 const int kQNRequestCancelled = -2;
@@ -75,6 +76,10 @@ static NSString *domain = @"qiniu.com";
 
 + (instancetype)responseInfoWithInvalidArgument:(NSString *)text {
 	return [[QNResponseInfo alloc] initWithStatus:kQNInvalidArgument errorDescription:text];
+}
+
++ (instancetype)responseInfoWithInvalidToken:(NSString *)text {
+	return [[QNResponseInfo alloc] initWithStatus:kQNInvalidToken errorDescription:text];
 }
 
 + (instancetype)responseInfoWithNetError:(NSError *)error host:(NSString *)host duration:(double)duration {

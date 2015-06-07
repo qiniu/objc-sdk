@@ -28,6 +28,7 @@ typedef void (^task)(void);
 @property (nonatomic, strong) NSString *recorderKey;
 @property (nonatomic) NSDictionary *headers;
 @property (nonatomic, strong) QNUploadOption *option;
+@property (nonatomic, strong) QNUpToken *token;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) NSMutableArray *contexts;
 @property (nonatomic, readonly, getter = isCancelled) BOOL cancelled;
@@ -63,7 +64,7 @@ typedef void (^task)(void);
 - (instancetype)initWithData:(NSData *)data
                     withSize:(UInt32)size
                      withKey:(NSString *)key
-                   withToken:(NSString *)token
+                   withToken:(QNUpToken *)token
        withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option
               withModifyTime:(NSDate *)time
@@ -75,7 +76,7 @@ typedef void (^task)(void);
 		_data = data;
 		_size = size;
 		_key = key;
-		NSString *tok = [NSString stringWithFormat:@"UpToken %@", token];
+		NSString *tok = [NSString stringWithFormat:@"UpToken %@", token.token];
 		_option = option != nil ? option : [QNUploadOption defaultOptions];
 		_complete = block;
 		_headers = @{ @"Authorization":tok, @"Content-Type":@"application/octet-stream" };
@@ -87,6 +88,8 @@ typedef void (^task)(void);
 		_recorderKey = recorderKey;
 		_contexts = [[NSMutableArray alloc] initWithCapacity:(size + kQNBlockSize - 1) / kQNBlockSize];
 		_config = config;
+
+		_token = token;
 	}
 	return self;
 }

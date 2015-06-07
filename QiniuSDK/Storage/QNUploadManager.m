@@ -25,6 +25,7 @@
 #import "QNFormUpload.h"
 #import "QNUploadOption+Private.h"
 #import "QNAsyncRun.h"
+#import "QNUpToken.h"
 
 @interface QNUploadManager ()
 @property (nonatomic) id <QNHttpDelegate> httpManager;
@@ -133,6 +134,14 @@
 		return;
 	}
 
+	QNUpToken *t = [QNUpToken parse:token];
+	if (t == nil) {
+		QNAsyncRunInMain( ^{
+			completionHandler([QNResponseInfo responseInfoWithInvalidToken:@"invalid token"], key, nil);
+		});
+		return;
+	}
+
 	QNUpCompletionHandler complete = ^(QNResponseInfo *info, NSString *key, NSDictionary *resp)
 	{
 		QNAsyncRunInMain( ^{
@@ -142,7 +151,7 @@
 	QNFormUpload *up = [[QNFormUpload alloc]
 	                    initWithData:data
 	                              withKey:key
-	                            withToken:token
+	                            withToken:t
 	                withCompletionHandler:complete
 	                           withOption:option
 	                      withHttpManager:_httpManager
@@ -162,6 +171,14 @@
 	}
 
 	@autoreleasepool {
+		QNUpToken *t = [QNUpToken parse:token];
+		if (t == nil) {
+			QNAsyncRunInMain( ^{
+				completionHandler([QNResponseInfo responseInfoWithInvalidToken:@"invalid token"], key, nil);
+			});
+			return;
+		}
+
 		NSError *error = nil;
 		NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:&error];
 
@@ -207,7 +224,7 @@
 		                      initWithData:data
 		                               withSize:fileSize
 		                                withKey:key
-		                              withToken:token
+		                              withToken:t
 		                  withCompletionHandler:complete
 		                             withOption:option
 		                         withModifyTime:modifyTime
