@@ -56,10 +56,6 @@ static NSString *mime(NSString *mimeType) {
 	return self;
 }
 
-- (BOOL)priv_isCancelled {
-	return _cancellationSignal && _cancellationSignal();
-}
-
 + (instancetype)defaultOptions {
 	return [[QNUploadOption alloc] initWithMime:nil progressHandler:nil params:nil checkCrc:NO cancellationSignal:nil];
 }

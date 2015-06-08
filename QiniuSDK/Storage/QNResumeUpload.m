@@ -31,7 +31,6 @@ typedef void (^task)(void);
 @property (nonatomic, strong) QNUpToken *token;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) NSMutableArray *contexts;
-@property (nonatomic, readonly, getter = isCancelled) BOOL cancelled;
 
 @property int64_t modifyTime;
 @property (nonatomic, strong) id <QNRecorderDelegate> recorder;
@@ -172,7 +171,7 @@ typedef void (^task)(void);
 }
 
 - (void)nextTask:(UInt32)offset retriedTimes:(int)retried host:(NSString *)host {
-	if (self.isCancelled) {
+	if (self.option.cancellationSignal()) {
 		self.complete([QNResponseInfo cancel], self.key, nil);
 		return;
 	}
@@ -281,10 +280,6 @@ typedef void (^task)(void);
 	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
 }
 
-- (BOOL)isCancelled {
-	return self.option.priv_isCancelled;
-}
-
 - (void)makeFile:(NSString *)uphost
         complete:(QNCompleteBlock)complete {
 	NSString *mime = [[NSString alloc] initWithFormat:@"/mimeType/%@", [QNUrlSafeBase64 encodeString:self.option.mimeType]];
@@ -311,7 +306,7 @@ typedef void (^task)(void);
              withData:(NSData *)data
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock {
-	[_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:nil];
+	[_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal];
 }
 
 - (void)run {

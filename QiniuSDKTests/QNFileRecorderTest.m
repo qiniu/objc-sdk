@@ -68,7 +68,7 @@
 	} option:opt];
 	AGWW_WAIT_WHILE(key == nil, 60 * 30);
 	NSLog(@"info %@", info);
-	XCTAssert(info.statusCode == kQNRequestCancelled, @"Pass");
+	XCTAssert(info.isCancelled, @"Pass");
 	XCTAssert([keyUp isEqualToString:key], @"Pass");
 
 	// continue

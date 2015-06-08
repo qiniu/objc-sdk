@@ -34,7 +34,7 @@ static NSArray *getAddresses(CFHostRef hostRef) {
 			const char *p = inet_ntop(AF_INET, &(remoteAddr->sin_addr), buf, 32);
 			NSString *ip = [NSString stringWithUTF8String:p];
 			[ret addObject:ip];
-			NSLog(@"Resolved %u->%@", i, ip);
+//			NSLog(@"Resolved %u->%@", i, ip);
 		}
 	}
 	return ret;
