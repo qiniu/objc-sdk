@@ -74,7 +74,8 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
 
 - (void)  sendRequest:(NSMutableURLRequest *)request
     withCompleteBlock:(QNCompleteBlock)completeBlock
-    withProgressBlock:(QNInternalProgressBlock)progressBlock {
+    withProgressBlock:(QNInternalProgressBlock)progressBlock
+      withCancelBlock:(QNCancelBlock)cancelBlock{
 	NSString *u = request.URL.absoluteString;
 	NSURL *url = request.URL;
 	__block NSString *ip = nil;
@@ -117,9 +118,21 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
 	}
 	    ];
 
-	if (progressBlock) {
+	if (progressBlock || cancelBlock) {
+        __block AFHTTPRequestOperation *op = nil;
+        if (cancelBlock) {
+            op = operation;
+        }
 		[operation setUploadProgressBlock: ^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-		    progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
+            if (progressBlock) {
+                progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
+            }
+            if (cancelBlock) {
+                if (cancelBlock()) {
+                    [op cancel];
+                }
+                op = nil;
+            }
 		}];
 	}
 	[request setTimeoutInterval:_timeout];
@@ -148,7 +161,8 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
 	                                                         error:nil];
 	[self sendRequest:request
 	    withCompleteBlock:completeBlock
-	    withProgressBlock:progressBlock];
+	    withProgressBlock:progressBlock
+     withCancelBlock:cancelBlock];
 }
 
 - (void)         post:(NSString *)url
@@ -171,7 +185,8 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
 	[request setHTTPBody:data];
 	[self sendRequest:request
 	    withCompleteBlock:completeBlock
-	    withProgressBlock:progressBlock];
+	    withProgressBlock:progressBlock
+     withCancelBlock:cancelBlock];
 }
 
 @end

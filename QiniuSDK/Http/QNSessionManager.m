@@ -21,6 +21,8 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context;
 @property (nonatomic, strong) QNInternalProgressBlock progressBlock;
 @property (nonatomic, strong) NSProgress *progress;
+@property (nonatomic, strong) NSURLSessionUploadTask *task;
+@property (nonatomic, strong) QNCancelBlock cancelBlock;
 - (instancetype)initWithProgress:(QNInternalProgressBlock)progressBlock;
 @end
 
@@ -51,6 +53,9 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
 	void *p = (__bridge void *)(self);
 	if (p == context) {
 		_progressBlock(progress.completedUnitCount, progress.totalUnitCount);
+        if (_cancelBlock && _cancelBlock()) {
+            [_task cancel];
+        }
 	}
 	else {
 		[super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
@@ -126,7 +131,8 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
 
 - (void)  sendRequest:(NSMutableURLRequest *)request
     withCompleteBlock:(QNCompleteBlock)completeBlock
-    withProgressBlock:(QNInternalProgressBlock)progressBlock {
+    withProgressBlock:(QNInternalProgressBlock)progressBlock
+      withCancelBlock:(QNCancelBlock)cancelBlock{
 	__block NSDate *startTime = [NSDate date];
 	NSProgress *progress = nil;
 	__block NSString *host = request.URL.host;
@@ -188,6 +194,8 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
 	if (progress != nil) {
 		[progress addObserver:delegate forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionNew context:(__bridge void *)delegate];
 		delegate.progress = progress;
+        delegate.task = uploadTask;
+        delegate.cancelBlock = cancelBlock;
 	}
 
 	[request setTimeoutInterval:_timeout];
@@ -216,7 +224,8 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
 	                                                         error:nil];
 	[self sendRequest:request
 	    withCompleteBlock:completeBlock
-	    withProgressBlock:progressBlock];
+	    withProgressBlock:progressBlock
+     withCancelBlock:cancelBlock];
 }
 
 - (void)         post:(NSString *)url
@@ -240,7 +249,8 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
 	QNAsyncRun( ^{
 		[self sendRequest:request
 		    withCompleteBlock:completeBlock
-		    withProgressBlock:progressBlock];
+		    withProgressBlock:progressBlock
+         withCancelBlock:cancelBlock];
 	});
 }
 

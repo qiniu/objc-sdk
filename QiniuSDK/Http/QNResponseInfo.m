@@ -169,7 +169,7 @@ static NSString *domain = @"qiniu.com";
 }
 
 - (BOOL)isCancelled {
-	return _statusCode == kQNRequestCancelled;
+	return _statusCode == kQNRequestCancelled || _statusCode == -999;
 }
 
 - (BOOL)isOK {

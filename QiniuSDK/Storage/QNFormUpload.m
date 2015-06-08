@@ -86,6 +86,10 @@
 			_complete(info, _key, resp);
 			return;
 		}
+		if (_option.cancellationSignal()) {
+			_complete([QNResponseInfo cancel], _key, nil);
+			return;
+		}
 		NSString *nextHost = _config.upHost;
 		if (info.isConnectionBroken || info.needSwitchServer) {
 			nextHost = _config.upHostBackup;
@@ -105,7 +109,7 @@
 		               withMimeType:_option.mimeType
 		          withCompleteBlock:retriedComplete
 		          withProgressBlock:p
-		            withCancelBlock:nil];
+		            withCancelBlock:_option.cancellationSignal];
 	};
 
 	[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@:%u/", _config.upHost, (unsigned int)_config.upPort]
@@ -115,7 +119,7 @@
 	               withMimeType:_option.mimeType
 	          withCompleteBlock:complete
 	          withProgressBlock:p
-	            withCancelBlock:nil];
+	            withCancelBlock:_option.cancellationSignal];
 }
 
 @end
