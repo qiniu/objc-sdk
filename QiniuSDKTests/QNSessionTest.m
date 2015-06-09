@@ -37,7 +37,7 @@
 	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	[_httpManager post:@"http://www.baidu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	    testInfo = info;
-	} withProgressBlock:nil withCancelBlock:nil];
+	} withProgressBlock:nil withCancelBlock:nil forceIp:NO];
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
 
@@ -47,7 +47,7 @@
 
 	[_httpManager post:@"http://up.qiniu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	    testInfo = info;
-	} withProgressBlock:nil withCancelBlock:nil];
+	} withProgressBlock:nil withCancelBlock:nil forceIp:NO];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -56,7 +56,7 @@
 	testInfo = nil;
 	[_httpManager post:@"http://httpbin.org/status/500" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	    testInfo = info;
-	} withProgressBlock:nil withCancelBlock:nil];
+	} withProgressBlock:nil withCancelBlock:nil forceIp:NO];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -66,7 +66,7 @@
 	testInfo = nil;
 	[_httpManager post:@"http://httpbin.org/status/418" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	    testInfo = info;
-	} withProgressBlock:nil withCancelBlock:nil];
+	} withProgressBlock:nil withCancelBlock:nil forceIp:NO];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -76,7 +76,7 @@
 	testInfo = nil;
 	[_httpManager post:@"http://httpbin.org/status/200" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	    testInfo = info;
-	} withProgressBlock:nil withCancelBlock:nil];
+	} withProgressBlock:nil withCancelBlock:nil forceIp:NO];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -97,7 +97,7 @@
 	__block QNResponseInfo *testInfo = nil;
 	[httpManager post:@"http://up123.qiniu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	    testInfo = info;
-	} withProgressBlock:nil withCancelBlock:nil];
+	} withProgressBlock:nil withCancelBlock:nil forceIp:NO];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -114,7 +114,7 @@
 	__block QNResponseInfo *testInfo = nil;
 	[httpManager post:@"http://upnono.qiniu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	    testInfo = info;
-	} withProgressBlock:nil withCancelBlock:nil];
+	} withProgressBlock:nil withCancelBlock:nil forceIp:NO];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -128,7 +128,7 @@
 	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:nil backupIp:[QNZone zone0].upIp];
 	[httpManager post:@"http://upnonono.qiniu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	    testInfo = info;
-	} withProgressBlock:nil withCancelBlock:nil];
+	} withProgressBlock:nil withCancelBlock:nil forceIp:NO];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -140,7 +140,7 @@
 	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:nil backupIp:nil];
 	[httpManager post:@"http://up.qiniu.com:12345/" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	    testInfo = info;
-	} withProgressBlock:nil withCancelBlock:nil];
+	} withProgressBlock:nil withCancelBlock:nil forceIp:NO];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);

@@ -19,7 +19,8 @@
          withMimeType:(NSString *)mime
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
-      withCancelBlock:(QNCancelBlock)cancelBlock;
+      withCancelBlock:(QNCancelBlock)cancelBlock
+              forceIp:(BOOL)forceIp;
 
 - (void)         post:(NSString *)url
              withData:(NSData *)data
@@ -27,7 +28,8 @@
           withHeaders:(NSDictionary *)headers
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
-      withCancelBlock:(QNCancelBlock)cancelBlock;
+      withCancelBlock:(QNCancelBlock)cancelBlock
+              forceIp:(BOOL)forceIp;
 
 @end
 

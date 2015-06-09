@@ -193,5 +193,30 @@
 	[QNTempFile removeTempfile:tempFile];
 }
 
+- (void)testDnsHijacking {
+	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
+	    builder.zone = [[QNZone alloc] initWithUpHost:@"uphijacktest.qiniu.com" upHostBackup:@"uphijacktest.qiniu.com" upIp:[QNZone zone0].upIp];
+	}];
+
+	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
+
+	int size = 600;
+	NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
+	NSString *keyUp = [NSString stringWithFormat:@"%dkconvert", size];
+	__block QNResponseInfo *info = nil;
+	__block NSString *key = nil;
+	[upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+	    key = k;
+	    info = i;
+	} option:nil];
+
+	AGWW_WAIT_WHILE(key == nil, 60 * 30);
+	NSLog(@"info %@", info);
+	XCTAssert(info.isOK, @"Pass");
+	XCTAssert([keyUp isEqualToString:key], @"Pass");
+	XCTAssert([info.host isEqual:@"uphijacktest.qiniu.com"], @"Pass");
+	[QNTempFile removeTempfile:tempFile];
+}
+
 #endif
 @end

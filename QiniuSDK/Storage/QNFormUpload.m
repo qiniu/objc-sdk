@@ -95,6 +95,11 @@
 			nextHost = _config.upHostBackup;
 		}
 
+		BOOL forceIp = NO;
+		if (info.isNotQiniu) {
+			forceIp = YES;
+		}
+
 		QNCompleteBlock retriedComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
 			if (info.isOK) {
 				_option.progressHandler(_key, 1.0);
@@ -109,7 +114,8 @@
 		               withMimeType:_option.mimeType
 		          withCompleteBlock:retriedComplete
 		          withProgressBlock:p
-		            withCancelBlock:_option.cancellationSignal];
+		            withCancelBlock:_option.cancellationSignal
+		                    forceIp:forceIp];
 	};
 
 	[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@:%u/", _config.upHost, (unsigned int)_config.upPort]
@@ -119,7 +125,8 @@
 	               withMimeType:_option.mimeType
 	          withCompleteBlock:complete
 	          withProgressBlock:p
-	            withCancelBlock:_option.cancellationSignal];
+	            withCancelBlock:_option.cancellationSignal
+	                    forceIp:NO];
 }
 
 @end

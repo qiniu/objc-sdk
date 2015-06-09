@@ -132,7 +132,8 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
 - (void)  sendRequest:(NSMutableURLRequest *)request
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
-      withCancelBlock:(QNCancelBlock)cancelBlock{
+      withCancelBlock:(QNCancelBlock)cancelBlock
+forceIp:(BOOL) forceIp{
 	__block NSDate *startTime = [NSDate date];
 	NSProgress *progress = nil;
 	__block NSString *host = request.URL.host;
@@ -147,7 +148,7 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
 		if (_noProxy && _backupIp != nil && ![_backupIp isEqualToString:@""]) {
 			NSString *host = url.host;
 			ip = [QNDns getAddress:host];
-			if ([ip isEqualToString:@""]) {
+			if ([ip isEqualToString:@""] || forceIp) {
 				ip = _backupIp;
 			}
 			NSString *path = url.path;
@@ -212,7 +213,8 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
          withMimeType:(NSString *)mime
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
-      withCancelBlock:(QNCancelBlock)cancelBlock {
+      withCancelBlock:(QNCancelBlock)cancelBlock
+forceIp:(BOOL) forceIp{
 	NSMutableURLRequest *request = [_httpManager.requestSerializer
 	                                multipartFormRequestWithMethod:@"POST"
 	                                                     URLString:url
@@ -225,7 +227,8 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
 	[self sendRequest:request
 	    withCompleteBlock:completeBlock
 	    withProgressBlock:progressBlock
-     withCancelBlock:cancelBlock];
+     withCancelBlock:cancelBlock
+     forceIp:forceIp];
 }
 
 - (void)         post:(NSString *)url
@@ -234,7 +237,8 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
           withHeaders:(NSDictionary *)headers
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
-      withCancelBlock:(QNCancelBlock)cancelBlock {
+      withCancelBlock:(QNCancelBlock)cancelBlock
+forceIp:(BOOL) forceIp{
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc] initWithString:url]];
 	if (headers) {
 		[request setAllHTTPHeaderFields:headers];
@@ -250,7 +254,8 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
 		[self sendRequest:request
 		    withCompleteBlock:completeBlock
 		    withProgressBlock:progressBlock
-         withCancelBlock:cancelBlock];
+         withCancelBlock:cancelBlock
+         forceIp: forceIp];
 	});
 }
 
