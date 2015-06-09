@@ -172,13 +172,17 @@ static NSString *domain = @"qiniu.com";
 	return _statusCode == kQNRequestCancelled || _statusCode == -999;
 }
 
+- (BOOL)isNotQiniu {
+	return (_statusCode >= 200 && _statusCode < 500) && _reqId == nil;
+}
+
 - (BOOL)isOK {
 	return _statusCode == 200 && _error == nil && _reqId != nil;
 }
 
 - (BOOL)isConnectionBroken {
 	// reqId is nill means the server is not qiniu
-	return _statusCode == kQNNetworkError;
+	return _statusCode == kQNNetworkError || (_statusCode < -1000 && _statusCode != -1003);
 }
 
 - (BOOL)needSwitchServer {
@@ -186,7 +190,7 @@ static NSString *domain = @"qiniu.com";
 }
 
 - (BOOL)couldRetry {
-	return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == kQNNetworkError || _statusCode == 996 || _statusCode == 406 || (_statusCode == 200 && _error != nil) || _statusCode < -1000;
+	return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == kQNNetworkError || _statusCode == 996 || _statusCode == 406 || (_statusCode == 200 && _error != nil) || _statusCode < -1000 || self.isNotQiniu;
 }
 
 @end

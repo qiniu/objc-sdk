@@ -14,13 +14,13 @@
 
 #import "QNTestConfig.h"
 
-@interface QNFormUploadTesT : XCTestCase
+@interface QNFormUploadTest : XCTestCase
 
 @property QNUploadManager *upManager;
 
 @end
 
-@implementation QNFormUploadTesT
+@implementation QNFormUploadTest
 
 - (void)setUp {
 	[super setUp];
@@ -226,6 +226,34 @@
 	XCTAssert(testInfo.isOK, @"Pass");
 	XCTAssert(testInfo.reqId, @"Pass");
 	XCTAssert([testInfo.host isEqual:@"up.qiniu.com"], @"Pass");
+	XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");
+}
+
+- (void)testDnsHijacking {
+	__block QNResponseInfo *testInfo = nil;
+	__block NSDictionary *testResp = nil;
+	__block NSString *key = nil;
+
+	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
+	    builder.zone = [[QNZone alloc] initWithUpHost:@"uphijacktest.qiniu.com" upHostBackup:@"uphijacktest.qiniu.com" upIp:[QNZone zone0].upIp];
+	}];
+
+	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
+
+	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
+	[upManager putData:data key:nil token:g_token complete: ^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
+	    key = k;
+	    testInfo = info;
+	    testResp = resp;
+	} option:nil];
+
+	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+	NSLog(@"%@", testInfo);
+	NSLog(@"%@", testResp);
+	XCTAssert(key == nil, @"Pass");
+	XCTAssert(testInfo.isOK, @"Pass");
+	XCTAssert(testInfo.reqId, @"Pass");
+	XCTAssert([testInfo.host isEqual:@"uphijacktest.qiniu.com"], @"Pass");
 	XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");
 }
 

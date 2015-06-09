@@ -108,6 +108,10 @@ extern const int kQNFileError;
  */
 @property (nonatomic, readonly) BOOL needSwitchServer;
 
+/**
+ *    是否为 七牛响应
+ */
+@property (nonatomic, readonly, getter = isNotQiniu) BOOL notQiniu;
 
 /**
  *    工厂函数，内部使用

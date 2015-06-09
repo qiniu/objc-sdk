@@ -39,6 +39,8 @@ typedef void (^task)(void);
 
 @property UInt32 chunkCrc;
 
+@property BOOL forceIp;
+
 - (void)makeBlock:(NSString *)uphost
            offset:(UInt32)offset
         blockSize:(UInt32)blockSize
@@ -89,6 +91,7 @@ typedef void (^task)(void);
 		_config = config;
 
 		_token = token;
+		_forceIp = NO;
 	}
 	return self;
 }
@@ -217,6 +220,10 @@ typedef void (^task)(void);
 				nextHost = _config.upHostBackup;
 			}
 
+			if (info.isNotQiniu) {
+				_forceIp = YES;
+			}
+
 			[self nextTask:offset retriedTimes:retried + 1 host:nextHost];
 			return;
 		}
@@ -306,7 +313,8 @@ typedef void (^task)(void);
              withData:(NSData *)data
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock {
-	[_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal];
+	[_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal
+	           forceIp:_forceIp];
 }
 
 - (void)run {
