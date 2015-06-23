@@ -113,6 +113,8 @@ static NSString *domain = @"qiniu.com";
 		_error = error;
 		_host = host;
 		_duration = duration;
+        _id = [QNUserAgent sharedInstance].id;
+        _timeStamp = [[NSDate date] timeIntervalSince1970];
 	}
 	return self;
 }
@@ -168,7 +170,7 @@ static NSString *domain = @"qiniu.com";
 }
 
 - (NSString *)description {
-	return [NSString stringWithFormat:@"<%@: id%@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ ip: %@ duration:%f s time:%llu error: %@>", NSStringFromClass([self class]), _id, _statusCode, _reqId, _xlog, _xvia, _host, _serverIp, _duration, _timeStamp, _error];
+	return [NSString stringWithFormat:@"<%@= id: %@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ ip: %@ duration: %f s time: %llu error: %@>", NSStringFromClass([self class]), _id, _statusCode, _reqId, _xlog, _xvia, _host, _serverIp, _duration, _timeStamp, _error];
 }
 
 - (BOOL)isCancelled {
