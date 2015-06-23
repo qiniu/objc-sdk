@@ -138,7 +138,7 @@ forceIp:(BOOL) forceIp{
 	}
 	[request setTimeoutInterval:_timeout];
 
-	[request setValue:QNUserAgent() forHTTPHeaderField:@"User-Agent"];
+	[request setValue:[[QNUserAgent sharedInstance] description] forHTTPHeaderField:@"User-Agent"];
 	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];
 	[_httpManager.operationQueue addOperation:operation];
 }

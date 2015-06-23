@@ -8,6 +8,7 @@
 
 
 #import "QNResponseInfo.h"
+#import "QNUserAgent.h"
 
 const int kQNInvalidToken = -5;
 const int kQNFileError = -4;
@@ -112,6 +113,8 @@ static NSString *domain = @"qiniu.com";
 		_error = error;
 		_host = host;
 		_duration = duration;
+        _id = [QNUserAgent sharedInstance].id;
+        _timeStamp = [[NSDate date] timeIntervalSince1970];
 	}
 	return self;
 }
@@ -138,6 +141,8 @@ static NSString *domain = @"qiniu.com";
 		_host = [host copy];
 		_duration = duration;
 		_serverIp = ip;
+		_id = [QNUserAgent sharedInstance].id;
+		_timeStamp = [[NSDate date] timeIntervalSince1970];
 		if (status != 200) {
 			if (body == nil) {
 				_error = [[NSError alloc] initWithDomain:domain code:_statusCode userInfo:nil];
@@ -165,7 +170,7 @@ static NSString *domain = @"qiniu.com";
 }
 
 - (NSString *)description {
-	return [NSString stringWithFormat:@"<%@: %p, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ ip: %@ duration:%f s error: %@>", NSStringFromClass([self class]), self, _statusCode, _reqId, _xlog, _xvia, _host, _serverIp, _duration, _error];
+	return [NSString stringWithFormat:@"<%@= id: %@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ ip: %@ duration: %f s time: %llu error: %@>", NSStringFromClass([self class]), _id, _statusCode, _reqId, _xlog, _xvia, _host, _serverIp, _duration, _timeStamp, _error];
 }
 
 - (BOOL)isCancelled {

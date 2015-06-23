@@ -79,6 +79,16 @@ extern const int kQNFileError;
 @property (nonatomic, readonly) NSString *serverIp;
 
 /**
+ *    客户端id
+ */
+@property (nonatomic, readonly) NSString *id;
+
+/**
+ *    时间戳
+ */
+@property (readonly) UInt64 timeStamp;
+
+/**
  *    网络类型
  */
 //@property (nonatomic, readonly) NSString *networkType;

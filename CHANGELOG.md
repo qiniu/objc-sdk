@@ -1,5 +1,10 @@
 #Changelog
 
+## 7.0.11.1 (2015-06-23)
+
+### 增加
+* response info 增加 user id, timestamp
+
 ## 7.0.11 (2015-06-07)
 
 ### 增加
