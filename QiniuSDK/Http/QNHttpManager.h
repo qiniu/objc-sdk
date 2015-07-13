@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "QNhttpDelegate.h"
+#import "QNHttpDelegate.h"
 
 #import "QNConfiguration.h"
 
