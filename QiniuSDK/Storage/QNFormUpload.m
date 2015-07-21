@@ -95,11 +95,6 @@
 			nextHost = _config.upHostBackup;
 		}
 
-		BOOL forceIp = NO;
-		if (info.isNotQiniu) {
-			forceIp = YES;
-		}
-
 		QNCompleteBlock retriedComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
 			if (info.isOK) {
 				_option.progressHandler(_key, 1.0);

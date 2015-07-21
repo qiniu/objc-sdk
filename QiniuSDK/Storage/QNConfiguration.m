@@ -71,7 +71,7 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 		_zone = [QNZone zone0];
 		_chunkSize = 256 * 1024;
 		_putThreshold = 512 * 1024;
-		_retryMax = 5;
+		_retryMax = 2;
 		_timeoutInterval = 60;
 
 		_recorder = nil;

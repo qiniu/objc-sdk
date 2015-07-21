@@ -33,14 +33,14 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
     return [[NSURL alloc] initWithString:p];
 }
 
-static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error){
+static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
     if (error != nil) {
         return error.code < -1000;
     }
-    if (op == nil) {
+    if (httpResponse == nil) {
         return YES;
     }
-    int status = (int)[op.response statusCode];
+    int status = (int)httpResponse.statusCode;
     return status >= 500 && status < 600 && status != 579;
 }
 
@@ -206,6 +206,14 @@ static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error){
         double duration = [[NSDate date] timeIntervalSinceDate:startTime];
         QNResponseInfo *info;
         NSDictionary *resp = nil;
+        if (delegate.progress != nil) {
+            [delegate.progress removeObserver:delegate forKeyPath:@"fractionCompleted" context:(__bridge void *)(delegate)];
+            delegate.progress = nil;
+        }
+        if (_converter != nil && _noProxy && (index+1 < ips.count || times>0) && needRetry(httpResponse, error)) {
+            [self sendRequest2:request withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:cancelBlock withIpArray:ips withIndex:index+1 withDomain:domain withRetryTimes:times -1 withStartTime:startTime];
+            return;
+        }
         if (error == nil) {
             info = [QNSessionManager buildResponseInfo:httpResponse withError:nil withDuration:duration withResponse:data withHost:domain withIp:ip];
             if (info.isOK) {
@@ -217,10 +225,6 @@ static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error){
             info = [QNSessionManager buildResponseInfo:httpResponse withError:error withDuration:duration withResponse:data withHost:domain withIp:ip];
         }
         
-        if (delegate.progress != nil) {
-            [delegate.progress removeObserver:delegate forKeyPath:@"fractionCompleted" context:(__bridge void *)(delegate)];
-            delegate.progress = nil;
-        }
         completeBlock(info, resp);
     }];
     if (progress != nil) {

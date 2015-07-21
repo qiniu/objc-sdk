@@ -220,10 +220,6 @@ typedef void (^task)(void);
 				nextHost = _config.upHostBackup;
 			}
 
-			if (info.isNotQiniu) {
-				_forceIp = YES;
-			}
-
 			[self nextTask:offset retriedTimes:retried + 1 host:nextHost];
 			return;
 		}
