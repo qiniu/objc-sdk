@@ -90,9 +90,9 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 @implementation QNZone
 
 - (instancetype)initWithUpHost:(NSString *)upHost
-        upHostBackup:(NSString *)upHostBackup
-        upIp:(NSString *)upIp
-        upIp2:(NSString*)upIp2; {
+                  upHostBackup:(NSString *)upHostBackup
+                          upIp:(NSString *)upIp
+                         upIp2:(NSString*)upIp2; {
 	if (self = [super init]) {
 		_upHost = upHost;
 		_upHostBackup = upHostBackup;

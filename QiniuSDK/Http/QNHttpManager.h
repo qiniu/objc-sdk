@@ -14,24 +14,24 @@
 @interface QNHttpManager : NSObject <QNHttpDelegate>
 
 - (instancetype)initWithTimeout:(UInt32)timeout
-        urlConverter:(QNUrlConvert)converter
-        dns:(QNDnsManager *)dns;
+                   urlConverter:(QNUrlConvert)converter
+                            dns:(QNDnsManager *)dns;
 
-- (void)multipartPost:(NSString *)url
-        withData:(NSData *)data
-        withParams:(NSDictionary *)params
-        withFileName:(NSString *)key
-        withMimeType:(NSString *)mime
+- (void)    multipartPost:(NSString *)url
+                 withData:(NSData *)data
+               withParams:(NSDictionary *)params
+             withFileName:(NSString *)key
+             withMimeType:(NSString *)mime
         withCompleteBlock:(QNCompleteBlock)completeBlock
         withProgressBlock:(QNInternalProgressBlock)progressBlock
-        withCancelBlock:(QNCancelBlock)cancelBlock;
+          withCancelBlock:(QNCancelBlock)cancelBlock;
 
-- (void)         post:(NSString *)url
-        withData:(NSData *)data
-        withParams:(NSDictionary *)params
-        withHeaders:(NSDictionary *)headers
+- (void)             post:(NSString *)url
+                 withData:(NSData *)data
+               withParams:(NSDictionary *)params
+              withHeaders:(NSDictionary *)headers
         withCompleteBlock:(QNCompleteBlock)completeBlock
         withProgressBlock:(QNInternalProgressBlock)progressBlock
-        withCancelBlock:(QNCancelBlock)cancelBlock;
+          withCancelBlock:(QNCancelBlock)cancelBlock;
 
 @end

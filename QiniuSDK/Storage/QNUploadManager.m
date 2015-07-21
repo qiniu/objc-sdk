@@ -45,7 +45,7 @@
 }
 
 - (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder
-        recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator {
+            recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator {
 	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
 	                                   builder.recorder = recorder;
 	                                   builder.recorderKeyGen = recorderKeyGenerator;
@@ -99,10 +99,10 @@
 }
 
 + (BOOL)checkAndNotifyError:(NSString *)key
-        token:(NSString *)token
-        data:(NSData *)data
-        file:(NSString *)file
-        complete:(QNUpCompletionHandler)completionHandler {
+                      token:(NSString *)token
+                       data:(NSData *)data
+                       file:(NSString *)file
+                   complete:(QNUpCompletionHandler)completionHandler {
 	NSString *desc = nil;
 	if (completionHandler == nil) {
 		@throw [NSException exceptionWithName:NSInvalidArgumentException
@@ -124,11 +124,11 @@
 	return NO;
 }
 
-- (void)putData:(NSData *)data
-        key:(NSString *)key
-        token:(NSString *)token
+- (void) putData:(NSData *)data
+             key:(NSString *)key
+           token:(NSString *)token
         complete:(QNUpCompletionHandler)completionHandler
-        option:(QNUploadOption *)option {
+          option:(QNUploadOption *)option {
 	if ([QNUploadManager checkAndNotifyError:key token:token data:data file:nil complete:completionHandler]) {
 		return;
 	}
@@ -160,11 +160,11 @@
 	});
 }
 
-- (void)putFile:(NSString *)filePath
-        key:(NSString *)key
-        token:(NSString *)token
+- (void) putFile:(NSString *)filePath
+             key:(NSString *)key
+           token:(NSString *)token
         complete:(QNUpCompletionHandler)completionHandler
-        option:(QNUploadOption *)option {
+          option:(QNUploadOption *)option {
 	if ([QNUploadManager checkAndNotifyError:key token:token data:nil file:filePath complete:completionHandler]) {
 		return;
 	}

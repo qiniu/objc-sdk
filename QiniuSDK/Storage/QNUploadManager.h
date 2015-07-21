@@ -53,7 +53,7 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
  *    @return 上传管理类实例
  */
 - (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder
-        recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator;
+            recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator;
 
 /**
  *    使用配置信息生成上传实例
@@ -83,11 +83,11 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
  *    @param completionHandler 上传完成后的回调函数
  *    @param option            上传时传入的可选参数
  */
-- (void)putData:(NSData *)data
-        key:(NSString *)key
-        token:(NSString *)token
+- (void) putData:(NSData *)data
+             key:(NSString *)key
+           token:(NSString *)token
         complete:(QNUpCompletionHandler)completionHandler
-        option:(QNUploadOption *)option;
+          option:(QNUploadOption *)option;
 
 /**
  *    上传文件
@@ -98,10 +98,10 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
  *    @param completionHandler 上传完成后的回调函数
  *    @param option            上传时传入的可选参数
  */
-- (void)putFile:(NSString *)filePath
-        key:(NSString *)key
-        token:(NSString *)token
+- (void) putFile:(NSString *)filePath
+             key:(NSString *)key
+           token:(NSString *)token
         complete:(QNUpCompletionHandler)completionHandler
-        option:(QNUploadOption *)option;
+          option:(QNUploadOption *)option;
 
 @end

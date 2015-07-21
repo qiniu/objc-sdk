@@ -214,28 +214,28 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 @interface GTM_Base64 (PrivateMethods)
 
 + (NSData *)baseEncode:(const void *)bytes
-        length:(NSUInteger)length
-        charset:(const char *)charset
-        padded:(BOOL)padded;
+                length:(NSUInteger)length
+               charset:(const char *)charset
+                padded:(BOOL)padded;
 
 + (NSData *)baseDecode:(const void *)bytes
-        length:(NSUInteger)length
-        charset:(const char *)charset
+                length:(NSUInteger)length
+               charset:(const char *)charset
         requirePadding:(BOOL)requirePadding;
 
 + (NSUInteger)baseEncode:(const char *)srcBytes
-        srcLen:(NSUInteger)srcLen
-        destBytes:(char *)destBytes
-        destLen:(NSUInteger)destLen
-        charset:(const char *)charset
-        padded:(BOOL)padded;
+                  srcLen:(NSUInteger)srcLen
+               destBytes:(char *)destBytes
+                 destLen:(NSUInteger)destLen
+                 charset:(const char *)charset
+                  padded:(BOOL)padded;
 
 + (NSUInteger)baseDecode:(const char *)srcBytes
-        srcLen:(NSUInteger)srcLen
-        destBytes:(char *)destBytes
-        destLen:(NSUInteger)destLen
-        charset:(const char *)charset
-        requirePadding:(BOOL)requirePadding;
+                  srcLen:(NSUInteger)srcLen
+               destBytes:(char *)destBytes
+                 destLen:(NSUInteger)destLen
+                 charset:(const char *)charset
+          requirePadding:(BOOL)requirePadding;
 
 @end
 
@@ -322,7 +322,7 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 //
 
 + (NSData *)webSafeEncodeData:(NSData *)data
-        padded:(BOOL)padded {
+                       padded:(BOOL)padded {
 	return [self baseEncode:[data bytes]
 	        length:[data length]
 	        charset:kWebSafeBase64EncodeChars
@@ -337,8 +337,8 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 }
 
 + (NSData *)webSafeEncodeBytes:(const void *)bytes
-        length:(NSUInteger)length
-        padded:(BOOL)padded {
+                        length:(NSUInteger)length
+                        padded:(BOOL)padded {
 	return [self baseEncode:bytes
 	        length:length
 	        charset:kWebSafeBase64EncodeChars
@@ -353,7 +353,7 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 }
 
 + (NSString *)stringByWebSafeEncodingData:(NSData *)data
-        padded:(BOOL)padded {
+                                   padded:(BOOL)padded {
 	NSString *result = nil;
 	NSData *converted = [self baseEncode:[data bytes]
 	                     length:[data length]
@@ -367,8 +367,8 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 }
 
 + (NSString *)stringByWebSafeEncodingBytes:(const void *)bytes
-        length:(NSUInteger)length
-        padded:(BOOL)padded {
+                                    length:(NSUInteger)length
+                                    padded:(BOOL)padded {
 	NSString *result = nil;
 	NSData *converted = [self baseEncode:bytes
 	                     length:length
@@ -409,9 +409,9 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 //   an autorelease NSData with the encoded data, nil if any error.
 //
 + (NSData *)baseEncode:(const void *)bytes
-        length:(NSUInteger)length
-        charset:(const char *)charset
-        padded:(BOOL)padded {
+                length:(NSUInteger)length
+               charset:(const char *)charset
+                padded:(BOOL)padded {
 	// how big could it be?
 	NSUInteger maxLength = CalcEncodedLength(length, padded);
 	// make space
@@ -446,8 +446,8 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 //
 //
 + (NSData *)baseDecode:(const void *)bytes
-        length:(NSUInteger)length
-        charset:(const char *)charset
+                length:(NSUInteger)length
+               charset:(const char *)charset
         requirePadding:(BOOL)requirePadding {
 	// could try to calculate what it will end up as
 	NSUInteger maxLength = GuessDecodedLength(length);
@@ -486,11 +486,11 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 //   the length of the encoded data.  zero if any error.
 //
 + (NSUInteger)baseEncode:(const char *)srcBytes
-        srcLen:(NSUInteger)srcLen
-        destBytes:(char *)destBytes
-        destLen:(NSUInteger)destLen
-        charset:(const char *)charset
-        padded:(BOOL)padded {
+                  srcLen:(NSUInteger)srcLen
+               destBytes:(char *)destBytes
+                 destLen:(NSUInteger)destLen
+                 charset:(const char *)charset
+                  padded:(BOOL)padded {
 	if (!srcLen || !destLen || !srcBytes || !destBytes) {
 		return 0;
 	}
@@ -567,11 +567,11 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 //   the length of the encoded data.  zero if any error.
 //
 + (NSUInteger)baseDecode:(const char *)srcBytes
-        srcLen:(NSUInteger)srcLen
-        destBytes:(char *)destBytes
-        destLen:(NSUInteger)destLen
-        charset:(const char *)charset
-        requirePadding:(BOOL)requirePadding {
+                  srcLen:(NSUInteger)srcLen
+               destBytes:(char *)destBytes
+                 destLen:(NSUInteger)destLen
+                 charset:(const char *)charset
+          requirePadding:(BOOL)requirePadding {
 	if (!srcLen || !destLen || !srcBytes || !destBytes) {
 		return 0;
 	}

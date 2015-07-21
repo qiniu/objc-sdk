@@ -31,13 +31,13 @@
 
 @implementation QNFormUpload
 
-- (instancetype)initWithData:(NSData *)data
-        withKey:(NSString *)key
-        withToken:(QNUpToken *)token
+- (instancetype) initWithData:(NSData *)data
+                      withKey:(NSString *)key
+                    withToken:(QNUpToken *)token
         withCompletionHandler:(QNUpCompletionHandler)block
-        withOption:(QNUploadOption *)option
-        withHttpManager:(id <QNHttpDelegate> )http
-        withConfiguration:(QNConfiguration *)config {
+                   withOption:(QNUploadOption *)option
+              withHttpManager:(id <QNHttpDelegate> )http
+            withConfiguration:(QNConfiguration *)config {
 	if (self = [super init]) {
 		_data = data;
 		_key = key;

@@ -125,9 +125,9 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  *    @return Zone实例
  */
 - (instancetype)initWithUpHost:(NSString *)upHost
-        upHostBackup:(NSString *)upHostBackup
-        upIp:(NSString *)upIp
-        upIp2:(NSString*)upIp2;
+                  upHostBackup:(NSString *)upHostBackup
+                          upIp:(NSString *)upIp
+                         upIp2:(NSString*)upIp2;
 
 /**
  *    zone 0
