@@ -100,39 +100,39 @@ static NSString *domain = @"qiniu.com";
 }
 
 - (instancetype)initWithStatus:(int)status
-                         error:(NSError *)error {
+        error:(NSError *)error {
 	return [self initWithStatus:status error:error host:nil duration:0];
 }
 
 - (instancetype)initWithStatus:(int)status
-                         error:(NSError *)error
-                          host:(NSString *)host
-                      duration:(double)duration {
+        error:(NSError *)error
+        host:(NSString *)host
+        duration:(double)duration {
 	if (self = [super init]) {
 		_statusCode = status;
 		_error = error;
 		_host = host;
 		_duration = duration;
-        _id = [QNUserAgent sharedInstance].id;
-        _timeStamp = [[NSDate date] timeIntervalSince1970];
+		_id = [QNUserAgent sharedInstance].id;
+		_timeStamp = [[NSDate date] timeIntervalSince1970];
 	}
 	return self;
 }
 
 - (instancetype)initWithStatus:(int)status
-              errorDescription:(NSString *)text {
+        errorDescription:(NSString *)text {
 	NSError *error = [[NSError alloc] initWithDomain:domain code:status userInfo:@{ @"error":text }];
 	return [self initWithStatus:status error:error];
 }
 
 - (instancetype)init:(int)status
-           withReqId:(NSString *)reqId
-            withXLog:(NSString *)xlog
-            withXVia:(NSString *)xvia
-            withHost:(NSString *)host
-              withIp:(NSString *)ip
+        withReqId:(NSString *)reqId
+        withXLog:(NSString *)xlog
+        withXVia:(NSString *)xvia
+        withHost:(NSString *)host
+        withIp:(NSString *)ip
         withDuration:(double)duration
-            withBody:(NSData *)body {
+        withBody:(NSData *)body {
 	if (self = [super init]) {
 		_statusCode = status;
 		_reqId = [reqId copy];

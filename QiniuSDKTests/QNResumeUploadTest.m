@@ -45,14 +45,14 @@
 	__block QNResponseInfo *info = nil;
 	__block BOOL flag = NO;
 	QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil progressHandler: ^(NSString *key, float percent) {
-	    flag = YES;
-	} params:@{ @"x:七牛":@"objc", @"x:no":@"", @"invalid":@"invalid" } checkCrc:NO cancellationSignal: ^BOOL () {
-	    return flag;
-	}];
+	                               flag = YES;
+			       } params:@{ @"x:七牛":@"objc", @"x:no":@"", @"invalid":@"invalid" } checkCrc:NO cancellationSignal: ^BOOL () {
+	                               return flag;
+			       }];
 	[_upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-	    key = k;
-	    info = i;
-	} option:opt];
+	         key = k;
+	         info = i;
+	 } option:opt];
 
 	AGWW_WAIT_WHILE(key == nil, 60 * 30);
 	NSLog(@"info %@", info);
@@ -68,12 +68,12 @@
 	__block NSString *key = nil;
 	__block QNResponseInfo *info = nil;
 	QNUploadOption *opt = [[QNUploadOption alloc] initWithProgessHandler: ^(NSString *key, float percent) {
-	    NSLog(@"progress %f", percent);
-	}];
+	                               NSLog(@"progress %f", percent);
+			       }];
 	[_upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-	    key = k;
-	    info = i;
-	} option:opt];
+	         key = k;
+	         info = i;
+	 } option:opt];
 	AGWW_WAIT_WHILE(key == nil, 60 * 30);
 	NSLog(@"info %@", info);
 	XCTAssert(info.isOK, @"Pass");
@@ -89,10 +89,10 @@
 	__block NSDictionary *testResp = nil;
 	__block NSString *key = nil;
 	[_upManager putFile:tempFile.path key:nil token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-	    key = k;
-	    info = i;
-	    testResp = resp;
-	} option:nil];
+	         key = k;
+	         info = i;
+	         testResp = resp;
+	 } option:nil];
 	AGWW_WAIT_WHILE(info == nil, 60 * 30);
 	NSLog(@"resp %@", testResp);
 	XCTAssert(info.isOK, @"Pass");
@@ -141,9 +141,9 @@
 	};
 
 	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
-	    builder.proxy = proxyDict;
-	    builder.zone = [[QNZone alloc] initWithUpHost:@"upnono.qiniu.com" upHostBackup:@"" upIp:@""];
-	}];
+	                                   builder.proxy = proxyDict;
+	                                   builder.zone = [[QNZone alloc] initWithUpHost:@"upnono.qiniu.com" upHostBackup:@"" upIp:@"" upIp2:@""];
+				   }];
 
 	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
@@ -153,9 +153,9 @@
 	__block QNResponseInfo *info = nil;
 	__block NSString *key = nil;
 	[upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-	    key = k;
-	    info = i;
-	} option:nil];
+	         key = k;
+	         info = i;
+	 } option:nil];
 
 	AGWW_WAIT_WHILE(key == nil, 60 * 30);
 	NSLog(@"info %@", info);
@@ -167,11 +167,11 @@
 
 - (void)testUrlConvert {
 	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
-	    builder.converter = ^NSString *(NSString *url) {
-	        return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
-		};
-	    builder.zone = [[QNZone alloc] initWithUpHost:@"upnono.qiniu.com" upHostBackup:@"" upIp:@""];
-	}];
+	                                   builder.converter = ^NSString *(NSString *url) {
+	                                           return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
+					   };
+	                                   builder.zone = [[QNZone alloc] initWithUpHost:@"upnono.qiniu.com" upHostBackup:@"" upIp:@"" upIp2:@""];
+				   }];
 
 	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
@@ -181,9 +181,9 @@
 	__block QNResponseInfo *info = nil;
 	__block NSString *key = nil;
 	[upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-	    key = k;
-	    info = i;
-	} option:nil];
+	         key = k;
+	         info = i;
+	 } option:nil];
 
 	AGWW_WAIT_WHILE(key == nil, 60 * 30);
 	NSLog(@"info %@", info);
@@ -193,10 +193,13 @@
 	[QNTempFile removeTempfile:tempFile];
 }
 
-- (void)testDnsHijacking {
+- (void)testHosts {
+	QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
+	QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
 	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
-	    builder.zone = [[QNZone alloc] initWithUpHost:@"uphijacktest.qiniu.com" upHostBackup:@"uphijacktest.qiniu.com" upIp:[QNZone zone0].upIp];
-	}];
+	                                   builder.zone = [[QNZone alloc] initWithUpHost:@"uphosts.qiniu.com" upHostBackup:@"uphostsbak.qiniu.com" upIp:[QNZone zone0].upIp upIp2:[QNZone zone0].upIp2];
+	                                   builder.dns = dns;
+				   }];
 
 	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
@@ -206,15 +209,15 @@
 	__block QNResponseInfo *info = nil;
 	__block NSString *key = nil;
 	[upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-	    key = k;
-	    info = i;
-	} option:nil];
+	         key = k;
+	         info = i;
+	 } option:nil];
 
 	AGWW_WAIT_WHILE(key == nil, 60 * 30);
 	NSLog(@"info %@", info);
 	XCTAssert(info.isOK, @"Pass");
 	XCTAssert([keyUp isEqualToString:key], @"Pass");
-	XCTAssert([info.host isEqual:@"uphijacktest.qiniu.com"], @"Pass");
+	XCTAssert([info.host isEqual:@"uphosts.qiniu.com"], @"Pass");
 	[QNTempFile removeTempfile:tempFile];
 }
 

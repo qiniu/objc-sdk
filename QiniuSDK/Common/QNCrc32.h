@@ -22,7 +22,7 @@
  *    @return 校验码
  */
 + (UInt32)file:(NSString *)filePath
-         error:(NSError **)error;
+        error:(NSError **)error;
 
 /**
  *    二进制字节校验

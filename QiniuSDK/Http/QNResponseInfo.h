@@ -158,8 +158,8 @@ extern const int kQNFileError;
  *    @return 网络错误实例
  */
 + (instancetype)responseInfoWithNetError:(NSError *)error
-                                    host:(NSString *)host
-                                duration:(double)duration;
+        host:(NSString *)host
+        duration:(double)duration;
 
 /**
  *    工厂函数，内部使用
@@ -183,12 +183,12 @@ extern const int kQNFileError;
  *    @return 实例
  */
 - (instancetype)init:(int)status
-           withReqId:(NSString *)reqId
-            withXLog:(NSString *)xlog
-            withXVia:(NSString *)xvia
-            withHost:(NSString *)host
-              withIp:(NSString *)ip
+        withReqId:(NSString *)reqId
+        withXLog:(NSString *)xlog
+        withXVia:(NSString *)xvia
+        withHost:(NSString *)host
+        withIp:(NSString *)ip
         withDuration:(double)duration
-            withBody:(NSData *)body;
+        withBody:(NSData *)body;
 
 @end

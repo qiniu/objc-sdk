@@ -15,16 +15,16 @@
 @interface QNResumeUpload : NSObject
 
 - (instancetype)initWithData:(NSData *)data
-                    withSize:(UInt32)size
-                     withKey:(NSString *)key
-                   withToken:(QNUpToken *)token
-       withCompletionHandler:(QNUpCompletionHandler)block
-                  withOption:(QNUploadOption *)option
-              withModifyTime:(NSDate *)time
-                withRecorder:(id <QNRecorderDelegate> )recorder
-             withRecorderKey:(NSString *)recorderKey
-             withHttpManager:(id <QNHttpDelegate> )http
-           withConfiguration:(QNConfiguration *)config;
+        withSize:(UInt32)size
+        withKey:(NSString *)key
+        withToken:(QNUpToken *)token
+        withCompletionHandler:(QNUpCompletionHandler)block
+        withOption:(QNUploadOption *)option
+        withModifyTime:(NSDate *)time
+        withRecorder:(id <QNRecorderDelegate> )recorder
+        withRecorderKey:(NSString *)recorderKey
+        withHttpManager:(id <QNHttpDelegate> )http
+        withConfiguration:(QNConfiguration *)config;
 
 - (void)run;
 

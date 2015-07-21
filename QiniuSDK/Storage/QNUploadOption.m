@@ -25,10 +25,10 @@ static NSString *mime(NSString *mimeType) {
 	}
 
 	[params enumerateKeysAndObjectsUsingBlock: ^(NSString *key, NSString *obj, BOOL *stop) {
-	    if ([key hasPrefix:@"x:"] && ![obj isEqualToString:@""]) {
-	        ret[key] = obj;
-		}
-	}];
+	         if ([key hasPrefix:@"x:"] && ![obj isEqualToString:@""]) {
+	                 ret[key] = obj;
+		 }
+	 }];
 
 	return ret;
 }
@@ -38,10 +38,10 @@ static NSString *mime(NSString *mimeType) {
 }
 
 - (instancetype)initWithMime:(NSString *)mimeType
-             progressHandler:(QNUpProgressHandler)progress
-                      params:(NSDictionary *)params
-                    checkCrc:(BOOL)check
-          cancellationSignal:(QNUpCancellationSignal)cancel {
+        progressHandler:(QNUpProgressHandler)progress
+        params:(NSDictionary *)params
+        checkCrc:(BOOL)check
+        cancellationSignal:(QNUpCancellationSignal)cancel {
 	if (self = [super init]) {
 		_mimeType = mime(mimeType);
 		_progressHandler = progress != nil ? progress : ^(NSString *key, float percent) {

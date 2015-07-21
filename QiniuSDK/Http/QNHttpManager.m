@@ -13,13 +13,16 @@
 #import "QNUserAgent.h"
 #import "QNResponseInfo.h"
 #import "QNDns.h"
+#import "HappyDNS.h"
 
 @interface QNHttpManager ()
 @property (nonatomic) AFHTTPRequestOperationManager *httpManager;
 @property UInt32 timeout;
 @property (nonatomic, strong) QNUrlConvert converter;
-@property (nonatomic) NSString *backupIp;
+@property (nonatomic) QNDnsManager *dns;
 @end
+
+const int kQNRetryConnectTimes = 3;
 
 static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
     port = port == nil? [NSNumber numberWithInt:80]:port;
@@ -27,24 +30,35 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
     return [[NSURL alloc] initWithString:p];
 }
 
+static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error){
+    if (error != nil) {
+        return error.code < -1000;
+    }
+    if (op == nil) {
+        return YES;
+    }
+    int status = (int)[op.response statusCode];
+    return status >= 500 && status < 600 && status != 579;
+}
+
 @implementation QNHttpManager
 
 - (instancetype)initWithTimeout:(UInt32)timeout
                    urlConverter:(QNUrlConvert)converter
-                       backupIp:(NSString *)ip {
+                       dns:(QNDnsManager *)dns {
 	if (self = [super init]) {
 		_httpManager = [[AFHTTPRequestOperationManager alloc] init];
 		_httpManager.responseSerializer = [AFJSONResponseSerializer serializer];
 		_timeout = timeout;
 		_converter = converter;
-		_backupIp = ip;
+		_dns = dns;
 	}
 
 	return self;
 }
 
 - (instancetype)init {
-	return [self initWithTimeout:60 urlConverter:nil backupIp:nil];
+	return [self initWithTimeout:60 urlConverter:nil dns:nil];
 }
 
 + (QNResponseInfo *)buildResponseInfo:(AFHTTPRequestOperation *)operation
@@ -72,59 +86,59 @@ static NSURL *buildUrl(NSString *host, NSNumber *port, NSString *path){
 	return info;
 }
 
-- (void)  sendRequest:(NSMutableURLRequest *)request
-    withCompleteBlock:(QNCompleteBlock)completeBlock
-    withProgressBlock:(QNInternalProgressBlock)progressBlock
-      withCancelBlock:(QNCancelBlock)cancelBlock
-forceIp:(BOOL) forceIp{
-	NSString *u = request.URL.absoluteString;
-	NSURL *url = request.URL;
-	__block NSString *ip = nil;
-	if (_converter != nil) {
-		url = [[NSURL alloc] initWithString:_converter(u)];
-	} else {
-		if (_backupIp != nil && ![_backupIp isEqualToString:@""]) {
-			NSString *host = url.host;
-			ip = [QNDns getAddress:host];
-			if ([ip isEqualToString:@""] || forceIp) {
-				ip = _backupIp;
-			}
-			NSString *path = url.path;
-			if (path == nil || [@"" isEqualToString:path]) {
-				path = @"/";
-			}
-            url = buildUrl(ip, url.port, path);
-			[request setValue:host forHTTPHeaderField:@"Host"];
-		}
-	}
-	request.URL = url;
-
-	__block NSDate *startTime = [NSDate date];
-	AFHTTPRequestOperation *operation = [_httpManager
-	                                     HTTPRequestOperationWithRequest:request
-	                                                             success: ^(AFHTTPRequestOperation *operation, id responseObject) {
-	    double duration = [[NSDate date] timeIntervalSinceDate:startTime];
-	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil withDuration:duration withResponse:operation.responseData withIp:ip];
-	    NSDictionary *resp = nil;
-	    if (info.isOK) {
-	        resp = responseObject;
-		}
-	    NSLog(@"success %@", info);
-	    completeBlock(info, resp);
-	}                                                                failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
-	    double duration = [[NSDate date] timeIntervalSinceDate:startTime];
-	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:error withDuration:duration withResponse:operation.responseData withIp:ip];
-	    NSLog(@"failure %@", info);
-	    completeBlock(info, nil);
-	}
-	    ];
-
-	if (progressBlock || cancelBlock) {
+- (void)  sendRequest2:(NSMutableURLRequest *)request
+     withCompleteBlock:(QNCompleteBlock)completeBlock
+     withProgressBlock:(QNInternalProgressBlock)progressBlock
+       withCancelBlock:(QNCancelBlock)cancelBlock
+           withIpArray:(NSArray*)ips
+             withIndex:(int)index
+            withDomain:(NSString *)domain
+        withRetryTimes:(int)times
+         withStartTime:(NSDate *)startTime{
+    NSURL *url = request.URL;
+    __block NSString *ip = nil;
+    if(ips != nil){
+        ip = [ips objectAtIndex:(index%ips.count)];
+        NSString *path = url.path;
+        if (path == nil || [@"" isEqualToString:path]) {
+            path = @"/";
+        }
+        url = buildUrl(ip, url.port, path);
+        [request setValue:domain forHTTPHeaderField:@"Host"];
+        
+    }
+    
+    request.URL = url;
+    
+    AFHTTPRequestOperation *operation = [_httpManager
+                                         HTTPRequestOperationWithRequest:request
+                                         success: ^(AFHTTPRequestOperation *operation, id responseObject) {
+                                             double duration = [[NSDate date] timeIntervalSinceDate:startTime];
+                                             QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil withDuration:duration withResponse:operation.responseData withIp:ip];
+                                             NSDictionary *resp = nil;
+                                             if (info.isOK) {
+                                                 resp = responseObject;
+                                             }
+                                             NSLog(@"success %@", info);
+                                             completeBlock(info, resp);
+                                         }                                                                failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
+                                             if (_converter != nil && (index+1 < ips.count || times>0) && needRetry(operation, error)) {
+                                                 [self sendRequest2:request withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:cancelBlock withIpArray:ips withIndex:index+1 withDomain:domain withRetryTimes:times -1 withStartTime:startTime];
+                                                 return;
+                                             }
+                                             double duration = [[NSDate date] timeIntervalSinceDate:startTime];
+                                             QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:error withDuration:duration withResponse:operation.responseData withIp:ip];
+                                             NSLog(@"failure %@", info);
+                                             completeBlock(info, nil);
+                                         }
+                                         ];
+    
+    if (progressBlock || cancelBlock) {
         __block AFHTTPRequestOperation *op = nil;
         if (cancelBlock) {
             op = operation;
         }
-		[operation setUploadProgressBlock: ^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+        [operation setUploadProgressBlock: ^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
             if (progressBlock) {
                 progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
             }
@@ -134,13 +148,41 @@ forceIp:(BOOL) forceIp{
                 }
                 op = nil;
             }
-		}];
-	}
-	[request setTimeoutInterval:_timeout];
+        }];
+    }
+    [request setTimeoutInterval:_timeout];
+    
+    [request setValue:[[QNUserAgent sharedInstance] description] forHTTPHeaderField:@"User-Agent"];
+    [request setValue:nil forHTTPHeaderField:@"Accept-Language"];
+    [_httpManager.operationQueue addOperation:operation];
+}
 
-	[request setValue:[[QNUserAgent sharedInstance] description] forHTTPHeaderField:@"User-Agent"];
-	[request setValue:nil forHTTPHeaderField:@"Accept-Language"];
-	[_httpManager.operationQueue addOperation:operation];
+- (void)  sendRequest:(NSMutableURLRequest *)request
+    withCompleteBlock:(QNCompleteBlock)completeBlock
+    withProgressBlock:(QNInternalProgressBlock)progressBlock
+      withCancelBlock:(QNCancelBlock)cancelBlock{
+    NSString *u = request.URL.absoluteString;
+    NSURL *url = request.URL;
+    NSString *domain =url.host;
+    NSArray * ips = nil;
+    NSDate *startTime = [NSDate date];
+    if (_converter != nil) {
+        url = [[NSURL alloc] initWithString:_converter(u)];
+        request.URL = url;
+        domain = url.host;
+    } else if(_dns != nil){
+        ips = [_dns queryWithDomain:[[QNDomain alloc] init:domain hostsFirst:NO hasCname:YES maxTtl:1000]];
+        if (ips == nil || ips.count == 0) {
+            NSError *error = [[NSError alloc] initWithDomain:domain code:-1003 userInfo:@{ @"error":@"unkonwn host" }];
+             double duration = [[NSDate date] timeIntervalSinceDate:startTime];
+            QNResponseInfo *info = [QNResponseInfo responseInfoWithNetError:error host:domain duration:duration];
+            NSLog(@"failure %@", info);
+            completeBlock(info, nil);
+            return;
+        }
+    }
+    [self sendRequest2:request withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:cancelBlock withIpArray:ips withIndex:0 withDomain:domain withRetryTimes:kQNRetryConnectTimes withStartTime:startTime];
+    
 }
 
 - (void)multipartPost:(NSString *)url
@@ -150,8 +192,7 @@ forceIp:(BOOL) forceIp{
          withMimeType:(NSString *)mime
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
-      withCancelBlock:(QNCancelBlock)cancelBlock
-forceIp:(BOOL) forceIp{
+      withCancelBlock:(QNCancelBlock)cancelBlock{
 	NSMutableURLRequest *request = [_httpManager.requestSerializer
 	                                multipartFormRequestWithMethod:@"POST"
 	                                                     URLString:url
@@ -164,8 +205,7 @@ forceIp:(BOOL) forceIp{
 	[self sendRequest:request
 	    withCompleteBlock:completeBlock
 	    withProgressBlock:progressBlock
-     withCancelBlock:cancelBlock
-     forceIp:forceIp];
+     withCancelBlock:cancelBlock];
 }
 
 - (void)         post:(NSString *)url
@@ -174,8 +214,7 @@ forceIp:(BOOL) forceIp{
           withHeaders:(NSDictionary *)headers
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
-      withCancelBlock:(QNCancelBlock)cancelBlock
-              forceIp:(BOOL) forceIp{
+      withCancelBlock:(QNCancelBlock)cancelBlock{
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc] initWithString:url]];
 	if (headers) {
 		[request setAllHTTPHeaderFields:headers];
@@ -190,8 +229,7 @@ forceIp:(BOOL) forceIp{
 	[self sendRequest:request
 	    withCompleteBlock:completeBlock
 	    withProgressBlock:progressBlock
-     withCancelBlock:cancelBlock
-     forceIp:forceIp];
+     withCancelBlock:cancelBlock];
 }
 
 @end

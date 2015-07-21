@@ -21,7 +21,7 @@
 }
 
 + (UInt32)file:(NSString *)filePath
-         error:(NSError **)error {
+        error:(NSError **)error {
 	@autoreleasepool {
 		NSData *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:error];
 		if (*error != nil) {

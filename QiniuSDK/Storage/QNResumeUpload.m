@@ -42,16 +42,16 @@ typedef void (^task)(void);
 @property BOOL forceIp;
 
 - (void)makeBlock:(NSString *)uphost
-           offset:(UInt32)offset
+        offset:(UInt32)offset
         blockSize:(UInt32)blockSize
         chunkSize:(UInt32)chunkSize
-         progress:(QNInternalProgressBlock)progressBlock
-         complete:(QNCompleteBlock)complete;
+        progress:(QNInternalProgressBlock)progressBlock
+        complete:(QNCompleteBlock)complete;
 
 - (void)putChunk:(NSString *)uphost
-          offset:(UInt32)offset
-            size:(UInt32)size
-         context:(NSString *)context
+        offset:(UInt32)offset
+        size:(UInt32)size
+        context:(NSString *)context
         progress:(QNInternalProgressBlock)progressBlock
         complete:(QNCompleteBlock)complete;
 
@@ -63,22 +63,22 @@ typedef void (^task)(void);
 @implementation QNResumeUpload
 
 - (instancetype)initWithData:(NSData *)data
-                    withSize:(UInt32)size
-                     withKey:(NSString *)key
-                   withToken:(QNUpToken *)token
-       withCompletionHandler:(QNUpCompletionHandler)block
-                  withOption:(QNUploadOption *)option
-              withModifyTime:(NSDate *)time
-                withRecorder:(id <QNRecorderDelegate> )recorder
-             withRecorderKey:(NSString *)recorderKey
-             withHttpManager:(id <QNHttpDelegate> )http
-           withConfiguration:(QNConfiguration *)config {
+        withSize:(UInt32)size
+        withKey:(NSString *)key
+        withToken:(QNUpToken *)token
+        withCompletionHandler:(QNUpCompletionHandler)block
+        withOption:(QNUploadOption *)option
+        withModifyTime:(NSDate *)time
+        withRecorder:(id <QNRecorderDelegate> )recorder
+        withRecorderKey:(NSString *)recorderKey
+        withHttpManager:(id <QNHttpDelegate> )http
+        withConfiguration:(QNConfiguration *)config {
 	if (self = [super init]) {
 		_data = data;
 		_size = size;
 		_key = key;
 		NSString *tok = [NSString stringWithFormat:@"UpToken %@", token.token];
-		_option = option != nil ? option : [QNUploadOption defaultOptions];
+		_option = option != nil ? option :[QNUploadOption defaultOptions];
 		_complete = block;
 		_headers = @{ @"Authorization":tok, @"Content-Type":@"application/octet-stream" };
 		_recorder = recorder;
@@ -263,11 +263,11 @@ typedef void (^task)(void);
 }
 
 - (void)makeBlock:(NSString *)uphost
-           offset:(UInt32)offset
+        offset:(UInt32)offset
         blockSize:(UInt32)blockSize
         chunkSize:(UInt32)chunkSize
-         progress:(QNInternalProgressBlock)progressBlock
-         complete:(QNCompleteBlock)complete {
+        progress:(QNInternalProgressBlock)progressBlock
+        complete:(QNCompleteBlock)complete {
 	NSData *data = [self.data subdataWithRange:NSMakeRange(offset, (unsigned int)chunkSize)];
 	NSString *url = [[NSString alloc] initWithFormat:@"http://%@:%u/mkblk/%u", uphost, (unsigned int)_config.upPort, (unsigned int)blockSize];
 	_chunkCrc = [QNCrc32 data:data];
@@ -275,9 +275,9 @@ typedef void (^task)(void);
 }
 
 - (void)putChunk:(NSString *)uphost
-          offset:(UInt32)offset
-            size:(UInt32)size
-         context:(NSString *)context
+        offset:(UInt32)offset
+        size:(UInt32)size
+        context:(NSString *)context
         progress:(QNInternalProgressBlock)progressBlock
         complete:(QNCompleteBlock)complete {
 	NSData *data = [self.data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
@@ -299,8 +299,8 @@ typedef void (^task)(void);
 	}
 
 	[self.option.params enumerateKeysAndObjectsUsingBlock: ^(NSString *key, NSString *obj, BOOL *stop) {
-	    url = [NSString stringWithFormat:@"%@/%@/%@", url, key, [QNUrlSafeBase64 encodeString:obj]];
-	}];
+	         url = [NSString stringWithFormat:@"%@/%@/%@", url, key, [QNUrlSafeBase64 encodeString:obj]];
+	 }];
 
 
 	NSMutableData *postData = [NSMutableData data];
@@ -310,11 +310,10 @@ typedef void (^task)(void);
 }
 
 - (void)         post:(NSString *)url
-             withData:(NSData *)data
-    withCompleteBlock:(QNCompleteBlock)completeBlock
-    withProgressBlock:(QNInternalProgressBlock)progressBlock {
-	[_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal
-	           forceIp:_forceIp];
+        withData:(NSData *)data
+        withCompleteBlock:(QNCompleteBlock)completeBlock
+        withProgressBlock:(QNInternalProgressBlock)progressBlock {
+	[_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal];
 }
 
 - (void)run {

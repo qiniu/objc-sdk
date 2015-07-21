@@ -12,22 +12,20 @@ typedef BOOL (^QNCancelBlock)(void);
 @protocol QNHttpDelegate <NSObject>
 
 - (void)multipartPost:(NSString *)url
-             withData:(NSData *)data
-           withParams:(NSDictionary *)params
-         withFileName:(NSString *)key
-         withMimeType:(NSString *)mime
-    withCompleteBlock:(QNCompleteBlock)completeBlock
-    withProgressBlock:(QNInternalProgressBlock)progressBlock
-      withCancelBlock:(QNCancelBlock)cancelBlock
-              forceIp:(BOOL)forceIp;
+        withData:(NSData *)data
+        withParams:(NSDictionary *)params
+        withFileName:(NSString *)key
+        withMimeType:(NSString *)mime
+        withCompleteBlock:(QNCompleteBlock)completeBlock
+        withProgressBlock:(QNInternalProgressBlock)progressBlock
+        withCancelBlock:(QNCancelBlock)cancelBlock;
 
 - (void)         post:(NSString *)url
-             withData:(NSData *)data
-           withParams:(NSDictionary *)params
-          withHeaders:(NSDictionary *)headers
-    withCompleteBlock:(QNCompleteBlock)completeBlock
-    withProgressBlock:(QNInternalProgressBlock)progressBlock
-      withCancelBlock:(QNCancelBlock)cancelBlock
-              forceIp:(BOOL)forceIp;
+        withData:(NSData *)data
+        withParams:(NSDictionary *)params
+        withHeaders:(NSDictionary *)headers
+        withCompleteBlock:(QNCompleteBlock)completeBlock
+        withProgressBlock:(QNInternalProgressBlock)progressBlock
+        withCancelBlock:(QNCancelBlock)cancelBlock;
 
 @end

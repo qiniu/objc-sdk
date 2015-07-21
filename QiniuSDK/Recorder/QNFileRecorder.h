@@ -23,7 +23,7 @@
  *    @return 实例
  */
 + (instancetype)fileRecorderWithFolder:(NSString *)directory
-                                 error:(NSError *__autoreleasing *)error;
+        error:(NSError *__autoreleasing *)error;
 
 /**
  *    用指定保存的目录，以及是否进行base64编码进行初始化，
@@ -35,8 +35,8 @@
  *    @return 实例
  */
 + (instancetype)fileRecorderWithFolder:(NSString *)directory
-                             encodeKey:(BOOL)encode
-                                 error:(NSError *__autoreleasing *)error;
+        encodeKey:(BOOL)encode
+        error:(NSError *__autoreleasing *)error;
 
 /**
  *    从外部手动删除记录，如无特殊需求，不建议使用

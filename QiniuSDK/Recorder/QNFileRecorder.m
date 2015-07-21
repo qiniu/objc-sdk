@@ -23,18 +23,18 @@
 }
 
 + (NSString *)pathJoin:(NSString *)key
-                  path:(NSString *)path {
+        path:(NSString *)path {
 	return [[NSString alloc] initWithFormat:@"%@/%@", path, key];
 }
 
 + (instancetype)fileRecorderWithFolder:(NSString *)directory
-                                 error:(NSError *__autoreleasing *)perror {
+        error:(NSError *__autoreleasing *)perror {
 	return [QNFileRecorder fileRecorderWithFolder:directory encodeKey:false error:perror];
 }
 
 + (instancetype)fileRecorderWithFolder:(NSString *)directory
-                             encodeKey:(BOOL)encode
-                                 error:(NSError *__autoreleasing *)perror {
+        encodeKey:(BOOL)encode
+        error:(NSError *__autoreleasing *)perror {
 	NSError *error;
 	[[NSFileManager defaultManager] createDirectoryAtPath:directory withIntermediateDirectories:YES attributes:nil error:&error];
 	if (error != nil) {
@@ -56,7 +56,7 @@
 }
 
 - (NSError *)set:(NSString *)key
-            data:(NSData *)value {
+        data:(NSData *)value {
 	NSError *error;
 	if (_encode) {
 		key = [QNUrlSafeBase64 encodeString:key];

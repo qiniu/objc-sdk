@@ -65,10 +65,10 @@ typedef BOOL (^QNUpCancellationSignal)(void);
  *    @return 可选参数类实例
  */
 - (instancetype)initWithMime:(NSString *)mimeType
-             progressHandler:(QNUpProgressHandler)progress
-                      params:(NSDictionary *)params
-                    checkCrc:(BOOL)check
-          cancellationSignal:(QNUpCancellationSignal)cancellation;
+        progressHandler:(QNUpProgressHandler)progress
+        params:(NSDictionary *)params
+        checkCrc:(BOOL)check
+        cancellationSignal:(QNUpCancellationSignal)cancellation;
 
 - (instancetype)initWithProgessHandler:(QNUpProgressHandler)progress;
 
