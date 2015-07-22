@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.libraries = 'z'
   s.dependency 'AFNetworking', '~> 2.0'
-  s.dependency 'HappyDNS'
+  s.dependency 'HappyDNS', '~> 0.1'
   s.license = { :type => 'MIT', :text => <<-LICENSE
 The MIT License (MIT)
 
