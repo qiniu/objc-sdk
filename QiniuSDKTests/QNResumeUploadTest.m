@@ -217,7 +217,7 @@
 	NSLog(@"info %@", info);
 	XCTAssert(info.isOK, @"Pass");
 	XCTAssert([keyUp isEqualToString:key], @"Pass");
-	XCTAssert([info.host isEqual:@"uphosts.qiniu.com"], @"Pass");
+	XCTAssert([info.host isEqual:@"uphosts.qiniu.com"] || [info.host isEqual:@"uphostsbak.qiniu.com"], @"Pass");
 	[QNTempFile removeTempfile:tempFile];
 }
 

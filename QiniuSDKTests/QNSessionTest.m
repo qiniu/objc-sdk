@@ -139,17 +139,17 @@
 	XCTAssert(testInfo.reqId, @"Pass");
 }
 
-- (void)testPostNoPort {
-	__block QNResponseInfo *testInfo = nil;
-	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:nil dns:nil];
-	[httpManager post:@"http://up.qiniug.com:12345/" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
-	         testInfo = info;
-	 } withProgressBlock:nil withCancelBlock:nil];
-
-	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-	NSLog(@"%@", testInfo);
-	XCTAssert(testInfo.statusCode < 0, @"Pass");
-}
+//- (void)testPostNoPort {
+//	__block QNResponseInfo *testInfo = nil;
+//	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:nil dns:nil];
+//	[httpManager post:@"http://up.qiniug.com:12345/" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+//	         testInfo = info;
+//	 } withProgressBlock:nil withCancelBlock:nil];
+//
+//	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+//	NSLog(@"%@", testInfo);
+//	XCTAssert(testInfo.statusCode < 0, @"Pass");
+//}
 
 @end
 
