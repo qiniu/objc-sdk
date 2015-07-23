@@ -119,7 +119,7 @@
 - (void)testPostNoPort {
 	__block QNResponseInfo *testInfo = nil;
 	QNHttpManager *httpManager = [[QNHttpManager alloc] initWithTimeout:60 urlConverter:nil dns:nil];
-	[httpManager post:@"http://upload.qiniu.com:12345/" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+	[httpManager post:@"http://up.qiniug.com:12345/" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	         testInfo = info;
 	 } withProgressBlock:nil withCancelBlock:nil];
 
