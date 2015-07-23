@@ -142,7 +142,7 @@
 - (void)testPostNoPort {
 	__block QNResponseInfo *testInfo = nil;
 	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:nil dns:nil];
-	[httpManager post:@"http://up.qiniu.com:12345/" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+	[httpManager post:@"http://upload.qiniu.com:12345/" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	         testInfo = info;
 	 } withProgressBlock:nil withCancelBlock:nil];
 
