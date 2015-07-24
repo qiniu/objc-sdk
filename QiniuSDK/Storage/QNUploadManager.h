@@ -83,11 +83,11 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
  *    @param completionHandler 上传完成后的回调函数
  *    @param option            上传时传入的可选参数
  */
-- (void)putData:(NSData *)data
-            key:(NSString *)key
-          token:(NSString *)token
-       complete:(QNUpCompletionHandler)completionHandler
-         option:(QNUploadOption *)option;
+- (void) putData:(NSData *)data
+             key:(NSString *)key
+           token:(NSString *)token
+        complete:(QNUpCompletionHandler)completionHandler
+          option:(QNUploadOption *)option;
 
 /**
  *    上传文件
@@ -98,10 +98,10 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
  *    @param completionHandler 上传完成后的回调函数
  *    @param option            上传时传入的可选参数
  */
-- (void)putFile:(NSString *)filePath
-            key:(NSString *)key
-          token:(NSString *)token
-       complete:(QNUpCompletionHandler)completionHandler
-         option:(QNUploadOption *)option;
+- (void) putFile:(NSString *)filePath
+             key:(NSString *)key
+           token:(NSString *)token
+        complete:(QNUpCompletionHandler)completionHandler
+          option:(QNUploadOption *)option;
 
 @end

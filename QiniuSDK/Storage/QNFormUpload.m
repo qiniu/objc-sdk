@@ -31,18 +31,18 @@
 
 @implementation QNFormUpload
 
-- (instancetype)initWithData:(NSData *)data
-                     withKey:(NSString *)key
-                   withToken:(QNUpToken *)token
-       withCompletionHandler:(QNUpCompletionHandler)block
-                  withOption:(QNUploadOption *)option
-             withHttpManager:(id <QNHttpDelegate> )http
-           withConfiguration:(QNConfiguration *)config {
+- (instancetype) initWithData:(NSData *)data
+                      withKey:(NSString *)key
+                    withToken:(QNUpToken *)token
+        withCompletionHandler:(QNUpCompletionHandler)block
+                   withOption:(QNUploadOption *)option
+              withHttpManager:(id <QNHttpDelegate> )http
+            withConfiguration:(QNConfiguration *)config {
 	if (self = [super init]) {
 		_data = data;
 		_key = key;
 		_token = token;
-		_option = option != nil ? option : [QNUploadOption defaultOptions];
+		_option = option != nil ? option :[QNUploadOption defaultOptions];
 		_complete = block;
 		_httpManager = http;
 		_config = config;
@@ -95,11 +95,6 @@
 			nextHost = _config.upHostBackup;
 		}
 
-		BOOL forceIp = NO;
-		if (info.isNotQiniu) {
-			forceIp = YES;
-		}
-
 		QNCompleteBlock retriedComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
 			if (info.isOK) {
 				_option.progressHandler(_key, 1.0);
@@ -108,25 +103,23 @@
 		};
 
 		[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@:%u/", nextHost, (unsigned int)_config.upPort]
-		                   withData:_data
-		                 withParams:parameters
-		               withFileName:fileName
-		               withMimeType:_option.mimeType
-		          withCompleteBlock:retriedComplete
-		          withProgressBlock:p
-		            withCancelBlock:_option.cancellationSignal
-		                    forceIp:forceIp];
+		 withData:_data
+		 withParams:parameters
+		 withFileName:fileName
+		 withMimeType:_option.mimeType
+		 withCompleteBlock:retriedComplete
+		 withProgressBlock:p
+		 withCancelBlock:_option.cancellationSignal];
 	};
 
 	[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@:%u/", _config.upHost, (unsigned int)_config.upPort]
-	                   withData:_data
-	                 withParams:parameters
-	               withFileName:fileName
-	               withMimeType:_option.mimeType
-	          withCompleteBlock:complete
-	          withProgressBlock:p
-	            withCancelBlock:_option.cancellationSignal
-	                    forceIp:NO];
+	 withData:_data
+	 withParams:parameters
+	 withFileName:fileName
+	 withMimeType:_option.mimeType
+	 withCompleteBlock:complete
+	 withProgressBlock:p
+	 withCancelBlock:_option.cancellationSignal];
 }
 
 @end

@@ -1,16 +1,15 @@
 #import <Foundation/Foundation.h>
-#import "QNHttpDelegate.h"
 
-#import "QNConfiguration.h"
+@class QNResponseInfo;
 
-#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
+typedef void (^QNInternalProgressBlock)(long long totalBytesWritten, long long totalBytesExpectedToWrite);
+typedef void (^QNCompleteBlock)(QNResponseInfo *info, NSDictionary *resp);
+typedef BOOL (^QNCancelBlock)(void);
 
-@interface QNSessionManager : NSObject <QNHttpDelegate>
-
-- (instancetype)initWithProxy:(NSDictionary *)proxyDict
-                      timeout:(UInt32)timeout
-                 urlConverter:(QNUrlConvert)converter
-                          dns:(QNDnsManager*)dns;
+/**
+ *    Http 客户端接口
+ */
+@protocol QNHttpDelegate <NSObject>
 
 - (void)    multipartPost:(NSString *)url
                  withData:(NSData *)data
@@ -30,5 +29,3 @@
           withCancelBlock:(QNCancelBlock)cancelBlock;
 
 @end
-
-#endif

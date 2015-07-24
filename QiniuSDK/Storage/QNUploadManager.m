@@ -47,9 +47,9 @@
 - (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder
             recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator {
 	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
-	    builder.recorder = recorder;
-	    builder.recorderKeyGen = recorderKeyGenerator;
-	}];
+	                                   builder.recorder = recorder;
+	                                   builder.recorderKeyGen = recorderKeyGenerator;
+				   }];
 	return [self initWithConfiguration:config];
 }
 
@@ -57,7 +57,7 @@
 	if (self = [super init]) {
 		if (config == nil) {
 			config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
-			}];
+				  }];
 		}
 		_config = config;
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
@@ -75,14 +75,13 @@
 		}
 	#endif
 		if (lowVersion) {
-			_httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter backupIp:config.upIp];
+			_httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter dns:config.dns];
 		}
 		else {
-			_httpManager = [[QNSessionManager alloc] initWithProxy:config.proxy timeout:config.timeoutInterval
-			                                          urlConverter:config.converter backupIp:config.upIp];
+			_httpManager = [[QNSessionManager alloc] initWithProxy:config.proxy timeout:config.timeoutInterval urlConverter:config.converter dns:config.dns];
 		}
 #else
-		_httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter backupIp:config.upIp];
+		_httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter dns:config.dns];
 #endif
 	}
 	return self;
@@ -107,7 +106,7 @@
 	NSString *desc = nil;
 	if (completionHandler == nil) {
 		@throw [NSException exceptionWithName:NSInvalidArgumentException
-		                               reason:@"no completionHandler" userInfo:nil];
+		        reason:@"no completionHandler" userInfo:nil];
 		return YES;
 	}
 	if (data == nil && file == nil) {
@@ -125,11 +124,11 @@
 	return NO;
 }
 
-- (void)putData:(NSData *)data
-            key:(NSString *)key
-          token:(NSString *)token
-       complete:(QNUpCompletionHandler)completionHandler
-         option:(QNUploadOption *)option {
+- (void) putData:(NSData *)data
+             key:(NSString *)key
+           token:(NSString *)token
+        complete:(QNUpCompletionHandler)completionHandler
+          option:(QNUploadOption *)option {
 	if ([QNUploadManager checkAndNotifyError:key token:token data:data file:nil complete:completionHandler]) {
 		return;
 	}
@@ -150,22 +149,22 @@
 	};
 	QNFormUpload *up = [[QNFormUpload alloc]
 	                    initWithData:data
-	                              withKey:key
-	                            withToken:t
-	                withCompletionHandler:complete
-	                           withOption:option
-	                      withHttpManager:_httpManager
+	                    withKey:key
+	                    withToken:t
+	                    withCompletionHandler:complete
+	                    withOption:option
+	                    withHttpManager:_httpManager
 	                    withConfiguration:_config];
 	QNAsyncRun( ^{
 		[up put];
 	});
 }
 
-- (void)putFile:(NSString *)filePath
-            key:(NSString *)key
-          token:(NSString *)token
-       complete:(QNUpCompletionHandler)completionHandler
-         option:(QNUploadOption *)option {
+- (void) putFile:(NSString *)filePath
+             key:(NSString *)key
+           token:(NSString *)token
+        complete:(QNUpCompletionHandler)completionHandler
+          option:(QNUploadOption *)option {
 	if ([QNUploadManager checkAndNotifyError:key token:token data:nil file:filePath complete:completionHandler]) {
 		return;
 	}
@@ -222,15 +221,15 @@
 
 		QNResumeUpload *up = [[QNResumeUpload alloc]
 		                      initWithData:data
-		                               withSize:fileSize
-		                                withKey:key
-		                              withToken:t
-		                  withCompletionHandler:complete
-		                             withOption:option
-		                         withModifyTime:modifyTime
-		                           withRecorder:_config.recorder
-		                        withRecorderKey:recorderKey
-		                        withHttpManager:_httpManager
+		                      withSize:fileSize
+		                      withKey:key
+		                      withToken:t
+		                      withCompletionHandler:complete
+		                      withOption:option
+		                      withModifyTime:modifyTime
+		                      withRecorder:_config.recorder
+		                      withRecorderKey:recorderKey
+		                      withHttpManager:_httpManager
 		                      withConfiguration:_config];
 		QNAsyncRun( ^{
 			[up run];

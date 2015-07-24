@@ -62,23 +62,23 @@ typedef void (^task)(void);
 
 @implementation QNResumeUpload
 
-- (instancetype)initWithData:(NSData *)data
-                    withSize:(UInt32)size
-                     withKey:(NSString *)key
-                   withToken:(QNUpToken *)token
-       withCompletionHandler:(QNUpCompletionHandler)block
-                  withOption:(QNUploadOption *)option
-              withModifyTime:(NSDate *)time
-                withRecorder:(id <QNRecorderDelegate> )recorder
-             withRecorderKey:(NSString *)recorderKey
-             withHttpManager:(id <QNHttpDelegate> )http
-           withConfiguration:(QNConfiguration *)config {
+- (instancetype) initWithData:(NSData *)data
+                     withSize:(UInt32)size
+                      withKey:(NSString *)key
+                    withToken:(QNUpToken *)token
+        withCompletionHandler:(QNUpCompletionHandler)block
+                   withOption:(QNUploadOption *)option
+               withModifyTime:(NSDate *)time
+                 withRecorder:(id <QNRecorderDelegate> )recorder
+              withRecorderKey:(NSString *)recorderKey
+              withHttpManager:(id <QNHttpDelegate> )http
+            withConfiguration:(QNConfiguration *)config {
 	if (self = [super init]) {
 		_data = data;
 		_size = size;
 		_key = key;
 		NSString *tok = [NSString stringWithFormat:@"UpToken %@", token.token];
-		_option = option != nil ? option : [QNUploadOption defaultOptions];
+		_option = option != nil ? option :[QNUploadOption defaultOptions];
 		_complete = block;
 		_headers = @{ @"Authorization":tok, @"Content-Type":@"application/octet-stream" };
 		_recorder = recorder;
@@ -220,10 +220,6 @@ typedef void (^task)(void);
 				nextHost = _config.upHostBackup;
 			}
 
-			if (info.isNotQiniu) {
-				_forceIp = YES;
-			}
-
 			[self nextTask:offset retriedTimes:retried + 1 host:nextHost];
 			return;
 		}
@@ -299,8 +295,8 @@ typedef void (^task)(void);
 	}
 
 	[self.option.params enumerateKeysAndObjectsUsingBlock: ^(NSString *key, NSString *obj, BOOL *stop) {
-	    url = [NSString stringWithFormat:@"%@/%@/%@", url, key, [QNUrlSafeBase64 encodeString:obj]];
-	}];
+	         url = [NSString stringWithFormat:@"%@/%@/%@", url, key, [QNUrlSafeBase64 encodeString:obj]];
+	 }];
 
 
 	NSMutableData *postData = [NSMutableData data];
@@ -309,12 +305,11 @@ typedef void (^task)(void);
 	[self post:url withData:postData withCompleteBlock:complete withProgressBlock:nil];
 }
 
-- (void)         post:(NSString *)url
-             withData:(NSData *)data
-    withCompleteBlock:(QNCompleteBlock)completeBlock
-    withProgressBlock:(QNInternalProgressBlock)progressBlock {
-	[_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal
-	           forceIp:_forceIp];
+- (void)             post:(NSString *)url
+                 withData:(NSData *)data
+        withCompleteBlock:(QNCompleteBlock)completeBlock
+        withProgressBlock:(QNInternalProgressBlock)progressBlock {
+	[_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal];
 }
 
 - (void)run {

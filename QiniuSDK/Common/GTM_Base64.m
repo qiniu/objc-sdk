@@ -248,41 +248,41 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 
 + (NSData *)encodeData:(NSData *)data {
 	return [self baseEncode:[data bytes]
-	                 length:[data length]
-	                charset:kBase64EncodeChars
-	                 padded:YES];
+	        length:[data length]
+	        charset:kBase64EncodeChars
+	        padded:YES];
 }
 
 + (NSData *)decodeData:(NSData *)data {
 	return [self baseDecode:[data bytes]
-	                 length:[data length]
-	                charset:kBase64DecodeChars
-	         requirePadding:YES];
+	        length:[data length]
+	        charset:kBase64DecodeChars
+	        requirePadding:YES];
 }
 
 + (NSData *)encodeBytes:(const void *)bytes length:(NSUInteger)length {
 	return [self baseEncode:bytes
-	                 length:length
-	                charset:kBase64EncodeChars
-	                 padded:YES];
+	        length:length
+	        charset:kBase64EncodeChars
+	        padded:YES];
 }
 
 + (NSData *)decodeBytes:(const void *)bytes length:(NSUInteger)length {
 	return [self baseDecode:bytes
-	                 length:length
-	                charset:kBase64DecodeChars
-	         requirePadding:YES];
+	        length:length
+	        charset:kBase64DecodeChars
+	        requirePadding:YES];
 }
 
 + (NSString *)stringByEncodingData:(NSData *)data {
 	NSString *result = nil;
 	NSData *converted = [self baseEncode:[data bytes]
-	                              length:[data length]
-	                             charset:kBase64EncodeChars
-	                              padded:YES];
+	                     length:[data length]
+	                     charset:kBase64EncodeChars
+	                     padded:YES];
 	if (converted) {
 		result = [[NSString alloc] initWithData:converted
-		                               encoding:NSASCIIStringEncoding];
+		          encoding:NSASCIIStringEncoding];
 	}
 	return result;
 }
@@ -290,12 +290,12 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 + (NSString *)stringByEncodingBytes:(const void *)bytes length:(NSUInteger)length {
 	NSString *result = nil;
 	NSData *converted = [self baseEncode:bytes
-	                              length:length
-	                             charset:kBase64EncodeChars
-	                              padded:YES];
+	                     length:length
+	                     charset:kBase64EncodeChars
+	                     padded:YES];
 	if (converted) {
 		result = [[NSString alloc] initWithData:converted
-		                               encoding:NSASCIIStringEncoding];
+		          encoding:NSASCIIStringEncoding];
 	}
 	return result;
 }
@@ -305,9 +305,9 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 	NSData *data = [string dataUsingEncoding:NSASCIIStringEncoding];
 	if (data) {
 		result = [self baseDecode:[data bytes]
-		                   length:[data length]
-		                  charset:kBase64DecodeChars
-		           requirePadding:YES];
+		          length:[data length]
+		          charset:kBase64DecodeChars
+		          requirePadding:YES];
 	}
 	return result;
 }
@@ -324,44 +324,44 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 + (NSData *)webSafeEncodeData:(NSData *)data
                        padded:(BOOL)padded {
 	return [self baseEncode:[data bytes]
-	                 length:[data length]
-	                charset:kWebSafeBase64EncodeChars
-	                 padded:padded];
+	        length:[data length]
+	        charset:kWebSafeBase64EncodeChars
+	        padded:padded];
 }
 
 + (NSData *)webSafeDecodeData:(NSData *)data {
 	return [self baseDecode:[data bytes]
-	                 length:[data length]
-	                charset:kWebSafeBase64DecodeChars
-	         requirePadding:NO];
+	        length:[data length]
+	        charset:kWebSafeBase64DecodeChars
+	        requirePadding:NO];
 }
 
 + (NSData *)webSafeEncodeBytes:(const void *)bytes
                         length:(NSUInteger)length
                         padded:(BOOL)padded {
 	return [self baseEncode:bytes
-	                 length:length
-	                charset:kWebSafeBase64EncodeChars
-	                 padded:padded];
+	        length:length
+	        charset:kWebSafeBase64EncodeChars
+	        padded:padded];
 }
 
 + (NSData *)webSafeDecodeBytes:(const void *)bytes length:(NSUInteger)length {
 	return [self baseDecode:bytes
-	                 length:length
-	                charset:kWebSafeBase64DecodeChars
-	         requirePadding:NO];
+	        length:length
+	        charset:kWebSafeBase64DecodeChars
+	        requirePadding:NO];
 }
 
 + (NSString *)stringByWebSafeEncodingData:(NSData *)data
                                    padded:(BOOL)padded {
 	NSString *result = nil;
 	NSData *converted = [self baseEncode:[data bytes]
-	                              length:[data length]
-	                             charset:kWebSafeBase64EncodeChars
-	                              padded:padded];
+	                     length:[data length]
+	                     charset:kWebSafeBase64EncodeChars
+	                     padded:padded];
 	if (converted) {
 		result = [[NSString alloc] initWithData:converted
-		                               encoding:NSASCIIStringEncoding];
+		          encoding:NSASCIIStringEncoding];
 	}
 	return result;
 }
@@ -371,12 +371,12 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
                                     padded:(BOOL)padded {
 	NSString *result = nil;
 	NSData *converted = [self baseEncode:bytes
-	                              length:length
-	                             charset:kWebSafeBase64EncodeChars
-	                              padded:padded];
+	                     length:length
+	                     charset:kWebSafeBase64EncodeChars
+	                     padded:padded];
 	if (converted) {
 		result = [[NSString alloc] initWithData:converted
-		                               encoding:NSASCIIStringEncoding];
+		          encoding:NSASCIIStringEncoding];
 	}
 	return result;
 }
@@ -386,9 +386,9 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 	NSData *data = [string dataUsingEncoding:NSASCIIStringEncoding];
 	if (data) {
 		result = [self baseDecode:[data bytes]
-		                   length:[data length]
-		                  charset:kWebSafeBase64DecodeChars
-		           requirePadding:NO];
+		          length:[data length]
+		          charset:kWebSafeBase64DecodeChars
+		          requirePadding:NO];
 	}
 	return result;
 }
@@ -419,11 +419,11 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 	[result setLength:maxLength];
 	// do it
 	NSUInteger finalLength = [self baseEncode:bytes
-	                                   srcLen:length
-	                                destBytes:[result mutableBytes]
-	                                  destLen:[result length]
-	                                  charset:charset
-	                                   padded:padded];
+	                          srcLen:length
+	                          destBytes:[result mutableBytes]
+	                          destLen:[result length]
+	                          charset:charset
+	                          padded:padded];
 	if (finalLength) {
 //        _GTMDevAssert(finalLength == maxLength, @"how did we calc the length wrong?");
 	}
@@ -456,11 +456,11 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 	[result setLength:maxLength];
 	// do it
 	NSUInteger finalLength = [self baseDecode:bytes
-	                                   srcLen:length
-	                                destBytes:[result mutableBytes]
-	                                  destLen:[result length]
-	                                  charset:charset
-	                           requirePadding:requirePadding];
+	                          srcLen:length
+	                          destBytes:[result mutableBytes]
+	                          destLen:[result length]
+	                          charset:charset
+	                          requirePadding:requirePadding];
 	if (finalLength) {
 		if (finalLength != maxLength) {
 			// resize down to how big it was
@@ -516,41 +516,41 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 
 	// now deal with the tail (<=2 bytes)
 	switch (srcLen) {
-		case 0:
-			// Nothing left; nothing more to do.
-			break;
+	case 0:
+		// Nothing left; nothing more to do.
+		break;
 
-		case 1:
-			// One byte left: this encodes to two characters, and (optionally)
-			// two pad characters to round out the four-character cypherblock.
+	case 1:
+		// One byte left: this encodes to two characters, and (optionally)
+		// two pad characters to round out the four-character cypherblock.
 //            _GTMDevAssert(destLen >= 2, @"our calc for encoded length was wrong");
-			curDest[0] = charset[curSrc[0] >> 2];
-			curDest[1] = charset[(curSrc[0] & 0x03) << 4];
-			curDest += 2;
-			destLen -= 2;
-			if (padded) {
+		curDest[0] = charset[curSrc[0] >> 2];
+		curDest[1] = charset[(curSrc[0] & 0x03) << 4];
+		curDest += 2;
+		destLen -= 2;
+		if (padded) {
 //                _GTMDevAssert(destLen >= 2, @"our calc for encoded length was wrong");
-				curDest[0] = kBase64PaddingChar;
-				curDest[1] = kBase64PaddingChar;
-				curDest += 2;
-			}
-			break;
+			curDest[0] = kBase64PaddingChar;
+			curDest[1] = kBase64PaddingChar;
+			curDest += 2;
+		}
+		break;
 
-		case 2:
-			// Two bytes left: this encodes to three characters, and (optionally)
-			// one pad character to round out the four-character cypherblock.
+	case 2:
+		// Two bytes left: this encodes to three characters, and (optionally)
+		// one pad character to round out the four-character cypherblock.
 //            _GTMDevAssert(destLen >= 3, @"our calc for encoded length was wrong");
-			curDest[0] = charset[curSrc[0] >> 2];
-			curDest[1] = charset[((curSrc[0] & 0x03) << 4) + (curSrc[1] >> 4)];
-			curDest[2] = charset[(curSrc[1] & 0x0f) << 2];
-			curDest += 3;
-			destLen -= 3;
-			if (padded) {
+		curDest[0] = charset[curSrc[0] >> 2];
+		curDest[1] = charset[((curSrc[0] & 0x03) << 4) + (curSrc[1] >> 4)];
+		curDest[2] = charset[(curSrc[1] & 0x0f) << 2];
+		curDest += 3;
+		destLen -= 3;
+		if (padded) {
 //                _GTMDevAssert(destLen >= 1, @"our calc for encoded length was wrong");
-				curDest[0] = kBase64PaddingChar;
-				curDest += 1;
-			}
-			break;
+			curDest[0] = kBase64PaddingChar;
+			curDest += 1;
+		}
+		break;
 	}
 	// return the length
 	return (curDest - destBytes);
@@ -594,49 +594,49 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 		// Four cyphertext characters decode to three bytes.
 		// Therefore we can be in one of four states.
 		switch (state) {
-			case 0:
-				// We're at the beginning of a four-character cyphertext block.
-				// This sets the high six bits of the first byte of the
-				// plaintext block.
+		case 0:
+			// We're at the beginning of a four-character cyphertext block.
+			// This sets the high six bits of the first byte of the
+			// plaintext block.
 //                _GTMDevAssert(destIndex < destLen, @"our calc for decoded length was wrong");
-				destBytes[destIndex] = decode << 2;
-				state = 1;
-				break;
+			destBytes[destIndex] = decode << 2;
+			state = 1;
+			break;
 
-			case 1:
-				// We're one character into a four-character cyphertext block.
-				// This sets the low two bits of the first plaintext byte,
-				// and the high four bits of the second plaintext byte.
+		case 1:
+			// We're one character into a four-character cyphertext block.
+			// This sets the low two bits of the first plaintext byte,
+			// and the high four bits of the second plaintext byte.
 //                _GTMDevAssert((destIndex+1) < destLen, @"our calc for decoded length was wrong");
-				destBytes[destIndex] |= decode >> 4;
-				destBytes[destIndex + 1] = (decode & 0x0f) << 4;
-				destIndex++;
-				state = 2;
-				break;
+			destBytes[destIndex] |= decode >> 4;
+			destBytes[destIndex + 1] = (decode & 0x0f) << 4;
+			destIndex++;
+			state = 2;
+			break;
 
-			case 2:
-				// We're two characters into a four-character cyphertext block.
-				// This sets the low four bits of the second plaintext
-				// byte, and the high two bits of the third plaintext byte.
-				// However, if this is the end of data, and those two
-				// bits are zero, it could be that those two bits are
-				// leftovers from the encoding of data that had a length
-				// of two mod three.
+		case 2:
+			// We're two characters into a four-character cyphertext block.
+			// This sets the low four bits of the second plaintext
+			// byte, and the high two bits of the third plaintext byte.
+			// However, if this is the end of data, and those two
+			// bits are zero, it could be that those two bits are
+			// leftovers from the encoding of data that had a length
+			// of two mod three.
 //                _GTMDevAssert((destIndex+1) < destLen, @"our calc for decoded length was wrong");
-				destBytes[destIndex] |= decode >> 2;
-				destBytes[destIndex + 1] = (decode & 0x03) << 6;
-				destIndex++;
-				state = 3;
-				break;
+			destBytes[destIndex] |= decode >> 2;
+			destBytes[destIndex + 1] = (decode & 0x03) << 6;
+			destIndex++;
+			state = 3;
+			break;
 
-			case 3:
-				// We're at the last character of a four-character cyphertext block.
-				// This sets the low six bits of the third plaintext byte.
+		case 3:
+			// We're at the last character of a four-character cyphertext block.
+			// This sets the low six bits of the third plaintext byte.
 //                _GTMDevAssert(destIndex < destLen, @"our calc for decoded length was wrong");
-				destBytes[destIndex] |= decode;
-				destIndex++;
-				state = 0;
-				break;
+			destBytes[destIndex] |= decode;
+			destIndex++;
+			state = 0;
+			break;
 		}
 	}
 

@@ -10,6 +10,8 @@
 
 #import "QNRecorderDelegate.h"
 
+#import "HappyDNS.h"
+
 /**
  *    断点上传时的分块大小
  */
@@ -84,6 +86,8 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @property (nonatomic, readonly) QNUrlConvert converter;
 
+@property (nonatomic, readonly) QNDnsManager *dns;
+
 + (instancetype)build:(QNConfigurationBuilderBlock)block;
 
 @end
@@ -107,6 +111,11 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (nonatomic, readonly) NSString *upIp;
 
 /**
+ *    备用上传IP
+ */
+@property (nonatomic, readonly) NSString *upIp2;
+
+/**
  *    Zone初始化方法
  *
  *    @param upHost     默认上传服务器地址
@@ -117,7 +126,8 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  */
 - (instancetype)initWithUpHost:(NSString *)upHost
                   upHostBackup:(NSString *)upHostBackup
-                          upIp:(NSString *)upIp;
+                          upIp:(NSString *)upIp
+                         upIp2:(NSString*)upIp2;
 
 /**
  *    zone 0
@@ -174,5 +184,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (nonatomic, assign)  NSDictionary *proxy;
 
 @property (nonatomic, assign) QNUrlConvert converter;
+
+@property (nonatomic, assign) QNDnsManager *dns;
 
 @end

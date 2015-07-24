@@ -13,6 +13,7 @@
 #import "QiniuSDK.h"
 
 #import "QNTestConfig.h"
+#import "HappyDns.h"
 
 @interface QNFormUploadTest : XCTestCase
 
@@ -38,9 +39,9 @@
 	QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo":@"bar" } checkCrc:YES cancellationSignal:nil];
 	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	[self.upManager putData:data key:@"你好" token:g_token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-	    testInfo = info;
-	    testResp = resp;
-	} option:opt];
+	         testInfo = info;
+	         testResp = resp;
+	 } option:opt];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -55,9 +56,9 @@
 	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	NSString *token = @"noauth";
 	[self.upManager putData:data key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-	    testInfo = info;
-	    testResp = resp;
-	} option:nil];
+	         testInfo = info;
+	         testResp = resp;
+	 } option:nil];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -70,9 +71,9 @@
 	__block NSDictionary *testResp = nil;
 	NSString *token = @"noauth";
 	[self.upManager putData:nil key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-	    testInfo = info;
-	    testResp = resp;
-	} option:nil];
+	         testInfo = info;
+	         testResp = resp;
+	 } option:nil];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -84,9 +85,9 @@
 	__block NSDictionary *testResp = nil;
 	NSString *token = @"noauth";
 	[self.upManager putFile:nil key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-	    testInfo = info;
-	    testResp = resp;
-	} option:nil];
+	         testInfo = info;
+	         testResp = resp;
+	 } option:nil];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -98,9 +99,9 @@
 	__block NSDictionary *testResp = nil;
 	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	[self.upManager putData:data key:@"hello" token:nil complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-	    testInfo = info;
-	    testResp = resp;
-	} option:nil];
+	         testInfo = info;
+	         testResp = resp;
+	 } option:nil];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -109,9 +110,9 @@
 	testInfo = nil;
 	testResp = nil;
 	[self.upManager putData:data key:@"hello" token:@"" complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-	    testInfo = info;
-	    testResp = resp;
-	} option:nil];
+	         testInfo = info;
+	         testResp = resp;
+	 } option:nil];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -120,9 +121,9 @@
 	testInfo = nil;
 	testResp = nil;
 	[self.upManager putData:nil key:@"hello" token:nil complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-	    testInfo = info;
-	    testResp = resp;
-	} option:nil];
+	         testInfo = info;
+	         testResp = resp;
+	 } option:nil];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -150,10 +151,10 @@
 
 	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	[self.upManager putData:data key:nil token:g_token complete: ^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
-	    key = k;
-	    testInfo = info;
-	    testResp = resp;
-	} option:nil];
+	         key = k;
+	         testInfo = info;
+	         testResp = resp;
+	 } option:nil];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -176,18 +177,18 @@
 	};
 
 	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
-	    builder.proxy = proxyDict;
-	    builder.zone = [[QNZone alloc] initWithUpHost:@"upnono.qiniu.com" upHostBackup:@"" upIp:@""];
-	}];
+	                                   builder.proxy = proxyDict;
+	                                   builder.zone = [[QNZone alloc] initWithUpHost:@"upnono.qiniu.com" upHostBackup:@"" upIp:@"" upIp2:@""];
+				   }];
 
 	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
 	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	[upManager putData:data key:nil token:g_token complete: ^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
-	    key = k;
-	    testInfo = info;
-	    testResp = resp;
-	} option:nil];
+	         key = k;
+	         testInfo = info;
+	         testResp = resp;
+	 } option:nil];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -204,20 +205,20 @@
 	__block NSString *key = nil;
 
 	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
-	    builder.converter = ^NSString *(NSString *url) {
-	        return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
-		};
-	    builder.zone = [[QNZone alloc] initWithUpHost:@"upnono.qiniu.com" upHostBackup:@"" upIp:@""];
-	}];
+	                                   builder.converter = ^NSString *(NSString *url) {
+	                                           return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
+					   };
+	                                   builder.zone = [[QNZone alloc] initWithUpHost:@"upnono.qiniu.com" upHostBackup:@"" upIp:@"" upIp2:@""];
+				   }];
 
 	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
 	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	[upManager putData:data key:nil token:g_token complete: ^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
-	    key = k;
-	    testInfo = info;
-	    testResp = resp;
-	} option:nil];
+	         key = k;
+	         testInfo = info;
+	         testResp = resp;
+	 } option:nil];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -229,23 +230,25 @@
 	XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");
 }
 
-- (void)testDnsHijacking {
+- (void)testDnsHosts {
 	__block QNResponseInfo *testInfo = nil;
 	__block NSDictionary *testResp = nil;
 	__block NSString *key = nil;
-
+	QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
+	QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
 	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
-	    builder.zone = [[QNZone alloc] initWithUpHost:@"uphijacktest.qiniu.com" upHostBackup:@"uphijacktest.qiniu.com" upIp:[QNZone zone0].upIp];
-	}];
+	                                   builder.zone = [[QNZone alloc] initWithUpHost:@"uphosttest.qiniu.com" upHostBackup:@"uphosttestbak.qiniu.com" upIp:[QNZone zone0].upIp upIp2:[QNZone zone0].upIp2];
+	                                   builder.dns = dns;
+				   }];
 
 	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
 	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	[upManager putData:data key:nil token:g_token complete: ^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
-	    key = k;
-	    testInfo = info;
-	    testResp = resp;
-	} option:nil];
+	         key = k;
+	         testInfo = info;
+	         testResp = resp;
+	 } option:nil];
 
 	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
 	NSLog(@"%@", testInfo);
@@ -253,7 +256,7 @@
 	XCTAssert(key == nil, @"Pass");
 	XCTAssert(testInfo.isOK, @"Pass");
 	XCTAssert(testInfo.reqId, @"Pass");
-	XCTAssert([testInfo.host isEqual:@"uphijacktest.qiniu.com"], @"Pass");
+	XCTAssert([testInfo.host isEqual:@"uphosttest.qiniu.com"], @"Pass");
 	XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");
 }
 

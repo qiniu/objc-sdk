@@ -113,8 +113,8 @@ static NSString *domain = @"qiniu.com";
 		_error = error;
 		_host = host;
 		_duration = duration;
-        _id = [QNUserAgent sharedInstance].id;
-        _timeStamp = [[NSDate date] timeIntervalSince1970];
+		_id = [QNUserAgent sharedInstance].id;
+		_timeStamp = [[NSDate date] timeIntervalSince1970];
 	}
 	return self;
 }
