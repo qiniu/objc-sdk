@@ -102,5 +102,6 @@
 - (int64_t)size {
 	return 0;
 }
+@end
 #endif
 

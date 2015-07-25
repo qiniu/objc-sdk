@@ -104,7 +104,6 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
         complete:(QNUpCompletionHandler)completionHandler
           option:(QNUploadOption *)option;
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
 /**
  *    上传ALAsset文件
  *
@@ -119,5 +118,5 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
               token:(NSString *)token
            complete:(QNUpCompletionHandler)completionHandler
              option:(QNUploadOption *)option;
-#endif
+
 @end
