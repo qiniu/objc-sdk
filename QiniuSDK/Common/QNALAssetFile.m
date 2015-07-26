@@ -69,39 +69,5 @@
 	return _fileSize;
 }
 @end
-#else
-@implementation QNALAssetFile
-- (instancetype)init:(ALAsset *)asset
-               error:(NSError *__autoreleasing *)error {
-	if (self = [super init]) {
-	}
-
-	return self;
-}
-
-- (NSData *)read:(long)offset
-            size:(long)size {
-	return nil;
-}
-
-- (NSData *)readAll {
-	return nil;
-}
-
-- (void)close {
-}
-
--(NSString *)path {
-	return nil;
-}
-
-- (int64_t)modifyTime {
-	return 0;
-}
-
-- (int64_t)size {
-	return 0;
-}
-@end
 #endif
 

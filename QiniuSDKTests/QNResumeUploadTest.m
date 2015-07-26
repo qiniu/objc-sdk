@@ -15,10 +15,6 @@
 #import "QNTestConfig.h"
 #import "QNTempFile.h"
 
-#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
-#import <AssetsLibrary/AssetsLibrary.h>
-#endif
-
 @interface QNResumeUploadTest : XCTestCase
 @property QNUploadManager *upManager;
 @property BOOL inTravis;

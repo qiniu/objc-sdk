@@ -4,7 +4,7 @@
 
 ### 增加
 * 使用 happydns 进行解析
-* 支持ALAsset上传
+* 支持ALAsset上传，多谢 github.com/NSFish的代码
 
 ### 修正
 * 当文件超过200M时，iOS上传失败
