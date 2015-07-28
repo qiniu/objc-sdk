@@ -8,7 +8,7 @@
 
 ## 安装
 
-通过CocoaPods
+通过 CocoaPods
 
 ```ruby
 pod "Qiniu", "~> 7.0"
@@ -16,11 +16,11 @@ pod "Qiniu", "~> 7.0"
 
 ## 运行环境
 
-| Qiniu SDK版本 | 最低 iOS版本   | 最低 OS X 版本  |                                   Notes                                   |
+| Qiniu SDK 版本 | 最低 iOS版本   | 最低 OS X 版本  |                                   Notes                                   |
 |:--------------------:|:---------------------------:|:----------------------------:|:-------------------------------------------------------------------------:|
-|          7.x         |            iOS 6            |           OS X 10.8          | Xcode最低版本 5.  |
-|          [7.x/AFNetworking-1.x](https://github.com/qiniu/objc-sdk/tree/AFNetworking-1.x)         |            iOS 5            |         OS X 10.7        |Xcode最低版本 5. |
-|          [6.x](https://github.com/qiniu/ios-sdk)         |            iOS 6            |         None        |Xcode最低版本 5. |
+|          7.x         |            iOS 6            |           OS X 10.8          | Xcode 最低版本 5.  |
+|          [7.x / AFNetworking-1.x](https://github.com/qiniu/objc-sdk/tree/AFNetworking-1.x)         |            iOS 5            |         OS X 10.7        |Xcode 最低版本 5. |
+|          [6.x](https://github.com/qiniu/ios-sdk)         |            iOS 6            |         None        |Xcode 最低版本 5. |
 
 ## 使用方法
 
@@ -77,8 +77,8 @@ $ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -con
 - 如果发现了 bug, 欢迎提交 [issue](https://github.com/qiniu/objc-sdk/issues)
 - 如果有功能需求, 欢迎提交 [issue](https://github.com/qiniu/objc-sdk/issues)
 - 如果要提交代码, 欢迎提交 pull request
-- 欢迎关注我们的 [微信](http://www.qiniu.com/#weixin) [微博](http://weibo.com/qiniutek), 及时获取动态信息
+- 欢迎关注我们的 [微信](http://www.qiniu.com/#weixin) && [微博](http://weibo.com/qiniutek), 及时获取动态信息
 
 ## 代码许可
 
-The MIT License (MIT). 详情见 [License文件](https://github.com/qiniu/objc-sdk/blob/master/LICENSE).
+The MIT License (MIT). 详情见 [License 文件](https://github.com/qiniu/objc-sdk/blob/master/LICENSE).
