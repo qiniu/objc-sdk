@@ -49,7 +49,7 @@
 		NSData *d = nil;
 		//[NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error] 不能用在大于 200M的文件上，改用filehandle
 		// 参见 https://issues.apache.org/jira/browse/CB-5790
-		if (_fileSize > 32*1024*1024) {
+		if (_fileSize > 16*1024*1024) {
 			f = [NSFileHandle fileHandleForReadingAtPath:path];
 			if (f == nil) {
 				if (error != nil) {
