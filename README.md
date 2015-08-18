@@ -27,7 +27,7 @@ pod "Qiniu", "~> 7.0"
 ```Objective-C
 #import <QiniuSDK.h>
 ...
-    NSString token = @"从服务端SDK获取";
+    NSString *token = @"从服务端SDK获取";
     QNUploadManager *upManager = [[QNUploadManager alloc] init];
     NSData *data = [@"Hello, World!" dataUsingEncoding : NSUTF8StringEncoding];
     [upManager putData:data key:@"hello" token:token
@@ -63,7 +63,7 @@ $ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -con
 
 ## 代码贡献
 
-详情参考 [代码提交指南](https://github.com/qiniu/objc-sdk/blob/master/CONTRIBUTING.md).
+详情参考 [代码提交指南](https://github.com/qiniu/objc-sdk/blob/master/Contributing.md).
 
 ## 贡献记录
 
