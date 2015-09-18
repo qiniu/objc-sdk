@@ -15,6 +15,8 @@
 #import "QNUploadOption+Private.h"
 #import "QNRecorderDelegate.h"
 #import "QNCrc32.h"
+#import "QNTaskRecord.h"
+#import "QNAsyncRun.h"
 
 typedef void (^task)(void);
 
@@ -29,30 +31,15 @@ typedef void (^task)(void);
 @property (nonatomic, strong) QNUploadOption *option;
 @property (nonatomic, strong) QNUpToken *token;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
-@property (nonatomic, strong) NSMutableArray *contexts;
 
 @property int64_t modifyTime;
 @property (nonatomic, strong) id <QNRecorderDelegate> recorder;
 
 @property (nonatomic, strong) QNConfiguration *config;
 
-@property UInt32 chunkCrc;
-
 @property (nonatomic, strong) id <QNFileDelegate> file;
-
-- (void)makeBlock:(NSString *)uphost
-           offset:(UInt32)offset
-        blockSize:(UInt32)blockSize
-        chunkSize:(UInt32)chunkSize
-         progress:(QNInternalProgressBlock)progressBlock
-         complete:(QNCompleteBlock)complete;
-
-- (void)putChunk:(NSString *)uphost
-          offset:(UInt32)offset
-            size:(UInt32)size
-         context:(NSString *)context
-        progress:(QNInternalProgressBlock)progressBlock
-        complete:(QNCompleteBlock)complete;
+@property (nonatomic, copy) NSArray *tasks;
+@property (atomic, assign) UInt32 uploadedSize;
 
 - (void)makeFile:(NSString *)uphost
         complete:(QNCompleteBlock)complete;
@@ -83,7 +70,6 @@ typedef void (^task)(void);
 		_httpManager = http;
 		_modifyTime = [file modifyTime];
 		_recorderKey = recorderKey;
-		_contexts = [[NSMutableArray alloc] initWithCapacity:(_size + kQNBlockSize - 1) / kQNBlockSize];
 		_config = config;
 
 		_token = token;
@@ -99,15 +85,23 @@ typedef void (^task)(void);
 //    "contexts": contexts
 //}
 
-- (void)record:(UInt32)offset {
+- (void)recordTasks {
 	NSString *key = self.recorderKey;
-	if (offset == 0 || _recorder == nil || key == nil || [key isEqualToString:@""]) {
+	if (self.tasks.count == 0 || _recorder == nil || key == nil || [key isEqualToString:@""]) {
 		return;
 	}
+    
 	NSNumber *n_size = @(self.size);
-	NSNumber *n_offset = @(offset);
 	NSNumber *n_time = [NSNumber numberWithLongLong:_modifyTime];
-	NSMutableDictionary *rec = [NSMutableDictionary dictionaryWithObjectsAndKeys:n_size, @"size", n_offset, @"offset", n_time, @"modify_time", _contexts, @"contexts", nil];
+    NSMutableArray *taskDics = [NSMutableArray arrayWithCapacity:self.tasks.count];
+    [self.tasks enumerateObjectsUsingBlock:^(QNTaskRecord*  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        NSDictionary *dic = [obj jsonFromObj];
+        if (dic) {
+            [taskDics addObject:dic];
+        }
+    }];
+    
+	NSMutableDictionary *rec = [NSMutableDictionary dictionaryWithObjectsAndKeys:n_size, @"size", taskDics, @"tasks", n_time, @"modify_time", nil];
 
 	NSError *error;
 	NSData *data = [NSJSONSerialization dataWithJSONObject:rec options:NSJSONWritingPrettyPrinted error:&error];
@@ -115,7 +109,11 @@ typedef void (^task)(void);
 		NSLog(@"up record json error %@ %@", key, error);
 		return;
 	}
-	error = [_recorder set:key data:data];
+	
+    @synchronized(self.recorder) {
+        error = [_recorder set:key data:data];
+    }
+    
 	if (error != nil) {
 		NSLog(@"up record set error %@ %@", key, error);
 	}
@@ -128,15 +126,17 @@ typedef void (^task)(void);
 	[_recorder del:self.recorderKey];
 }
 
-- (UInt32)recoveryFromRecord {
+- (void)recoveryFromRecord {
 	NSString *key = self.recorderKey;
 	if (_recorder == nil || key == nil || [key isEqualToString:@""]) {
-		return 0;
+        [self createEmptyTasks];
+		return;
 	}
-
+    
 	NSData *data = [_recorder get:key];
 	if (data == nil) {
-		return 0;
+        [self createEmptyTasks];
+		return ;
 	}
 
 	NSError *error;
@@ -144,65 +144,106 @@ typedef void (^task)(void);
 	if (error != nil) {
 		NSLog(@"recovery error %@ %@", key, error);
 		[_recorder del:self.key];
-		return 0;
+        
+        [self createEmptyTasks];
+		return ;
 	}
-	NSNumber *n_offset = info[@"offset"];
+	NSArray *taskDics = info[@"tasks"];
 	NSNumber *n_size = info[@"size"];
 	NSNumber *time = info[@"modify_time"];
-	NSArray *contexts = info[@"contexts"];
-	if (n_offset == nil || n_size == nil || time == nil || contexts == nil) {
-		return 0;
+	if (taskDics == nil || n_size == nil || time == nil) {
+        [self createEmptyTasks];
+		return;
 	}
-
-	UInt32 offset = [n_offset unsignedIntValue];
+    
+    NSMutableArray *tasks = [NSMutableArray arrayWithCapacity:taskDics.count];
+    for (NSDictionary *dic in taskDics) {
+        QNTaskRecord *record = [QNTaskRecord recordFromJson:dic];
+        if (record) {
+            [tasks addObject:record];
+        }
+    }
+    
+    int blockCount = (self.size + kQNBlockSize - 1) / kQNBlockSize;
+    if (tasks.count != blockCount) {
+        [self createEmptyTasks];
+        return;
+    }
+    self.tasks = tasks;
+    
+    self.uploadedSize = 0;
+    [self.tasks enumerateObjectsUsingBlock:^(QNTaskRecord*  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        self.uploadedSize += obj.offset - obj.blockIndex * kQNBlockSize;
+        obj.running = NO;
+    }];
+    
 	UInt32 size = [n_size unsignedIntValue];
-	if (offset > size || size != self.size) {
-		return 0;
+	if (size != self.size) {
+        [self createEmptyTasks];
+		return;
 	}
+    
+    
 	UInt64 t = [time unsignedLongLongValue];
 	if (t != _modifyTime) {
 		NSLog(@"modify time changed %llu, %llu", t, _modifyTime);
-		return 0;
+        [self createEmptyTasks];
+		return;
 	}
-	_contexts = [[NSMutableArray alloc] initWithArray:contexts copyItems:true];
-	return offset;
+    
+	return;
 }
 
-- (void)nextTask:(UInt32)offset retriedTimes:(int)retried host:(NSString *)host {
+- (void)createEmptyTasks
+{
+    int blockCount = (self.size + kQNBlockSize - 1) / kQNBlockSize;
+    NSMutableArray *tasks = [NSMutableArray arrayWithCapacity:blockCount];
+    for (int i = 0; i < blockCount; i++) {
+        QNTaskRecord *task = [[QNTaskRecord alloc] init];
+        task.blockIndex = i;
+        task.offset = i * kQNBlockSize;
+        [tasks addObject:task];
+    }
+    self.tasks = tasks;
+}
+
+- (BOOL)allTaskFinished
+{
+    __block BOOL finished = YES;
+    @synchronized(self) {
+        [self.tasks enumerateObjectsUsingBlock:^(QNTaskRecord*  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if ((idx + 1 != self.tasks.count && obj.isFinished == NO) || (idx + 1 == self.tasks.count && obj.offset != self.size)) {
+                finished = NO;
+            }
+        }];
+    }
+    
+    return finished;
+}
+
+- (void)nextTask:(QNTaskRecord*)task retriedTimes:(int)retried host:(NSString *)host {
 	if (self.option.cancellationSignal()) {
 		self.complete([QNResponseInfo cancel], self.key, nil);
 		return;
 	}
+    task.running = YES;
 
-	if (offset == self.size) {
-		QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
-			if (info.isOK) {
-				[self removeRecord];
-				self.option.progressHandler(self.key, 1.0);
-			}
-			else if (info.couldRetry && retried < _config.retryMax) {
-				[self nextTask:offset retriedTimes:retried + 1 host:host];
-				return;
-			}
-			self.complete(info, self.key, resp);
-		};
-		[self makeFile:host complete:completionHandler];
-		return;
-	}
-
-	UInt32 chunkSize = [self calcPutSize:offset];
+	UInt32 chunkSize = [self calcPutSize:task.offset];
 	QNInternalProgressBlock progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-		float percent = (float)(offset + totalBytesWritten) / (float)self.size;
-		if (percent > 0.95) {
-			percent = 0.95;
-		}
-		self.option.progressHandler(self.key, percent);
+        
+        float percent = (float)(self.uploadedSize + totalBytesWritten) / (float)self.size;
+        
+        if (percent > 0.95) {
+            percent = 0.95;
+        }
+        self.option.progressHandler(self.key, percent);
 	};
 
 	QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
 		if (info.error != nil) {
 			if (info.statusCode == 701) {
-				[self nextTask:(offset / kQNBlockSize) * kQNBlockSize retriedTimes:0 host:host];
+                task.offset = task.blockIndex * kQNBlockSize;
+				[self nextTask:task retriedTimes:0 host:host];
 				return;
 			}
 			if (retried >= _config.retryMax || !info.couldRetry) {
@@ -215,32 +256,69 @@ typedef void (^task)(void);
 				nextHost = _config.upHostBackup;
 			}
 
-			[self nextTask:offset retriedTimes:retried + 1 host:nextHost];
+			[self nextTask:task retriedTimes:retried + 1 host:nextHost];
 			return;
 		}
 
 		if (resp == nil) {
-			[self nextTask:offset retriedTimes:retried host:host];
+			[self nextTask:task retriedTimes:retried host:host];
 			return;
 		}
 
 		NSString *ctx = resp[@"ctx"];
 		NSNumber *crc = resp[@"crc32"];
-		if (ctx == nil || crc == nil || [crc unsignedLongValue] != _chunkCrc) {
-			[self nextTask:offset retriedTimes:retried host:host];
+		if (ctx == nil || crc == nil || [crc unsignedLongValue] != task.chunkCrc) {
+			[self nextTask:task retriedTimes:retried host:host];
 			return;
 		}
-		_contexts[offset / kQNBlockSize] = ctx;
-		[self record:offset + chunkSize];
-		[self nextTask:offset + chunkSize retriedTimes:retried host:host];
+        
+		task.context = ctx;
+        task.offset += chunkSize;
+        @synchronized(self) {
+            self.uploadedSize += chunkSize;
+        }
+		QNAsyncRun(^{
+            [self recordTasks];
+        });
+		[self nextTask:task retriedTimes:retried host:host];
 	};
-	if (offset % kQNBlockSize == 0) {
-		UInt32 blockSize = [self calcBlockSize:offset];
-		[self makeBlock:host offset:offset blockSize:blockSize chunkSize:chunkSize progress:progressBlock complete:completionHandler];
+    
+	if (task.offset % kQNBlockSize == 0 || task.offset == self.size) {
+        if (task.offset == task.blockIndex * kQNBlockSize) {
+            UInt32 blockSize = [self calcBlockSize:task.offset];
+            [self makeBlock:host task:task blockSize:blockSize chunkSize:chunkSize progress:progressBlock complete:completionHandler];
+        }
+        else {
+            if ([self allTaskFinished]) {
+                [self postFinished:host retriedTimes:0];
+                return;
+            }
+            else {
+                task.running = NO;
+                [self runNextTask];
+            }
+        }
+
 		return;
 	}
-	NSString *context = _contexts[offset / kQNBlockSize];
-	[self putChunk:host offset:offset size:chunkSize context:context progress:progressBlock complete:completionHandler];
+	NSString *context = task.context;
+	[self putChunk:host task:task size:chunkSize context:context progress:progressBlock complete:completionHandler];
+}
+
+- (void)postFinished:(NSString*)host retriedTimes:(int)retried
+{
+    QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
+        if (info.isOK) {
+            [self removeRecord];
+            self.option.progressHandler(self.key, 1.0);
+        }
+        else if (info.couldRetry && retried < _config.retryMax) {
+            [self postFinished:host retriedTimes:retried + 1];
+            return;
+        }
+        self.complete(info, self.key, resp);
+    };
+    [self makeFile:host complete:completionHandler];
 }
 
 - (UInt32)calcPutSize:(UInt32)offset {
@@ -254,27 +332,39 @@ typedef void (^task)(void);
 }
 
 - (void)makeBlock:(NSString *)uphost
-           offset:(UInt32)offset
+             task:(QNTaskRecord*)task
         blockSize:(UInt32)blockSize
         chunkSize:(UInt32)chunkSize
          progress:(QNInternalProgressBlock)progressBlock
          complete:(QNCompleteBlock)complete {
-	NSData *data = [self.file read:offset size:chunkSize];
-	NSString *url = [[NSString alloc] initWithFormat:@"http://%@:%u/mkblk/%u", uphost, (unsigned int)_config.upPort, (unsigned int)blockSize];
-	_chunkCrc = [QNCrc32 data:data];
+	NSData *data = [self.file read:task.offset size:chunkSize];
+    NSString *url = nil;
+    if (self.config.isEnabledBackgroundUpload) {
+        url = [[NSString alloc] initWithFormat:@"http://%@/mkblk/%u", uphost, (unsigned int)blockSize];
+    }
+    else {
+        url = [[NSString alloc] initWithFormat:@"http://%@:%u/mkblk/%u", uphost, (unsigned int)_config.upPort, (unsigned int)blockSize];
+    }
+	task.chunkCrc = [QNCrc32 data:data];
 	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
 }
 
 - (void)putChunk:(NSString *)uphost
-          offset:(UInt32)offset
+            task:(QNTaskRecord*)task
             size:(UInt32)size
          context:(NSString *)context
         progress:(QNInternalProgressBlock)progressBlock
         complete:(QNCompleteBlock)complete {
-	NSData *data = [self.file read:offset size:size];
-	UInt32 chunkOffset = offset % kQNBlockSize;
-	NSString *url = [[NSString alloc] initWithFormat:@"http://%@:%u/bput/%@/%u", uphost, (unsigned int)_config.upPort, context, (unsigned int)chunkOffset];
-	_chunkCrc = [QNCrc32 data:data];
+	NSData *data = [self.file read:task.offset size:size];
+	UInt32 chunkOffset = task.offset % kQNBlockSize;
+	NSString *url = nil;
+    if (self.config.isEnabledBackgroundUpload) {
+        url = [[NSString alloc] initWithFormat:@"http://%@/bput/%@/%u", uphost, context, (unsigned int)chunkOffset];
+    }
+    else {
+        url = [[NSString alloc] initWithFormat:@"http://%@:%u/bput/%@/%u", uphost, (unsigned int)_config.upPort, context, (unsigned int)chunkOffset];
+    }
+	task.chunkCrc = [QNCrc32 data:data];
 	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
 }
 
@@ -282,7 +372,13 @@ typedef void (^task)(void);
         complete:(QNCompleteBlock)complete {
 	NSString *mime = [[NSString alloc] initWithFormat:@"/mimeType/%@", [QNUrlSafeBase64 encodeString:self.option.mimeType]];
 
-	__block NSString *url = [[NSString alloc] initWithFormat:@"http://%@:%u/mkfile/%u%@", uphost, (unsigned int)_config.upPort, (unsigned int)self.size, mime];
+    __block NSString *url = nil;
+    if (self.config.isEnabledBackgroundUpload) {
+        url = [[NSString alloc] initWithFormat:@"http://%@/mkfile/%u%@", uphost, (unsigned int)self.size, mime];
+    }
+    else {
+        url = [[NSString alloc] initWithFormat:@"http://%@:%u/mkfile/%u%@", uphost, (unsigned int)_config.upPort, (unsigned int)self.size, mime];
+    }
 
 	if (self.key != nil) {
 		NSString *keyStr = [[NSString alloc] initWithFormat:@"/key/%@", [QNUrlSafeBase64 encodeString:self.key]];
@@ -295,7 +391,15 @@ typedef void (^task)(void);
 
 
 	NSMutableData *postData = [NSMutableData data];
-	NSString *bodyStr = [self.contexts componentsJoinedByString:@","];
+	__block NSString *bodyStr = nil;
+    [self.tasks enumerateObjectsUsingBlock:^(QNTaskRecord*  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        if (bodyStr) {
+            bodyStr = [bodyStr stringByAppendingFormat:@",%@",obj.context];
+        }
+        else {
+            bodyStr = obj.context;
+        }
+    }];
 	[postData appendData:[bodyStr dataUsingEncoding:NSUTF8StringEncoding]];
 	[self post:url withData:postData withCompleteBlock:complete withProgressBlock:nil];
 }
@@ -309,9 +413,31 @@ typedef void (^task)(void);
 
 - (void)run {
 	@autoreleasepool {
-		UInt32 offset = [self recoveryFromRecord];
-		[self nextTask:offset retriedTimes:0 host:_config.upHost];
+		[self recoveryFromRecord];
+        
+        if ([self allTaskFinished]) {
+            [self postFinished:self.config.upHost retriedTimes:0];
+        }
+        else {
+            for (int i = 0; i < self.config.maxUploadThreadCount; i++) {
+                [self runNextTask];
+            }
+        }
 	}
+}
+
+- (void)runNextTask
+{
+    @synchronized(self) {
+        [self.tasks enumerateObjectsUsingBlock:^(QNTaskRecord*  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            if (!obj.isRunning && obj.isFinished == NO) {
+                if (idx +1 != self.tasks.count || obj.offset != self.size) {
+                    [self nextTask:obj retriedTimes:0 host:self.config.upHost];
+                    *stop = YES;
+                }
+            }
+        }];
+    }
 }
 
 @end

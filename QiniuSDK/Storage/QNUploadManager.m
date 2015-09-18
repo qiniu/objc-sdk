@@ -80,6 +80,9 @@
 		}
 		else {
 			_httpManager = [[QNSessionManager alloc] initWithProxy:config.proxy timeout:config.timeoutInterval urlConverter:config.converter dns:config.dns];
+            if (self.config.isEnabledBackgroundUpload) {
+                ((QNSessionManager*)_httpManager).sessionIdentifier = self.config.sessionIdentifier;
+            }
 		}
 #else
 		_httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter dns:config.dns];
@@ -182,7 +185,7 @@
 			});
 		};
 
-		if ([file size] <= _config.putThreshold) {
+		if (self.config.isEnabledBackgroundUpload == NO && [file size] <= _config.putThreshold) {
 			NSData *data = [file readAll];
 			[self putData:data key:key token:token complete:complete option:option];
 			return;

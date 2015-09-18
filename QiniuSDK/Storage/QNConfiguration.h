@@ -38,6 +38,10 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @interface QNConfiguration : NSObject
 
+@property (copy, nonatomic, readonly) NSString *sessionIdentifier;
+@property (nonatomic, readonly) BOOL isEnabledBackgroundUpload;
+//同时上传的线程数, 默认是2
+@property (nonatomic, assign) int maxUploadThreadCount;
 /**
  *    默认上传服务器地址
  */
@@ -147,6 +151,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @interface QNConfigurationBuilder : NSObject
 
+@property (nonatomic, copy) NSString *sessionIdentifier;
 /**
  *    默认上传服务器地址
  */
