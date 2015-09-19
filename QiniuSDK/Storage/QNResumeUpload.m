@@ -94,7 +94,7 @@ typedef void (^task)(void);
 	NSNumber *n_size = @(self.size);
 	NSNumber *n_time = [NSNumber numberWithLongLong:_modifyTime];
     NSMutableArray *taskDics = [NSMutableArray arrayWithCapacity:self.tasks.count];
-    [self.tasks enumerateObjectsUsingBlock:^(QNTaskRecord*  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.tasks enumerateObjectsUsingBlock:^(QNTaskRecord* obj, NSUInteger idx, BOOL * stop) {
         NSDictionary *dic = [obj jsonFromObj];
         if (dic) {
             [taskDics addObject:dic];
@@ -172,7 +172,7 @@ typedef void (^task)(void);
     self.tasks = tasks;
     
     self.uploadedSize = 0;
-    [self.tasks enumerateObjectsUsingBlock:^(QNTaskRecord*  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.tasks enumerateObjectsUsingBlock:^(QNTaskRecord* obj, NSUInteger idx, BOOL * stop) {
         self.uploadedSize += obj.offset - obj.blockIndex * kQNBlockSize;
         obj.running = NO;
     }];
@@ -211,7 +211,7 @@ typedef void (^task)(void);
 {
     __block BOOL finished = YES;
     @synchronized(self) {
-        [self.tasks enumerateObjectsUsingBlock:^(QNTaskRecord*  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.tasks enumerateObjectsUsingBlock:^(QNTaskRecord* obj, NSUInteger idx, BOOL * stop) {
             if ((idx + 1 != self.tasks.count && obj.isFinished == NO) || (idx + 1 == self.tasks.count && obj.offset != self.size)) {
                 finished = NO;
             }
@@ -392,7 +392,7 @@ typedef void (^task)(void);
 
 	NSMutableData *postData = [NSMutableData data];
 	__block NSString *bodyStr = nil;
-    [self.tasks enumerateObjectsUsingBlock:^(QNTaskRecord*  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+    [self.tasks enumerateObjectsUsingBlock:^(QNTaskRecord* obj, NSUInteger idx, BOOL * stop) {
         if (bodyStr) {
             bodyStr = [bodyStr stringByAppendingFormat:@",%@",obj.context];
         }
@@ -429,7 +429,7 @@ typedef void (^task)(void);
 - (void)runNextTask
 {
     @synchronized(self) {
-        [self.tasks enumerateObjectsUsingBlock:^(QNTaskRecord*  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+        [self.tasks enumerateObjectsUsingBlock:^(QNTaskRecord* obj, NSUInteger idx, BOOL * stop) {
             if (!obj.isRunning && obj.isFinished == NO) {
                 if (idx +1 != self.tasks.count || obj.offset != self.size) {
                     [self nextTask:obj retriedTimes:0 host:self.config.upHost];
