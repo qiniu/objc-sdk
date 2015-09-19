@@ -76,6 +76,10 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 @end
 
 @interface QNSessionManager ()
+{
+    dispatch_once_t onceToken;
+    id _httpMgr;
+}
 @property UInt32 timeout;
 @property (nonatomic, strong) QNUrlConvert converter;
 @property bool noProxy;
@@ -90,6 +94,8 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
                  urlConverter:(QNUrlConvert)converter
                           dns:(QNDnsManager*)dns{
 	if (self = [super init]) {
+        onceToken = 0;
+        _httpMgr = nil;
 		_timeout = timeout;
 		_converter = converter;
         _dns = dns;
@@ -111,8 +117,6 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 
 - (AFHTTPSessionManager*)httpManager
 {
-    static dispatch_once_t onceToken = 0;
-    __strong static id _sharedObject = nil;
     dispatch_once(&onceToken, ^{
         NSURLSessionConfiguration *configuration = nil;
         if ([self isEnabledBackgroundUpload]) {
@@ -128,14 +132,14 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
         
         AFHTTPSessionManager *httpManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
         httpManager.responseSerializer = [AFHTTPResponseSerializer serializer];
-        _sharedObject = httpManager;
+        _httpMgr = httpManager;
         [httpManager setDidFinishEventsForBackgroundURLSessionBlock:^(NSURLSession *session) {
             
         }];
         
     });
     
-    return _sharedObject;
+    return _httpMgr;
 }
 
 - (BOOL)isEnabledBackgroundUpload
