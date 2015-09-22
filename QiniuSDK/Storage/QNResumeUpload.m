@@ -58,16 +58,16 @@ typedef void (^task)(void);
 
 @implementation QNResumeUpload
 
-- (instancetype)initWithData:(NSData *)data
-                    withSize:(UInt32)size
-                     withKey:(NSString *)key
-                   withToken:(NSString *)token
-       withCompletionHandler:(QNUpCompletionHandler)block
-                  withOption:(QNUploadOption *)option
-              withModifyTime:(NSDate *)time
-                withRecorder:(id <QNRecorderDelegate> )recorder
-             withRecorderKey:(NSString *)recorderKey
-             withHttpManager:(QNHttpManager *)http {
+- (instancetype) initWithData:(NSData *)data
+                     withSize:(UInt32)size
+                      withKey:(NSString *)key
+                    withToken:(NSString *)token
+        withCompletionHandler:(QNUpCompletionHandler)block
+                   withOption:(QNUploadOption *)option
+               withModifyTime:(NSDate *)time
+                 withRecorder:(id <QNRecorderDelegate> )recorder
+              withRecorderKey:(NSString *)recorderKey
+              withHttpManager:(QNHttpManager *)http {
 	if (self = [super init]) {
 		_data = data;
 		_size = size;
@@ -302,8 +302,8 @@ typedef void (^task)(void);
 
 	if (self.option && self.option.params) {
 		[self.option.params enumerateKeysAndObjectsUsingBlock: ^(NSString *key, NSString *obj, BOOL *stop) {
-		    url = [NSString stringWithFormat:@"%@/%@/%@", url, key, [QNUrlSafeBase64 encodeString:obj]];
-		}];
+		         url = [NSString stringWithFormat:@"%@/%@/%@", url, key, [QNUrlSafeBase64 encodeString:obj]];
+		 }];
 	}
 
 	NSMutableData *postData = [NSMutableData data];
@@ -312,10 +312,10 @@ typedef void (^task)(void);
 	[self post:url withData:postData withCompleteBlock:complete withProgressBlock:nil];
 }
 
-- (void)         post:(NSString *)url
-             withData:(NSData *)data
-    withCompleteBlock:(QNCompleteBlock)completeBlock
-    withProgressBlock:(QNInternalProgressBlock)progressBlock {
+- (void)             post:(NSString *)url
+                 withData:(NSData *)data
+        withCompleteBlock:(QNCompleteBlock)completeBlock
+        withProgressBlock:(QNInternalProgressBlock)progressBlock {
 	[_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:nil];
 }
 

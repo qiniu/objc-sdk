@@ -49,7 +49,7 @@
 
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
-	    sharedInstance = [[self alloc] initWithRecorder:recorder recorderKeyGenerator:recorderKeyGenerator];
+		sharedInstance = [[self alloc] initWithRecorder:recorder recorderKeyGenerator:recorderKeyGenerator];
 	});
 
 	return sharedInstance;
@@ -63,7 +63,7 @@
 	NSString *desc = nil;
 	if (completionHandler == nil) {
 		@throw [NSException exceptionWithName:NSInvalidArgumentException
-		                               reason:@"no completionHandler" userInfo:nil];
+		        reason:@"no completionHandler" userInfo:nil];
 		return YES;
 	}
 	if (data == nil && file == nil) {
@@ -74,18 +74,18 @@
 	}
 	if (desc != nil) {
 		QNAsyncRun ( ^{
-		    completionHandler([QNResponseInfo responseInfoWithInvalidArgument:desc], key, nil);
+			completionHandler([QNResponseInfo responseInfoWithInvalidArgument:desc], key, nil);
 		});
 		return YES;
 	}
 	return NO;
 }
 
-- (void)putData:(NSData *)data
-            key:(NSString *)key
-          token:(NSString *)token
-       complete:(QNUpCompletionHandler)completionHandler
-         option:(QNUploadOption *)option {
+- (void) putData:(NSData *)data
+             key:(NSString *)key
+           token:(NSString *)token
+        complete:(QNUpCompletionHandler)completionHandler
+          option:(QNUploadOption *)option {
 	NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
 
 	if ([QNUploadManager checkAndNotifyError:key token:token data:data file:nil complete:completionHandler]) {
@@ -149,30 +149,30 @@
 		};
 
 		[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", nextHost]
-		                   withData:data
-		                 withParams:parameters
-		               withFileName:fileName
-		               withMimeType:mimeType
-		          withCompleteBlock:retriedComplete
-		          withProgressBlock:p
-		            withCancelBlock:nil];
+		 withData:data
+		 withParams:parameters
+		 withFileName:fileName
+		 withMimeType:mimeType
+		 withCompleteBlock:retriedComplete
+		 withProgressBlock:p
+		 withCancelBlock:nil];
 	};
 
 	[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@", kQNUpHost]
-	                   withData:data
-	                 withParams:parameters
-	               withFileName:fileName
-	               withMimeType:mimeType
-	          withCompleteBlock:complete
-	          withProgressBlock:p
-	            withCancelBlock:nil];
+	 withData:data
+	 withParams:parameters
+	 withFileName:fileName
+	 withMimeType:mimeType
+	 withCompleteBlock:complete
+	 withProgressBlock:p
+	 withCancelBlock:nil];
 }
 
-- (void)putFile:(NSString *)filePath
-            key:(NSString *)key
-          token:(NSString *)token
-       complete:(QNUpCompletionHandler)completionHandler
-         option:(QNUploadOption *)option {
+- (void) putFile:(NSString *)filePath
+             key:(NSString *)key
+           token:(NSString *)token
+        complete:(QNUpCompletionHandler)completionHandler
+          option:(QNUploadOption *)option {
 	if ([QNUploadManager checkAndNotifyError:key token:token data:nil file:filePath complete:completionHandler]) {
 		return;
 	}
@@ -183,8 +183,8 @@
 
 		if (error) {
 			QNAsyncRun ( ^{
-			    QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
-			    completionHandler(info, key, nil);
+				QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+				completionHandler(info, key, nil);
 			});
 			return;
 		}
@@ -194,8 +194,8 @@
 		NSData *data = [NSData dataWithContentsOfFile:filePath options:NSDataReadingMappedIfSafe error:&error];
 		if (error) {
 			QNAsyncRun ( ^{
-			    QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
-			    completionHandler(info, key, nil);
+				QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+				completionHandler(info, key, nil);
 			});
 			return;
 		}
@@ -217,17 +217,17 @@
 
 		QNResumeUpload *up = [[QNResumeUpload alloc]
 		                      initWithData:data
-		                                      withSize:fileSize
-		                                       withKey:key
-		                                     withToken:token
-		                         withCompletionHandler:complete
-		                                    withOption:option
-		                                withModifyTime:modifyTime
-		                                  withRecorder:_recorder
-		                               withRecorderKey:recorderKey
-		                               withHttpManager:_httpManager];
+		                      withSize:fileSize
+		                      withKey:key
+		                      withToken:token
+		                      withCompletionHandler:complete
+		                      withOption:option
+		                      withModifyTime:modifyTime
+		                      withRecorder:_recorder
+		                      withRecorderKey:recorderKey
+		                      withHttpManager:_httpManager];
 		QNAsyncRun ( ^{
-		    [up run];
+			[up run];
 		});
 	}
 }

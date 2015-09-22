@@ -12,16 +12,16 @@
 @class QNHttpManager;
 @interface QNResumeUpload : NSObject
 
-- (instancetype)initWithData:(NSData *)data
-                    withSize:(UInt32)size
-                     withKey:(NSString *)key
-                   withToken:(NSString *)token
-       withCompletionHandler:(QNUpCompletionHandler)block
-                  withOption:(QNUploadOption *)option
-              withModifyTime:(NSDate *)time
-                withRecorder:(id <QNRecorderDelegate> )recorder
-             withRecorderKey:(NSString *)recorderKey
-             withHttpManager:(QNHttpManager *)http;
+- (instancetype) initWithData:(NSData *)data
+                     withSize:(UInt32)size
+                      withKey:(NSString *)key
+                    withToken:(NSString *)token
+        withCompletionHandler:(QNUpCompletionHandler)block
+                   withOption:(QNUploadOption *)option
+               withModifyTime:(NSDate *)time
+                 withRecorder:(id <QNRecorderDelegate> )recorder
+              withRecorderKey:(NSString *)recorderKey
+              withHttpManager:(QNHttpManager *)http;
 
 - (void)run;
 

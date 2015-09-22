@@ -27,16 +27,16 @@ typedef NSString *(^QNRecorderKeyGenerator)(NSString *uploadKey, NSString *fileP
 + (instancetype)sharedInstanceWithRecorder:(id <QNRecorderDelegate> )recorder
                       recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator;
 
-- (void)putData:(NSData *)data
-            key:(NSString *)key
-          token:(NSString *)token
-       complete:(QNUpCompletionHandler)completionHandler
-         option:(QNUploadOption *)option;
+- (void) putData:(NSData *)data
+             key:(NSString *)key
+           token:(NSString *)token
+        complete:(QNUpCompletionHandler)completionHandler
+          option:(QNUploadOption *)option;
 
-- (void)putFile:(NSString *)filePath
-            key:(NSString *)key
-          token:(NSString *)token
-       complete:(QNUpCompletionHandler)completionHandler
-         option:(QNUploadOption *)option;
+- (void) putFile:(NSString *)filePath
+             key:(NSString *)key
+           token:(NSString *)token
+        complete:(QNUpCompletionHandler)completionHandler
+          option:(QNUploadOption *)option;
 
 @end
