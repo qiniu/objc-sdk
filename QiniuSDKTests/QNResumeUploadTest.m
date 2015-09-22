@@ -45,14 +45,14 @@
 	__block QNResponseInfo *info = nil;
 	__block BOOL flag = NO;
 	QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil progressHandler: ^(NSString *key, float percent) {
-	    flag = YES;
-	} params:@{ @"x:七牛":@"objc" } checkCrc:NO cancellationSignal: ^BOOL () {
-	    return flag;
-	}];
+	                               flag = YES;
+			       } params:@{ @"x:七牛":@"objc" } checkCrc:NO cancellationSignal: ^BOOL () {
+	                               return flag;
+			       }];
 	[_upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-	    key = k;
-	    info = i;
-	} option:opt];
+	         key = k;
+	         info = i;
+	 } option:opt];
 
 	AGWW_WAIT_WHILE(key == nil, 60 * 30);
 	NSLog(@"info %@", info);
@@ -68,12 +68,12 @@
 	__block NSString *key = nil;
 	__block QNResponseInfo *info = nil;
 	QNUploadOption *opt = [[QNUploadOption alloc] initWithProgessHandler: ^(NSString *key, float percent) {
-	    NSLog(@"progress %f", percent);
-	}];
+	                               NSLog(@"progress %f", percent);
+			       }];
 	[_upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-	    key = k;
-	    info = i;
-	} option:opt];
+	         key = k;
+	         info = i;
+	 } option:opt];
 	AGWW_WAIT_WHILE(key == nil, 60 * 30);
 	NSLog(@"info %@", info);
 	XCTAssert(info.isOK, @"Pass");
@@ -89,10 +89,10 @@
 	__block NSDictionary *testResp = nil;
 	__block NSString *key = nil;
 	[_upManager putFile:tempFile.path key:nil token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-	    key = k;
-	    info = i;
-	    testResp = resp;
-	} option:nil];
+	         key = k;
+	         info = i;
+	         testResp = resp;
+	 } option:nil];
 	AGWW_WAIT_WHILE(info == nil, 60 * 30);
 	NSLog(@"resp %@", testResp);
 	XCTAssert(info.isOK, @"Pass");

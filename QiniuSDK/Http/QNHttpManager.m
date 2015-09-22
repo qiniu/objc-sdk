@@ -56,9 +56,9 @@ static NSString *userAgent = nil;
 	return info;
 }
 
-- (void)  sendRequest:(NSMutableURLRequest *)request
-    withCompleteBlock:(QNCompleteBlock)completeBlock
-    withProgressBlock:(QNInternalProgressBlock)progressBlock {
+- (void)      sendRequest:(NSMutableURLRequest *)request
+        withCompleteBlock:(QNCompleteBlock)completeBlock
+        withProgressBlock:(QNInternalProgressBlock)progressBlock {
 	AFHTTPClient *client = _httpManager;
 	if ([kQNUpHostBackup isEqualToString:request.URL.host]) {
 		client = _httpManagerBackup;
@@ -66,25 +66,25 @@ static NSString *userAgent = nil;
 
 	AFHTTPRequestOperation *operation = [client
 	                                     HTTPRequestOperationWithRequest:request
-	                                                             success: ^(AFHTTPRequestOperation *operation, id responseObject) {
-	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil withResponse:operation.responseData];
-	    NSDictionary *resp = nil;
-	    if (info.isOK) {
-	        NSError *tmp;
-	        resp = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&tmp];
-		}
-	    completeBlock(info, resp);
-	}                                                                failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
-	    QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:error withResponse:operation.responseData];
-	    completeBlock(info, nil);
-	}
+	                                     success: ^(AFHTTPRequestOperation *operation, id responseObject) {
+	                                             QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:nil withResponse:operation.responseData];
+	                                             NSDictionary *resp = nil;
+	                                             if (info.isOK) {
+	                                                     NSError *tmp;
+	                                                     resp = [NSJSONSerialization JSONObjectWithData:responseObject options:NSJSONReadingMutableLeaves error:&tmp];
+						     }
+	                                             completeBlock(info, resp);
+					     }                                                                failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
+	                                             QNResponseInfo *info = [QNHttpManager buildResponseInfo:operation withError:error withResponse:operation.responseData];
+	                                             completeBlock(info, nil);
+					     }
 
-	    ];
+	                                    ];
 
 	if (progressBlock) {
 		[operation setUploadProgressBlock: ^(NSUInteger bytesWritten, long long totalBytesWritten, long long totalBytesExpectedToWrite) {
-		    progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
-		}];
+		         progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
+		 }];
 	}
 	[request setTimeoutInterval:kQNTimeoutInterval];
 
@@ -93,38 +93,38 @@ static NSString *userAgent = nil;
 	[client.operationQueue addOperation:operation];
 }
 
-- (void)multipartPost:(NSString *)url
-             withData:(NSData *)data
-           withParams:(NSDictionary *)params
-         withFileName:(NSString *)key
-         withMimeType:(NSString *)mime
-    withCompleteBlock:(QNCompleteBlock)completeBlock
-    withProgressBlock:(QNInternalProgressBlock)progressBlock
-      withCancelBlock:(QNCancelBlock)cancelBlock {
+- (void)    multipartPost:(NSString *)url
+                 withData:(NSData *)data
+               withParams:(NSDictionary *)params
+             withFileName:(NSString *)key
+             withMimeType:(NSString *)mime
+        withCompleteBlock:(QNCompleteBlock)completeBlock
+        withProgressBlock:(QNInternalProgressBlock)progressBlock
+          withCancelBlock:(QNCancelBlock)cancelBlock {
 	AFHTTPClient *client = _httpManager;
 	if ([url hasSuffix:kQNUpHostBackup]) {
 		client = _httpManagerBackup;
 	}
 
 	NSMutableURLRequest *request = [client multipartFormRequestWithMethod:@"POST" path:@"/" parameters:nil constructingBodyWithBlock: ^(id < AFMultipartFormData > formData) {
-	    [formData appendPartWithFileData:data name:@"file" fileName:key mimeType:mime];
-	    for (NSString *k in params) {
-	        [formData appendPartWithFormData:[params[k] dataUsingEncoding:NSUTF8StringEncoding] name:k];
-		}
-	}];
+	                                        [formData appendPartWithFileData:data name:@"file" fileName:key mimeType:mime];
+	                                        for (NSString *k in params) {
+	                                                [formData appendPartWithFormData:[params[k] dataUsingEncoding:NSUTF8StringEncoding] name:k];
+						}
+					}];
 
 	[self sendRequest:request
-	    withCompleteBlock:completeBlock
-	    withProgressBlock:progressBlock];
+	 withCompleteBlock:completeBlock
+	 withProgressBlock:progressBlock];
 }
 
-- (void)         post:(NSString *)url
-             withData:(NSData *)data
-           withParams:(NSDictionary *)params
-          withHeaders:(NSDictionary *)headers
-    withCompleteBlock:(QNCompleteBlock)completeBlock
-    withProgressBlock:(QNInternalProgressBlock)progressBlock
-      withCancelBlock:(QNCancelBlock)cancelBlock {
+- (void)             post:(NSString *)url
+                 withData:(NSData *)data
+               withParams:(NSDictionary *)params
+              withHeaders:(NSDictionary *)headers
+        withCompleteBlock:(QNCompleteBlock)completeBlock
+        withProgressBlock:(QNInternalProgressBlock)progressBlock
+          withCancelBlock:(QNCancelBlock)cancelBlock {
 	NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc] initWithString:url]];
 	if (headers) {
 		[request setAllHTTPHeaderFields:headers];
@@ -137,8 +137,8 @@ static NSString *userAgent = nil;
 	}
 	[request setHTTPBody:data];
 	[self sendRequest:request
-	    withCompleteBlock:completeBlock
-	    withProgressBlock:progressBlock];
+	 withCompleteBlock:completeBlock
+	 withProgressBlock:progressBlock];
 }
 
 @end
