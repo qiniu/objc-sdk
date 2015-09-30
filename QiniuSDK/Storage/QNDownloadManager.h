@@ -12,17 +12,17 @@
 #import "QNStats.h"
 
 typedef enum {
-    TaskFailed = 0,
-    TaskNotStarted,
-    TaskGenerating,
-    TaskNormal
+	TaskFailed = 0,
+	TaskNotStarted,
+	TaskGenerating,
+	TaskNormal
 } TaskStat;
 
 typedef enum {
-    TaskCreate = 0,
-    TaskResume,
-    TaskSuspend,
-    TaskCancel
+	TaskCreate = 0,
+	TaskResume,
+	TaskSuspend,
+	TaskCancel
 } TaskAction;
 
 @interface QNSessionDownloadTask : NSObject
@@ -60,8 +60,8 @@ typedef enum {
 - (NSData *) dataWithContentsOfURL:(NSString *) url;
 
 - (QNSessionDownloadTask *) downloadTaskWithRequest:(NSURLRequest *)request
-                                              progress:(NSProgress *__autoreleasing *)progress
-                                           destination:(NSURL * (^__strong)(NSURL *__strong, NSURLResponse *__strong))destination
-                                     completionHandler:(void (^__strong)(NSURLResponse *__strong, NSURL *__strong, NSError *__strong))completionHandler;
+                                           progress:(NSProgress *__autoreleasing *)progress
+                                        destination:(NSURL * (^__strong)(NSURL *__strong, NSURLResponse *__strong))destination
+                                  completionHandler:(void (^__strong)(NSURLResponse *__strong, NSURL *__strong, NSError *__strong))completionHandler;
 
 @end
