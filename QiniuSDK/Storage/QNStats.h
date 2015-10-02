@@ -7,11 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <CoreTelephony/CTTelephonyNetworkInfo.h>
 
 #import "AFNetworking.h"
 #import "QNConfiguration.h"
+
+#if TARGET_OS_IPHONE
 #import "Reachability.h"
+#import <CoreTelephony/CTTelephonyNetworkInfo.h>
+#endif
 
 //QNStats *defaultStatsManager;
 
@@ -24,13 +27,16 @@
 
 @property (nonatomic) NSTimer *pushTimer;
 @property (nonatomic) NSTimer *getIPTimer;
+
+#if TARGET_OS_IPHONE
 @property (nonatomic) Reachability *wifiReach;
 @property (nonatomic) CTTelephonyNetworkInfo *telephonyInfo;
+@property (atomic) NetworkStatus reachabilityStatus;
+#endif
 
 // 切换网络的时候需要拿本地IP
 @property (atomic) NSString *sip;
 
-@property (atomic) NetworkStatus reachabilityStatus;
 // ...
 @property (atomic) NSString *radioAccessTechnology;
 

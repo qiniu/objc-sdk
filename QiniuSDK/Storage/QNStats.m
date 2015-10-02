@@ -39,6 +39,8 @@
 	// get out ip first time
 	[self getOutIp];
 
+#if TARGET_OS_IPHONE
+
 	// radio access technology
 	_telephonyInfo = [CTTelephonyNetworkInfo new];
 	_radioAccessTechnology = _telephonyInfo.currentRadioAccessTechnology;
@@ -57,7 +59,6 @@
 	_wifiReach = [Reachability reachabilityForInternetConnection];
 	_reachabilityStatus = _wifiReach.currentReachabilityStatus;
 
-
 	[NSNotificationCenter.defaultCenter addObserverForName:kReachabilityChangedNotification
 	 object:nil
 	 queue:nil
@@ -70,6 +71,20 @@
 	 }];
 	[_wifiReach startNotifier];
 
+	// init device information
+	_phoneModel = [[UIDevice currentDevice] model];
+	_systemName = [[UIDevice currentDevice] systemName];
+	_systemVersion = [[UIDevice currentDevice] systemVersion];
+#elif TARGET_OS_OSX
+	_phoneModel = @""
+	              _systemName = @"osx"
+	                            _systemVersion = @"";
+#else
+	_phoneModel = @"";
+	_systemName = @"";
+	_systemVersion = @"";
+#endif
+
 	// timer for push
 	_pushTimer = [NSTimer scheduledTimerWithTimeInterval:_config.pushStatIntervalS target:self selector:@selector(pushStats) userInfo:nil repeats:YES];
 	[_pushTimer fire];
@@ -77,10 +92,7 @@
 	_getIPTimer = [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(getOutIp) userInfo:nil repeats:YES];
 	[_getIPTimer fire];
 
-	// init device information
-	_phoneModel = [[UIDevice currentDevice] model];
-	_systemName = [[UIDevice currentDevice] systemName];
-	_systemVersion = [[UIDevice currentDevice] systemVersion];
+
 
 	NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
 	_appName = [info objectForKey:@"CFBundleDisplayName"];
@@ -109,9 +121,11 @@
 
 	@synchronized(self) {
 
+#if TARGET_OS_IPHONE
 		if (_reachabilityStatus == NotReachable) {
 			return;
 		}
+#endif
 
 		[_bufLock lock];
 		NSMutableArray *reqs = [[NSMutableArray alloc] initWithArray:_statsBuffer copyItems:YES];

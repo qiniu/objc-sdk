@@ -10,45 +10,18 @@
 
 #import "QNConfiguration.h"
 #import "QNStats.h"
+#import "QNDownloadTask.h"
 
-typedef enum {
-	TaskFailed = 0,
-	TaskNotStarted,
-	TaskGenerating,
-	TaskNormal
-} TaskStat;
 
-typedef enum {
-	TaskCreate = 0,
-	TaskResume,
-	TaskSuspend,
-	TaskCancel
-} TaskAction;
-
-@interface QNSessionDownloadTask : NSObject
-
-@property (nonatomic) NSURLSessionTask *realTask;
-@property (nonatomic) NSMutableDictionary *stats;
-@property (nonatomic) NSLock *lock;
-@property TaskStat taskStat;
-@property TaskAction expectedAction;
-
-@property (nonatomic, copy) NSURLSessionTask* (^taskGener)(void);
-
-- (instancetype) initWithTaskGener:(NSURLSessionTask* (^)(void))taskGener
-                             stats:(NSMutableDictionary *)stats;
-
-- (void) cancel;
-- (void) resume;
-- (void) suspend;
-
-@end
+typedef NSURL * (^QNDestinationBlock)(NSURL *targetPath, NSURLResponse *response);
+typedef void (^QNURLSessionTaskCompletionHandler)(NSURLResponse *response, id responseObject, NSError *error);
 
 @interface QNDownloadManager : NSObject
 
 @property (nonatomic) QNConfiguration *config;
 @property (nonatomic) AFURLSessionManager *manager;
 @property (nonatomic) QNStats *statsManager;
+@property (nonatomic) NSURLSession *session;
 
 + (BOOL) isValidIPAddress:(NSString *)ip;
 
@@ -59,9 +32,11 @@ typedef enum {
 
 - (NSData *) dataWithContentsOfURL:(NSString *) url;
 
-- (QNSessionDownloadTask *) downloadTaskWithRequest:(NSURLRequest *)request
-                                           progress:(NSProgress *__autoreleasing *)progress
-                                        destination:(NSURL * (^__strong)(NSURL *__strong, NSURLResponse *__strong))destination
-                                  completionHandler:(void (^__strong)(NSURLResponse *__strong, NSURL *__strong, NSError *__strong))completionHandler;
+
+- (QNDownloadTask *) downloadTaskWithRequest:(NSURLRequest *)request
+                                    progress:(NSProgress *)progress
+                                 destination:(NSURL * (^__strong)(NSURL *__strong, NSURLResponse *__strong))destination
+                           completionHandler:(void (^__strong)(NSURLResponse *__strong, NSURL *__strong, NSError *__strong))completionHandler;
 
 @end
+

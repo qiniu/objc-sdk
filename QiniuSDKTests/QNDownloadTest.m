@@ -6,7 +6,6 @@
 //  Copyright (c) 2015 Qiniu. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import <XCTest/XCTest.h>
 #import <AGAsyncTestHelper.h>
 
@@ -34,26 +33,34 @@
 	[super tearDown];
 }
 
-- (void)testExample {
+- (void)testDownload {
 	// This is an example of a functional test case.
 
 	NSURL *URL = [NSURL URLWithString:@"http://ztest.qiniudn.com/gogopher.jpg"];
 
 	NSURLRequest *request = [NSURLRequest requestWithURL:URL];
 	__block bool done = false;
-	__block NSError *dErr;
+	__block NSError *dErr = nil;
 
 	NSLog(@"start download");
-	QNSessionDownloadTask *task = [_dnManager downloadTaskWithRequest:request progress:nil destination:^NSURL *(NSURL *targetPath, NSURLResponse *response) {
-	                                       NSURL *documentsDirectoryURL = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:NO error:nil];
-	                                       return [documentsDirectoryURL URLByAppendingPathComponent:[response suggestedFilename]];
-				       } completionHandler:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
-	                                       NSLog(@"File downloaded to: %@", filePath);
-	                                       dErr = [error mutableCopy];
+	QNDownloadTask *task = [_dnManager downloadTaskWithRequest:request progress:nil destination:^NSURL *(NSURL *targetPath, NSURLResponse *response) {
 
-	                                       [_dnManager.statsManager pushStats];
-	                                       done = true;
-				       }];
+	                                NSURL *documentsDirectoryURL = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory inDomain:NSUserDomainMask appropriateForURL:nil create:NO error:nil];
+	                                NSURL *u = [documentsDirectoryURL URLByAppendingPathComponent:[response suggestedFilename]];
+	                                NSLog(@"targetPath: %@", targetPath);
+	                                NSLog(@"urll: %@", u.absoluteString);
+	                                return u;
+				} completionHandler:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
+	                                NSLog(@"File downloaded to: %@", filePath);
+	                                if (error) {
+                                        dErr = [error copy];
+					}
+	                                     NSLog(@"download error: %@", error);
+
+	                                [_dnManager.statsManager pushStats];
+	                                done = true;
+	                                [[NSFileManager defaultManager] removeItemAtPath:filePath error:nil];
+				}];
 	[task resume];
 
 	AGWW_WAIT_WHILE(done==false, 60*30);
