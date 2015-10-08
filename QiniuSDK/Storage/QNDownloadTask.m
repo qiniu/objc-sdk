@@ -76,7 +76,8 @@ BOOL isValidIPAddress(NSString *ip) {
 
 		NSDate *s0 = [NSDate date];
 		// 查询DNS
-		NSArray *ips = [_manager.config.dns queryWithDomain:[[QNDomain alloc] init:host hostsFirst:NO hasCname:YES maxTtl:1000]];
+		NSArray *ips = [_manager.config.dns queryWithDomain:[[QNDomain alloc] init:host hostsFirst:NO hasCname:YES]];
+
 
 		// 记录DNS查询时间
 		NSTimeInterval interval = [[NSDate date] timeIntervalSinceDate:s0];
