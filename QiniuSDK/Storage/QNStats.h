@@ -6,8 +6,9 @@
 //  Copyright (c) 2015 Qiniu. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 
+
+#import <Foundation/Foundation.h>
 #import "AFNetworking.h"
 #import "QNConfiguration.h"
 
@@ -19,6 +20,8 @@
 //QNStats *defaultStatsManager;
 
 @interface QNStats : NSObject
+
+#if ( defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || ( defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9)
 
 @property (nonatomic) QNConfiguration *config;
 @property (nonatomic) AFHTTPRequestOperationManager *httpManager;
@@ -56,4 +59,7 @@
 
 @property int count;
 
+#endif
+
 @end
+

@@ -86,8 +86,8 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 
 		_upPort = 80;
 
-		//_statsHost = @"http://192.168.210.97:2334";
-		_statsHost = @"http://192.168.1.7:2334";
+		_statsHost = @"http://192.168.210.97:2334";
+		//_statsHost = @"http://192.168.1.7:2334";
 
 
 

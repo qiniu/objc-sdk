@@ -6,8 +6,13 @@
 //  Copyright (c) 2015 Qiniu. All rights reserved.
 //
 
+
+
 #import <Foundation/Foundation.h>
 #include <arpa/inet.h>
+
+//#if 1 == 1
+
 
 #import "QNAsyncRun.h"
 #import "HappyDNS.h"
@@ -17,6 +22,9 @@
 #import "QNDownloadTask.h"
 
 @implementation QNDownloadManager
+
+#if ( defined(__IPHONE_OS_VERSION_MAX_ALLOWED) &&__IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || ( defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9)
+
 
 - (instancetype) init {
 
@@ -80,4 +88,7 @@
 	return success == 1;
 }
 
+#endif
+
 @end
+

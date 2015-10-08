@@ -13,7 +13,11 @@
 #import "QNDownloadManager.h"
 
 @interface QNDownloadTest : XCTestCase
+#if ( defined(__IPHONE_OS_VERSION_MAX_ALLOWED) &&__IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || ( defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9)
+
 @property QNDownloadManager *dnManager;
+#endif
+
 @end
 
 @implementation QNDownloadTest
@@ -21,11 +25,15 @@
 - (void)setUp {
 	[super setUp];
 	// Put setup code here. This method is called before the invocation of each test method in the class.
+
+#if ( defined(__IPHONE_OS_VERSION_MAX_ALLOWED) &&__IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || ( defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9)
+
 	QNConfigurationBuilder *builder = [[QNConfigurationBuilder alloc] init];
 	builder.pushStatIntervalS = 1;
 	QNConfiguration *cfg = [[QNConfiguration alloc] initWithBuilder:builder];
 	QNStats *stats = [[QNStats alloc] initWithConfiguration:cfg];
 	_dnManager = [[QNDownloadManager alloc] initWithConfiguration:cfg sessionConfiguration:nil statsManager:stats];
+#endif
 }
 
 - (void)tearDown {
@@ -34,7 +42,7 @@
 }
 
 - (void)testDownload {
-	// This is an example of a functional test case.
+#if ( defined(__IPHONE_OS_VERSION_MAX_ALLOWED) &&__IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || ( defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9)
 
 	NSURL *URL = [NSURL URLWithString:@"http://ztest.qiniudn.com/gogopher.jpg"];
 
@@ -53,9 +61,9 @@
 				} completionHandler:^(NSURLResponse *response, NSURL *filePath, NSError *error) {
 	                                NSLog(@"File downloaded to: %@", filePath);
 	                                if (error) {
-                                        dErr = [error copy];
+	                                        dErr = [error copy];
 					}
-	                                     NSLog(@"download error: %@", error);
+	                                NSLog(@"download error: %@", error);
 
 	                                [_dnManager.statsManager pushStats];
 	                                done = true;
@@ -67,6 +75,9 @@
 	AGWW_WAIT_WHILE(_dnManager.statsManager.count == 0, 60);
 
 	XCTAssertNil(dErr, @"Pass");
+
+#endif
+
 }
 
 /*
@@ -79,3 +90,4 @@
  */
 
 @end
+

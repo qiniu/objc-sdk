@@ -6,6 +6,8 @@
 //  Copyright © 2015 Qiniu. All rights reserved.
 //
 
+
+
 #import <Foundation/Foundation.h>
 
 void setStat(NSMutableDictionary *dic, id key, id value);
@@ -31,6 +33,9 @@ typedef void (^QNURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
 @class QNDownloadManager;
 
 @interface QNDownloadTask : NSObject<NSURLSessionDownloadDelegate>
+
+#if ( defined(__IPHONE_OS_VERSION_MAX_ALLOWED) &&__IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || ( defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9)
+
 
 @property (nonatomic) QNDownloadManager *manager;
 @property (nonatomic) NSURLSessionTask *realTask;
@@ -58,4 +63,7 @@ typedef void (^QNURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
 - (void) resume;
 - (void) suspend;
 
+#endif
+
 @end
+

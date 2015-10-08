@@ -18,6 +18,9 @@ typedef void (^QNURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
 
 @interface QNDownloadManager : NSObject
 
+#if ( defined(__IPHONE_OS_VERSION_MAX_ALLOWED) &&__IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || ( defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9)
+
+
 @property (nonatomic) QNConfiguration *config;
 @property (nonatomic) AFURLSessionManager *manager;
 @property (nonatomic) QNStats *statsManager;
@@ -37,6 +40,8 @@ typedef void (^QNURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
                                     progress:(NSProgress *)progress
                                  destination:(NSURL * (^__strong)(NSURL *__strong, NSURLResponse *__strong))destination
                            completionHandler:(void (^__strong)(NSURLResponse *__strong, NSURL *__strong, NSError *__strong))completionHandler;
+
+#endif
 
 @end
 

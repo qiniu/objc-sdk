@@ -25,7 +25,6 @@
 		BAC5706A1BBBCEDE00B315F3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAC570691BBBCEDE00B315F3 /* SystemConfiguration.framework */; };
 		BAC5706C1BBBCEE500B315F3 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BAC5706B1BBBCEE500B315F3 /* SystemConfiguration.framework */; };
 		BAC570721BBBD12C00B315F3 /* QNDownloadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BAC570711BBBD12C00B315F3 /* QNDownloadTest.m */; settings = {ASSET_TAGS = (); }; };
-		BAC570731BBBD12C00B315F3 /* QNDownloadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = BAC570711BBBD12C00B315F3 /* QNDownloadTest.m */; settings = {ASSET_TAGS = (); }; };
 		DF0A03231B3BABEC00E3778C /* libQiniuSDK Mac.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DF2CDDFF19DAC05500CE01FB /* libQiniuSDK Mac.dylib */; };
 		DF0A03241B3BAC3900E3778C /* QNFormUploadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DF3C504619DD7BA6000F548F /* QNFormUploadTest.m */; };
 		DF0A03251B3BAC5700E3778C /* libQiniuSDK iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DF2CDE1A19DAC08400CE01FB /* libQiniuSDK iOS.a */; };
@@ -822,7 +821,6 @@
 			files = (
 				DF0A03261B3BAC6E00E3778C /* QNBase64Test.m in Sources */,
 				DF0A03271B3BAC6E00E3778C /* QNCrc32Test.m in Sources */,
-				BAC570731BBBD12C00B315F3 /* QNDownloadTest.m in Sources */,
 				DF0A03281B3BAC6E00E3778C /* QNFormUploadTest.m in Sources */,
 				DF0A03291B3BAC6E00E3778C /* QNResumeUploadTest.m in Sources */,
 				DF0A032A1B3BAC6E00E3778C /* QNHttpTest.m in Sources */,

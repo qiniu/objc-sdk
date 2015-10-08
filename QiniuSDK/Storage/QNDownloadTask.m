@@ -6,6 +6,9 @@
 //  Copyright © 2015 Qiniu. All rights reserved.
 //
 
+
+
+
 #include <arpa/inet.h>
 
 #import "QNAsyncRun.h"
@@ -37,6 +40,8 @@ BOOL isValidIPAddress(NSString *ip) {
 }
 
 @implementation QNDownloadTask
+
+#if ( defined(__IPHONE_OS_VERSION_MAX_ALLOWED) &&__IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || ( defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9)
 
 - (instancetype)        initWithStats:(NSMutableDictionary *)stats
                               manager:(QNDownloadManager *)manager
@@ -302,6 +307,8 @@ BOOL isValidIPAddress(NSString *ip) {
 	}
 	_completionHandler(downloadTask.response, mvDestination, nil);
 }
+
+#endif
 
 @end
 

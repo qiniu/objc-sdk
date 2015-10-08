@@ -6,13 +6,17 @@
 //  Copyright (c) 2015 Qiniu. All rights reserved.
 //
 
+#if TARGET_OS_IPHONE
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
+#endif
 
 #import "QNStats.h"
 #import "QNConfiguration.h"
 #import "Reachability.h"
 
 @implementation QNStats
+
+#if ( defined(__IPHONE_OS_VERSION_MAX_ALLOWED) &&__IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || ( defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9)
 
 - (instancetype) init {
 
@@ -150,7 +154,6 @@
 	}
 }
 
-
 - (void) getOutIp {
 
 	[_httpManager GET:[_config.statsHost stringByAppendingString:@"/v1/ip"] parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -162,4 +165,7 @@
 	 }];
 }
 
+#endif
+
 @end
+
