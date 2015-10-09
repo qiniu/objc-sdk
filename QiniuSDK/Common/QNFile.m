@@ -37,8 +37,7 @@
 			}
 			return self;
 		}
-		NSNumber *fileSizeNumber = fileAttr[NSFileSize];
-		_fileSize = [fileSizeNumber intValue];
+		_fileSize = [fileAttr fileSize];
 		NSDate *modifyTime = fileAttr[NSFileModificationDate];
 		int64_t t = 0;
 		if (modifyTime != nil) {
