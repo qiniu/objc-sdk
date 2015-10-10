@@ -27,11 +27,7 @@
 @property (nonatomic) NSTimer *pushTimer;
 @property (nonatomic) NSTimer *getIPTimer;
 
-#if TARGET_OS_IPHONE
-@property (nonatomic) Reachability *wifiReach;
-@property (nonatomic) CTTelephonyNetworkInfo *telephonyInfo;
-@property (atomic) NetworkStatus reachabilityStatus;
-#endif
+
 
 // ...
 @property (atomic) NSString *radioAccessTechnology;
