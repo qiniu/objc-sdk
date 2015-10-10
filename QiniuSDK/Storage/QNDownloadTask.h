@@ -58,7 +58,6 @@ typedef void (^QNURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
                    destination:(QNDestinationBlock)destination
              completionHandler:(QNURLSessionTaskCompletionHandler)completionHandler;
 
-
 - (void) cancel;
 - (void) resume;
 - (void) suspend;

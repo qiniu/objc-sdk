@@ -20,21 +20,13 @@ typedef void (^QNURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
 
 #if ( defined(__IPHONE_OS_VERSION_MAX_ALLOWED) &&__IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || ( defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9)
 
-
-@property (nonatomic) QNConfiguration *config;
-@property (nonatomic) AFURLSessionManager *manager;
 @property (nonatomic) QNStats *statsManager;
-@property (nonatomic) NSURLSession *session;
-
-+ (BOOL) isValidIPAddress:(NSString *)ip;
+@property (nonatomic) QNConfiguration *config;
 
 - (instancetype) init;
 - (instancetype) initWithConfiguration:(QNConfiguration*)config
                   sessionConfiguration:(AFURLSessionManager*)manager
                           statsManager:(QNStats*)statsManager;
-
-- (NSData *) dataWithContentsOfURL:(NSString *) url;
-
 
 - (QNDownloadTask *) downloadTaskWithRequest:(NSURLRequest *)request
                                     progress:(NSProgress *)progress

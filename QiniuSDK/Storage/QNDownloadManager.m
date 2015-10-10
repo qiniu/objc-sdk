@@ -11,15 +11,19 @@
 #import <Foundation/Foundation.h>
 #include <arpa/inet.h>
 
-//#if 1 == 1
-
-
 #import "QNAsyncRun.h"
 #import "HappyDNS.h"
 #import "AFNetworking.h"
 #import "QNConfiguration.h"
 #import "QNDownloadManager.h"
 #import "QNDownloadTask.h"
+
+
+@interface QNDownloadManager ()
+
+@property (nonatomic) AFURLSessionManager *manager;
+
+@end
 
 @implementation QNDownloadManager
 
@@ -56,10 +60,6 @@
 	return self;
 }
 
-- (NSData *) dataWithContentsOfURL:(NSString *) url {
-	return nil;
-}
-
 - (QNDownloadTask *) downloadTaskWithRequest:(NSURLRequest *)request
                                     progress:(NSProgress *)progress
                                  destination:(NSURL * (^__strong)(NSURL *__strong, NSURLResponse *__strong))destination
@@ -69,23 +69,6 @@
 
 	return [[QNDownloadTask alloc]initWithStats:stats
 	        manager:self request:request progress:progress destination:destination completionHandler:completionHandler];
-}
-
-+ (BOOL) isValidIPAddress:(NSString *)ip {
-	const char *utf8 = [ip UTF8String];
-	if (utf8 == nil) {
-		return true;
-	}
-	int success;
-
-	struct in_addr dst;
-	success = inet_pton(AF_INET, utf8, &dst);
-	if (success != 1) {
-		struct in6_addr dst6;
-		success = inet_pton(AF_INET6, utf8, &dst6);
-	}
-
-	return success == 1;
 }
 
 #endif
