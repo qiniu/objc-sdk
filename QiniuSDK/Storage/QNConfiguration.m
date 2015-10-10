@@ -58,6 +58,10 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 		}
 
 		_dns = initDns(builder);
+
+		_statsHost = builder.statsHost;
+		_pushStatIntervalS = builder.pushStatIntervalS;
+		_isGatherStats = builder.isGatherStats;
 	}
 	return self;
 }
@@ -81,6 +85,11 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 		_converter = nil;
 
 		_upPort = 80;
+
+		_statsHost = @"http://reportqos.qiniuapi.com";
+
+		_pushStatIntervalS = 60;
+		_isGatherStats = true;
 	}
 	return self;
 }

@@ -89,6 +89,13 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (nonatomic, readonly) QNDnsManager *dns;
 
 + (instancetype)build:(QNConfigurationBuilderBlock)block;
+- (instancetype)initWithBuilder:(QNConfigurationBuilder *)builder;
+
+@property int pushStatIntervalS;
+
+@property bool isGatherStats;
+
+@property (nonatomic, assign) NSString *statsHost;
 
 @end
 
@@ -186,5 +193,9 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (nonatomic, assign) QNUrlConvert converter;
 
 @property (nonatomic, assign) QNDnsManager *dns;
+
+@property (nonatomic) NSString *statsHost;
+@property int pushStatIntervalS;
+@property bool isGatherStats;
 
 @end
