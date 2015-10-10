@@ -23,31 +23,8 @@
 
 #if ( defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || ( defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9)
 
-@property (nonatomic) QNConfiguration *config;
-@property (nonatomic) AFHTTPRequestOperationManager *httpManager;
-@property (nonatomic) NSMutableArray *statsBuffer;
-@property (nonatomic) NSLock *bufLock;
-
-@property (nonatomic) NSTimer *pushTimer;
-@property (nonatomic) NSTimer *getIPTimer;
-
-#if TARGET_OS_IPHONE
-@property (nonatomic) Reachability *wifiReach;
-@property (nonatomic) CTTelephonyNetworkInfo *telephonyInfo;
-@property (atomic) NetworkStatus reachabilityStatus;
-#endif
-
 // 切换网络的时候需要拿本地IP
-@property (atomic) NSString *sip;
-
-// ...
-@property (atomic) NSString *radioAccessTechnology;
-
-@property (nonatomic) NSString *phoneModel; // dev
-@property (nonatomic) NSString *systemName; // os
-@property (nonatomic) NSString *systemVersion; // sysv
-@property (nonatomic) NSString *appName;  // app
-@property (nonatomic) NSString *appVersion; // appv
+@property (atomic, readonly) NSString *sip;
 
 - (instancetype) init;
 - (instancetype) initWithConfiguration: (QNConfiguration *) config;

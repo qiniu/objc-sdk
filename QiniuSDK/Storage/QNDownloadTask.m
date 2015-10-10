@@ -39,6 +39,37 @@ BOOL isValidIPAddress(NSString *ip) {
 	return success == 1;
 }
 
+typedef enum {
+	TaskFailed = 0,
+	TaskNotStarted,
+	TaskGenerating,
+	TaskNormal
+} TaskStat;
+
+typedef enum {
+	TaskCreate = 0,
+	TaskResume,
+	TaskSuspend,
+	TaskCancel
+} TaskAction;
+
+@interface QNDownloadTask ()
+
+@property (nonatomic) QNDownloadManager *manager;
+@property (nonatomic) NSURLSessionTask *realTask;
+@property (nonatomic) NSMutableDictionary *stats;
+@property (nonatomic) NSLock *lock;
+@property TaskStat taskStat;
+@property TaskAction expectedAction;
+
+
+@property (nonatomic) NSURLRequest *oldRequest;
+@property (nonatomic) NSProgress *progress;
+@property (nonatomic, strong) QNDestinationBlock destination;
+@property (nonatomic, strong) QNURLSessionTaskCompletionHandler completionHandler;
+
+@end
+
 @implementation QNDownloadTask
 
 #if ( defined(__IPHONE_OS_VERSION_MAX_ALLOWED) &&__IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || ( defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9)

@@ -20,8 +20,8 @@ typedef void (^QNURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
 
 #if ( defined(__IPHONE_OS_VERSION_MAX_ALLOWED) &&__IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || ( defined(MAC_OS_X_VERSION_MAX_ALLOWED) && MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_9)
 
-@property (nonatomic) QNStats *statsManager;
-@property (nonatomic) QNConfiguration *config;
+@property (nonatomic, readonly) QNStats *statsManager;
+@property (nonatomic, readonly) QNConfiguration *config;
 
 - (instancetype) init;
 - (instancetype) initWithConfiguration:(QNConfiguration*)config
