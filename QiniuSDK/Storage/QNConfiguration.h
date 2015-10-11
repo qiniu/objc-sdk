@@ -10,7 +10,7 @@
 
 #import "QNRecorderDelegate.h"
 
-#import "HappyDNS.h"
+#import <HappyDNS/HappyDNS.h>
 
 /**
  *    断点上传时的分块大小
