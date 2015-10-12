@@ -71,10 +71,10 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 
 - (BOOL)isEnabledBackgroundUpload
 {
-    return self.sessionIdentifier && self.sessionIdentifier.length != 0 && [self isVersionSupport:@"8.0"];
+    return self.sessionIdentifier && self.sessionIdentifier.length != 0 && [self isOSVersionSupport];
 }
 
-- (BOOL)isVersionSupport:(NSString *)reqSysVer {
+- (BOOL)isOSVersionSupport {
     BOOL supportBackgroundUpload = NO;
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
     float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
