@@ -259,10 +259,12 @@ typedef void (^task)(void);
         chunkSize:(UInt32)chunkSize
          progress:(QNInternalProgressBlock)progressBlock
          complete:(QNCompleteBlock)complete {
-	NSData *data = [self.file read:offset size:chunkSize];
-	NSString *url = [[NSString alloc] initWithFormat:@"http://%@:%u/mkblk/%u", uphost, (unsigned int)_config.upPort, (unsigned int)blockSize];
-	_chunkCrc = [QNCrc32 data:data];
-	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
+	@autoreleasepool {
+		NSData *data = [self.file read:offset size:chunkSize];
+		NSString *url = [[NSString alloc] initWithFormat:@"http://%@:%u/mkblk/%u", uphost, (unsigned int)_config.upPort, (unsigned int)blockSize];
+		_chunkCrc = [QNCrc32 data:data];
+		[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
+	}
 }
 
 - (void)putChunk:(NSString *)uphost
@@ -271,11 +273,13 @@ typedef void (^task)(void);
          context:(NSString *)context
         progress:(QNInternalProgressBlock)progressBlock
         complete:(QNCompleteBlock)complete {
-	NSData *data = [self.file read:offset size:size];
-	UInt32 chunkOffset = offset % kQNBlockSize;
-	NSString *url = [[NSString alloc] initWithFormat:@"http://%@:%u/bput/%@/%u", uphost, (unsigned int)_config.upPort, context, (unsigned int)chunkOffset];
-	_chunkCrc = [QNCrc32 data:data];
-	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
+	@autoreleasepool {
+		NSData *data = [self.file read:offset size:size];
+		UInt32 chunkOffset = offset % kQNBlockSize;
+		NSString *url = [[NSString alloc] initWithFormat:@"http://%@:%u/bput/%@/%u", uphost, (unsigned int)_config.upPort, context, (unsigned int)chunkOffset];
+		_chunkCrc = [QNCrc32 data:data];
+		[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
+	}
 }
 
 - (void)makeFile:(NSString *)uphost
