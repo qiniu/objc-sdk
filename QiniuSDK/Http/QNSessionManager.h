@@ -7,6 +7,8 @@
 
 @interface QNSessionManager : NSObject <QNHttpDelegate>
 
+@property (nonatomic, copy) NSString *sessionIdentifier;
+
 - (instancetype)initWithProxy:(NSDictionary *)proxyDict
                       timeout:(UInt32)timeout
                  urlConverter:(QNUrlConvert)converter

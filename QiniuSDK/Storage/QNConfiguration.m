@@ -8,6 +8,11 @@
 
 #import "QNConfiguration.h"
 #import "QNNetworkInfo.h"
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+#import <UIKit/UIKit.h>
+#else
+#import <CoreServices/CoreServices.h>
+#endif
 
 
 const UInt32 kQNBlockSize = 4 * 1024 * 1024;
@@ -37,6 +42,7 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 
 - (instancetype)initWithBuilder:(QNConfigurationBuilder *)builder {
 	if (self = [super init]) {
+        _sessionIdentifier = builder.sessionIdentifier;
 		_upHost = builder.zone.upHost;
 		_upHostBackup = builder.zone.upHostBackup;
 
@@ -58,8 +64,31 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 		}
 
 		_dns = initDns(builder);
+        _maxUploadThreadCount = 2;
 	}
 	return self;
+}
+
+- (BOOL)isEnabledBackgroundUpload
+{
+    return self.sessionIdentifier && self.sessionIdentifier.length != 0 && [self isOSVersionSupport];
+}
+
+- (BOOL)isOSVersionSupport {
+    BOOL supportBackgroundUpload = NO;
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
+    float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
+    if (sysVersion >= 8.0) {
+        supportBackgroundUpload = YES;
+    }
+#else
+    NSOperatingSystemVersion sysVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
+    
+    if ((sysVersion.majorVersion = 10 && sysVersion.minorVersion >= 10)) {
+        supportBackgroundUpload = YES;
+    }
+#endif
+    return supportBackgroundUpload;
 }
 
 @end

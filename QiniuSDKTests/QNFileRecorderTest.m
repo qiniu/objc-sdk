@@ -70,26 +70,27 @@
 	NSLog(@"info %@", info);
 	XCTAssert(info.isCancelled, @"Pass");
 	XCTAssert([keyUp isEqualToString:key], @"Pass");
-
+    
 	// continue
-	key = nil;
-	info = nil;
+	__block NSString *key2 = nil;
+    __block QNResponseInfo *info2 = nil;
 	__block BOOL failed = NO;
+    int const defaultMultiThreadCount = 2;
 	opt = [[QNUploadOption alloc] initWithMime:nil progressHandler: ^(NSString *key, float percent) {
-	               if (percent < pos - (256 * 1024.0) / (size * 1024.0)) {
+	               if (percent < pos - defaultMultiThreadCount * (256 * 1024.0) / (size * 1024.0)) {
 	                       failed = YES;
 		       }
 	               NSLog(@"continue progress %f", percent);
 	       } params:nil checkCrc:NO cancellationSignal:nil];
 	[_upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-	         key = k;
-	         info = i;
+	         key2 = k;
+	         info2 = i;
 	 } option:opt];
-	AGWW_WAIT_WHILE(key == nil, 60 * 30);
-	NSLog(@"info %@", info);
-	XCTAssert(info.isOK, @"Pass");
+	AGWW_WAIT_WHILE(key2 == nil, 60 * 30);
+	NSLog(@"info %@", info2);
+	XCTAssert(info2.isOK, @"Pass");
 	XCTAssert(!failed, @"Pass");
-	XCTAssert([keyUp isEqualToString:key], @"Pass");
+	XCTAssert([keyUp isEqualToString:key2], @"Pass");
 	[QNTempFile removeTempfile:tempFile];
 }
 
@@ -105,7 +106,7 @@
 	[self template:700 pos:0.1];
 }
 
-#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
+//#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
 
 - (void)test1M {
 	if (_inTravis) {
@@ -128,6 +129,6 @@
 	[self template:8 * 1024 + 1 pos:0.8];
 }
 
-#endif
+//#endif
 
 @end
