@@ -193,7 +193,6 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
         [request setValue:domain forHTTPHeaderField:@"Host"];
         
     }
-    NSLog(@"domain %@ ip%@", domain, ip);
     request.URL = url;
     
     if (progressBlock == nil) {
