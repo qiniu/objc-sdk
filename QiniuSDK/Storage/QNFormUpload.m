@@ -90,9 +90,9 @@
 			_complete([QNResponseInfo cancel], _key, nil);
 			return;
 		}
-		NSString *nextHost = _config.upHost;
+		NSString *nextHost = _config.up.address;
 		if (info.isConnectionBroken || info.needSwitchServer) {
-			nextHost = _config.upHostBackup;
+			nextHost = _config.upBackup.address;
 		}
 
 		QNCompleteBlock retriedComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
@@ -102,8 +102,8 @@
 			_complete(info, _key, resp);
 		};
 
-		[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@:%u/", nextHost, (unsigned int)_config.upPort]
-		 withData:_data
+		[_httpManager multipartPost:nextHost
+                           withData:_data
 		 withParams:parameters
 		 withFileName:fileName
 		 withMimeType:_option.mimeType
@@ -112,7 +112,7 @@
 		 withCancelBlock:_option.cancellationSignal];
 	};
 
-	[_httpManager multipartPost:[NSString stringWithFormat:@"http://%@:%u/", _config.upHost, (unsigned int)_config.upPort]
+	[_httpManager multipartPost:_config.up.address
 	 withData:_data
 	 withParams:parameters
 	 withFileName:fileName

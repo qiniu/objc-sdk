@@ -212,7 +212,7 @@ typedef void (^task)(void);
 
 			NSString *nextHost = host;
 			if (info.isConnectionBroken || info.needSwitchServer) {
-				nextHost = _config.upHostBackup;
+				nextHost = _config.upBackup.address;
 			}
 
 			[self nextTask:offset retriedTimes:retried + 1 host:nextHost];
@@ -260,7 +260,7 @@ typedef void (^task)(void);
          progress:(QNInternalProgressBlock)progressBlock
          complete:(QNCompleteBlock)complete {
 	NSData *data = [self.file read:offset size:chunkSize];
-	NSString *url = [[NSString alloc] initWithFormat:@"http://%@:%u/mkblk/%u", uphost, (unsigned int)_config.upPort, (unsigned int)blockSize];
+	NSString *url = [[NSString alloc] initWithFormat:@"%@/mkblk/%u", uphost, (unsigned int)blockSize];
 	_chunkCrc = [QNCrc32 data:data];
 	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
 }
@@ -273,7 +273,7 @@ typedef void (^task)(void);
         complete:(QNCompleteBlock)complete {
 	NSData *data = [self.file read:offset size:size];
 	UInt32 chunkOffset = offset % kQNBlockSize;
-	NSString *url = [[NSString alloc] initWithFormat:@"http://%@:%u/bput/%@/%u", uphost, (unsigned int)_config.upPort, context, (unsigned int)chunkOffset];
+	NSString *url = [[NSString alloc] initWithFormat:@"%@/bput/%@/%u", uphost, context, (unsigned int)chunkOffset];
 	_chunkCrc = [QNCrc32 data:data];
 	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
 }
@@ -282,7 +282,7 @@ typedef void (^task)(void);
         complete:(QNCompleteBlock)complete {
 	NSString *mime = [[NSString alloc] initWithFormat:@"/mimeType/%@", [QNUrlSafeBase64 encodeString:self.option.mimeType]];
 
-	__block NSString *url = [[NSString alloc] initWithFormat:@"http://%@:%u/mkfile/%u%@", uphost, (unsigned int)_config.upPort, (unsigned int)self.size, mime];
+	__block NSString *url = [[NSString alloc] initWithFormat:@"%@/mkfile/%u%@", uphost,(unsigned int)self.size, mime];
 
 	if (self.key != nil) {
 		NSString *keyStr = [[NSString alloc] initWithFormat:@"/key/%@", [QNUrlSafeBase64 encodeString:self.key]];
@@ -310,7 +310,7 @@ typedef void (^task)(void);
 - (void)run {
 	@autoreleasepool {
 		UInt32 offset = [self recoveryFromRecord];
-		[self nextTask:offset retriedTimes:0 host:_config.upHost];
+		[self nextTask:offset retriedTimes:0 host:_config.up.address];
 	}
 }
 

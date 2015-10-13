@@ -178,7 +178,8 @@
 
 	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
 	                                   builder.proxy = proxyDict;
-	                                   builder.zone = [[QNZone alloc] initWithUpHost:@"upnono.qiniu.com" upHostBackup:@"" upIp:@"" upIp2:@""];
+        QNServiceAddress *s = [[QNServiceAddress alloc] init:@"http://upnono.qiniu.com" ips:nil];
+        builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
 				   }];
 
 	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
@@ -208,7 +209,8 @@
 	                                   builder.converter = ^NSString *(NSString *url) {
 	                                           return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
 					   };
-	                                   builder.zone = [[QNZone alloc] initWithUpHost:@"upnono.qiniu.com" upHostBackup:@"" upIp:@"" upIp2:@""];
+        QNServiceAddress *s = [[QNServiceAddress alloc] init:@"http://upnono.qiniu.com" ips:nil];
+	                                   builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
 				   }];
 
 	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
@@ -237,7 +239,10 @@
 	QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
 	QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
 	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
-	                                   builder.zone = [[QNZone alloc] initWithUpHost:@"uphosttest.qiniu.com" upHostBackup:@"uphosttestbak.qiniu.com" upIp:[QNZone zone0].upIp upIp2:[QNZone zone0].upIp2];
+        NSArray *ips = [QNZone zone0].up.ips;
+        QNServiceAddress *s1 = [[QNServiceAddress alloc] init:@"http://uphosttest.qiniu.com" ips:ips];
+        QNServiceAddress *s2 = [[QNServiceAddress alloc] init:@"http://uphosttestbak.qiniu.com" ips:ips];
+        builder.zone = [[QNZone alloc] initWithUp:s1 upBackup:s2];
 	                                   builder.dns = dns;
 				   }];
 
