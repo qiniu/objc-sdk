@@ -29,6 +29,7 @@
 #import "QNAsyncRun.h"
 #import "QNUpToken.h"
 #import "QNFile.h"
+#import "QNSystem.h"
 
 @interface QNUploadManager ()
 @property (nonatomic) id <QNHttpDelegate> httpManager;
@@ -62,20 +63,7 @@
 		}
 		_config = config;
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
-		BOOL lowVersion = NO;
-	#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
-		float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
-		if (sysVersion < 7.0) {
-			lowVersion = YES;
-		}
-	#else
-		NSOperatingSystemVersion sysVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
-
-		if ((sysVersion.majorVersion = 10 && sysVersion.minorVersion < 9)) {
-			lowVersion = YES;
-		}
-	#endif
-		if (lowVersion) {
+		if (hasNSURLSession()) {
 			_httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter dns:config.dns];
 		}
 		else {

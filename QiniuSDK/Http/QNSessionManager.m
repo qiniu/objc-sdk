@@ -16,6 +16,8 @@
 #import "QNDns.h"
 #import "HappyDNS.h"
 
+#import "QNSystem.h"
+
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 
 @interface QNProgessDelegate : NSObject
@@ -155,7 +157,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 		url = [[NSURL alloc] initWithString:_converter(u)];
         request.URL = url;
         domain = url.host;
-	} else if (_noProxy && _dns != nil){
+	} else if (_noProxy && _dns != nil && [url.scheme isEqualToString:@"http"] && !hasAts()){
         ips = [_dns queryWithDomain:[[QNDomain alloc] init:domain hostsFirst:NO hasCname:YES maxTtl:1000]];
         if (ips == nil || ips.count == 0) {
             NSError *error = [[NSError alloc] initWithDomain:domain code:-1003 userInfo:@{ @"error":@"unkonwn host" }];
@@ -191,7 +193,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
         [request setValue:domain forHTTPHeaderField:@"Host"];
         
     }
-    
+    NSLog(@"domain %@ ip%@", domain, ip);
     request.URL = url;
     
     if (progressBlock == nil) {
