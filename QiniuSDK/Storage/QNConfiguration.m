@@ -8,22 +8,39 @@
 
 #import "QNConfiguration.h"
 #import "QNNetworkInfo.h"
-
+#import "HappyDNS.h"
 
 const UInt32 kQNBlockSize = 4 * 1024 * 1024;
+
+static void addServiceToDns(QNServiceAddress* address, QNDnsManager *dns) {
+    NSArray *ips = address.ips;
+    if (ips == nil) {
+        return;
+    }
+    NSURL *u = [[NSURL alloc] initWithString:address.address];
+    NSString *host = u.host;
+    for (int i = 0; i<ips.count; i++) {
+        [dns putHosts:host ip:ips[i]];
+    }
+}
+
+static void addZoneToDns(QNZone *zone, QNDnsManager* dns){
+    if (zone.up != nil) {
+        addServiceToDns(zone.up, dns);
+    }
+    if (zone.upBackup != nil) {
+        addServiceToDns(zone.upBackup, dns);
+    }
+}
 
 static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 	QNDnsManager *d = builder.dns;
 	if (d == nil) {
 		id<QNResolverDelegate> r1 = [QNResolver systemResolver];
-		id<QNResolverDelegate> r2 = [[QNResolver alloc] initWithAddres:@"223.6.6.6"];
+		id<QNResolverDelegate> r2 = [[QNResolver alloc] initWithAddres:@"119.29.29.29"];
 		id<QNResolverDelegate> r3 = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
 		d = [[QNDnsManager alloc] init:[NSArray arrayWithObjects:r1,r2, r3, nil] networkInfo:[QNNetworkInfo normal ]];
 	}
-	[d putHosts:builder.zone.upHost ip:builder.zone.upIp];
-	[d putHosts:builder.zone.upHost ip:builder.zone.upIp2];
-	[d putHosts:builder.zone.upHostBackup ip:builder.zone.upIp];
-	[d putHosts:builder.zone.upHostBackup ip:builder.zone.upIp2];
 	return d;
 }
 
@@ -37,10 +54,8 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 
 - (instancetype)initWithBuilder:(QNConfigurationBuilder *)builder {
 	if (self = [super init]) {
-		_upHost = builder.zone.upHost;
-		_upHostBackup = builder.zone.upHostBackup;
-
-		_upPort = builder.upPort;
+		_up = builder.zone.up;
+        _upBackup = builder.zone.upBackup == nil? builder.zone.up:builder.zone.upBackup;
 
 		_chunkSize = builder.chunkSize;
 		_putThreshold = builder.putThreshold;
@@ -53,11 +68,9 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 		_proxy = builder.proxy;
 
 		_converter = builder.converter;
-		if (builder.converter == nil) {
-			_upIp = builder.zone.upIp;
-		}
 
 		_dns = initDns(builder);
+        addZoneToDns(builder.zone, _dns);
 	}
 	return self;
 }
@@ -80,34 +93,51 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 		_proxy = nil;
 		_converter = nil;
 
-		_upPort = 80;
 	}
 	return self;
 }
 
 @end
 
+@implementation QNServiceAddress : NSObject
+
+- (instancetype) init:(NSString*)address ips:(NSArray*)ips{
+    if (self = [super init]) {
+        _address = address;
+        _ips = ips;
+        
+    }
+    return self;
+}
+
+@end
+
 @implementation QNZone
 
-- (instancetype)initWithUpHost:(NSString *)upHost
-                  upHostBackup:(NSString *)upHostBackup
-                          upIp:(NSString *)upIp
-                         upIp2:(NSString*)upIp2; {
+- (instancetype)initWithUp:(QNServiceAddress *)up
+                  upBackup:(QNServiceAddress *)upBackup {
 	if (self = [super init]) {
-		_upHost = upHost;
-		_upHostBackup = upHostBackup;
-		_upIp = upIp;
-		_upIp2 = upIp2;
+		_up = up;
+		_upBackup = upBackup;
 	}
 
 	return self;
+}
+
++ (instancetype)createWithHost:(NSString*)up backupHost:(NSString*)backup ip1:(NSString*)ip1 ip2:(NSString*)ip2{
+    NSArray* ips = [NSArray arrayWithObjects:ip1,ip2, nil];
+    NSString* a = [NSString stringWithFormat:@"http://%@", up];
+    QNServiceAddress *s1 = [[QNServiceAddress alloc] init:a ips:ips];
+    NSString* b = [NSString stringWithFormat:@"http://%@", backup];
+    QNServiceAddress *s2 = [[QNServiceAddress alloc] init:b ips:ips];
+    return [[QNZone alloc] initWithUp:s1 upBackup:s2];
 }
 
 + (instancetype)zone0 {
 	static QNZone *z0 = nil;
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
-		z0 = [[QNZone alloc] initWithUpHost:@"upload.qiniu.com" upHostBackup:@"up.qiniu.com" upIp:@"183.136.139.10" upIp2:@"115.231.182.136"];
+        z0 = [QNZone createWithHost:@"upload.qiniu.com" backupHost:@"up.qiniu.com" ip1:@"183.136.139.10" ip2:@"115.231.182.136"];
 	});
 	return z0;
 }
@@ -116,7 +146,7 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 	static QNZone *z1 = nil;
 	static dispatch_once_t onceToken;
 	dispatch_once(&onceToken, ^{
-		z1 = [[self alloc] initWithUpHost:@"upload-z1.qiniu.com" upHostBackup:@"up-z1.qiniu.com" upIp:@"106.38.227.28" upIp2:@"106.38.227.27"];
+        z1 = [QNZone createWithHost:@"upload-z1.qiniu.com" backupHost:@"up-z1.qiniu.com" ip1:@"106.38.227.28" ip2:@"106.38.227.27"];
 	});
 	return z1;
 }

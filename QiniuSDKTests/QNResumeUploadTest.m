@@ -11,6 +11,7 @@
 #import <AGAsyncTestHelper.h>
 
 #import "QiniuSDK.h"
+#import "HappyDNS.h"
 
 #import "QNTestConfig.h"
 #import "QNTempFile.h"
@@ -67,7 +68,7 @@
 	NSString *keyUp = [NSString stringWithFormat:@"%dk", size];
 	__block NSString *key = nil;
 	__block QNResponseInfo *info = nil;
-	QNUploadOption *opt = [[QNUploadOption alloc] initWithProgessHandler: ^(NSString *key, float percent) {
+	QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler: ^(NSString *key, float percent) {
 	                               NSLog(@"progress %f", percent);
 			       }];
 	[_upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
@@ -81,6 +82,34 @@
 	XCTAssert([keyUp isEqualToString:key], @"Pass");
 
 	[QNTempFile removeTempfile:tempFile];
+}
+
+- (void)templateHttps:(int)size {
+    NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
+    NSString *keyUp = [NSString stringWithFormat:@"%dk", size];
+    __block NSString *key = nil;
+    __block QNResponseInfo *info = nil;
+    QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler: ^(NSString *key, float percent) {
+        NSLog(@"progress %f", percent);
+    }];
+    
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        QNServiceAddress *s = [[QNServiceAddress alloc] init:@"https://up.qbox.me" ips:nil];
+        builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
+    }];
+    QNUploadManager *upManager = [[QNUploadManager alloc]initWithConfiguration:config];
+    
+    [upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+        key = k;
+        info = i;
+    } option:opt];
+    AGWW_WAIT_WHILE(key == nil, 60 * 30);
+    NSLog(@"info %@", info);
+    XCTAssert(info.isOK, @"Pass");
+    XCTAssert(info.reqId, @"Pass");
+    XCTAssert([keyUp isEqualToString:key], @"Pass");
+    
+    [QNTempFile removeTempfile:tempFile];
 }
 
 - (void)testNoKey {
@@ -109,6 +138,16 @@
 - (void)test600k {
 	[self template:600];
 }
+
+/*
+- (void)test500ks {
+    [self templateHttps:500];
+}
+
+- (void)test600ks {
+    [self templateHttps:600];
+}
+*/
 
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
 
@@ -142,7 +181,8 @@
 
 	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
 	                                   builder.proxy = proxyDict;
-	                                   builder.zone = [[QNZone alloc] initWithUpHost:@"upnono.qiniu.com" upHostBackup:@"" upIp:@"" upIp2:@""];
+        QNServiceAddress *s = [[QNServiceAddress alloc] init:@"http://upnono.qiniu.com" ips:nil];
+        builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
 				   }];
 
 	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
@@ -170,7 +210,8 @@
 	                                   builder.converter = ^NSString *(NSString *url) {
 	                                           return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
 					   };
-	                                   builder.zone = [[QNZone alloc] initWithUpHost:@"upnono.qiniu.com" upHostBackup:@"" upIp:@"" upIp2:@""];
+        QNServiceAddress *s = [[QNServiceAddress alloc] init:@"http://upnono.qiniu.com" ips:nil];
+        builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
 				   }];
 
 	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
@@ -197,8 +238,11 @@
 	QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
 	QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
 	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
-	                                   builder.zone = [[QNZone alloc] initWithUpHost:@"uphosts.qiniu.com" upHostBackup:@"uphostsbak.qiniu.com" upIp:[QNZone zone0].upIp upIp2:[QNZone zone0].upIp2];
-	                                   builder.dns = dns;
+        NSArray *ips = [QNZone zone0].up.ips;
+        QNServiceAddress *s1 = [[QNServiceAddress alloc] init:@"http://uphosttest.qiniu.com" ips:ips];
+        QNServiceAddress *s2 = [[QNServiceAddress alloc] init:@"http://uphosttestbak.qiniu.com" ips:ips];
+        builder.zone = [[QNZone alloc] initWithUp:s1 upBackup:s2];
+        builder.dns = dns;
 				   }];
 
 	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
@@ -217,7 +261,7 @@
 	NSLog(@"info %@", info);
 	XCTAssert(info.isOK, @"Pass");
 	XCTAssert([keyUp isEqualToString:key], @"Pass");
-	XCTAssert([info.host isEqual:@"uphosts.qiniu.com"] || [info.host isEqual:@"uphostsbak.qiniu.com"], @"Pass");
+	XCTAssert([info.host isEqual:@"uphosttest.qiniu.com"] || [info.host isEqual:@"uphosttestbak.qiniu.com"], @"Pass");
 	[QNTempFile removeTempfile:tempFile];
 }
 

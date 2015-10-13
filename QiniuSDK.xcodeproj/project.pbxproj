@@ -32,7 +32,6 @@
 		DF293C9119DB85CB00799011 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DF293C9019DB85CB00799011 /* libz.dylib */; };
 		DF293C9219DB85EB00799011 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DF293C9019DB85CB00799011 /* libz.dylib */; };
 		DF293C9719DB865800799011 /* QNCrc32Test.m in Sources */ = {isa = PBXBuildFile; fileRef = DF293C9619DB865800799011 /* QNCrc32Test.m */; };
-		DF293C9919DBAE3E00799011 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DF293C9319DB860200799011 /* libz.dylib */; };
 		DF293C9A19DBC09400799011 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DF293C9319DB860200799011 /* libz.dylib */; };
 		DF293C9E19DBC2AE00799011 /* QNUserAgent.h in Headers */ = {isa = PBXBuildFile; fileRef = DF293C9C19DBC2AE00799011 /* QNUserAgent.h */; };
 		DF293C9F19DBC2AE00799011 /* QNUserAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = DF293C9D19DBC2AE00799011 /* QNUserAgent.m */; };
@@ -90,6 +89,9 @@
 		DFA9B65A19E0B53700A15FD1 /* QNFileRecorder.m in Sources */ = {isa = PBXBuildFile; fileRef = DFA9B65719E0B53700A15FD1 /* QNFileRecorder.m */; };
 		DFA9B65C19E0B58900A15FD1 /* QNRecorderDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = DFA9B65B19E0B58900A15FD1 /* QNRecorderDelegate.h */; };
 		DFBC622519DE459800458C4B /* QNHttpTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBC622419DE459800458C4B /* QNHttpTest.m */; };
+		DFBF636E1BCCE28300A771D8 /* QNSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBF636D1BCCE28200A771D8 /* QNSystem.m */; settings = {ASSET_TAGS = (); }; };
+		DFBF636F1BCCE28300A771D8 /* QNSystem.m in Sources */ = {isa = PBXBuildFile; fileRef = DFBF636D1BCCE28200A771D8 /* QNSystem.m */; settings = {ASSET_TAGS = (); }; };
+		DFBF63711BCCE2A600A771D8 /* QNSystem.h in Headers */ = {isa = PBXBuildFile; fileRef = DFBF63701BCCE2A600A771D8 /* QNSystem.h */; settings = {ASSET_TAGS = (); }; };
 		DFF126EE1B63909A0005C39C /* QNFileDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = DFF126ED1B63909A0005C39C /* QNFileDelegate.h */; };
 		DFF126F11B639F3B0005C39C /* QNFile.h in Headers */ = {isa = PBXBuildFile; fileRef = DFF126EF1B639F3B0005C39C /* QNFile.h */; };
 		DFF126F21B639F3B0005C39C /* QNFile.m in Sources */ = {isa = PBXBuildFile; fileRef = DFF126F01B639F3B0005C39C /* QNFile.m */; };
@@ -182,6 +184,8 @@
 		DFA9B65B19E0B58900A15FD1 /* QNRecorderDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNRecorderDelegate.h; sourceTree = "<group>"; };
 		DFA9B65E19E391A100A15FD1 /* QNTestConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNTestConfig.h; sourceTree = "<group>"; };
 		DFBC622419DE459800458C4B /* QNHttpTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNHttpTest.m; sourceTree = "<group>"; };
+		DFBF636D1BCCE28200A771D8 /* QNSystem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNSystem.m; sourceTree = "<group>"; };
+		DFBF63701BCCE2A600A771D8 /* QNSystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNSystem.h; sourceTree = "<group>"; };
 		DFF126ED1B63909A0005C39C /* QNFileDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNFileDelegate.h; sourceTree = "<group>"; };
 		DFF126EF1B639F3B0005C39C /* QNFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNFile.h; sourceTree = "<group>"; };
 		DFF126F01B639F3B0005C39C /* QNFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNFile.m; sourceTree = "<group>"; };
@@ -218,7 +222,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DF293C9919DBAE3E00799011 /* libz.dylib in Frameworks */,
 				22019FE04FB937FAB13FDFFD /* libPods-QiniuSDK iOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -337,6 +340,8 @@
 				DFF126F01B639F3B0005C39C /* QNFile.m */,
 				DFF126F41B63ABED0005C39C /* QNALAssetFile.h */,
 				DFF126F51B63ABED0005C39C /* QNALAssetFile.m */,
+				DFBF636D1BCCE28200A771D8 /* QNSystem.m */,
+				DFBF63701BCCE2A600A771D8 /* QNSystem.h */,
 			);
 			path = Common;
 			sourceTree = "<group>";
@@ -398,6 +403,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DF0D23CD19DCE6C400D6B68F /* QNResponseInfo.h in Headers */,
+				DFBF63711BCCE2A600A771D8 /* QNSystem.h in Headers */,
 				DFF126F61B63ABED0005C39C /* QNALAssetFile.h in Headers */,
 				DF6099FA1A5676AA00AC7297 /* QNDns.h in Headers */,
 				DF437CD21B2426270099587B /* GTM_Base64.h in Headers */,
@@ -692,6 +698,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DF2CDE5D19DAC6A400CE01FB /* QNUrlSafeBase64.m in Sources */,
+				DFBF636E1BCCE28300A771D8 /* QNSystem.m in Sources */,
 				DF0D23CF19DCE6E500D6B68F /* QNResponseInfo.m in Sources */,
 				DFA9B63C19DF904000A15FD1 /* QNEtag.m in Sources */,
 				DF437CD31B2426270099587B /* GTM_Base64.m in Sources */,
@@ -736,6 +743,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DF24DDA11B63FF1800EF57E6 /* QNALAssetFile.m in Sources */,
+				DFBF636F1BCCE28300A771D8 /* QNSystem.m in Sources */,
 				DF24DDA01B63FF0E00EF57E6 /* QNFile.m in Sources */,
 				DF2CDE5E19DAC6A400CE01FB /* QNUrlSafeBase64.m in Sources */,
 				DF0D23D019DCE6E500D6B68F /* QNResponseInfo.m in Sources */,

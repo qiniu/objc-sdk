@@ -14,6 +14,7 @@
 #import "QNResponseInfo.h"
 
 #import "QNConfiguration.h"
+#import "HappyDNS.h"
 
 @interface QNHttpTest : XCTestCase
 @property QNHttpManager *httpManager;
@@ -105,7 +106,7 @@
 	__block QNResponseInfo *testInfo = nil;
 	QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
 	QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
-	[dns putHosts: @"upnonono.qiniu.com" ip: [QNZone zone0].upIp];
+	[dns putHosts: @"upnonono.qiniu.com" ip: [QNZone zone0].up.ips[0]];
 	QNHttpManager *httpManager = [[QNHttpManager alloc] initWithTimeout:60 urlConverter:nil dns:dns];
 	[httpManager post:@"http://upnonono.qiniu.com" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	         testInfo = info;

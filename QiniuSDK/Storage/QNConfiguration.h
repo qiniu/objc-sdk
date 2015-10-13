@@ -10,8 +10,6 @@
 
 #import "QNRecorderDelegate.h"
 
-#import "HappyDNS.h"
-
 /**
  *    断点上传时的分块大小
  */
@@ -27,7 +25,8 @@ extern const UInt32 kQNBlockSize;
 typedef NSString *(^QNUrlConvert)(NSString *url);
 
 @class QNConfigurationBuilder;
-
+@class QNDnsManager;
+@class QNServiceAddress;
 /**
  *    Builder block
  *
@@ -41,22 +40,12 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 /**
  *    默认上传服务器地址
  */
-@property (copy, nonatomic, readonly) NSString *upHost;
+@property (copy, nonatomic, readonly) QNServiceAddress *up;
 
 /**
  *    备用上传服务器地址
  */
-@property (copy, nonatomic, readonly) NSString *upHostBackup;
-
-/**
- *    备用上传IP
- */
-@property (copy, nonatomic, readonly) NSString *upIp;
-
-/**
- *    上传端口
- */
-@property (nonatomic, readonly) UInt32 upPort;
+@property (copy, nonatomic, readonly) QNServiceAddress *upBackup;
 
 /**
  *    断点上传时的分片大小
@@ -92,28 +81,30 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @end
 
+/**
+ * 上传服务地址
+ */
+@interface QNServiceAddress : NSObject
+
+- (instancetype) init:(NSString*)address ips:(NSArray*)ips;
+
+@property (nonatomic, readonly) NSString* address;
+@property (nonatomic, readonly) NSArray* ips;
+
+@end
 
 @interface QNZone : NSObject
 
 /**
  *    默认上传服务器地址
  */
-@property (nonatomic, readonly) NSString *upHost;
+@property (nonatomic, readonly) QNServiceAddress *up;
 
 /**
  *    备用上传服务器地址
  */
-@property (nonatomic, readonly) NSString *upHostBackup;
+@property (nonatomic, readonly) QNServiceAddress *upBackup;
 
-/**
- *    备用上传IP
- */
-@property (nonatomic, readonly) NSString *upIp;
-
-/**
- *    备用上传IP
- */
-@property (nonatomic, readonly) NSString *upIp2;
 
 /**
  *    Zone初始化方法
@@ -124,10 +115,8 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  *
  *    @return Zone实例
  */
-- (instancetype)initWithUpHost:(NSString *)upHost
-                  upHostBackup:(NSString *)upHostBackup
-                          upIp:(NSString *)upIp
-                         upIp2:(NSString*)upIp2;
+- (instancetype)initWithUp:(QNServiceAddress *)up
+                  upBackup:(QNServiceAddress *)upBackup;
 
 /**
  *    zone 0
@@ -145,17 +134,13 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @end
 
+
 @interface QNConfigurationBuilder : NSObject
 
 /**
  *    默认上传服务器地址
  */
 @property (nonatomic, strong) QNZone *zone;
-
-/**
- *    上传端口
- */
-@property (nonatomic, readonly) UInt32 upPort;
 
 /**
  *    断点上传时的分片大小
