@@ -49,7 +49,7 @@
 	XCTAssert(testInfo.isOK, @"Pass");
 	XCTAssert(testInfo.reqId, @"Pass");
 }
-/*
+
 - (void)testHttpsUp {
     __block QNResponseInfo *testInfo = nil;
     __block NSDictionary *testResp = nil;
@@ -71,7 +71,7 @@
     NSLog(@"%@", testResp);
     XCTAssert(testInfo.isOK, @"Pass");
     XCTAssert(testInfo.reqId, @"Pass");
-}*/
+}
 
 - (void)testUpUnAuth {
 	__block QNResponseInfo *testInfo = nil;
