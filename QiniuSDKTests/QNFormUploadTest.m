@@ -288,4 +288,21 @@
 	XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");
 }
 
+- (void)test0sizeData {
+    __block QNResponseInfo *testInfo = nil;
+    __block NSDictionary *testResp = nil;
+    
+    QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo":@"bar" } checkCrc:YES cancellationSignal:nil];
+    NSData *data = [@"" dataUsingEncoding:NSUTF8StringEncoding];
+    [self.upManager putData:data key:@"你好" token:g_token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+        testInfo = info;
+        testResp = resp;
+    } option:opt];
+    
+    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+    NSLog(@"%@", testInfo);
+    NSLog(@"%@", testResp);
+    XCTAssert(testInfo.statusCode == kQNZeroDataSize, @"Pass");
+}
+
 @end

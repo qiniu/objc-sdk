@@ -128,7 +128,13 @@
 		});
 		return;
 	}
-
+    
+    if ([data length] == 0) {
+        QNAsyncRunInMain( ^{
+            completionHandler([QNResponseInfo responseInfoOfZeroData:nil], key, nil);
+        });
+        return;
+    }
 	QNUpCompletionHandler complete = ^(QNResponseInfo *info, NSString *key, NSDictionary *resp)
 	{
 		QNAsyncRunInMain( ^{
