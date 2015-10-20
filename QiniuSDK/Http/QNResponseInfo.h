@@ -24,6 +24,11 @@ extern const int kQNNetworkError;
 extern const int kQNInvalidArgument;
 
 /**
+ *    0 字节文件或数据
+ */
+extern const int kQNZeroDataSize;
+
+/**
  *    错误token状态码
  */
 extern const int kQNInvalidToken;
@@ -169,6 +174,13 @@ extern const int kQNFileError;
  *    @return 文件错误实例
  */
 + (instancetype)responseInfoWithFileError:(NSError *)error;
+
+/**
+ *    工厂函数，内部使用
+ *
+ *    @return 文件错误实例
+ */
++ (instancetype)responseInfoOfZeroData:(NSString *)path;
 
 /**
  *    构造函数

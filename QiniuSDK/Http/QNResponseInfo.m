@@ -10,6 +10,7 @@
 #import "QNResponseInfo.h"
 #import "QNUserAgent.h"
 
+const int kQNZeroDataSize = -6;
 const int kQNInvalidToken = -5;
 const int kQNFileError = -4;
 const int kQNInvalidArgument = -3;
@@ -93,6 +94,16 @@ static NSString *domain = @"qiniu.com";
 
 + (instancetype)responseInfoWithFileError:(NSError *)error {
 	return [[QNResponseInfo alloc] initWithStatus:kQNFileError error:error];
+}
+
++ (instancetype)responseInfoOfZeroData:(NSString *)path{
+    NSString *desc;
+    if (path == nil) {
+        desc = @"data size is 0";
+    }else {
+        desc = [[NSString alloc] initWithFormat:@"file %@ size is 0", path];
+    }
+    return [[QNResponseInfo alloc] initWithStatus:kQNZeroDataSize errorDescription:desc];
 }
 
 - (instancetype)initWithCancelled {

@@ -131,6 +131,26 @@
 	[QNTempFile removeTempfile:tempFile];
 }
 
+- (void)test0k {
+    NSURL *tempFile = [QNTempFile createTempfileWithSize:0];
+    NSString *keyUp = [NSString stringWithFormat:@"%dk", 0];
+    __block NSString *key = nil;
+    __block QNResponseInfo *info = nil;
+    QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler: ^(NSString *key, float percent) {
+        NSLog(@"progress %f", percent);
+    }];
+    [_upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+        key = k;
+        info = i;
+    } option:opt];
+    AGWW_WAIT_WHILE(key == nil, 60 * 30);
+    NSLog(@"info %@", info);
+    XCTAssert(info.statusCode == kQNZeroDataSize, @"Pass");
+    XCTAssert([keyUp isEqualToString:key], @"Pass");
+    
+    [QNTempFile removeTempfile:tempFile];
+}
+
 - (void)test500k {
 	[self template:500];
 }
