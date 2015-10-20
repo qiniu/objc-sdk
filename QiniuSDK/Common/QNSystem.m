@@ -17,31 +17,31 @@
 
 BOOL hasNSURLSession(){
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
-    float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
-    if (sysVersion < 7.0) {
-        return NO;
-    }
+	float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
+	if (sysVersion < 7.0) {
+		return NO;
+	}
 #else
-    NSOperatingSystemVersion sysVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
-    if ((sysVersion.majorVersion <= 10 && sysVersion.minorVersion < 9)) {
-        return NO;
-    }
+	NSOperatingSystemVersion sysVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
+	if ((sysVersion.majorVersion <= 10 && sysVersion.minorVersion < 9)) {
+		return NO;
+	}
 #endif
-    return YES;
+	return YES;
 }
 
 BOOL hasAts(){
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
-    float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
-    if (sysVersion < 9.0) {
-        return NO;
-    }
+	float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
+	if (sysVersion < 9.0) {
+		return NO;
+	}
 #else
-    NSOperatingSystemVersion sysVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
-    
-    if ((sysVersion.majorVersion <= 10 && sysVersion.minorVersion < 11)) {
-        return NO;
-    }
+	NSOperatingSystemVersion sysVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
+
+	if ((sysVersion.majorVersion <= 10 && sysVersion.minorVersion < 11)) {
+		return NO;
+	}
 #endif
-    return YES;
+	return YES;
 }

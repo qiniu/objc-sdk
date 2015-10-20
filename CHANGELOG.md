@@ -5,6 +5,7 @@
 ### 增加
 * 支持 https 
 * 禁止0字节文件上传
+* ua加入idfv 便于网络诊断
 
 ### 修正
 * QNHttpDelegate.h 头文件名大小写修正

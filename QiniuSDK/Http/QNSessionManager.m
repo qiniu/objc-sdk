@@ -195,6 +195,11 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
     }
     request.URL = url;
     
+    [request setTimeoutInterval:_timeout];
+    
+    [request setValue:[[QNUserAgent sharedInstance] description] forHTTPHeaderField:@"User-Agent"];
+    [request setValue:nil forHTTPHeaderField:@"Accept-Language"];
+    
     if (progressBlock == nil) {
         progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
         };
@@ -235,10 +240,6 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
         delegate.cancelBlock = cancelBlock;
     }
     
-    [request setTimeoutInterval:_timeout];
-    
-    [request setValue:[[QNUserAgent sharedInstance] description] forHTTPHeaderField:@"User-Agent"];
-    [request setValue:nil forHTTPHeaderField:@"Accept-Language"];
     [uploadTask resume];
 }
 

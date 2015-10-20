@@ -9,6 +9,7 @@
 
 #import "QNResponseInfo.h"
 #import "QNUserAgent.h"
+#import "QNVersion.h"
 
 const int kQNZeroDataSize = -6;
 const int kQNInvalidToken = -5;
@@ -96,14 +97,14 @@ static NSString *domain = @"qiniu.com";
 	return [[QNResponseInfo alloc] initWithStatus:kQNFileError error:error];
 }
 
-+ (instancetype)responseInfoOfZeroData:(NSString *)path{
-    NSString *desc;
-    if (path == nil) {
-        desc = @"data size is 0";
-    }else {
-        desc = [[NSString alloc] initWithFormat:@"file %@ size is 0", path];
-    }
-    return [[QNResponseInfo alloc] initWithStatus:kQNZeroDataSize errorDescription:desc];
++ (instancetype)responseInfoOfZeroData:(NSString *)path {
+	NSString *desc;
+	if (path == nil) {
+		desc = @"data size is 0";
+	}else {
+		desc = [[NSString alloc] initWithFormat:@"file %@ size is 0", path];
+	}
+	return [[QNResponseInfo alloc] initWithStatus:kQNZeroDataSize errorDescription:desc];
 }
 
 - (instancetype)initWithCancelled {
@@ -181,7 +182,7 @@ static NSString *domain = @"qiniu.com";
 }
 
 - (NSString *)description {
-	return [NSString stringWithFormat:@"<%@= id: %@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ ip: %@ duration: %f s time: %llu error: %@>", NSStringFromClass([self class]), _id, _statusCode, _reqId, _xlog, _xvia, _host, _serverIp, _duration, _timeStamp, _error];
+	return [NSString stringWithFormat:@"<%@= id: %@, ver: %@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ ip: %@ duration: %f s time: %llu error: %@>", NSStringFromClass([self class]), _id, kQiniuVersion, _statusCode, _reqId, _xlog, _xvia, _host, _serverIp, _duration, _timeStamp, _error];
 }
 
 - (BOOL)isCancelled {
