@@ -1,10 +1,18 @@
 #Changelog
 
-## 7.0.13 (-)
+## 7.0.13 (2015-10-20)
+
+### 增加
+* 支持 https 
+* 禁止0字节文件上传
 
 ### 修正
 * QNHttpDelegate.h 头文件名大小写修正
 * 指定AFNetworking 为2.5.＋, 因为2.6已经移除iOS 6 支持
+* 变更set host 方法 
+* 修正大文件上传内存泄露 
+* 支持文件大小超过2G
+* Fix typo in QNUploadOption constructor.
 
 ## 7.0.12 (2015-07-25)
 
