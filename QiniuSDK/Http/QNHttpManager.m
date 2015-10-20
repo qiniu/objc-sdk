@@ -112,6 +112,11 @@ static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error){
     
     request.URL = url;
     
+    [request setTimeoutInterval:_timeout];
+    
+    [request setValue:[[QNUserAgent sharedInstance] description] forHTTPHeaderField:@"User-Agent"];
+    [request setValue:nil forHTTPHeaderField:@"Accept-Language"];
+    
     AFHTTPRequestOperation *operation = [_httpManager
                                          HTTPRequestOperationWithRequest:request
                                          success: ^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -151,10 +156,7 @@ static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error){
             }
         }];
     }
-    [request setTimeoutInterval:_timeout];
-    
-    [request setValue:[[QNUserAgent sharedInstance] description] forHTTPHeaderField:@"User-Agent"];
-    [request setValue:nil forHTTPHeaderField:@"Accept-Language"];
+
     [_httpManager.operationQueue addOperation:operation];
 }
 
