@@ -46,28 +46,26 @@ enum {
             t = [createTime timeIntervalSince1970];
         }
         _fileModifyTime = t;
-        
-        [self getInfo];
         _phAsset = phAsset;
+        [self getInfo];
+        
     }
     return self;
 }
 
 - (NSData *)read:(long)offset size:(long)size
 {
-    NSData *data = [self readAll];
     NSRange subRange = NSMakeRange(offset, size);
-    NSData *subData = [data subdataWithRange:subRange];
+    if (!self.assetData) {
+        self.assetData = [self fetchDataFromAsset:self.phAsset];
+    }
+    NSData *subData = [self.assetData subdataWithRange:subRange];
+    
     return subData;
 }
 
 - (NSData *)readAll {
-    if (self.assetData) {
-        return self.assetData;
-    }else {
-        self.assetData = [self fetchDataFromAsset:self.phAsset];
-        return self.assetData;
-    }
+    return [self read:0 size:(long)_fileSize];
 }
 
 - (void)close {
