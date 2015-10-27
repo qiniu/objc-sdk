@@ -12,10 +12,13 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
 #import "QNALAssetFile.h"
-#import "QNPHAssetFile.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #else
 #import <CoreServices/CoreServices.h>
+#endif
+
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
+#import "QNPHAssetFile.h"
 #endif
 
 #import "QNConfiguration.h"
@@ -256,7 +259,7 @@
 #endif
 }
 
-#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 - (void) putPHAsset:(PHAsset *)asset
                 key:(NSString *)key
               token:(NSString *)token
