@@ -10,7 +10,7 @@
 
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000) 
 #import <Photos/Photos.h>
-
+#import <AVFoundation/AVFoundation.h>
 enum {
     kAMASSETMETADATA_PENDINGREADS = 1,
     kAMASSETMETADATA_ALLFINISHED = 0
