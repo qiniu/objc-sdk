@@ -10,10 +10,17 @@
 
 #import "QNRecorderDelegate.h"
 
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
+#import <Photos/Photos.h>
+#endif
+
 @class QNResponseInfo;
 @class QNUploadOption;
 @class QNConfiguration;
 @class ALAsset;
+
+
+
 /**
  *    上传完成后的回调函数
  *
@@ -118,5 +125,24 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
               token:(NSString *)token
            complete:(QNUpCompletionHandler)completionHandler
              option:(QNUploadOption *)option;
+
+/**
+ *    上传PHAsset文件(IOS8 andLater)
+ *
+ *    @param asset             PHAsset文件
+ *    @param key               上传到云存储的key，为nil时表示是由七牛生成
+ *    @param token             上传需要的token, 由服务器生成
+ *    @param completionHandler 上传完成后的回调函数
+ *    @param option            上传时传入的可选参数
+ */
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
+- (void) putPHAsset:(PHAsset *)asset
+                key:(NSString *)key
+              token:(NSString *)token
+           complete:(QNUpCompletionHandler)completionHandler
+             option:(QNUploadOption *)option;
+
+
+#endif
 
 @end
