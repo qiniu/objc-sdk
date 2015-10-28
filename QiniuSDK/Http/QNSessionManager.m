@@ -145,14 +145,12 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock{
 	__block NSDate *startTime = [NSDate date];
-    
 	NSString *domain = request.URL.host;
-	
-	NSString *u = request.URL.absoluteString;
 	NSURL *url = request.URL;
     NSArray *ips = nil;
 	if (_converter != nil) {
-		url = [[NSURL alloc] initWithString:_converter(u)];
+        NSString *u = request.URL.absoluteString;
+        url = [[NSURL alloc] initWithString:_converter(u)];
         request.URL = url;
         domain = url.host;
 	} else if (_noProxy && _dns != nil && [url.scheme isEqualToString:@"http"]){
