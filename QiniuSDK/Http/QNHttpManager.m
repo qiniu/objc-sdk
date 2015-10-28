@@ -162,12 +162,12 @@ static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error){
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock{
+    NSString *u = request.URL.absoluteString;
     NSURL *url = request.URL;
     NSString *domain =url.host;
     NSArray * ips = nil;
     NSDate *startTime = [NSDate date];
     if (_converter != nil) {
-        NSString *u = request.URL.absoluteString;
         url = [[NSURL alloc] initWithString:_converter(u)];
         request.URL = url;
         domain = url.host;
