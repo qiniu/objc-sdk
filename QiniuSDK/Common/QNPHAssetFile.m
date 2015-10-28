@@ -8,7 +8,7 @@
 
 #import "QNPHAssetFile.h"
 
-#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000) 
 #import <Photos/Photos.h>
 
 enum {
@@ -175,7 +175,6 @@ enum {
     
     return tmpData;
 }
-
 
 @end
 #endif

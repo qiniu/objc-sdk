@@ -13,13 +13,16 @@
 #import <UIKit/UIKit.h>
 #import "QNALAssetFile.h"
 #import <AssetsLibrary/AssetsLibrary.h>
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
+#import "QNPHAssetFile.h"
+#import <Photos/Photos.h>
+#endif
+
 #else
 #import <CoreServices/CoreServices.h>
 #endif
 
-#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
-#import "QNPHAssetFile.h"
-#endif
 
 #import "QNConfiguration.h"
 #import "QNHttpManager.h"
@@ -259,12 +262,12 @@
 #endif
 }
 
-#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 - (void) putPHAsset:(PHAsset *)asset
                 key:(NSString *)key
               token:(NSString *)token
            complete:(QNUpCompletionHandler)completionHandler
              option:(QNUploadOption *)option {
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000)
     if ([QNUploadManager checkAndNotifyError:key token:token input:asset complete:completionHandler]) {
         return;
     }
@@ -281,7 +284,7 @@
         }
         [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
-}
 #endif
+}
 
 @end
