@@ -10,15 +10,12 @@
 
 #import "QNRecorderDelegate.h"
 
-#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
-#import <Photos/Photos.h>
-#endif
 
 @class QNResponseInfo;
 @class QNUploadOption;
 @class QNConfiguration;
 @class ALAsset;
-
+@class PHAsset;
 
 
 /**
@@ -135,14 +132,10 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
  *    @param completionHandler 上传完成后的回调函数
  *    @param option            上传时传入的可选参数
  */
-#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 - (void) putPHAsset:(PHAsset *)asset
                 key:(NSString *)key
               token:(NSString *)token
            complete:(QNUpCompletionHandler)completionHandler
              option:(QNUploadOption *)option;
-
-
-#endif
 
 @end
