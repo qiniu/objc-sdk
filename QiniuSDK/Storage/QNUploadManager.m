@@ -281,7 +281,7 @@
         }
         [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
-#endif
 }
+#endif
 
 @end
