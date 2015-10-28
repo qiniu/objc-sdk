@@ -69,8 +69,13 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 
 		_converter = builder.converter;
 
-		_dns = initDns(builder);
-		addZoneToDns(builder.zone, _dns);
+        _disableATS = builder.disableATS;
+        if (_disableATS) {
+            _dns = initDns(builder);
+            addZoneToDns(builder.zone, _dns);
+        }else{
+            _dns = nil;
+        }
 	}
 	return self;
 }
@@ -92,7 +97,8 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 
 		_proxy = nil;
 		_converter = nil;
-
+        
+        _disableATS = YES;
 	}
 	return self;
 }
