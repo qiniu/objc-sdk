@@ -10,7 +10,7 @@
 
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000) 
 #import <Photos/Photos.h>
-
+#import <AVFoundation/AVFoundation.h>
 enum {
     kAMASSETMETADATA_PENDINGREADS = 1,
     kAMASSETMETADATA_ALLFINISHED = 0
@@ -159,7 +159,7 @@ enum {
         [[PHImageManager defaultManager] requestAVAssetForVideo:asset
                                                         options:request
                                                   resultHandler:
-         ^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+         ^(AVAsset* asset, AVAudioMix* audioMix, NSDictionary* info) {
              AVURLAsset *urlAsset = (AVURLAsset *)asset;
              NSData *videoData = [NSData dataWithContentsOfURL:urlAsset.URL];
              tmpData = [NSData dataWithData:videoData];
