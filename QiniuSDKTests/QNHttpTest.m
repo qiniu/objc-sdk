@@ -133,12 +133,12 @@
     __block QNResponseInfo *testInfo = nil;
     QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
     QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
-    QNHttpManager *httpManager = [[QNHttpManager alloc] initWithTimeout:60 urlConverter:nil dns:dns];
+    QNHttpManager *httpManager = [[QNHttpManager alloc] initWithTimeout:300 urlConverter:nil dns:dns];
     [httpManager post:@"https://up.qbox.me" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
         testInfo = info;
     } withProgressBlock:nil withCancelBlock:nil];
     
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+    AGWW_WAIT_WHILE(testInfo == nil, 300.0);
     NSLog(@"%@", testInfo);
     XCTAssert(testInfo.reqId, @"Pass");
 }
