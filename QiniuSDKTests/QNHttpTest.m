@@ -134,7 +134,7 @@
     QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
     QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
     QNHttpManager *httpManager = [[QNHttpManager alloc] initWithTimeout:300 urlConverter:nil dns:nil];
-    [httpManager post:@"https://up.qbox.me" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+    [httpManager post:@"https://uptemp.qbox.me" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
         testInfo = info;
     } withProgressBlock:nil withCancelBlock:nil];
     

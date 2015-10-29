@@ -57,7 +57,7 @@
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo":@"bar" } checkCrc:YES cancellationSignal:nil];
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        QNServiceAddress *s = [[QNServiceAddress alloc] init:@"https://up.qbox.me" ips:nil];
+        QNServiceAddress *s = [[QNServiceAddress alloc] init:@"https://uptemp.qbox.me" ips:nil];
         builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc]initWithConfiguration:config];
