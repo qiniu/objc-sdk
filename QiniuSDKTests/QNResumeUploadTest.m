@@ -160,13 +160,13 @@
 }
 
 
-- (void)test500ks {
-    [self templateHttps:500];
-}
-
-- (void)test600ks {
-    [self templateHttps:600];
-}
+//- (void)test500ks {
+//    [self templateHttps:500];
+//}
+//
+//- (void)test600ks {
+//    [self templateHttps:600];
+//}
 
 
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
