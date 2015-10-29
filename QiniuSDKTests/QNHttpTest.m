@@ -129,4 +129,19 @@
 	XCTAssert(testInfo.statusCode < 0, @"Pass");
 }
 
+// travis ci iOS simulator 8.1 failed，其他环境（mac, iOS 9.0）正常，待详细排查
+//- (void)testPostHttps {
+//    __block QNResponseInfo *testInfo = nil;
+//    QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
+//    QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
+//    QNHttpManager *httpManager = [[QNHttpManager alloc] initWithTimeout:300 urlConverter:nil dns:nil];
+//    [httpManager post:@"https://up.qiniu.com" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+//        testInfo = info;
+//    } withProgressBlock:nil withCancelBlock:nil];
+//    
+//    AGWW_WAIT_WHILE(testInfo == nil, 300.0);
+//    NSLog(@"%@", testInfo);
+//    XCTAssert(testInfo.reqId, @"Pass");
+//}
+
 @end

@@ -77,6 +77,8 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @property (nonatomic, readonly) QNDnsManager *dns;
 
+@property (readonly) BOOL disableATS;
+
 + (instancetype)build:(QNConfigurationBuilderBlock)block;
 
 @end
@@ -171,5 +173,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (nonatomic, assign) QNUrlConvert converter;
 
 @property (nonatomic, assign) QNDnsManager *dns;
+
+@property (assign) BOOL disableATS;
 
 @end

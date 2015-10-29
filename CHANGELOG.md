@@ -3,12 +3,12 @@
 ## 7.0.13 (2015-10-28)
 
 ### 增加
-* 支持 https 
 * 禁止0字节文件上传
 * ua加入idfv 便于网络诊断
 * 支持PHAsset
 
 ### 修正
+* HappyDns swift bridge问题
 * QNHttpDelegate.h 头文件名大小写修正
 * 指定AFNetworking 为2.5.＋, 因为2.6已经移除iOS 6 支持
 * 变更set host 方法 

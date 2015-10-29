@@ -10,6 +10,8 @@
 #import "QNNetworkInfo.h"
 #import "HappyDNS.h"
 
+#import "QNSystem.h"
+
 const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 
 static void addServiceToDns(QNServiceAddress* address, QNDnsManager *dns) {
@@ -69,8 +71,13 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 
 		_converter = builder.converter;
 
-		_dns = initDns(builder);
-		addZoneToDns(builder.zone, _dns);
+		_disableATS = builder.disableATS;
+		if (_disableATS || !hasAts()) {
+			_dns = initDns(builder);
+			addZoneToDns(builder.zone, _dns);
+		}else{
+			_dns = nil;
+		}
 	}
 	return self;
 }
@@ -93,6 +100,7 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 		_proxy = nil;
 		_converter = nil;
 
+		_disableATS = YES;
 	}
 	return self;
 }

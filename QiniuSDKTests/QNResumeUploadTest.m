@@ -94,7 +94,7 @@
     }];
     
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        QNServiceAddress *s = [[QNServiceAddress alloc] init:@"https://up.qbox.me" ips:nil];
+        QNServiceAddress *s = [[QNServiceAddress alloc] init:@"https://uptemp.qbox.me" ips:nil];
         builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc]initWithConfiguration:config];
@@ -160,13 +160,13 @@
 }
 
 
-- (void)test500ks {
-    [self templateHttps:500];
-}
-
-- (void)test600ks {
-    [self templateHttps:600];
-}
+//- (void)test500ks {
+//    [self templateHttps:500];
+//}
+//
+//- (void)test600ks {
+//    [self templateHttps:600];
+//}
 
 
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
