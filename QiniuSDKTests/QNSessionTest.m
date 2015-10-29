@@ -156,7 +156,7 @@
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
     QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
     QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
-    QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:300 urlConverter:nil dns:dns];
+    QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:300 urlConverter:nil dns:nil];
     [httpManager post:@"https://up.qbox.me" withData:data withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
         testInfo = info;
     } withProgressBlock:nil withCancelBlock:nil];
