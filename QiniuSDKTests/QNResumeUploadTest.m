@@ -85,31 +85,31 @@
 }
 
 - (void)templateHttps:(int)size {
-	NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
-	NSString *keyUp = [NSString stringWithFormat:@"%dk", size];
-	__block NSString *key = nil;
-	__block QNResponseInfo *info = nil;
-	QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler: ^(NSString *key, float percent) {
-	                               NSLog(@"progress %f", percent);
-			       }];
-
-	QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-	                                   QNServiceAddress *s = [[QNServiceAddress alloc] init:@"https://up.qbox.me" ips:nil];
-	                                   builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
-				   }];
-	QNUploadManager *upManager = [[QNUploadManager alloc]initWithConfiguration:config];
-
-	[upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-	         key = k;
-	         info = i;
-	 } option:opt];
-	AGWW_WAIT_WHILE(key == nil, 60 * 30);
-	NSLog(@"info %@", info);
-	XCTAssert(info.isOK, @"Pass");
-	XCTAssert(info.reqId, @"Pass");
-	XCTAssert([keyUp isEqualToString:key], @"Pass");
-
-	[QNTempFile removeTempfile:tempFile];
+    NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
+    NSString *keyUp = [NSString stringWithFormat:@"%dk", size];
+    __block NSString *key = nil;
+    __block QNResponseInfo *info = nil;
+    QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler: ^(NSString *key, float percent) {
+        NSLog(@"progress %f", percent);
+    }];
+    
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        QNServiceAddress *s = [[QNServiceAddress alloc] init:@"https://uptemp.qbox.me" ips:nil];
+        builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
+    }];
+    QNUploadManager *upManager = [[QNUploadManager alloc]initWithConfiguration:config];
+    
+    [upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+        key = k;
+        info = i;
+    } option:opt];
+    AGWW_WAIT_WHILE(key == nil, 60 * 30);
+    NSLog(@"info %@", info);
+    XCTAssert(info.isOK, @"Pass");
+    XCTAssert(info.reqId, @"Pass");
+    XCTAssert([keyUp isEqualToString:key], @"Pass");
+    
+    [QNTempFile removeTempfile:tempFile];
 }
 
 - (void)testNoKey {
@@ -160,13 +160,13 @@
 }
 
 
-- (void)test500ks {
-	[self templateHttps:500];
-}
-
-- (void)test600ks {
-	[self templateHttps:600];
-}
+//- (void)test500ks {
+//    [self templateHttps:500];
+//}
+//
+//- (void)test600ks {
+//    [self templateHttps:600];
+//}
 
 
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED

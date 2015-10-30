@@ -16,8 +16,6 @@
 #import "HappyDNS.h"
 #import "QNStats.h"
 
-#import "QNSystem.h"
-
 @interface QNHttpManager ()
 @property (nonatomic) AFHTTPRequestOperationManager *httpManager;
 @property UInt32 timeout;
@@ -229,7 +227,7 @@ static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error){
 		url = [[NSURL alloc] initWithString:_converter(u)];
 		request.URL = url;
 		domain = url.host;
-	}else if(_dns != nil /*&& [url.scheme  isEqual: @"http"] && !hasAts()*/) {
+    }else if(_dns != nil && [url.scheme  isEqual: @"http"]){
 		ips = [_dns queryWithDomain:[[QNDomain alloc] init:domain hostsFirst:NO hasCname:YES maxTtl:1000]];
 		double duration = [[NSDate date] timeIntervalSinceDate:startTime];
 		setStat(stats, @"dt", [NSNumber numberWithInt:(int)(duration*1000)]);
@@ -248,7 +246,6 @@ static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error){
 		}
 	}
 	[self sendRequest2:request withStats:stats withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:cancelBlock withIpArray:ips withIndex:0 withDomain:domain withRetryTimes:kQNRetryConnectTimes withStartTime:startTime];
-
 }
 
 - (void)    multipartPost:(NSString *)url
