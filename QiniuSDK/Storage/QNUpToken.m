@@ -26,6 +26,33 @@
 	return self;
 }
 
+- (NSString *) getAccess {
+
+	NSRange range = [_token rangeOfString:@":" options:NSCaseInsensitiveSearch];
+	return [_token substringToIndex:range.location];
+}
+
+- (NSString *) getBucket {
+	NSRange range = [_token rangeOfString:@":" options:NSBackwardsSearch];
+	NSData *policyData = [QNUrlSafeBase64 decodeString:[_token substringFromIndex:range.location+1]];
+	NSError *err = nil;
+	NSDictionary *info = [NSJSONSerialization JSONObjectWithData:policyData options:kNilOptions error:&err];
+	if (err != nil) {
+		return @"";
+	}
+	NSString *scope = [info objectForKey:@"scope"];
+	if (!scope) {
+		return @"";
+	}
+
+	range = [scope rangeOfString:@":"];
+	if (range.location == NSNotFound) {
+		return scope;
+	}
+	return [scope substringToIndex:range.location];
+}
+
+
 + (instancetype)parse:(NSString *)token {
 	if (token == nil) {
 		return nil;

@@ -15,6 +15,7 @@
 #import "QNUploadOption+Private.h"
 #import "QNRecorderDelegate.h"
 #import "QNCrc32.h"
+#import "QNStats.h"
 
 @interface QNFormUpload ()
 
@@ -26,6 +27,7 @@
 @property (nonatomic, strong) QNUploadOption *option;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) QNConfiguration *config;
+@property (nonatomic, strong) NSMutableDictionary *stats;
 
 @end
 
@@ -46,6 +48,9 @@
 		_complete = block;
 		_httpManager = http;
 		_config = config;
+		_stats = [[NSMutableDictionary alloc] init];
+		setStat(_stats, @"ak", [token getAccess]);
+		setStat(_stats, @"bucket", [token getBucket]);
 	}
 	return self;
 }
@@ -107,6 +112,7 @@
 		 withParams:parameters
 		 withFileName:fileName
 		 withMimeType:_option.mimeType
+		 withStats:_stats
 		 withCompleteBlock:retriedComplete
 		 withProgressBlock:p
 		 withCancelBlock:_option.cancellationSignal];
@@ -117,6 +123,7 @@
 	 withParams:parameters
 	 withFileName:fileName
 	 withMimeType:_option.mimeType
+	 withStats:_stats
 	 withCompleteBlock:complete
 	 withProgressBlock:p
 	 withCancelBlock:_option.cancellationSignal];

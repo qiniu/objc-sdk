@@ -15,6 +15,7 @@
 #import "QNUploadOption+Private.h"
 #import "QNRecorderDelegate.h"
 #import "QNCrc32.h"
+#import "QNStats.h"
 
 typedef void (^task)(void);
 
@@ -30,6 +31,8 @@ typedef void (^task)(void);
 @property (nonatomic, strong) QNUpToken *token;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) NSMutableArray *contexts;
+
+@property (nonatomic, strong) NSMutableDictionary *stats;
 
 @property int64_t modifyTime;
 @property (nonatomic, strong) id <QNRecorderDelegate> recorder;
@@ -87,6 +90,10 @@ typedef void (^task)(void);
 		_config = config;
 
 		_token = token;
+
+		_stats = [[NSMutableDictionary alloc] init];
+		setStat(_stats, @"ak", [token getAccess]);
+		setStat(_stats, @"bucket", [token getBucket]);
 	}
 	return self;
 }
@@ -262,7 +269,7 @@ typedef void (^task)(void);
 	NSData *data = [self.file read:offset size:chunkSize];
 	NSString *url = [[NSString alloc] initWithFormat:@"%@/mkblk/%u", uphost, (unsigned int)blockSize];
 	_chunkCrc = [QNCrc32 data:data];
-	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
+	[self post:url withData:data withStats:[NSMutableDictionary dictionaryWithDictionary:_stats] withCompleteBlock:complete withProgressBlock:progressBlock];
 }
 
 - (void)putChunk:(NSString *)uphost
@@ -275,7 +282,7 @@ typedef void (^task)(void);
 	UInt32 chunkOffset = offset % kQNBlockSize;
 	NSString *url = [[NSString alloc] initWithFormat:@"%@/bput/%@/%u", uphost, context, (unsigned int)chunkOffset];
 	_chunkCrc = [QNCrc32 data:data];
-	[self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
+	[self post:url withData:data withStats:[NSMutableDictionary dictionaryWithDictionary:_stats] withCompleteBlock:complete withProgressBlock:progressBlock];
 }
 
 - (void)makeFile:(NSString *)uphost
@@ -297,14 +304,15 @@ typedef void (^task)(void);
 	NSMutableData *postData = [NSMutableData data];
 	NSString *bodyStr = [self.contexts componentsJoinedByString:@","];
 	[postData appendData:[bodyStr dataUsingEncoding:NSUTF8StringEncoding]];
-	[self post:url withData:postData withCompleteBlock:complete withProgressBlock:nil];
+	[self post:url withData:postData withStats:[NSMutableDictionary dictionaryWithDictionary:_stats] withCompleteBlock:complete withProgressBlock:nil];
 }
 
 - (void)             post:(NSString *)url
                  withData:(NSData *)data
+                withStats:(NSMutableDictionary *)stats
         withCompleteBlock:(QNCompleteBlock)completeBlock
         withProgressBlock:(QNInternalProgressBlock)progressBlock {
-	[_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal];
+	[_httpManager post:url withData:data withParams:nil withHeaders:_headers withStats:stats withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal];
 }
 
 - (void)run {

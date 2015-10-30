@@ -12,6 +12,9 @@
 
 + (instancetype)parse:(NSString *)token;
 
+- (NSString *) getAccess;
+- (NSString *) getBucket;
+
 @property (copy, nonatomic, readonly) NSString *token;
 
 @property (readonly) BOOL hasReturnUrl;
