@@ -65,14 +65,7 @@ QNStats *defaultStatsManager = nil;
 
 - (instancetype) init {
 
-	NSLog(@"init");
-	// init dns
-	id<QNResolverDelegate> r1 = [QNResolver systemResolver];
-	id<QNResolverDelegate> r2 = [[QNResolver alloc] initWithAddres:@"223.6.6.6"];
-	id<QNResolverDelegate> r3 = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
-	QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObjects:r1,r2, r3, nil] networkInfo:[QNNetworkInfo normal ]];
-	//return [self initWithPushInterval:2 dropRate:0 statsHost:@"http://192.168.210.97:2334" dns:dns];
-	return [self initWithPushInterval:2 dropRate:0 statsHost:@"http://reportqos.qiniuapi.com" dns:dns];
+	return [self initWithPushInterval:-1 dropRate:-1 statsHost:nil dns:nil];
 }
 
 - (instancetype) initWithPushInterval: (int) interval
@@ -81,6 +74,24 @@ QNStats *defaultStatsManager = nil;
                                   dns:(QNDnsManager *) dns {
 
 	self = [super init];
+
+	if (interval <= 0) {
+		interval = 180;
+	}
+	if (dropRate < 0) {
+		dropRate = 0.7;
+	}
+	if (!statsHost) {
+		//statsHost = @"http://192.168.210.97:2334"; // office
+		//statsHost = @"http://192.168.199.202:2334"; // home
+		statsHost = @"http://reportqos.qiniuapi.com";
+	}
+	if (!dns) {
+		id<QNResolverDelegate> r1 = [QNResolver systemResolver];
+		id<QNResolverDelegate> r2 = [[QNResolver alloc] initWithAddres:@"223.6.6.6"];
+		id<QNResolverDelegate> r3 = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
+		dns = [[QNDnsManager alloc] init:[NSArray arrayWithObjects:r1,r2, r3, nil] networkInfo:[QNNetworkInfo normal ]];
+	}
 
 	_pushInterval = interval;
 	_statsHost = statsHost;
@@ -105,13 +116,13 @@ QNStats *defaultStatsManager = nil;
 	_telephonyInfo = [CTTelephonyNetworkInfo new];
 	_radioAccessTechnology = _telephonyInfo.currentRadioAccessTechnology;
 
-	NSLog(@"Current Radio Access Technology: %@", _radioAccessTechnology);
+	//NSLog(@"Current Radio Access Technology: %@", _radioAccessTechnology);
 	[NSNotificationCenter.defaultCenter addObserverForName:CTRadioAccessTechnologyDidChangeNotification
 	 object:nil
 	 queue:nil
 	 usingBlock:^(NSNotification *note) {
 	         _radioAccessTechnology = _telephonyInfo.currentRadioAccessTechnology;
-	         NSLog(@"New Radio Access Technology: %@", _telephonyInfo.currentRadioAccessTechnology);
+	         //NSLog(@"New Radio Access Technology: %@", _telephonyInfo.currentRadioAccessTechnology);
 	         [self getOutIp];
 	 }];
 
@@ -173,7 +184,6 @@ QNStats *defaultStatsManager = nil;
 
 - (void) addStatics:(NSMutableDictionary *)stat {
 
-	NSLog(@"stat: %@", stat);
 	if (!stat) {
 		NSLog(@"stat nil");
 		return;
@@ -226,7 +236,7 @@ QNStats *defaultStatsManager = nil;
 			NSDictionary *parameters = @{@"dev": _phoneModel, @"os": _systemName, @"sysv": _systemVersion,
 				                     @"app": _appName, @"appv": _appVersion,
 				                     @"stats": reqs, @"v": @"0.1"};
-			NSLog(@"stats: %@", reqs);
+			//NSLog(@"stats: %@", reqs);
 			NSURLRequest *req = [[AFJSONRequestSerializer serializer] requestWithMethod:@"POST" URLString:[_statsHost stringByAppendingString:@"/v1/upstats"] parameters:parameters error:nil];
 			//NSData *data = [NSJSONSerialization dataWithJSONObject:parameters options:kNilOptions error:nil];
 			//NSLog(@"data::: %@", [NSString stringWithUTF8String:[data bytes]]);

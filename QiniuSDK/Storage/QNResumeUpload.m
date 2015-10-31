@@ -92,8 +92,8 @@ typedef void (^task)(void);
 		_token = token;
 
 		_stats = [[NSMutableDictionary alloc] init];
-		setStat(_stats, @"ak", [token getAccess]);
-		setStat(_stats, @"bucket", [token getBucket]);
+		setStat(_stats, @"ak", token.access);
+		setStat(_stats, @"bucket", token.bucket);
 	}
 	return self;
 }

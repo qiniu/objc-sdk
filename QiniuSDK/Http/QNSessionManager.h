@@ -10,6 +10,7 @@
 - (instancetype)initWithProxy:(NSDictionary *)proxyDict
                       timeout:(UInt32)timeout
                  urlConverter:(QNUrlConvert)converter
+              upStatsDropRate:(float)dropRate
                           dns:(QNDnsManager*)dns;
 
 - (void)    multipartPost:(NSString *)url

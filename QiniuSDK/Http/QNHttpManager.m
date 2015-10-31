@@ -47,6 +47,7 @@ static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error){
 
 - (instancetype)initWithTimeout:(UInt32)timeout
                    urlConverter:(QNUrlConvert)converter
+                upStatsDropRate:(float)dropRate
                             dns:(QNDnsManager *)dns {
 	if (self = [super init]) {
 		_httpManager = [[AFHTTPRequestOperationManager alloc] init];
@@ -54,14 +55,14 @@ static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error){
 		_timeout = timeout;
 		_converter = converter;
 		_dns = dns;
-		_statsManager = [[QNStats alloc] init];
+		_statsManager = [[QNStats alloc] initWithPushInterval:0 dropRate:dropRate statsHost:nil dns:dns];
 	}
 
 	return self;
 }
 
 - (instancetype)init {
-	return [self initWithTimeout:60 urlConverter:nil dns:nil];
+	return [self initWithTimeout:60 urlConverter:nil upStatsDropRate:-1 dns:nil];
 }
 
 + (QNResponseInfo *)buildResponseInfo:(AFHTTPRequestOperation *)operation
@@ -87,6 +88,41 @@ static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error){
 		info = [QNResponseInfo responseInfoWithNetError:error host:host duration:duration];
 	}
 	return info;
+}
+
+- (void) recordRst:(NSMutableDictionary *)stats
+          response:(NSHTTPURLResponse *)response
+             error:(NSError *)error
+                st:(NSDate *)st {
+
+	if (!stats) {
+		return;
+	}
+	if (response) {
+		setStat(stats, @"rt", [NSNumber numberWithLongLong:(long long)([[NSDate date] timeIntervalSinceDate:st])*1000]);
+		setStat(stats, @"rst", @"Success");
+		setStat(stats, @"code", [NSNumber numberWithInteger:response.statusCode]);
+	} else {
+		setStat(stats, @"rst", errorFromDesc([error localizedDescription]));
+	}
+	if (!error || ![[error localizedDescription] isEqualToString:@"cancelled"]) {
+		[_statsManager addStatics:stats];
+	}
+}
+
+- (void) recordBaseStats:(NSMutableDictionary *)stats
+                 request:(NSMutableURLRequest *)request
+                      st:(NSDate *)st {
+
+	if (stats) {
+		setStat(stats, @"path", request.URL.path);
+		setStat(stats, @"net", [_statsManager getNetType]);
+		setStat(stats, @"sip", [_statsManager getSIP]);
+		setStat(stats, @"st",[NSNumber numberWithLongLong:(long long)([st timeIntervalSince1970]*1000000000)]);
+		if (request.HTTPBody != nil) {
+			setStat(stats, @"fs", [NSNumber numberWithInteger:[request.HTTPBody length]]);
+		}
+	}
 }
 
 - (void)     sendRequest2:(NSMutableURLRequest *)request
@@ -116,12 +152,7 @@ static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error){
 	}
 
 	NSDate *st = [NSDate date];
-	if (stats) {
-		setStat(stats, @"path", request.URL.path);
-		setStat(stats, @"net", [_statsManager getNetType]);
-		setStat(stats, @"sip", [_statsManager getSIP]);
-		setStat(stats, @"st",[NSNumber numberWithLongLong:(long long)([st timeIntervalSince1970]*1000000000)]);
-	}
+	[self recordBaseStats:stats request:request st:st];
 
 	request.URL = url;
 
@@ -140,28 +171,10 @@ static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error){
 	                                             if (info.isOK) {
 	                                                     resp = responseObject;
 						     }
-	                                             if (stats && operation.response) {
-	                                                     setStat(stats, @"rt", [NSNumber numberWithLongLong:(long long)([[NSDate date] timeIntervalSinceDate:st])*1000]);
-	                                                     setStat(stats, @"rst", @"Success");
-	                                                     setStat(stats, @"code", [NSNumber numberWithInteger:operation.response.statusCode]);
-	                                                     [_statsManager addStatics:stats];
-						     }
+	                                             [self recordRst:stats response:operation.response error:nil st:st];
 	                                             completeBlock(info, resp);
 					     }                                                                failure: ^(AFHTTPRequestOperation *operation, NSError *error) {
-
-	                                             if (stats) {
-	                                                     if (operation.response) {
-	                                                             setStat(stats, @"rt", [NSNumber numberWithLongLong:(long long)([[NSDate date] timeIntervalSinceDate:st])*1000]);
-	                                                             setStat(stats, @"rst", @"Success");
-	                                                             setStat(stats, @"code", [NSNumber numberWithInteger:operation.response.statusCode]);
-							     } else if (error) {
-	                                                             // 只处理第一次的情况
-	                                                             setStat(stats, @"rst", errorFromDesc([error localizedDescription]));
-							     }
-	                                                     if (!error || ![[error localizedDescription] isEqualToString:@"cancelled"]) {
-	                                                             [_statsManager addStatics:stats];
-							     }
-						     }
+	                                             [self recordRst:stats response:operation.response error:error st:st];
 	                                             if (_converter != nil && (index+1 < ips.count || times>0) && needRetry(operation, error)) {
 
 	                                                     NSLog(@"idx: %d, count: %lu", index, (unsigned long)ips.count);
@@ -179,9 +192,6 @@ static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error){
 					     }
 	                                    ];
 
-	if (stats && request.HTTPBody != nil) {
-		setStat(stats, @"fs", [NSNumber numberWithInteger:[request.HTTPBody length]]);
-	}
 	__block AFHTTPRequestOperation *op = nil;
 	if (cancelBlock) {
 		op = operation;
@@ -227,7 +237,7 @@ static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error){
 		url = [[NSURL alloc] initWithString:_converter(u)];
 		request.URL = url;
 		domain = url.host;
-    }else if(_dns != nil && [url.scheme  isEqual: @"http"]){
+	}else if(_dns != nil && [url.scheme isEqual: @"http"]) {
 		ips = [_dns queryWithDomain:[[QNDomain alloc] init:domain hostsFirst:NO hasCname:YES maxTtl:1000]];
 		double duration = [[NSDate date] timeIntervalSinceDate:startTime];
 		setStat(stats, @"dt", [NSNumber numberWithInt:(int)(duration*1000)]);

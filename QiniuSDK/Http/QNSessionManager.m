@@ -91,6 +91,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 - (instancetype)initWithProxy:(NSDictionary *)proxyDict
                       timeout:(UInt32)timeout
                  urlConverter:(QNUrlConvert)converter
+              upStatsDropRate:(float)dropRate
                           dns:(QNDnsManager*)dns {
 	if (self = [super init]) {
 		NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
@@ -106,14 +107,14 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 		_timeout = timeout;
 		_converter = converter;
 		_dns = dns;
-		_statsManager = [[QNStats alloc]init];
+		_statsManager = [[QNStats alloc]initWithPushInterval:0 dropRate:dropRate statsHost:nil dns:dns];
 	}
 
 	return self;
 }
 
 - (instancetype)init {
-	return [self initWithProxy:nil timeout:60 urlConverter:nil dns:nil];
+	return [self initWithProxy:nil timeout:60 urlConverter:nil upStatsDropRate:-1 dns:nil];
 }
 
 + (QNResponseInfo *)buildResponseInfo:(NSHTTPURLResponse *)response
@@ -162,7 +163,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 		url = [[NSURL alloc] initWithString:_converter(u)];
 		request.URL = url;
 		domain = url.host;
-	} else if (_noProxy && _dns != nil && [url.scheme isEqualToString:@"http"]){
+	} else if (_noProxy && _dns != nil && [url.scheme isEqualToString:@"http"]) {
 		ips = [_dns queryWithDomain:[[QNDomain alloc] init:domain hostsFirst:NO hasCname:YES maxTtl:1000]];
 		double duration = [[NSDate date] timeIntervalSinceDate:startTime];
 
@@ -181,6 +182,42 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 		}
 	}
 	[self sendRequest2:request withStats:stats withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:cancelBlock withIpArray:ips withIndex:0 withDomain:domain withRetryTimes:3 withStartTime:startTime];
+}
+
+
+- (void) recordRst:(NSMutableDictionary *)stats
+          response:(NSHTTPURLResponse *)response
+             error:(NSError *)error
+                st:(NSDate *)st {
+
+	if (!stats) {
+		return;
+	}
+	if (response) {
+		setStat(stats, @"rt", [NSNumber numberWithLongLong:(long long)([[NSDate date] timeIntervalSinceDate:st])*1000]);
+		setStat(stats, @"rst", @"Success");
+		setStat(stats, @"code", [NSNumber numberWithInteger:response.statusCode]);
+	} else {
+		setStat(stats, @"rst", errorFromDesc([error localizedDescription]));
+	}
+	if (!error || ![[error localizedDescription] isEqualToString:@"cancelled"]) {
+		[_statsManager addStatics:stats];
+	}
+}
+
+- (void) recordBaseStats:(NSMutableDictionary *)stats
+                 request:(NSMutableURLRequest *)request
+                      st:(NSDate *)st {
+
+	if (stats) {
+		setStat(stats, @"path", request.URL.path);
+		setStat(stats, @"net", [_statsManager getNetType]);
+		setStat(stats, @"sip", [_statsManager getSIP]);
+		setStat(stats, @"st",[NSNumber numberWithLongLong:(long long)([st timeIntervalSince1970]*1000000000)]);
+		if (request.HTTPBody != nil) {
+			setStat(stats, @"fs", [NSNumber numberWithInteger:[request.HTTPBody length]]);
+		}
+	}
 }
 
 - (void)     sendRequest2:(NSMutableURLRequest *)request
@@ -209,16 +246,8 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 	}
 
 	NSDate *st = [NSDate date];
-	if (stats) {
-		setStat(stats, @"path", request.URL.path);
-		setStat(stats, @"net", [_statsManager getNetType]);
-		setStat(stats, @"sip", [_statsManager getSIP]);
-		setStat(stats, @"st",[NSNumber numberWithLongLong:(long long)([st timeIntervalSince1970]*1000000000)]);
-	}
+	[self recordBaseStats:stats request:request st:st];
 
-	if (stats && request.HTTPBody != nil) {
-		setStat(stats, @"fs", [NSNumber numberWithInteger:[request.HTTPBody length]]);
-	}
 
 	request.URL = url;
 
@@ -272,16 +301,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 	                                                      info = [QNSessionManager buildResponseInfo:httpResponse withError:error withDuration:duration withResponse:data withHost:domain withIp:ip];
 						      }
 
-	                                              if (stats && httpResponse != nil) {
-	                                                      setStat(stats, @"rt", [NSNumber numberWithLongLong:(long long)([[NSDate date] timeIntervalSinceDate:st])*1000]);
-	                                                      setStat(stats, @"rst", @"Success");
-	                                                      setStat(stats, @"code", [NSNumber numberWithInteger:httpResponse.statusCode]);
-						      } else if (stats && error) {
-	                                                      setStat(stats, @"rst",  errorFromDesc([error localizedDescription]));
-						      }
-	                                              if (!error || ![[error localizedDescription] isEqualToString:@"cancelled"]) {
-	                                                      [_statsManager addStatics:stats];
-						      }
+	                                              [self recordRst:stats response:httpResponse error:error st:st];
 
 	                                              completeBlock(info, resp);
 					      }];
