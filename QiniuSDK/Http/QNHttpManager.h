@@ -15,6 +15,7 @@
 
 - (instancetype)initWithTimeout:(UInt32)timeout
                    urlConverter:(QNUrlConvert)converter
+                upStatsDropRate:(float)dropRate
                             dns:(QNDnsManager *)dns;
 
 - (void)    multipartPost:(NSString *)url
@@ -22,6 +23,7 @@
                withParams:(NSDictionary *)params
              withFileName:(NSString *)key
              withMimeType:(NSString *)mime
+                withStats:(NSMutableDictionary *)stats
         withCompleteBlock:(QNCompleteBlock)completeBlock
         withProgressBlock:(QNInternalProgressBlock)progressBlock
           withCancelBlock:(QNCancelBlock)cancelBlock;
@@ -30,6 +32,7 @@
                  withData:(NSData *)data
                withParams:(NSDictionary *)params
               withHeaders:(NSDictionary *)headers
+                withStats:(NSMutableDictionary *)stats
         withCompleteBlock:(QNCompleteBlock)completeBlock
         withProgressBlock:(QNInternalProgressBlock)progressBlock
           withCancelBlock:(QNCancelBlock)cancelBlock;

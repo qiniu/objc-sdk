@@ -71,6 +71,14 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 
 		_converter = builder.converter;
 
+		_upStatsDropRate = 1 - builder.upStatsRate;
+		if (_upStatsDropRate > 1) {
+			_upStatsDropRate = 1;
+		}
+		if (_upStatsDropRate < 0) {
+			_upStatsDropRate = 0;
+		}
+
 		_disableATS = builder.disableATS;
 		if (_disableATS || !hasAts()) {
 			_dns = initDns(builder);
@@ -101,6 +109,8 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 		_converter = nil;
 
 		_disableATS = YES;
+
+		_upStatsRate = 0.3;
 	}
 	return self;
 }

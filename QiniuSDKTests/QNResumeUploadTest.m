@@ -132,23 +132,23 @@
 }
 
 - (void)test0k {
-    NSURL *tempFile = [QNTempFile createTempfileWithSize:0];
-    NSString *keyUp = [NSString stringWithFormat:@"%dk", 0];
-    __block NSString *key = nil;
-    __block QNResponseInfo *info = nil;
-    QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler: ^(NSString *key, float percent) {
-        NSLog(@"progress %f", percent);
-    }];
-    [_upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-        key = k;
-        info = i;
-    } option:opt];
-    AGWW_WAIT_WHILE(key == nil, 60 * 30);
-    NSLog(@"info %@", info);
-    XCTAssert(info.statusCode == kQNZeroDataSize, @"Pass");
-    XCTAssert([keyUp isEqualToString:key], @"Pass");
-    
-    [QNTempFile removeTempfile:tempFile];
+	NSURL *tempFile = [QNTempFile createTempfileWithSize:0];
+	NSString *keyUp = [NSString stringWithFormat:@"%dk", 0];
+	__block NSString *key = nil;
+	__block QNResponseInfo *info = nil;
+	QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler: ^(NSString *key, float percent) {
+	                               NSLog(@"progress %f", percent);
+			       }];
+	[_upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+	         key = k;
+	         info = i;
+	 } option:opt];
+	AGWW_WAIT_WHILE(key == nil, 60 * 30);
+	NSLog(@"info %@", info);
+	XCTAssert(info.statusCode == kQNZeroDataSize, @"Pass");
+	XCTAssert([keyUp isEqualToString:key], @"Pass");
+
+	[QNTempFile removeTempfile:tempFile];
 }
 
 - (void)test500k {
@@ -201,8 +201,8 @@
 
 	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
 	                                   builder.proxy = proxyDict;
-        QNServiceAddress *s = [[QNServiceAddress alloc] init:@"http://upnono.qiniu.com" ips:nil];
-        builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
+	                                   QNServiceAddress *s = [[QNServiceAddress alloc] init:@"http://upnono.qiniu.com" ips:nil];
+	                                   builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
 				   }];
 
 	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
@@ -230,8 +230,8 @@
 	                                   builder.converter = ^NSString *(NSString *url) {
 	                                           return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
 					   };
-        QNServiceAddress *s = [[QNServiceAddress alloc] init:@"http://upnono.qiniu.com" ips:nil];
-        builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
+	                                   QNServiceAddress *s = [[QNServiceAddress alloc] init:@"http://upnono.qiniu.com" ips:nil];
+	                                   builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
 				   }];
 
 	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
@@ -258,11 +258,11 @@
 	QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
 	QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
 	QNConfiguration *config = [QNConfiguration build: ^(QNConfigurationBuilder *builder) {
-        NSArray *ips = [QNZone zone0].up.ips;
-        QNServiceAddress *s1 = [[QNServiceAddress alloc] init:@"http://uphosttest.qiniu.com" ips:ips];
-        QNServiceAddress *s2 = [[QNServiceAddress alloc] init:@"http://uphosttestbak.qiniu.com" ips:ips];
-        builder.zone = [[QNZone alloc] initWithUp:s1 upBackup:s2];
-        builder.dns = dns;
+	                                   NSArray *ips = [QNZone zone0].up.ips;
+	                                   QNServiceAddress *s1 = [[QNServiceAddress alloc] init:@"http://uphosttest.qiniu.com" ips:ips];
+	                                   QNServiceAddress *s2 = [[QNServiceAddress alloc] init:@"http://uphosttestbak.qiniu.com" ips:ips];
+	                                   builder.zone = [[QNZone alloc] initWithUp:s1 upBackup:s2];
+	                                   builder.dns = dns;
 				   }];
 
 	QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
