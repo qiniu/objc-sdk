@@ -8,7 +8,7 @@
 
 #if TARGET_OS_IPHONE
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
-#import "Reachability.h"
+#import "QNReachability.h"
 #endif
 
 //#import "GZIP.h"
@@ -127,10 +127,10 @@ QNStats *defaultStatsManager = nil;
 	 }];
 
 	// WiFi, WLAN, or nothing
-	_wifiReach = [Reachability reachabilityForInternetConnection];
+	_wifiReach = [QNReachability reachabilityForInternetConnection];
 	_reachabilityStatus = _wifiReach.currentReachabilityStatus;
 
-	[NSNotificationCenter.defaultCenter addObserverForName:kReachabilityChangedNotification
+	[NSNotificationCenter.defaultCenter addObserverForName:kQNReachabilityChangedNotification
 	 object:nil
 	 queue:nil
 	 usingBlock:^(NSNotification *note) {
