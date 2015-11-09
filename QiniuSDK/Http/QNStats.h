@@ -22,7 +22,7 @@
 #if TARGET_OS_IPHONE
 @property (nonatomic, readonly) QNReachability *wifiReach;
 @property (nonatomic, readonly) CTTelephonyNetworkInfo *telephonyInfo;
-@property (atomic, readonly) NetworkStatus reachabilityStatus;
+@property (atomic, readonly) QNNetworkStatus reachabilityStatus;
 #endif
 
 @property (nonatomic,retain) NSTimer *pushTimer;
