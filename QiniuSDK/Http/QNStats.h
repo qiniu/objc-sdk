@@ -9,14 +9,14 @@
 
 
 #import <Foundation/Foundation.h>
-#import "AFNetworking.h"
-#import "HappyDns.h"
+
 
 #if TARGET_OS_IPHONE
 #import "QNReachability.h"
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #endif
 
+@class QNDnsManager;
 @interface QNStats : NSObject
 
 #if TARGET_OS_IPHONE
