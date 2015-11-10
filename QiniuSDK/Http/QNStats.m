@@ -8,7 +8,7 @@
 
 #if TARGET_OS_IPHONE
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
-#import "Reachability.h"
+#import "QNReachability.h"
 #endif
 
 //#import "GZIP.h"
@@ -127,16 +127,16 @@ QNStats *defaultStatsManager = nil;
 	 }];
 
 	// WiFi, WLAN, or nothing
-	_wifiReach = [Reachability reachabilityForInternetConnection];
+	_wifiReach = [QNReachability reachabilityForInternetConnection];
 	_reachabilityStatus = _wifiReach.currentReachabilityStatus;
 
-	[NSNotificationCenter.defaultCenter addObserverForName:kReachabilityChangedNotification
+	[NSNotificationCenter.defaultCenter addObserverForName:kQNReachabilityChangedNotification
 	 object:nil
 	 queue:nil
 	 usingBlock:^(NSNotification *note) {
 	         _reachabilityStatus = _wifiReach.currentReachabilityStatus;
 
-	         if (_reachabilityStatus != NotReachable) {
+	         if (_reachabilityStatus != QNNotReachable) {
 	                 [self getOutIp];
 		 }
 	 }];
@@ -203,7 +203,7 @@ QNStats *defaultStatsManager = nil;
 	@synchronized(self) {
 
 #if TARGET_OS_IPHONE
-		if (_reachabilityStatus == NotReachable) {
+		if (_reachabilityStatus == QNNotReachable) {
 			return;
 		}
 #endif
@@ -278,9 +278,9 @@ QNStats *defaultStatsManager = nil;
 
 - (NSString *) getNetType {
 #if TARGET_OS_IPHONE
-	if (_reachabilityStatus == ReachableViaWiFi) {
+	if (_reachabilityStatus == QNReachableViaWiFi) {
 		return @"wifi";
-	} else if (_reachabilityStatus == ReachableViaWWAN) {
+	} else if (_reachabilityStatus == QNReachableViaWWAN) {
 		return @"wan";
 	}
 #elif TARGET_OS_MAC

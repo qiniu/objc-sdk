@@ -13,16 +13,16 @@
 #import "HappyDns.h"
 
 #if TARGET_OS_IPHONE
-#import "Reachability.h"
+#import "QNReachability.h"
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #endif
 
 @interface QNStats : NSObject
 
 #if TARGET_OS_IPHONE
-@property (nonatomic, readonly) Reachability *wifiReach;
+@property (nonatomic, readonly) QNReachability *wifiReach;
 @property (nonatomic, readonly) CTTelephonyNetworkInfo *telephonyInfo;
-@property (atomic, readonly) NetworkStatus reachabilityStatus;
+@property (atomic, readonly) QNNetworkStatus reachabilityStatus;
 #endif
 
 @property (nonatomic,retain) NSTimer *pushTimer;
