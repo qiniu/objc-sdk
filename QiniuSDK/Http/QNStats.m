@@ -13,6 +13,8 @@
 
 //#import "GZIP.h"
 #import "QNStats.h"
+#import "AFNetworking.h"
+#import "HappyDns.h"
 
 void setStat(NSMutableDictionary *dic, id key, id value) {
 	if (value == nil || dic == nil) {
