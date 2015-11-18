@@ -11,7 +11,8 @@
                       timeout:(UInt32)timeout
                  urlConverter:(QNUrlConvert)converter
               upStatsDropRate:(float)dropRate
-                          dns:(QNDnsManager*)dns;
+                          dns:(QNDnsManager*)dns
+                     enableBg:(BOOL)bg;
 
 - (void)    multipartPost:(NSString *)url
                  withData:(NSData *)data

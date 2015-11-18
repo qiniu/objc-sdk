@@ -92,18 +92,21 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
                       timeout:(UInt32)timeout
                  urlConverter:(QNUrlConvert)converter
               upStatsDropRate:(float)dropRate
-                          dns:(QNDnsManager*)dns {
+                          dns:(QNDnsManager*)dns
+                     enableBg:(BOOL)bg{
 	if (self = [super init]) {
-		NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
 		if (proxyDict != nil) {
-			configuration.connectionProxyDictionary = proxyDict;
 			_noProxy = NO;
 		}
 		else {
 			_noProxy = YES;
 		}
-		_httpManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
-		_httpManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        if (bg) {
+            _httpManager = [QNSessionManager sharedBgHttpManagerWithProxy:proxyDict];
+        }else{
+            _httpManager = [QNSessionManager httpManagerWithProxy:proxyDict];
+        }
+        
 		_timeout = timeout;
 		_converter = converter;
 		_dns = dns;
@@ -113,8 +116,37 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 	return self;
 }
 
++ (AFHTTPSessionManager*) httpManagerWithProxy:(NSDictionary *)proxyDict{
+    NSURLSessionConfiguration *configuration =  [NSURLSessionConfiguration defaultSessionConfiguration];
+    if (proxyDict != nil) {
+        configuration.connectionProxyDictionary = proxyDict;
+    }
+
+    AFHTTPSessionManager *httpManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
+    httpManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    return httpManager;
+}
+
++ (AFHTTPSessionManager*) sharedBgHttpManagerWithProxy:(NSDictionary *)proxyDict{
+    static AFHTTPSessionManager *httpManager = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSURLSessionConfiguration *configuration = nil;
+        configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:[QNUserAgent sharedInstance].id];
+        if (proxyDict != nil) {
+            configuration.connectionProxyDictionary = proxyDict;
+        }
+        
+        httpManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
+        httpManager.responseSerializer = [AFHTTPResponseSerializer serializer];
+        [httpManager setDidFinishEventsForBackgroundURLSessionBlock:^(NSURLSession *session) {}];
+    });
+
+    return httpManager;
+}
+
 - (instancetype)init {
-	return [self initWithProxy:nil timeout:60 urlConverter:nil upStatsDropRate:-1 dns:nil];
+	return [self initWithProxy:nil timeout:60 urlConverter:nil upStatsDropRate:-1 dns:nil enableBg:NO];
 }
 
 + (QNResponseInfo *)buildResponseInfo:(NSHTTPURLResponse *)response
