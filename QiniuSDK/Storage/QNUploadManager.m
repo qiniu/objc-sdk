@@ -13,13 +13,16 @@
 #import <UIKit/UIKit.h>
 #import "QNALAssetFile.h"
 #import <AssetsLibrary/AssetsLibrary.h>
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
+#import "QNPHAssetFile.h"
+#import <Photos/Photos.h>
+#endif
+
 #else
 #import <CoreServices/CoreServices.h>
 #endif
 
-#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
-#import "QNPHAssetFile.h"
-#endif
 
 #import "QNConfiguration.h"
 #import "QNHttpManager.h"
@@ -67,11 +70,11 @@
 		}
 		_config = config;
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
-        if (hasNSURLSession()) {
-			_httpManager = [[QNSessionManager alloc] initWithProxy:config.proxy timeout:config.timeoutInterval urlConverter:config.converter dns:config.dns];
+		if (hasNSURLSession()) {
+			_httpManager = [[QNSessionManager alloc] initWithProxy:config.proxy timeout:config.timeoutInterval urlConverter:config.converter upStatsDropRate:-1 dns:config.dns enableBg:config.enableBackgroundUpload];
 		}
 		else {
-			_httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter dns:config.dns];
+			_httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter upStatsDropRate:config.upStatsDropRate dns:config.dns];
 		}
 #else
 		_httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter dns:config.dns];
@@ -259,29 +262,29 @@
 #endif
 }
 
-#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 - (void) putPHAsset:(PHAsset *)asset
                 key:(NSString *)key
               token:(NSString *)token
            complete:(QNUpCompletionHandler)completionHandler
              option:(QNUploadOption *)option {
-    if ([QNUploadManager checkAndNotifyError:key token:token input:asset complete:completionHandler]) {
-        return;
-    }
-    
-    @autoreleasepool {
-        NSError *error = nil;
-        __block QNPHAssetFile *file = [[QNPHAssetFile alloc] init:asset error:&error];
-        if (error) {
-            QNAsyncRunInMain( ^{
-                QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
-                completionHandler(info, key, nil);
-            });
-            return;
-        }
-        [self putFileInternal:file key:key token:token complete:completionHandler option:option];
-    }
-}
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000)
+	if ([QNUploadManager checkAndNotifyError:key token:token input:asset complete:completionHandler]) {
+		return;
+	}
+
+	@autoreleasepool {
+		NSError *error = nil;
+		__block QNPHAssetFile *file = [[QNPHAssetFile alloc] init:asset error:&error];
+		if (error) {
+			QNAsyncRunInMain( ^{
+				QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+				completionHandler(info, key, nil);
+			});
+			return;
+		}
+		[self putFileInternal:file key:key token:token complete:completionHandler option:option];
+	}
 #endif
+}
 
 @end

@@ -20,11 +20,34 @@
 - (instancetype)init:(NSDictionary *)policy token:(NSString *)token {
 	if (self = [super init]) {
 		_token = token;
+        _access = [self getAccess];
+        _bucket = [self getBucket:policy];
 		_hasReturnUrl = (policy[@"returnUrl"] != nil);
 	}
 
 	return self;
 }
+
+- (NSString *) getAccess {
+
+	NSRange range = [_token rangeOfString:@":" options:NSCaseInsensitiveSearch];
+	return [_token substringToIndex:range.location];
+}
+
+- (NSString *) getBucket:(NSDictionary *)info {
+    
+	NSString *scope = [info objectForKey:@"scope"];
+	if (!scope) {
+		return @"";
+	}
+
+	NSRange range = [scope rangeOfString:@":"];
+	if (range.location == NSNotFound) {
+		return scope;
+	}
+	return [scope substringToIndex:range.location];
+}
+
 
 + (instancetype)parse:(NSString *)token {
 	if (token == nil) {
