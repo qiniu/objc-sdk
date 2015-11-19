@@ -159,7 +159,7 @@ QNStats *defaultStatsManager = nil;
 #endif
 
 	// timer for push
-	NSLog(@"interval %d", _pushInterval);
+//	NSLog(@"interval %d", _pushInterval);
 	_pushTimer = [NSTimer scheduledTimerWithTimeInterval:_pushInterval target:self selector:@selector(pushStats) userInfo:nil repeats:YES];
 	[_pushTimer fire];
 

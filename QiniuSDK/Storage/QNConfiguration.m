@@ -109,6 +109,8 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 		_converter = nil;
 
 		_disableATS = YES;
+        
+        _enableBackgroundUpload = NO;
 
 		_upStatsRate = 0.3;
 	}

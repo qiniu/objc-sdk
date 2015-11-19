@@ -19,7 +19,11 @@
 
 static NSString *clientId(void) {
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
-	return [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+	NSString* s= [[[UIDevice currentDevice] identifierForVendor] UUIDString];
+    if (s == nil ) {
+        s = @"simulator";
+    }
+    return s;
 #else
 	long long now_timestamp = [[NSDate date] timeIntervalSince1970] * 1000;
 	int r = arc4random() % 1000;
