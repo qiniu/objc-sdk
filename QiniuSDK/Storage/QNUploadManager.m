@@ -71,7 +71,7 @@
 		_config = config;
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 		if (hasNSURLSession()) {
-			_httpManager = [[QNSessionManager alloc] initWithProxy:config.proxy timeout:config.timeoutInterval urlConverter:config.converter upStatsDropRate:-1 dns:config.dns enableBg:config.enableBackgroundUpload];
+			_httpManager = [[QNSessionManager alloc] initWithProxy:config.proxy timeout:config.timeoutInterval urlConverter:config.converter upStatsDropRate:-1 dns:config.dns enableBg:config.enableBackgroundUpload sharedContainerIdentifier:config.sharedContainerIdentifier];
 		}
 		else {
 			_httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter upStatsDropRate:config.upStatsDropRate dns:config.dns];

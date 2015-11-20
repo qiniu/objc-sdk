@@ -12,7 +12,8 @@
                  urlConverter:(QNUrlConvert)converter
               upStatsDropRate:(float)dropRate
                           dns:(QNDnsManager*)dns
-                     enableBg:(BOOL)bg;
+                     enableBg:(BOOL)bg
+    sharedContainerIdentifier:(NSString*)identifier;
 
 - (void)    multipartPost:(NSString *)url
                  withData:(NSData *)data

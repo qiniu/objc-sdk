@@ -87,6 +87,7 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 			_dns = nil;
 		}
 		_enableBackgroundUpload = builder.enableBackgroundUpload;
+        _sharedContainerIdentifier = builder.sharedContainerIdentifier;
 	}
 	return self;
 }
@@ -112,6 +113,7 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 		_disableATS = YES;
         
         _enableBackgroundUpload = NO;
+        _sharedContainerIdentifier = nil;
         
         _upStatsRate = 0.3;
 	}
