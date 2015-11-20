@@ -296,7 +296,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 		progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
 		};
 	}
-	QNInternalProgressBlock iProgressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+	QNInternalProgressBlock progressBlock2 = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
 		if (stats && totalBytesWritten == totalBytesExpectedToWrite) {
 			double sendTime = [[NSDate date] timeIntervalSinceDate:st];
 			setStat(stats, @"snt", [NSNumber numberWithLongLong:(long long)(sendTime * 1000)]);
@@ -304,9 +304,9 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 		if (stats && request.HTTPBodyStream) {
 			setStat(stats, @"fs", [NSNumber numberWithLongLong:totalBytesWritten]);
 		}
-		progressBlock(totalBytesWritten, totalBytesWritten);
+		progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
 	};
-	__block QNProgessDelegate *delegate = [[QNProgessDelegate alloc] initWithProgress:iProgressBlock];
+	__block QNProgessDelegate *delegate = [[QNProgessDelegate alloc] initWithProgress:progressBlock2];
 
 	NSURLSessionUploadTask *uploadTask = [_httpManager uploadTaskWithRequest:request fromData:nil progress:&progress completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
 	                                              NSData *data = responseObject;
