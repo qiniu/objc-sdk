@@ -93,7 +93,7 @@
 		(NSString *)kCFStreamPropertyHTTPProxyPort  : @8888,
 	};
 
-	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:proxyDict timeout:60 urlConverter:nil upStatsDropRate:-1 dns:nil enableBg:NO sharedContainerIdentifier:nil];
+	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:proxyDict timeout:60 urlConverter:nil upStatsDropRate:-1 dns:nil];
 	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	__block QNResponseInfo *testInfo = nil;
 	[httpManager post:@"http://up123.qiniu.com" withData:data withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
@@ -110,7 +110,7 @@
 		return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
 	};
 
-	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:c upStatsDropRate:-1 dns:nil enableBg:NO sharedContainerIdentifier:nil];
+	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:c upStatsDropRate:-1 dns:nil];
 	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	__block QNResponseInfo *testInfo = nil;
 	[httpManager post:@"http://upnono.qiniu.com" withData:data withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
@@ -129,7 +129,7 @@
 	QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
 	QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
 	[dns putHosts: @"upnonono.qiniu.com" ip: [QNZone zone0].up.ips[0]];
-	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:nil upStatsDropRate:-1 dns:dns enableBg:NO sharedContainerIdentifier:nil];
+	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:nil upStatsDropRate:-1 dns:dns];
 	[httpManager post:@"http://upnonono.qiniu.com" withData:data withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	         testInfo = info;
 	 } withProgressBlock:nil withCancelBlock:nil];
@@ -141,7 +141,7 @@
 
 //- (void)testPostNoPort {
 //	__block QNResponseInfo *testInfo = nil;
-//	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:nil upStatsDropRate:-1 dns:nil enableBg:NO sharedContainerIdentifier:nil];
+//	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:nil upStatsDropRate:-1 dns:nil];
 //	[httpManager post:@"http://up.qiniug.com:12345/" withData:nil withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 //	         testInfo = info;
 //	 } withProgressBlock:nil withCancelBlock:nil];
@@ -157,7 +157,7 @@
 //    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 //    QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
 //    QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
-//    QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:300 urlConverter:nil upStatsDropRate:-1 dns:dns enableBg:NO sharedContainerIdentifier:nil];
+//    QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:300 urlConverter:nil upStatsDropRate:-1 dns:dns];
 //    [httpManager post:@"https://up.qbox.me" withData:data withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 //        testInfo = info;
 //    } withProgressBlock:nil withCancelBlock:nil];

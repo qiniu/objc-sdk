@@ -79,10 +79,6 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @property (readonly) BOOL disableATS;
 
-@property (readonly) BOOL enableBackgroundUpload;
-
-@property (readonly) NSString* sharedContainerIdentifier;
-
 @property (readonly) float upStatsDropRate;
 
 + (instancetype)build:(QNConfigurationBuilderBlock)block;
