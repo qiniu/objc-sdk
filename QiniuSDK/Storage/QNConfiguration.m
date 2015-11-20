@@ -86,7 +86,7 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 		}else{
 			_dns = nil;
 		}
-        _enableBackgroundUpload = YES;
+		_enableBackgroundUpload = NO;
 	}
 	return self;
 }
