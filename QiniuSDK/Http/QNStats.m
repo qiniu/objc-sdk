@@ -42,7 +42,7 @@ NSString *errorFromDesc(NSString *desc) {
 
 @interface QNStats ()
 
-@property (nonatomic) AFHTTPRequestOperationManager *httpManager;
+@property (nonatomic) AFHTTPSessionManager *httpManager;
 @property (nonatomic) NSMutableArray *statsBuffer;
 @property (nonatomic) NSLock *bufLock;
 
@@ -104,7 +104,7 @@ QNStats *defaultStatsManager = nil;
 	_statsBuffer = [[NSMutableArray alloc] init];
 	_bufLock = [[NSLock alloc] init];
 
-	_httpManager = [[AFHTTPRequestOperationManager alloc] init];
+	_httpManager = [[AFHTTPSessionManager alloc] init];
 	_httpManager.responseSerializer = [AFJSONResponseSerializer serializer];
 
 	_count = 0;
@@ -252,25 +252,40 @@ QNStats *defaultStatsManager = nil;
 			//[req setValue:@"gzip" forHTTPHeaderField:@"Content-Encoding"];
 			//[req setHTTPBody:data];
 
-			AFHTTPRequestOperation *operation = [_httpManager HTTPRequestOperationWithRequest:req success:^(AFHTTPRequestOperation *operation, id responseObject) {
-			                                             _count += [reqs count];
-
-							     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-			                                             NSLog(@"post stats failed, %@", error);
-							     }];
-			[_httpManager.operationQueue addOperation:operation];
+//			AFHTTPRequestOperation *operation = [_httpManager HTTPRequestOperationWithRequest:req success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//			                                             _count += [reqs count];
+//
+//							     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//			                                             NSLog(@"post stats failed, %@", error);
+//							     }];
+//			[_httpManager.operationQueue addOperation:operation];
+            NSProgress * progress = nil;
+            [_httpManager uploadTaskWithRequest:req fromData:nil progress:&progress completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
+                if (error == nil) {
+                    _count += [reqs count];
+                }else
+                {
+                    NSLog(@"post stats failed, %@", error);
+                }
+            }];
 		}
 	}
 }
 
 - (void) getOutIp {
 
-	[_httpManager GET:[_statsHost stringByAppendingString:@"/v1/ip"] parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
-	         NSDictionary *rst = (NSDictionary *)responseObject;
-	         _sip = [rst valueForKey:@"ip"];
-	 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-	         NSLog(@"get ip failed: %@", error);
-	 }];
+//	[_httpManager GET:[_statsHost stringByAppendingString:@"/v1/ip"] parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//	         NSDictionary *rst = (NSDictionary *)responseObject;
+//	         _sip = [rst valueForKey:@"ip"];
+//	 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//	         NSLog(@"get ip failed: %@", error);
+//	 }];
+    [_httpManager GET:[_statsHost stringByAppendingString:@"/v1/ip"] parameters:nil success:^(NSURLSessionDataTask * _Nonnull task, id  _Nullable responseObject) {
+        NSDictionary *rst = (NSDictionary *)responseObject;
+        _sip = [rst valueForKey:@"ip"];
+    } failure:^(NSURLSessionDataTask * _Nullable task, NSError * _Nonnull error) {
+        NSLog(@"get ip failed: %@", error);
+    }];
 }
 
 - (NSString *) getSIP {
