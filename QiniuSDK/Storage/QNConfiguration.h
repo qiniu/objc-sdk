@@ -79,8 +79,6 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @property (readonly) BOOL disableATS;
 
-@property (readonly) BOOL enableBackgroundUpload;
-
 @property (readonly) float upStatsDropRate;
 
 + (instancetype)build:(QNConfigurationBuilderBlock)block;
@@ -181,6 +179,8 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (assign) BOOL disableATS;
 
 @property (assign) BOOL enableBackgroundUpload;
+
+@property (nonatomic, assign) NSString* sharedContainerIdentifier;
 /**
  *   上传统计随机上传的概率，1为全部上传，0为不上传，0.5为随机上传一半。默认0.3
  */

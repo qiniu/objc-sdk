@@ -6,27 +6,25 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 #import <XCTest/XCTest.h>
 
 #import <AGAsyncTestHelper.h>
 
-#import "QNSessionManager.h"
+#import "QNHttpManager.h"
 #import "QNResponseInfo.h"
 
 #import "QNConfiguration.h"
 #import "HappyDNS.h"
 
-@interface QNSessionTest : XCTestCase
-@property QNSessionManager *httpManager;
+@interface QNHttpTest : XCTestCase
+@property QNHttpManager *httpManager;
 @end
 
-@implementation QNSessionTest
+@implementation QNHttpTest
 
 - (void)setUp {
 	[super setUp];
-	_httpManager = [[QNSessionManager alloc] init];
+	_httpManager = [[QNHttpManager alloc] init];
 }
 
 - (void)tearDown {
@@ -46,7 +44,7 @@
 
 	testInfo = nil;
 
-	[_httpManager post:@"http://up.qiniu.com" withData:data withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+	[_httpManager post:@"http://up.qiniu.com" withData:nil withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	         testInfo = info;
 	 } withProgressBlock:nil withCancelBlock:nil];
 
@@ -55,7 +53,7 @@
 	XCTAssert(testInfo.reqId, @"Pass");
 
 	testInfo = nil;
-	[_httpManager post:@"http://httpbin.org/status/500" withData:data withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+	[_httpManager post:@"http://httpbin.org/status/500" withData:nil withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	         testInfo = info;
 	 } withProgressBlock:nil withCancelBlock:nil];
 
@@ -65,7 +63,7 @@
 	XCTAssert(testInfo.error != nil, @"Pass");
 
 	testInfo = nil;
-	[_httpManager post:@"http://httpbin.org/status/418" withData:data withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+	[_httpManager post:@"http://httpbin.org/status/418" withData:nil withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	         testInfo = info;
 	 } withProgressBlock:nil withCancelBlock:nil];
 
@@ -75,7 +73,7 @@
 	XCTAssert(testInfo.error != nil, @"Pass");
 
 	testInfo = nil;
-	[_httpManager post:@"http://httpbin.org/status/200" withData:data withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+	[_httpManager post:@"http://httpbin.org/status/200" withData:nil withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	         testInfo = info;
 	 } withProgressBlock:nil withCancelBlock:nil];
 
@@ -86,31 +84,12 @@
 	XCTAssert(testInfo.error != nil, @"Pass");
 }
 
-- (void)testProxy {
-	NSDictionary *proxyDict = @{
-		@"HTTPEnable"  : [NSNumber numberWithInt:1],
-		(NSString *)kCFStreamPropertyHTTPProxyHost  : @"183.136.139.16",
-		(NSString *)kCFStreamPropertyHTTPProxyPort  : @8888,
-	};
-
-	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:proxyDict timeout:60 urlConverter:nil upStatsDropRate:-1 dns:nil];
-	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-	__block QNResponseInfo *testInfo = nil;
-	[httpManager post:@"http://up123.qiniu.com" withData:data withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
-	         testInfo = info;
-	 } withProgressBlock:nil withCancelBlock:nil];
-
-	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-	NSLog(@"%@", testInfo);
-	XCTAssert(testInfo.reqId, @"Pass");
-}
-
 - (void)testUrlConvert {
 	QNUrlConvert c = ^NSString *(NSString *url) {
 		return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
 	};
 
-	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:c upStatsDropRate:-1 dns:nil];
+	QNHttpManager *httpManager = [[QNHttpManager alloc] initWithTimeout:60 urlConverter:c upStatsDropRate:-1 dns:nil];
 	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	__block QNResponseInfo *testInfo = nil;
 	[httpManager post:@"http://upnono.qiniu.com" withData:data withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
@@ -125,12 +104,11 @@
 
 - (void)testPostIp {
 	__block QNResponseInfo *testInfo = nil;
-	NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 	QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
 	QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
 	[dns putHosts: @"upnonono.qiniu.com" ip: [QNZone zone0].up.ips[0]];
-	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:nil upStatsDropRate:-1 dns:dns];
-	[httpManager post:@"http://upnonono.qiniu.com" withData:data withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+	QNHttpManager *httpManager = [[QNHttpManager alloc] initWithTimeout:60 urlConverter:nil upStatsDropRate:-1 dns:dns];
+	[httpManager post:@"http://upnonono.qiniu.com" withData:nil withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 	         testInfo = info;
 	 } withProgressBlock:nil withCancelBlock:nil];
 
@@ -139,26 +117,26 @@
 	XCTAssert(testInfo.reqId, @"Pass");
 }
 
-//- (void)testPostNoPort {
-//	__block QNResponseInfo *testInfo = nil;
-//	QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:nil upStatsDropRate:-1 dns:nil];
-//	[httpManager post:@"http://up.qiniug.com:12345/" withData:nil withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
-//	         testInfo = info;
-//	 } withProgressBlock:nil withCancelBlock:nil];
-//
-//	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-//	NSLog(@"%@", testInfo);
-//	XCTAssert(testInfo.statusCode < 0, @"Pass");
-//}
-//
-//// travis ci iOS simulator 8.1 failed，其他环境（mac, iOS 9.0）正常，待详细排查
+- (void)testPostNoPort {
+	__block QNResponseInfo *testInfo = nil;
+	QNHttpManager *httpManager = [[QNHttpManager alloc] initWithTimeout:60 urlConverter:nil upStatsDropRate:-1 dns:nil];
+	NSMutableDictionary *stats = [[NSMutableDictionary alloc] init];
+	[httpManager post:@"http://up.qiniu.com:12345/" withData:nil withParams:nil withHeaders:nil withStats:stats withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+	         testInfo = info;
+	 } withProgressBlock:nil withCancelBlock:nil];
+
+	AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+	NSLog(@"testInfo: %@ %d", testInfo, testInfo.statusCode);
+	XCTAssert(testInfo.statusCode < 0, @"Pass");
+}
+
+// travis ci iOS simulator 8.1 failed，其他环境（mac, iOS 9.0）正常，待详细排查
 //- (void)testPostHttps {
 //    __block QNResponseInfo *testInfo = nil;
-//    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
 //    QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
 //    QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
-//    QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:300 urlConverter:nil upStatsDropRate:-1 dns:dns];
-//    [httpManager post:@"https://up.qbox.me" withData:data withParams:nil withHeaders:nil withStats:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
+//    QNHttpManager *httpManager = [[QNHttpManager alloc] initWithTimeout:300 urlConverter:nil dns:nil];
+//    [httpManager post:@"https://up.qiniu.com" withData:nil withParams:nil withHeaders:nil withCompleteBlock: ^(QNResponseInfo *info, NSDictionary *resp) {
 //        testInfo = info;
 //    } withProgressBlock:nil withCancelBlock:nil];
 //
@@ -168,5 +146,3 @@
 //}
 
 @end
-
-#endif
