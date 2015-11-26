@@ -11,4 +11,4 @@
 /**
  *    sdk 版本
  */
-static const NSString *kQiniuVersion = @"7.0.15";
+static const NSString *kQiniuVersion = @"7.0.16";
