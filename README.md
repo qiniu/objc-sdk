@@ -11,7 +11,7 @@
 通过 CocoaPods
 
 ```ruby
-pod "Qiniu", "~> 7.0"
+pod "Qiniu", :git => 'https://github.com/qiniu/objc-sdk.git', :branch => 'AFNetworking-3.x'
 ```
 
 ## 运行环境
@@ -19,6 +19,7 @@ pod "Qiniu", "~> 7.0"
 | Qiniu SDK 版本 | 最低 iOS版本   | 最低 OS X 版本  |                                   Notes                                   |
 |:--------------------:|:---------------------------:|:----------------------------:|:-------------------------------------------------------------------------:|
 |          7.x         |            iOS 6            |           OS X 10.8          | Xcode 最低版本 5.  |
+|          [7.x / AFNetworking-3.x](https://github.com/qiniu/objc-sdk/tree/AFNetworking-3.x)         |            iOS 7            |           OS X 10.9          | Xcode 最低版本 6.  |
 |          [7.x / AFNetworking-1.x](https://github.com/qiniu/objc-sdk/tree/AFNetworking-1.x)         |            iOS 5            |         OS X 10.7        |Xcode 最低版本 5. |
 |          [6.x](https://github.com/qiniu/ios-sdk)         |            iOS 6            |         None        |Xcode 最低版本 5. |
 
@@ -60,6 +61,7 @@ $ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -con
 - 如果碰到 crc 链接错误, 请把 libz.dylib 加入到项目中去
 - 如果碰到 res_9_ninit 链接错误, 请把 libresolv.dylib 加入到项目中去
 - 如果需要支持 iOS 5 或者支持 RestKit, 请用 AFNetworking 1.x 分支的版本
+- 如果需要支持AFNetworking3.x，请用AFNetworking3.x分支的版本
 - 如果碰到其他编译错误, 请参考 CocoaPods 的 [troubleshooting](http://guides.cocoapods.org/using/troubleshooting.html)
 - iOS 9+ 强制使用https，需要在project build info 添加NSAppTransportSecurity类型Dictionary。在NSAppTransportSecurity下添加NSAllowsArbitraryLoads类型Boolean,值设为YES。 具体操作可参见 http://blog.csdn.net/guoer9973/article/details/48622823
 
