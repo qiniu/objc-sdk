@@ -11,7 +11,6 @@
 #import "QNUrlSafeBase64.h"
 #import "QNConfiguration.h"
 #import "QNResponseInfo.h"
-//#import "QNHttpManager.h"
 #import "QNUploadOption+Private.h"
 #import "QNRecorderDelegate.h"
 #import "QNCrc32.h"
