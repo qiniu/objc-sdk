@@ -252,13 +252,6 @@ QNStats *defaultStatsManager = nil;
             //[req setValue:@"gzip" forHTTPHeaderField:@"Content-Encoding"];
             //[req setHTTPBody:data];
             
-            //			AFHTTPRequestOperation *operation = [_httpManager HTTPRequestOperationWithRequest:req success:^(AFHTTPRequestOperation *operation, id responseObject) {
-            //			                                             _count += [reqs count];
-            //
-            //							     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            //			                                             NSLog(@"post stats failed, %@", error);
-            //							     }];
-            //			[_httpManager.operationQueue addOperation:operation];
             NSProgress * progress = nil;
             [_httpManager uploadTaskWithRequest:req fromData:nil progress:&progress completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
                 if (error == nil) {
