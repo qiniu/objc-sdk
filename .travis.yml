@@ -7,5 +7,5 @@ before_install:
 before_script:
   - export QINIU_TEST_ENV="travis"
 script:
-  - xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK iOS" -sdk iphonesimulator -configuration Release test -test-sdk iphonesimulator7.0 -freshInstall -freshSimulator
+  - xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK iOS" -sdk iphonesimulator -configuration Release test -test-sdk iphonesimulator9.0 -freshInstall -freshSimulator
   - xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -configuration Release test -test-sdk macosx
