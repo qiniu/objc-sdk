@@ -7,7 +7,6 @@
 //
 
 #import "AFNetworking.h"
-
 #import "QNConfiguration.h"
 #import "QNSessionManager.h"
 #import "QNUserAgent.h"
@@ -285,7 +284,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 		progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
 	};
 	__block QNProgessDelegate *delegate = [[QNProgessDelegate alloc] initWithProgress:progressBlock2];
-
+    
     NSURLSessionUploadTask *uploadTask = [_httpManager uploadTaskWithRequest:request fromData:nil progress:^(NSProgress * _Nonnull uploadProgress) {
         
     } completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
