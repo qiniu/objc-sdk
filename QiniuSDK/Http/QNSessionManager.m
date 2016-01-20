@@ -286,7 +286,6 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 	__block QNProgessDelegate *delegate = [[QNProgessDelegate alloc] initWithProgress:progressBlock2];
     
     NSURLSessionUploadTask *uploadTask = [_httpManager uploadTaskWithRequest:request fromData:nil progress:^(NSProgress * _Nonnull uploadProgress) {
-        
     } completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
 	                                              NSData *data = responseObject;
 	                                              NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
