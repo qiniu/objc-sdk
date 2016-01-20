@@ -25,7 +25,6 @@
 
 
 #import "QNConfiguration.h"
-//#import "QNHttpManager.h"
 #import "QNSessionManager.h"
 #import "QNResponseInfo.h"
 #import "QNCrc32.h"

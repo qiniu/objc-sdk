@@ -2,7 +2,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 target "QiniuSDK iOS" do
   platform :ios, "7.0"
-  pod 'AFNetworking', '~> 3.0.0-beta.2'
+  pod 'AFNetworking', '~> 3.0'
   pod 'HappyDNS', '>= 0.2'
 end
 
@@ -13,7 +13,7 @@ end
 
 target "QiniuSDK Mac" do
   platform :osx, "10.9"
-  pod 'AFNetworking', '~> 3.0.0-beta.2'
+  pod 'AFNetworking', '~> 3.0'
   pod 'HappyDNS', '>= 0.2'
 end
 

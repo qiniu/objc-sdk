@@ -16,12 +16,12 @@
 
 @implementation QNDnsTest
 
-- (void)testQiniu {
-	NSString *host = @"qiniu.com";
-	NSString *ip = [[QNDns getAddresses:host] objectAtIndex:0];
-	XCTAssert(ip != nil, @"Pass");
-	NSLog(@"dns result %@", ip);
-}
+//- (void)testQiniu {
+//	NSString *host = @"qiniu.com";
+//	NSString *ip = [[QNDns getAddresses:host] objectAtIndex:0];
+//	XCTAssert(ip != nil, @"Pass");
+//	NSLog(@"dns result %@", ip);
+//}
 
 - (void)testNoHost {
 	NSString *nohost = @"nodns.qiniu.com";
