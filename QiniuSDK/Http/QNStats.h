@@ -44,7 +44,7 @@
 - (NSString *) getSIP;
 - (NSString *) getNetType;
 
-@property int count;
+@property NSUInteger count;
 
 @end
 
