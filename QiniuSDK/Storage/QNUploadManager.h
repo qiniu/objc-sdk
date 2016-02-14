@@ -16,6 +16,7 @@
 @class QNConfiguration;
 @class ALAsset;
 @class PHAsset;
+@class PHAssetResource;
 
 
 /**
@@ -137,5 +138,23 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
               token:(NSString *)token
            complete:(QNUpCompletionHandler)completionHandler
              option:(QNUploadOption *)option;
+
+/**
+ *    上传PHAssetResource文件(IOS9.1 andLater)
+ *
+ *    @param asset             PHAssetResource文件
+ *    @param key               上传到云存储的key，为nil时表示是由七牛生成
+ *    @param token             上传需要的token, 由服务器生成
+ *    @param completionHandler 上传完成后的回调函数
+ *    @param option            上传时传入的可选参数
+ */
+
+- (void) putPHAssetResource:(PHAssetResource *)assetResource
+                        key:(NSString *)key
+                      token:(NSString *)token
+                   complete:(QNUpCompletionHandler)completionHandler
+                     option:(QNUploadOption *)option;
+
+
 
 @end

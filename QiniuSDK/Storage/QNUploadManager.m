@@ -19,6 +19,11 @@
 #import <Photos/Photos.h>
 #endif
 
+
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90100
+#import "QNPHAssetResource.h"
+#endif
+
 #else
 #import <CoreServices/CoreServices.h>
 #endif
@@ -286,5 +291,32 @@
 	}
 #endif
 }
+
+- (void) putPHAssetResource:(PHAssetResource *)assetResource
+                        key:(NSString *)key
+                      token:(NSString *)token
+                   complete:(QNUpCompletionHandler)completionHandler
+                     option:(QNUploadOption *)option
+{
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 90100)
+    if ([QNUploadManager checkAndNotifyError:key token:token input:assetResource complete:completionHandler]) {
+        return;
+    }
+    @autoreleasepool {
+        NSError *error = nil;
+        __block QNPHAssetResource *file = [[QNPHAssetResource alloc] init:assetResource error:&error];
+        if (error) {
+            QNAsyncRunInMain( ^{
+                QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+                completionHandler(info, key, nil);
+            });
+            return;
+        }
+        [self putFileInternal:file key:key token:token complete:completionHandler option:option];
+    }
+#endif
+}
+
+
 
 @end
