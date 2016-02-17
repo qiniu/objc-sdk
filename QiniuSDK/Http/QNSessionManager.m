@@ -55,6 +55,13 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 	return self;
 }
 
+- (void)valueChange:(NSProgress *)uploadProgress
+{
+    _progressBlock(uploadProgress.completedUnitCount, uploadProgress.totalUnitCount);
+    if (_cancelBlock && _cancelBlock()) {
+        [_task cancel];
+    }
+}
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context; {
 	if (context == nil || object == nil) {
 		return;
@@ -286,16 +293,14 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 	__block QNProgessDelegate *delegate = [[QNProgessDelegate alloc] initWithProgress:progressBlock2];
     
     NSURLSessionUploadTask *uploadTask = [_httpManager uploadTaskWithRequest:request fromData:nil progress:^(NSProgress * _Nonnull uploadProgress) {
-    } completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+        [delegate valueChange:uploadProgress];
+
+    }completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
 	                                              NSData *data = responseObject;
 	                                              NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
 	                                              double duration = [[NSDate date] timeIntervalSinceDate:startTime];
 	                                              QNResponseInfo *info;
 	                                              NSDictionary *resp = nil;
-	                                              if (delegate.progress != nil) {
-	                                                      [delegate.progress removeObserver:delegate forKeyPath:@"fractionCompleted" context:(__bridge void *)(delegate)];
-	                                                      delegate.progress = nil;
-						      }
 	                                              if (_converter != nil && _noProxy && (index+1 < ips.count || times>0) && needRetry(httpResponse, error)) {
 	                                                      [self sendRequest2:request withStats:nil withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:cancelBlock withIpArray:ips withIndex:index+1 withDomain:domain withRetryTimes:times -1 withStartTime:startTime];
 	                                                      return;
@@ -315,12 +320,12 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error){
 
 	                                              completeBlock(info, resp);
 					      }];
-	if (progress != nil) {
-		[progress addObserver:delegate forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionNew context:(__bridge void *)delegate];
-		delegate.progress = progress;
-		delegate.task = uploadTask;
-		delegate.cancelBlock = cancelBlock;
-	}
+//	if (progress != nil) {
+//		[progress addObserver:delegate forKeyPath:@"fractionCompleted" options:NSKeyValueObservingOptionNew context:(__bridge void *)delegate];
+//		delegate.progress = progress;
+//		delegate.task = uploadTask;
+//		delegate.cancelBlock = cancelBlock;
+//	}
 
 	[uploadTask resume];
 }
