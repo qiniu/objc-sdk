@@ -97,36 +97,36 @@
 	[super tearDown];
 }
 
-//- (void)test600k {
-//	[self template:600 pos:0.7];
-//}
+- (void)test600k {
+	[self template:600 pos:0.7];
+}
 
-//- (void)test700k {
-//	[self template:700 pos:0.1];
-//}
+- (void)test700k {
+	[self template:700 pos:0.1];
+}
 
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
 
-//- (void)test1M {
-//	if (_inTravis) {
-//		return;
-//	}
-//	[self template:1024 pos:0.51];
-//}
-//
-//- (void)test4M {
-//	if (_inTravis) {
-//		return;
-//	}
-//	[self template:4 * 1024 pos:0.9];
-//}
-//
-//- (void)test8M {
-//	if (_inTravis) {
-//		return;
-//	}
-//	[self template:8 * 1024 + 1 pos:0.8];
-//}
+- (void)test1M {
+	if (_inTravis) {
+		return;
+	}
+	[self template:1024 pos:0.51];
+}
+
+- (void)test4M {
+	if (_inTravis) {
+		return;
+	}
+	[self template:4 * 1024 pos:0.9];
+}
+
+- (void)test8M {
+	if (_inTravis) {
+		return;
+	}
+	[self template:8 * 1024 + 1 pos:0.8];
+}
 
 #endif
 
