@@ -1,8 +1,8 @@
 language: objective-c
-before_install:
-#  - brew update
-#  - brew upgrade xctool
-#  - gem install cocoapods
+before_install: true
+  #- brew update
+  #- brew upgrade xctool
+  #- gem install cocoapods
 before_script:
   - export QINIU_TEST_ENV="travis"
 script:
