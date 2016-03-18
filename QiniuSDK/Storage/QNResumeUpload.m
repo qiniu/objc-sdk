@@ -43,6 +43,8 @@ typedef void (^task)(void);
 
 @property (nonatomic, strong) id <QNFileDelegate> file;
 
+@property (nonatomic, strong) NSArray *fileAry;
+
 - (void)makeBlock:(NSString *)uphost
            offset:(UInt32)offset
         blockSize:(UInt32)blockSize
@@ -299,12 +301,26 @@ typedef void (^task)(void);
 	[self.option.params enumerateKeysAndObjectsUsingBlock: ^(NSString *key, NSString *obj, BOOL *stop) {
 	         url = [NSString stringWithFormat:@"%@/%@/%@", url, key, [QNUrlSafeBase64 encodeString:obj]];
 	 }];
-
+    
+    //添加路径
+    NSString *fname = [[NSString alloc]initWithFormat:@"/fname/%@",[QNUrlSafeBase64 encodeString:[self dealFilePath]]];
+    url = [NSString stringWithFormat:@"%@%@", url, fname];
 
 	NSMutableData *postData = [NSMutableData data];
 	NSString *bodyStr = [self.contexts componentsJoinedByString:@","];
 	[postData appendData:[bodyStr dataUsingEncoding:NSUTF8StringEncoding]];
 	[self post:url withData:postData withStats:[NSMutableDictionary dictionaryWithDictionary:_stats] withCompleteBlock:complete withProgressBlock:nil];
+}
+
+#pragma mark - 处理文件路径
+-(NSString *)dealFilePath{
+    
+    _fileAry = [NSArray array];
+    NSString *filePath = [_file path];
+    _fileAry = [filePath componentsSeparatedByString:@"/"];
+    NSString *fname = [_fileAry objectAtIndex:(_fileAry.count-1)];
+    return fname;
+    
 }
 
 - (void)             post:(NSString *)url
