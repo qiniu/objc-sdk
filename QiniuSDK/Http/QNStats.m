@@ -160,11 +160,11 @@ QNStats *defaultStatsManager = nil;
 
 	// timer for push
 //	NSLog(@"interval %d", _pushInterval);
-	_pushTimer = [NSTimer scheduledTimerWithTimeInterval:_pushInterval target:self selector:@selector(pushStats) userInfo:nil repeats:YES];
-	[_pushTimer fire];
-
-	_getIPTimer = [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(getOutIp) userInfo:nil repeats:YES];
-	[_getIPTimer fire];
+//	_pushTimer = [NSTimer scheduledTimerWithTimeInterval:_pushInterval target:self selector:@selector(pushStats) userInfo:nil repeats:YES];
+//	[_pushTimer fire];
+//
+//	_getIPTimer = [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(getOutIp) userInfo:nil repeats:YES];
+//	[_getIPTimer fire];
 
 
 
