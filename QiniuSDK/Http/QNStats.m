@@ -123,9 +123,11 @@ QNStats *defaultStatsManager = nil;
 	 object:nil
 	 queue:nil
 	 usingBlock:^(NSNotification *note) {
-	         _radioAccessTechnology = _telephonyInfo.currentRadioAccessTechnology;
-	         //NSLog(@"New Radio Access Technology: %@", _telephonyInfo.currentRadioAccessTechnology);
-	         [self getOutIp];
+	         if (_radioAccessTechnology != _telephonyInfo.currentRadioAccessTechnology) {
+	                 _radioAccessTechnology = _telephonyInfo.currentRadioAccessTechnology;
+	                 //NSLog(@"New Radio Access Technology: %@", _telephonyInfo.currentRadioAccessTechnology);
+	                 [self getOutIp];
+	         }
 	 }];
 
 	// WiFi, WLAN, or nothing
