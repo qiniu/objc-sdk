@@ -79,8 +79,6 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @property (readonly) BOOL disableATS;
 
-@property (readonly) float upStatsDropRate;
-
 + (instancetype)build:(QNConfigurationBuilderBlock)block;
 
 @end
