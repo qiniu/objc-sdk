@@ -11,7 +11,6 @@
 #import <AGAsyncTestHelper.h>
 
 #import "QiniuSDK.h"
-#import "QNStats.h"
 
 #import "QNTestConfig.h"
 #import "HappyDns.h"
