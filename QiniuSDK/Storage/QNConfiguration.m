@@ -75,7 +75,7 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 		if (_upStatsDropRate > 1) {
 			_upStatsDropRate = 1;
 		}
-		if (_upStatsDropRate < 0) {
+		if (_upStatsDropRate < 0 && _upStatsDropRate != -1) {
 			_upStatsDropRate = 0;
 		}
 

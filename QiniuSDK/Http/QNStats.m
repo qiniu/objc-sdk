@@ -80,6 +80,7 @@ QNStats *defaultStatsManager = nil;
 	if (interval <= 0) {
 		interval = 180;
 	}
+    float enableUpState = dropRate;
 	if (dropRate < 0) {
 		dropRate = 0.7;
 	}
@@ -162,12 +163,13 @@ QNStats *defaultStatsManager = nil;
 
 	// timer for push
 //	NSLog(@"interval %d", _pushInterval);
-	_pushTimer = [NSTimer scheduledTimerWithTimeInterval:_pushInterval target:self selector:@selector(pushStats) userInfo:nil repeats:YES];
-	[_pushTimer fire];
-
-	_getIPTimer = [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(getOutIp) userInfo:nil repeats:YES];
-	[_getIPTimer fire];
-
+    if (enableUpState != -1) {
+        _pushTimer = [NSTimer scheduledTimerWithTimeInterval:_pushInterval target:self selector:@selector(pushStats) userInfo:nil repeats:YES];
+        [_pushTimer fire];
+        
+        _getIPTimer = [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(getOutIp) userInfo:nil repeats:YES];
+        [_getIPTimer fire];
+    }
 
 
 	NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
