@@ -22,7 +22,7 @@ extern const UInt32 kQNBlockSize;
  *
  *    @return 根据上传url算出代理url
  */
-typedef NSString *(^QNUrlConvert)(NSString *url);
+typedef NSString * (^QNUrlConvert)(NSString *url);
 
 @class QNConfigurationBuilder;
 @class QNDnsManager;
@@ -33,7 +33,6 @@ typedef NSString *(^QNUrlConvert)(NSString *url);
  *    @param builder builder实例
  */
 typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
-
 
 @interface QNConfiguration : NSObject
 
@@ -67,11 +66,11 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  */
 @property (readonly) UInt32 timeoutInterval;
 
-@property (nonatomic, readonly) id <QNRecorderDelegate> recorder;
+@property (nonatomic, readonly) id<QNRecorderDelegate> recorder;
 
 @property (nonatomic, readonly) QNRecorderKeyGenerator recorderKeyGen;
 
-@property (nonatomic, readonly)  NSDictionary *proxy;
+@property (nonatomic, readonly) NSDictionary *proxy;
 
 @property (nonatomic, readonly) QNUrlConvert converter;
 
@@ -88,10 +87,10 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  */
 @interface QNServiceAddress : NSObject
 
-- (instancetype) init:(NSString*)address ips:(NSArray*)ips;
+- (instancetype)init:(NSString *)address ips:(NSArray *)ips;
 
-@property (nonatomic, readonly) NSString* address;
-@property (nonatomic, readonly) NSArray* ips;
+@property (nonatomic, readonly) NSString *address;
+@property (nonatomic, readonly) NSArray *ips;
 
 @end
 
@@ -106,7 +105,6 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  *    备用上传服务器地址
  */
 @property (nonatomic, readonly) QNServiceAddress *upBackup;
-
 
 /**
  *    Zone初始化方法
@@ -136,7 +134,6 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @end
 
-
 @interface QNConfigurationBuilder : NSObject
 
 /**
@@ -164,11 +161,11 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  */
 @property (assign) UInt32 timeoutInterval;
 
-@property (nonatomic, strong) id <QNRecorderDelegate> recorder;
+@property (nonatomic, strong) id<QNRecorderDelegate> recorder;
 
 @property (nonatomic, strong) QNRecorderKeyGenerator recorderKeyGen;
 
-@property (nonatomic, strong)  NSDictionary *proxy;
+@property (nonatomic, strong) NSDictionary *proxy;
 
 @property (nonatomic, strong) QNUrlConvert converter;
 

@@ -12,7 +12,7 @@
 
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000)
 @class PHAsset;
-@interface QNPHAssetFile : NSObject<QNFileDelegate>
+@interface QNPHAssetFile : NSObject <QNFileDelegate>
 /**
  *    打开指定文件
  *

@@ -14,7 +14,7 @@
 
 @class PHAssetResource;
 
-@interface QNPHAssetResource : NSObject<QNFileDelegate>
+@interface QNPHAssetResource : NSObject <QNFileDelegate>
 
 /**
  *    打开指定文件
@@ -29,4 +29,3 @@
 
 @end
 #endif
-
