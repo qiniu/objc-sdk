@@ -45,3 +45,18 @@ BOOL hasAts(){
 #endif
 	return YES;
 }
+
+BOOL allowsArbitraryLoads(){
+    if (!hasAts()) {
+        return YES;
+    }
+    NSDictionary* sec = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSAppTransportSecurity"];
+    if (sec == nil) {
+        return NO;
+    }
+    NSNumber* ats = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSAllowsArbitraryLoads"];
+    if (ats == nil) {
+        return NO;
+    }
+    return ats.boolValue;
+}
