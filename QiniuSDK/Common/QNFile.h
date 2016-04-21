@@ -6,8 +6,8 @@
 //  Copyright (c) 2015年 Qiniu. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "QNFileDelegate.h"
+#import <Foundation/Foundation.h>
 
 @interface QNFile : NSObject <QNFileDelegate>
 /**
@@ -18,7 +18,6 @@
  *
  *    @return 实例
  */
-- (instancetype)init:(NSString *)path
-               error:(NSError *__autoreleasing *)error;
+- (instancetype)init:(NSString *)path error:(NSError *__autoreleasing *)error;
 
 @end

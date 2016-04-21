@@ -18,29 +18,32 @@
 @implementation QNEtagTest
 
 - (void)testEtagZero {
-	XCTAssert([@"Fto5o-5ea0sNMlW_75VgGJCv2AcJ" isEqualToString:[QNEtag data:nil]], @"Pass");
+  XCTAssert([@"Fto5o-5ea0sNMlW_75VgGJCv2AcJ" isEqualToString:[QNEtag data:nil]],
+            @"Pass");
 }
 
 - (void)testFile5M {
-	NSError *error;
-	NSURL *file = [QNTempFile createTempfileWithSize:5 * 1024 * 1024];
-	NSString *x = [QNEtag file:[file relativePath] error:&error];
-	XCTAssert([@"lrMhp7oU8rzWSRlmUeGJ73Q2pVa-" isEqualToString:x], @"Pass");
-	[QNTempFile removeTempfile:file];
+  NSError *error;
+  NSURL *file = [QNTempFile createTempfileWithSize:5 * 1024 * 1024];
+  NSString *x = [QNEtag file:[file relativePath] error:&error];
+  XCTAssert([@"lrMhp7oU8rzWSRlmUeGJ73Q2pVa-" isEqualToString:x], @"Pass");
+  [QNTempFile removeTempfile:file];
 }
 
 - (void)testFile3M {
-    NSError *error;
-    NSURL *file = [QNTempFile createTempfileWithSize:3 * 1024 * 1024];
-    NSString *x = [QNEtag file:[file relativePath] error:&error];
-    XCTAssert([@"Fh5fje9Auwyw9xVrnCurnvtJz7aZ" isEqualToString:x], @"Pass");
-    [QNTempFile removeTempfile:file];
+  NSError *error;
+  NSURL *file = [QNTempFile createTempfileWithSize:3 * 1024 * 1024];
+  NSString *x = [QNEtag file:[file relativePath] error:&error];
+  XCTAssert([@"Fh5fje9Auwyw9xVrnCurnvtJz7aZ" isEqualToString:x], @"Pass");
+  [QNTempFile removeTempfile:file];
 }
 
 - (void)testData {
-	NSData *data = [@"etag" dataUsingEncoding:NSUTF8StringEncoding];
-	NSLog(@"%@", [QNEtag data:data]);
-	XCTAssert([@"FpLiADEaVoALPkdb8tJEJyRTXoe_" isEqualToString:[QNEtag data:data]], @"Pass");
+  NSData *data = [@"etag" dataUsingEncoding:NSUTF8StringEncoding];
+  NSLog(@"%@", [QNEtag data:data]);
+  XCTAssert(
+      [@"FpLiADEaVoALPkdb8tJEJyRTXoe_" isEqualToString:[QNEtag data:data]],
+      @"Pass");
 }
 
 @end

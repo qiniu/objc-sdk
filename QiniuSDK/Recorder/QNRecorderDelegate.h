@@ -16,8 +16,8 @@
  *
  *    @return 根据uploadKey, filepath 算出的记录key
  */
-typedef NSString *(^QNRecorderKeyGenerator)(NSString *uploadKey, NSString *filePath);
-
+typedef NSString * (^QNRecorderKeyGenerator)(NSString *uploadKey,
+                                             NSString *filePath);
 
 /**
  *    持久化记录接口，可以实现将记录持久化到文件，数据库等
@@ -32,8 +32,7 @@ typedef NSString *(^QNRecorderKeyGenerator)(NSString *uploadKey, NSString *fileP
  *
  *    @return 错误信息，成功为nil
  */
-- (NSError *)set:(NSString *)key
-            data:(NSData *)value;
+- (NSError *)set:(NSString *)key data:(NSData *)value;
 
 /**
  *    取出保存的持久化上传状态信息

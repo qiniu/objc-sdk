@@ -15,55 +15,58 @@
 #import <CoreServices/CoreServices.h>
 #endif
 
-BOOL hasNSURLSession(){
+BOOL hasNSURLSession() {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
-	float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
-	if (sysVersion < 7.0) {
-		return NO;
-	}
+  float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
+  if (sysVersion < 7.0) {
+    return NO;
+  }
 #else
-	NSOperatingSystemVersion sysVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
-	if ((sysVersion.majorVersion <= 10 && sysVersion.minorVersion < 9)) {
-		return NO;
-	}
+  NSOperatingSystemVersion sysVersion =
+      [[NSProcessInfo processInfo] operatingSystemVersion];
+  if ((sysVersion.majorVersion <= 10 && sysVersion.minorVersion < 9)) {
+    return NO;
+  }
 #endif
-	return YES;
+  return YES;
 }
 
-BOOL hasAts(){
+BOOL hasAts() {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
-	float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
-	if (sysVersion < 9.0) {
-		return NO;
-	}
+  float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
+  if (sysVersion < 9.0) {
+    return NO;
+  }
 #else
-	NSOperatingSystemVersion sysVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
+  NSOperatingSystemVersion sysVersion =
+      [[NSProcessInfo processInfo] operatingSystemVersion];
 
-	if ((sysVersion.majorVersion <= 10 && sysVersion.minorVersion < 11)) {
-		return NO;
-	}
+  if ((sysVersion.majorVersion <= 10 && sysVersion.minorVersion < 11)) {
+    return NO;
+  }
 #endif
-	return YES;
+  return YES;
 }
 
-BOOL allowsArbitraryLoads(){
-    if (!hasAts()) {
-        return YES;
-    }
-    
-    // for unit test
-    NSDictionary* d = [[NSBundle mainBundle] infoDictionary];
-    if (d == nil || d.count == 0) {
-        return YES;
-    }
-    
-    NSDictionary* sec = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSAppTransportSecurity"];
-    if (sec == nil) {
-        return NO;
-    }
-    NSNumber* ats = [sec objectForKey:@"NSAllowsArbitraryLoads"];
-    if (ats == nil) {
-        return NO;
-    }
-    return ats.boolValue;
+BOOL allowsArbitraryLoads() {
+  if (!hasAts()) {
+    return YES;
+  }
+
+  // for unit test
+  NSDictionary *d = [[NSBundle mainBundle] infoDictionary];
+  if (d == nil || d.count == 0) {
+    return YES;
+  }
+
+  NSDictionary *sec = [[NSBundle mainBundle]
+      objectForInfoDictionaryKey:@"NSAppTransportSecurity"];
+  if (sec == nil) {
+    return NO;
+  }
+  NSNumber *ats = [sec objectForKey:@"NSAllowsArbitraryLoads"];
+  if (ats == nil) {
+    return NO;
+  }
+  return ats.boolValue;
 }

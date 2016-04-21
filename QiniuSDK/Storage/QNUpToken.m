@@ -18,53 +18,55 @@
 @implementation QNUpToken
 
 - (instancetype)init:(NSDictionary *)policy token:(NSString *)token {
-	if (self = [super init]) {
-		_token = token;
-        _access = [self getAccess];
-        _bucket = [self getBucket:policy];
-		_hasReturnUrl = (policy[@"returnUrl"] != nil);
-	}
+  if (self = [super init]) {
+    _token = token;
+    _access = [self getAccess];
+    _bucket = [self getBucket:policy];
+    _hasReturnUrl = (policy[@"returnUrl"] != nil);
+  }
 
-	return self;
+  return self;
 }
 
-- (NSString *) getAccess {
+- (NSString *)getAccess {
 
-	NSRange range = [_token rangeOfString:@":" options:NSCaseInsensitiveSearch];
-	return [_token substringToIndex:range.location];
+  NSRange range = [_token rangeOfString:@":" options:NSCaseInsensitiveSearch];
+  return [_token substringToIndex:range.location];
 }
 
-- (NSString *) getBucket:(NSDictionary *)info {
-    
-	NSString *scope = [info objectForKey:@"scope"];
-	if (!scope) {
-		return @"";
-	}
+- (NSString *)getBucket:(NSDictionary *)info {
 
-	NSRange range = [scope rangeOfString:@":"];
-	if (range.location == NSNotFound) {
-		return scope;
-	}
-	return [scope substringToIndex:range.location];
+  NSString *scope = [info objectForKey:@"scope"];
+  if (!scope) {
+    return @"";
+  }
+
+  NSRange range = [scope rangeOfString:@":"];
+  if (range.location == NSNotFound) {
+    return scope;
+  }
+  return [scope substringToIndex:range.location];
 }
-
 
 + (instancetype)parse:(NSString *)token {
-	if (token == nil) {
-		return nil;
-	}
-	NSArray *array = [token componentsSeparatedByString:@":"];
-	if (array == nil || array.count != 3) {
-		return nil;
-	}
+  if (token == nil) {
+    return nil;
+  }
+  NSArray *array = [token componentsSeparatedByString:@":"];
+  if (array == nil || array.count != 3) {
+    return nil;
+  }
 
-	NSData *data = [QNUrlSafeBase64 decodeString:array[2]];
-	NSError *tmp = nil;
-	NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&tmp];
-	if (tmp != nil || dict[@"scope"] == nil || dict[@"deadline"] == nil) {
-		return nil;
-	}
-	return [[QNUpToken alloc] init:dict token:token];
+  NSData *data = [QNUrlSafeBase64 decodeString:array[2]];
+  NSError *tmp = nil;
+  NSDictionary *dict =
+      [NSJSONSerialization JSONObjectWithData:data
+                                      options:NSJSONReadingMutableLeaves
+                                        error:&tmp];
+  if (tmp != nil || dict[@"scope"] == nil || dict[@"deadline"] == nil) {
+    return nil;
+  }
+  return [[QNUpToken alloc] init:dict token:token];
 }
 
 @end
