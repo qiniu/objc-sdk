@@ -61,7 +61,7 @@ BOOL allowsArbitraryLoads(){
     if (sec == nil) {
         return NO;
     }
-    NSNumber* ats = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSAllowsArbitraryLoads"];
+    NSNumber* ats = [sec objectForKey:@"NSAllowsArbitraryLoads"];
     if (ats == nil) {
         return NO;
     }
