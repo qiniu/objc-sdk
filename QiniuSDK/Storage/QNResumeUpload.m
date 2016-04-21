@@ -42,6 +42,8 @@ typedef void (^task)(void);
 
 @property (nonatomic, strong) NSArray *fileAry;
 
+@property (nonatomic) float previousPercent;
+
 - (void)makeBlock:(NSString *)uphost
            offset:(UInt32)offset
         blockSize:(UInt32)blockSize
@@ -89,6 +91,7 @@ typedef void (^task)(void);
         _config = config;
 
         _token = token;
+        _previousPercent = 0;
     }
     return self;
 }
@@ -196,6 +199,11 @@ typedef void (^task)(void);
         float percent = (float)(offset + totalBytesWritten) / (float)self.size;
         if (percent > 0.95) {
             percent = 0.95;
+        }
+        if (percent > _previousPercent) {
+            _previousPercent = percent;
+        } else {
+            percent = _previousPercent;
         }
         self.option.progressHandler(self.key, percent);
     };

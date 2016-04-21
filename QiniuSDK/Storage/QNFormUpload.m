@@ -26,6 +26,7 @@
 @property (nonatomic, strong) QNUploadOption *option;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) QNConfiguration *config;
+@property (nonatomic) float previousPercent;
 
 @end
 
@@ -46,6 +47,7 @@
         _complete = block;
         _httpManager = http;
         _config = config;
+        _previousPercent = 0;
     }
     return self;
 }
@@ -71,6 +73,11 @@
         float percent = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
         if (percent > 0.95) {
             percent = 0.95;
+        }
+        if (percent > _previousPercent) {
+            _previousPercent = percent;
+        } else {
+            percent = _previousPercent;
         }
         _option.progressHandler(_key, percent);
     };
