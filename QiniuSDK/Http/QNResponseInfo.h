@@ -46,52 +46,52 @@ extern const int kQNFileError;
 /**
  *    状态码
  */
-@property (readonly) int statusCode;
+@property(readonly) int statusCode;
 
 /**
  *    七牛服务器生成的请求ID，用来跟踪请求信息，如果使用过程中出现问题，请反馈此ID
  */
-@property (nonatomic, copy, readonly) NSString *reqId;
+@property(nonatomic, copy, readonly) NSString *reqId;
 
 /**
  *    七牛服务器内部跟踪记录
  */
-@property (nonatomic, copy, readonly) NSString *xlog;
+@property(nonatomic, copy, readonly) NSString *xlog;
 
 /**
  *    cdn服务器内部跟踪记录
  */
-@property (nonatomic, copy, readonly) NSString *xvia;
+@property(nonatomic, copy, readonly) NSString *xvia;
 
 /**
  *    错误信息，出错时请反馈此记录
  */
-@property (nonatomic, copy, readonly) NSError *error;
+@property(nonatomic, copy, readonly) NSError *error;
 
 /**
  *    服务器域名
  */
-@property (nonatomic, copy, readonly) NSString *host;
+@property(nonatomic, copy, readonly) NSString *host;
 
 /**
  *    请求消耗的时间，单位 秒
  */
-@property (nonatomic, readonly) double duration;
+@property(nonatomic, readonly) double duration;
 
 /**
  *    服务器IP
  */
-@property (nonatomic, readonly) NSString *serverIp;
+@property(nonatomic, readonly) NSString *serverIp;
 
 /**
  *    客户端id
  */
-@property (nonatomic, readonly) NSString *id;
+@property(nonatomic, readonly) NSString *id;
 
 /**
  *    时间戳
  */
-@property (readonly) UInt64 timeStamp;
+@property(readonly) UInt64 timeStamp;
 
 /**
  *    网络类型
@@ -101,32 +101,32 @@ extern const int kQNFileError;
 /**
  *    是否取消
  */
-@property (nonatomic, readonly, getter = isCancelled) BOOL canceled;
+@property(nonatomic, readonly, getter=isCancelled) BOOL canceled;
 
 /**
  *    成功的请求
  */
-@property (nonatomic, readonly, getter = isOK) BOOL ok;
+@property(nonatomic, readonly, getter=isOK) BOOL ok;
 
 /**
  *    是否网络错误
  */
-@property (nonatomic, readonly, getter = isConnectionBroken) BOOL broken;
+@property(nonatomic, readonly, getter=isConnectionBroken) BOOL broken;
 
 /**
  *    是否需要重试，内部使用
  */
-@property (nonatomic, readonly) BOOL couldRetry;
+@property(nonatomic, readonly) BOOL couldRetry;
 
 /**
  *    是否需要换备用server，内部使用
  */
-@property (nonatomic, readonly) BOOL needSwitchServer;
+@property(nonatomic, readonly) BOOL needSwitchServer;
 
 /**
  *    是否为 七牛响应
  */
-@property (nonatomic, readonly, getter = isNotQiniu) BOOL notQiniu;
+@property(nonatomic, readonly, getter=isNotQiniu) BOOL notQiniu;
 
 /**
  *    工厂函数，内部使用

@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-
 /**
  *    文件处理接口，支持ALAsset, NSFileHandle, NSData
  */
@@ -22,8 +21,7 @@
  *
  *    @return 数据
  */
-- (NSData *)read:(long)offset
-            size:(long)size;
+- (NSData *)read:(long)offset size:(long)size;
 
 /**
  *    读取所有文件内容

@@ -21,8 +21,7 @@
  *
  *    @return etag
  */
-+ (NSString *)file:(NSString *)filePath
-             error:(NSError **)error;
++ (NSString *)file:(NSString *)filePath error:(NSError **)error;
 
 /**
  *    二进制数据etag

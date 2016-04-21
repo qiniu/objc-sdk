@@ -18,7 +18,7 @@
 /**
  *    用户id
  */
-@property (copy, nonatomic, readonly) NSString *id;
+@property(copy, nonatomic, readonly) NSString *id;
 
 /**
  *    UserAgent 字串

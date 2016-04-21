@@ -24,34 +24,35 @@ typedef void (^QNUpProgressHandler)(NSString *key, float percent);
 typedef BOOL (^QNUpCancellationSignal)(void);
 
 /**
- *    可选参数集合，此类初始化后sdk上传使用时 不会对此进行改变；如果参数没有变化以及没有使用依赖，可以重复使用。
+ *    可选参数集合，此类初始化后sdk上传使用时
+ * 不会对此进行改变；如果参数没有变化以及没有使用依赖，可以重复使用。
  */
 @interface QNUploadOption : NSObject
 
 /**
  *    用于服务器上传回调通知的自定义参数，参数的key必须以x: 开头
  */
-@property (copy, nonatomic, readonly) NSDictionary *params;
+@property(copy, nonatomic, readonly) NSDictionary *params;
 
 /**
  *    指定文件的mime类型
  */
-@property (copy, nonatomic, readonly) NSString *mimeType;
+@property(copy, nonatomic, readonly) NSString *mimeType;
 
 /**
  *    是否进行crc校验
  */
-@property (readonly) BOOL checkCrc;
+@property(readonly) BOOL checkCrc;
 
 /**
  *    进度回调函数
  */
-@property (copy, readonly) QNUpProgressHandler progressHandler;
+@property(copy, readonly) QNUpProgressHandler progressHandler;
 
 /**
  *    中途取消函数
  */
-@property (copy, readonly) QNUpCancellationSignal cancellationSignal;
+@property(copy, readonly) QNUpCancellationSignal cancellationSignal;
 
 /**
  *    可选参数的初始化方法
@@ -70,7 +71,8 @@ typedef BOOL (^QNUpCancellationSignal)(void);
                     checkCrc:(BOOL)check
           cancellationSignal:(QNUpCancellationSignal)cancellation;
 
-- (instancetype)initWithProgessHandler:(QNUpProgressHandler)progress DEPRECATED_ATTRIBUTE;
+- (instancetype)initWithProgessHandler:(QNUpProgressHandler)progress
+    DEPRECATED_ATTRIBUTE;
 - (instancetype)initWithProgressHandler:(QNUpProgressHandler)progress;
 
 /**

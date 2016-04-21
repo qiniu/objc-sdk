@@ -10,11 +10,12 @@
 
 #import "QNFileDelegate.h"
 
-#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 90100)
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) &&                               \
+     __IPHONE_OS_VERSION_MAX_ALLOWED >= 90100)
 
 @class PHAssetResource;
 
-@interface QNPHAssetResource : NSObject<QNFileDelegate>
+@interface QNPHAssetResource : NSObject <QNFileDelegate>
 
 /**
  *    打开指定文件
@@ -29,4 +30,3 @@
 
 @end
 #endif
-

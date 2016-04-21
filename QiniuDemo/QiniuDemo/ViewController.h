@@ -6,14 +6,13 @@
 //  Copyright © 2016年 Aaron. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
 #import <QiniuSDK.h>
+#import <UIKit/UIKit.h>
 
 @interface ViewController : UIViewController
 
-@property (nonatomic, weak) IBOutlet UIButton * chooseBtn;
-@property (nonatomic, weak) IBOutlet UIButton * uploadBtn;
-@property (nonatomic, weak) IBOutlet UIImageView * preViewImage;
+@property(nonatomic, weak) IBOutlet UIButton *chooseBtn;
+@property(nonatomic, weak) IBOutlet UIButton *uploadBtn;
+@property(nonatomic, weak) IBOutlet UIImageView *preViewImage;
 
 @end
-

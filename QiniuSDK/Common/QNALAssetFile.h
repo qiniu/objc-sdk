@@ -22,7 +22,6 @@
  *
  *    @return 实例
  */
-- (instancetype)init:(ALAsset *)asset
-               error:(NSError *__autoreleasing *)error;
+- (instancetype)init:(ALAsset *)asset error:(NSError *__autoreleasing *)error;
 @end
 #endif

@@ -12,7 +12,8 @@
 //  Unless required by applicable law or agreed to in writing, software
 //  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
 //  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  See the
-//  License for the specific language governing permissions and limitations under
+//  License for the specific language governing permissions and limitations
+//  under
 //  the License.
 //
 
@@ -86,7 +87,8 @@
 /// Returns:
 ///   A new autoreleased NSString with the encoded payload.  nil for any error.
 //
-+ (NSString *)stringByEncodingBytes:(const void *)bytes length:(NSUInteger)length;
++ (NSString *)stringByEncodingBytes:(const void *)bytes
+                             length:(NSUInteger)length;
 
 // decodeString:
 //
@@ -114,8 +116,7 @@
 /// Returns:
 ///   A new autoreleased NSData with the encoded payload.  nil for any error.
 //
-+ (NSData *)webSafeEncodeData:(NSData *)data
-                       padded:(BOOL)padded;
++ (NSData *)webSafeEncodeData:(NSData *)data padded:(BOOL)padded;
 
 // webSafeDecodeData:
 //
@@ -155,8 +156,7 @@
 /// Returns:
 ///   A new autoreleased NSString with the encoded payload.  nil for any error.
 //
-+ (NSString *)stringByWebSafeEncodingData:(NSData *)data
-                                   padded:(BOOL)padded;
++ (NSString *)stringByWebSafeEncodingData:(NSData *)data padded:(BOOL)padded;
 
 // stringByWebSafeEncodingBytes:length:padded:
 //
