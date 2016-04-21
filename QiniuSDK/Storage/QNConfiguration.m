@@ -70,9 +70,9 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 		_proxy = builder.proxy;
 
 		_converter = builder.converter;
-
-		_disableATS = builder.disableATS;
-		if (_disableATS || !hasAts()) {
+        
+        _disableATS = builder.disableATS;
+		if (_disableATS) {
 			_dns = initDns(builder);
 			addZoneToDns(builder.zone, _dns);
 		}else{
@@ -99,10 +99,12 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 
 		_proxy = nil;
 		_converter = nil;
-
-		_disableATS = YES;
         
-        _upStatsRate = 0.3;
+        if (hasAts() && !allowsArbitraryLoads()) {
+            _disableATS = NO;
+        }else{
+            _disableATS = YES;
+        }
 	}
 	return self;
 }

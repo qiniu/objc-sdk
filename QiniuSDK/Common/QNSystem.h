@@ -13,4 +13,6 @@ BOOL hasNSURLSession();
 
 BOOL hasAts();
 
+BOOL allowsArbitraryLoads();
+
 #endif /* QNSystem_h */

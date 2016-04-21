@@ -164,24 +164,16 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  */
 @property (assign) UInt32 timeoutInterval;
 
-@property (nonatomic, assign) id <QNRecorderDelegate> recorder;
+@property (nonatomic, strong) id <QNRecorderDelegate> recorder;
 
-@property (nonatomic, assign) QNRecorderKeyGenerator recorderKeyGen;
+@property (nonatomic, strong) QNRecorderKeyGenerator recorderKeyGen;
 
-@property (nonatomic, assign)  NSDictionary *proxy;
+@property (nonatomic, strong)  NSDictionary *proxy;
 
-@property (nonatomic, assign) QNUrlConvert converter;
+@property (nonatomic, strong) QNUrlConvert converter;
 
-@property (nonatomic, assign) QNDnsManager *dns;
+@property (nonatomic, strong) QNDnsManager *dns;
 
 @property (assign) BOOL disableATS;
-
-@property (assign) BOOL enableBackgroundUpload;
-
-@property (nonatomic, assign) NSString* sharedContainerIdentifier;
-/**
- *   上传统计随机上传的概率，1为全部上传，0为不上传，0.5为随机上传一半。默认0.3
- */
-@property (nonatomic, assign) float upStatsRate;
 
 @end
