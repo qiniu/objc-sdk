@@ -10,14 +10,12 @@
 
 #import "QNRecorderDelegate.h"
 
-
 @class QNResponseInfo;
 @class QNUploadOption;
 @class QNConfiguration;
 @class ALAsset;
 @class PHAsset;
 @class PHAssetResource;
-
 
 /**
  *    上传完成后的回调函数
@@ -47,7 +45,7 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
  *
  *    @return 上传管理类实例
  */
-- (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder;
+- (instancetype)initWithRecorder:(id<QNRecorderDelegate>)recorder;
 
 /**
  *    使用持久化记录接口以及持久化key生成函数的构造方法，默认情况下使用上传存储的key, 如果key为nil或者有特殊字符比如/，建议使用自己的生成函数
@@ -57,7 +55,7 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
  *
  *    @return 上传管理类实例
  */
-- (instancetype)initWithRecorder:(id <QNRecorderDelegate> )recorder
+- (instancetype)initWithRecorder:(id<QNRecorderDelegate>)recorder
             recorderKeyGenerator:(QNRecorderKeyGenerator)recorderKeyGenerator;
 
 /**
@@ -68,7 +66,6 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
  *    @return 上传管理类实例
  */
 - (instancetype)initWithConfiguration:(QNConfiguration *)config;
-
 
 /**
  *    方便使用的单例方法
@@ -88,11 +85,11 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
  *    @param completionHandler 上传完成后的回调函数
  *    @param option            上传时传入的可选参数
  */
-- (void) putData:(NSData *)data
-             key:(NSString *)key
-           token:(NSString *)token
-        complete:(QNUpCompletionHandler)completionHandler
-          option:(QNUploadOption *)option;
+- (void)putData:(NSData *)data
+            key:(NSString *)key
+          token:(NSString *)token
+       complete:(QNUpCompletionHandler)completionHandler
+         option:(QNUploadOption *)option;
 
 /**
  *    上传文件
@@ -103,11 +100,11 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
  *    @param completionHandler 上传完成后的回调函数
  *    @param option            上传时传入的可选参数
  */
-- (void) putFile:(NSString *)filePath
-             key:(NSString *)key
-           token:(NSString *)token
-        complete:(QNUpCompletionHandler)completionHandler
-          option:(QNUploadOption *)option;
+- (void)putFile:(NSString *)filePath
+            key:(NSString *)key
+          token:(NSString *)token
+       complete:(QNUpCompletionHandler)completionHandler
+         option:(QNUploadOption *)option;
 
 /**
  *    上传ALAsset文件
@@ -118,11 +115,11 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
  *    @param completionHandler 上传完成后的回调函数
  *    @param option            上传时传入的可选参数
  */
-- (void) putALAsset:(ALAsset *)asset
-                key:(NSString *)key
-              token:(NSString *)token
-           complete:(QNUpCompletionHandler)completionHandler
-             option:(QNUploadOption *)option;
+- (void)putALAsset:(ALAsset *)asset
+               key:(NSString *)key
+             token:(NSString *)token
+          complete:(QNUpCompletionHandler)completionHandler
+            option:(QNUploadOption *)option;
 
 /**
  *    上传PHAsset文件(IOS8 andLater)
@@ -133,11 +130,11 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
  *    @param completionHandler 上传完成后的回调函数
  *    @param option            上传时传入的可选参数
  */
-- (void) putPHAsset:(PHAsset *)asset
-                key:(NSString *)key
-              token:(NSString *)token
-           complete:(QNUpCompletionHandler)completionHandler
-             option:(QNUploadOption *)option;
+- (void)putPHAsset:(PHAsset *)asset
+               key:(NSString *)key
+             token:(NSString *)token
+          complete:(QNUpCompletionHandler)completionHandler
+            option:(QNUploadOption *)option;
 
 /**
  *    上传PHAssetResource文件(IOS9.1 andLater)
@@ -149,12 +146,10 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
  *    @param option            上传时传入的可选参数
  */
 
-- (void) putPHAssetResource:(PHAssetResource *)assetResource
-                        key:(NSString *)key
-                      token:(NSString *)token
-                   complete:(QNUpCompletionHandler)completionHandler
-                     option:(QNUploadOption *)option;
-
-
+- (void)putPHAssetResource:(PHAssetResource *)assetResource
+                       key:(NSString *)key
+                     token:(NSString *)token
+                  complete:(QNUpCompletionHandler)completionHandler
+                    option:(QNUploadOption *)option;
 
 @end

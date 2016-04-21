@@ -17,17 +17,17 @@
 @implementation QNDnsTest
 
 - (void)testQiniu {
-	NSString *host = @"qiniu.com";
-	NSString *ip = [[QNDns getAddresses:host] objectAtIndex:0];
-	XCTAssert(ip != nil, @"Pass");
-	NSLog(@"dns result %@", ip);
+    NSString *host = @"qiniu.com";
+    NSString *ip = [[QNDns getAddresses:host] objectAtIndex:0];
+    XCTAssert(ip != nil, @"Pass");
+    NSLog(@"dns result %@", ip);
 }
 
 - (void)testNoHost {
-	NSString *nohost = @"nodns.qiniu.com";
-	NSArray *noip = [QNDns getAddresses:nohost];
-	XCTAssert(noip.count == 0, @"Pass");
-	NSLog(@"dns result %@", noip);
+    NSString *nohost = @"nodns.qiniu.com";
+    NSArray *noip = [QNDns getAddresses:nohost];
+    XCTAssert(noip.count == 0, @"Pass");
+    NSLog(@"dns result %@", noip);
 }
 
 @end
