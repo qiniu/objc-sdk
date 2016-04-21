@@ -16,7 +16,7 @@
 //  the License.
 //
 
-#import "GTM_Base64.h"
+#import "QN_GTM_Base64.h"
 
 static const char *kBase64EncodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 static const char *kWebSafeBase64EncodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
@@ -149,7 +149,7 @@ static const char kWebSafeBase64DecodeChars[] = {
 //   YES if the character is a whitespace character.
 //   NO if the character is not a whitespace character.
 //
-BOOL IsSpace(unsigned char c) {
+BOOL QN_IsSpace(unsigned char c) {
     // we use our own mapping here because we don't want anything w/ locale
     // support.
     static BOOL kSpaces[256] = {
@@ -188,7 +188,7 @@ BOOL IsSpace(unsigned char c) {
 // Returns:
 //   The guessed encoded length for a source length
 //
-NSUInteger CalcEncodedLength(NSUInteger srcLen, BOOL padded) {
+NSUInteger QN_CalcEncodedLength(NSUInteger srcLen, BOOL padded) {
     NSUInteger intermediate_result = 8 * srcLen + 5;
     NSUInteger len = intermediate_result / 6;
     if (padded) {
@@ -204,11 +204,11 @@ NSUInteger CalcEncodedLength(NSUInteger srcLen, BOOL padded) {
 // Returns:
 //   The guessed decoded length for a source length
 //
-NSUInteger GuessDecodedLength(NSUInteger srcLen) {
+NSUInteger QN_GuessDecodedLength(NSUInteger srcLen) {
     return (srcLen + 3) / 4 * 3;
 }
 
-@interface GTM_Base64 (PrivateMethods)
+@interface QN_GTM_Base64 (PrivateMethods)
 
 + (NSData *)baseEncode:(const void *)bytes
                 length:(NSUInteger)length
@@ -236,7 +236,7 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 
 @end
 
-@implementation GTM_Base64
+@implementation QN_GTM_Base64
 
 //
 // Standard Base64 (RFC) handling
@@ -391,7 +391,7 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
 
 @end
 
-@implementation GTM_Base64 (PrivateMethods)
+@implementation QN_GTM_Base64 (PrivateMethods)
 
 //
 // baseEncode:length:charset:padded:
@@ -409,7 +409,7 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
                charset:(const char *)charset
                 padded:(BOOL)padded {
     // how big could it be?
-    NSUInteger maxLength = CalcEncodedLength(length, padded);
+    NSUInteger maxLength = QN_CalcEncodedLength(length, padded);
     // make space
     NSMutableData *result = [NSMutableData data];
     [result setLength:maxLength];
@@ -445,7 +445,7 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
                charset:(const char *)charset
         requirePadding:(BOOL)requirePadding {
     // could try to calculate what it will end up as
-    NSUInteger maxLength = GuessDecodedLength(length);
+    NSUInteger maxLength = QN_GuessDecodedLength(length);
     // make space
     NSMutableData *result = [NSMutableData data];
     [result setLength:maxLength];
@@ -575,7 +575,7 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
     int state = 0;
     char ch = 0;
     while (srcLen-- && (ch = *srcBytes++) != 0) {
-        if (IsSpace(ch)) // Skip whitespace
+        if (QN_IsSpace(ch)) // Skip whitespace
             continue;
 
         if (ch == kBase64PaddingChar)
@@ -648,7 +648,7 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
         } else {
             if (state == 2) { // need another '='
                 while ((ch = *srcBytes++) && (srcLen-- > 0)) {
-                    if (!IsSpace(ch))
+                    if (!QN_IsSpace(ch))
                         break;
                 }
                 if (ch != kBase64PaddingChar) {
@@ -657,7 +657,7 @@ NSUInteger GuessDecodedLength(NSUInteger srcLen) {
             }
             // state = 1 or 2, check if all remain padding is space
             while ((ch = *srcBytes++) && (srcLen-- > 0)) {
-                if (!IsSpace(ch)) {
+                if (!QN_IsSpace(ch)) {
                     return 0;
                 }
             }
