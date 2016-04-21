@@ -40,7 +40,7 @@ typedef void (^task)(void);
 
 @property (nonatomic, strong) id<QNFileDelegate> file;
 
-@property (nonatomic, strong) NSArray *fileAry;
+//@property (nonatomic, strong) NSArray *fileAry;
 
 @property (nonatomic) float previousPercent;
 
@@ -303,7 +303,7 @@ typedef void (^task)(void);
     }];
 
     //添加路径
-    NSString *fname = [[NSString alloc] initWithFormat:@"/fname/%@", [QNUrlSafeBase64 encodeString:[self dealFilePath]]];
+    NSString *fname = [[NSString alloc] initWithFormat:@"/fname/%@", [QNUrlSafeBase64 encodeString:[self fileBaseName]]];
     url = [NSString stringWithFormat:@"%@%@", url, fname];
 
     NSMutableData *postData = [NSMutableData data];
@@ -313,13 +313,8 @@ typedef void (^task)(void);
 }
 
 #pragma mark - 处理文件路径
-- (NSString *)dealFilePath {
-
-    _fileAry = [NSArray array];
-    NSString *filePath = [_file path];
-    _fileAry = [filePath componentsSeparatedByString:@"/"];
-    NSString *fname = [_fileAry objectAtIndex:(_fileAry.count - 1)];
-    return fname;
+- (NSString *)fileBaseName {
+    return [[_file path] lastPathComponent];
 }
 
 - (void)post:(NSString *)url

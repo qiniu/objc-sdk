@@ -9,7 +9,7 @@
 
 #import "QNUrlSafeBase64.h"
 
-#import "GTM_Base64.h"
+#import "QN_GTM_Base64.h"
 
 @implementation QNUrlSafeBase64
 
@@ -19,11 +19,11 @@
 }
 
 + (NSString *)encodeData:(NSData *)data {
-    return [GTM_Base64 stringByWebSafeEncodingData:data padded:YES];
+    return [QN_GTM_Base64 stringByWebSafeEncodingData:data padded:YES];
 }
 
 + (NSData *)decodeString:(NSString *)data {
-    return [GTM_Base64 webSafeDecodeString:data];
+    return [QN_GTM_Base64 webSafeDecodeString:data];
 }
 
 @end

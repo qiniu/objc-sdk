@@ -28,7 +28,7 @@
 /// encoding.  You must use the webSafe* methods together, the data does not
 /// interop with the RFC methods.
 //
-@interface GTM_Base64 : NSObject
+@interface QN_GTM_Base64 : NSObject
 
 //
 // Standard Base64 (RFC) handling
