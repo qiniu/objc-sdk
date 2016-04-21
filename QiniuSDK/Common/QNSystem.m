@@ -50,6 +50,13 @@ BOOL allowsArbitraryLoads(){
     if (!hasAts()) {
         return YES;
     }
+    
+    // for unit test
+    NSDictionary* d = [[NSBundle mainBundle] infoDictionary];
+    if (d == nil || d.count == 0) {
+        return YES;
+    }
+    
     NSDictionary* sec = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"NSAppTransportSecurity"];
     if (sec == nil) {
         return NO;

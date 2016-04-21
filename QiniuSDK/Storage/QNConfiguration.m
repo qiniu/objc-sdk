@@ -70,7 +70,8 @@ static QNDnsManager* initDns(QNConfigurationBuilder *builder) {
 		_proxy = builder.proxy;
 
 		_converter = builder.converter;
-
+        
+        _disableATS = builder.disableATS;
 		if (_disableATS) {
 			_dns = initDns(builder);
 			addZoneToDns(builder.zone, _dns);
