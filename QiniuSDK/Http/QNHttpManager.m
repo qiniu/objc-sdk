@@ -10,7 +10,6 @@
 
 #import "HappyDNS.h"
 #import "QNConfiguration.h"
-#import "QNDns.h"
 #import "QNHttpManager.h"
 #import "QNResponseInfo.h"
 #import "QNUserAgent.h"
