@@ -11,7 +11,6 @@
 #import "HappyDNS.h"
 #import "QNAsyncRun.h"
 #import "QNConfiguration.h"
-#import "QNDns.h"
 #import "QNResponseInfo.h"
 #import "QNSessionManager.h"
 #import "QNSystem.h"
