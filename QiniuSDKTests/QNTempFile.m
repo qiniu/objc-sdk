@@ -11,17 +11,17 @@
 @implementation QNTempFile
 
 + (NSURL *)createTempfileWithSize:(int)size {
-	NSString *fileName = [NSString stringWithFormat:@"%@_%@", [[NSProcessInfo processInfo] globallyUniqueString], @"file.txt"];
-	NSURL *fileUrl = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
-	NSData *data = [NSMutableData dataWithLength:size];
-	NSError *error = nil;
-	[data writeToURL:fileUrl options:NSDataWritingAtomic error:&error];
-	return fileUrl;
+    NSString *fileName = [NSString stringWithFormat:@"%@_%@", [[NSProcessInfo processInfo] globallyUniqueString], @"file.txt"];
+    NSURL *fileUrl = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
+    NSData *data = [NSMutableData dataWithLength:size];
+    NSError *error = nil;
+    [data writeToURL:fileUrl options:NSDataWritingAtomic error:&error];
+    return fileUrl;
 }
 
 + (void)removeTempfile:(NSURL *)fileUrl {
-	NSError *error = nil;
-	[[NSFileManager defaultManager] removeItemAtURL:fileUrl error:&error];
+    NSError *error = nil;
+    [[NSFileManager defaultManager] removeItemAtURL:fileUrl error:&error];
 }
 
 @end

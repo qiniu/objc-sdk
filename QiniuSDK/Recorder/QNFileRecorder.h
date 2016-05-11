@@ -6,8 +6,8 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "QNRecorderDelegate.h"
+#import <Foundation/Foundation.h>
 
 /**
  *    将上传记录保存到文件系统中
@@ -48,6 +48,5 @@
 + (void)removeKey:(NSString *)key
         directory:(NSString *)dir
         encodeKey:(BOOL)encode;
-
 
 @end
