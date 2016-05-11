@@ -12,7 +12,6 @@
 #import "QNUserAgent.h"
 #import "QNResponseInfo.h"
 #import "QNAsyncRun.h"
-#import "QNDns.h"
 #import "HappyDNS.h"
 #import "QNStats.h"
 #import "QNSystem.h"
