@@ -8,13 +8,8 @@
 
 #import "QNFormUpload.h"
 #import "QNConfiguration.h"
-<<<<<<< HEAD
-#import "QNResponseInfo.h"
-#import "QNUploadOption+Private.h"
-=======
 #import "QNCrc32.h"
 #import "QNHttpManager.h"
->>>>>>> master
 #import "QNRecorderDelegate.h"
 #import "QNResponseInfo.h"
 #import "QNUploadManager.h"

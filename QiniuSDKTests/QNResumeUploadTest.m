@@ -38,32 +38,6 @@
     [super tearDown];
 }
 
-<<<<<<< HEAD
-//- (void)testCancel {
-//	int size = 6 * 1024;
-//	NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
-//	NSString *keyUp = [NSString stringWithFormat:@"%dk", size];
-//	__block NSString *key = nil;
-//	__block QNResponseInfo *info = nil;
-//	__block BOOL flag = NO;
-//	QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil progressHandler: ^(NSString *key, float percent) {
-//	                               flag = YES;
-//			       } params:@{ @"x:七牛":@"objc", @"x:no":@"", @"invalid":@"invalid" } checkCrc:NO cancellationSignal: ^BOOL () {
-//	                               return flag;
-//			       }];
-//	[_upManager putFile:tempFile.path key:keyUp token:g_token complete: ^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-//	         key = k;
-//	         info = i;
-//	 } option:opt];
-//
-//	AGWW_WAIT_WHILE(key == nil, 60 * 30);
-//	NSLog(@"info %@", info);
-//	XCTAssert(info.isCancelled, @"Pass");
-//	XCTAssert([keyUp isEqualToString:key], @"Pass");
-//
-//	[QNTempFile removeTempfile:tempFile];
-//}
-=======
 - (void)testCancel {
     int size = 6 * 1024;
     NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
@@ -94,7 +68,6 @@
 
     [QNTempFile removeTempfile:tempFile];
 }
->>>>>>> master
 
 - (void) template:(int)size {
     NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
