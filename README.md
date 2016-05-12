@@ -56,6 +56,10 @@ $ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -con
 $ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -configuration Debug test -test-sdk macosx -only "QiniuSDK MacTests:QNResumeUploadTest/test500k"
 ```
 
+## 示例代码
+* 完整的demo 见 QiniuDemo 目录下的代码
+* 具体细节的一些配置 可参考 QiniuSDKTests 下面的一些单元测试，以及源代码
+
 ## 常见问题
 
 - 如果碰到 crc 链接错误, 请把 libz.dylib 加入到项目中去

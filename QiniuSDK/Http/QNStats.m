@@ -74,6 +74,7 @@ QNStats *defaultStatsManager = nil;
                              dropRate: (float) dropRate
                             statsHost:(NSString *) statsHost
                                   dns:(QNDnsManager *) dns {
+<<<<<<< HEAD
     
     self = [super init];
     
@@ -112,6 +113,47 @@ QNStats *defaultStatsManager = nil;
     // get out ip first time
     [self getOutIp];
     
+=======
+
+	self = [super init];
+
+	if (interval <= 0) {
+		interval = 180;
+	}
+    float enableUpState = dropRate;
+	if (dropRate < 0) {
+		dropRate = 0.7;
+	}
+	if (!statsHost) {
+		//statsHost = @"http://192.168.210.97:2334"; // office
+		//statsHost = @"http://192.168.199.202:2334"; // home
+		statsHost = @"http://reportqos.qiniuapi.com";
+	}
+	if (!dns) {
+		id<QNResolverDelegate> r1 = [QNResolver systemResolver];
+		id<QNResolverDelegate> r2 = [[QNResolver alloc] initWithAddres:@"223.6.6.6"];
+		id<QNResolverDelegate> r3 = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
+		dns = [[QNDnsManager alloc] init:[NSArray arrayWithObjects:r1,r2, r3, nil] networkInfo:[QNNetworkInfo normal ]];
+	}
+
+	_pushInterval = interval;
+	_statsHost = statsHost;
+	_dns = dns;
+
+	_pushDropRate = (int)(100*dropRate);
+
+	_statsBuffer = [[NSMutableArray alloc] init];
+	_bufLock = [[NSLock alloc] init];
+
+	_httpManager = [[AFHTTPRequestOperationManager alloc] init];
+	_httpManager.responseSerializer = [AFJSONResponseSerializer serializer];
+
+	_count = 0;
+
+	// get out ip first time
+	[self getOutIp];
+
+>>>>>>> master
 #if TARGET_OS_IPHONE
     
     // radio access technology
@@ -157,6 +199,7 @@ QNStats *defaultStatsManager = nil;
     _systemName = @"";
     _systemVersion = @"";
 #endif
+<<<<<<< HEAD
     
     // timer for push
     //	NSLog(@"interval %d", _pushInterval);
@@ -182,6 +225,34 @@ QNStats *defaultStatsManager = nil;
     }
     
     return self;
+=======
+
+	// timer for push
+//	NSLog(@"interval %d", _pushInterval);
+    if (enableUpState != -1) {
+        _pushTimer = [NSTimer scheduledTimerWithTimeInterval:_pushInterval target:self selector:@selector(pushStats) userInfo:nil repeats:YES];
+        [_pushTimer fire];
+        
+        _getIPTimer = [NSTimer scheduledTimerWithTimeInterval:300 target:self selector:@selector(getOutIp) userInfo:nil repeats:YES];
+        [_getIPTimer fire];
+    }
+
+
+	NSDictionary *info = [[NSBundle mainBundle] infoDictionary];
+	_appName = [info objectForKey:@"CFBundleDisplayName"];
+	NSString *majorVersion = [info objectForKey:@"CFBundleShortVersionString"];
+	NSString *minorVersion = [info objectForKey:@"CFBundleVersion"];
+	_appVersion = [NSString stringWithFormat:@"%@(%@)", majorVersion, minorVersion];
+
+	if (_appName == nil) {
+		_appName = @"";
+	}
+	if (_appVersion == nil) {
+		_appVersion = @"";
+	}
+
+	return self;
+>>>>>>> master
 }
 
 - (void) addStatics:(NSMutableDictionary *)stat {

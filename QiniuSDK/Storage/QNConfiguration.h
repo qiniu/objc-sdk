@@ -22,7 +22,7 @@ extern const UInt32 kQNBlockSize;
  *
  *    @return 根据上传url算出代理url
  */
-typedef NSString *(^QNUrlConvert)(NSString *url);
+typedef NSString * (^QNUrlConvert)(NSString *url);
 
 @class QNConfigurationBuilder;
 @class QNDnsManager;
@@ -33,7 +33,6 @@ typedef NSString *(^QNUrlConvert)(NSString *url);
  *    @param builder builder实例
  */
 typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
-
 
 @interface QNConfiguration : NSObject
 
@@ -67,19 +66,17 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  */
 @property (readonly) UInt32 timeoutInterval;
 
-@property (nonatomic, readonly) id <QNRecorderDelegate> recorder;
+@property (nonatomic, readonly) id<QNRecorderDelegate> recorder;
 
 @property (nonatomic, readonly) QNRecorderKeyGenerator recorderKeyGen;
 
-@property (nonatomic, readonly)  NSDictionary *proxy;
+@property (nonatomic, readonly) NSDictionary *proxy;
 
 @property (nonatomic, readonly) QNUrlConvert converter;
 
 @property (nonatomic, readonly) QNDnsManager *dns;
 
 @property (readonly) BOOL disableATS;
-
-@property (readonly) float upStatsDropRate;
 
 + (instancetype)build:(QNConfigurationBuilderBlock)block;
 
@@ -90,10 +87,10 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  */
 @interface QNServiceAddress : NSObject
 
-- (instancetype) init:(NSString*)address ips:(NSArray*)ips;
+- (instancetype)init:(NSString *)address ips:(NSArray *)ips;
 
-@property (nonatomic, readonly) NSString* address;
-@property (nonatomic, readonly) NSArray* ips;
+@property (nonatomic, readonly) NSString *address;
+@property (nonatomic, readonly) NSArray *ips;
 
 @end
 
@@ -108,7 +105,6 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  *    备用上传服务器地址
  */
 @property (nonatomic, readonly) QNServiceAddress *upBackup;
-
 
 /**
  *    Zone初始化方法
@@ -138,7 +134,6 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @end
 
-
 @interface QNConfigurationBuilder : NSObject
 
 /**
@@ -166,24 +161,27 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  */
 @property (assign) UInt32 timeoutInterval;
 
-@property (nonatomic, assign) id <QNRecorderDelegate> recorder;
+@property (nonatomic, strong) id<QNRecorderDelegate> recorder;
 
-@property (nonatomic, assign) QNRecorderKeyGenerator recorderKeyGen;
+@property (nonatomic, strong) QNRecorderKeyGenerator recorderKeyGen;
 
-@property (nonatomic, assign)  NSDictionary *proxy;
+@property (nonatomic, strong) NSDictionary *proxy;
 
-@property (nonatomic, assign) QNUrlConvert converter;
+@property (nonatomic, strong) QNUrlConvert converter;
 
-@property (nonatomic, assign) QNDnsManager *dns;
+@property (nonatomic, strong) QNDnsManager *dns;
 
 @property (assign) BOOL disableATS;
 
+<<<<<<< HEAD
 @property (assign) BOOL enableBackgroundUpload;
 
 @property (nonatomic, assign) NSString* sharedContainerIdentifier;
 /**
- *   上传统计随机上传的概率，1为全部上传，0为不上传，0.5为随机上传一半。默认0.3
+ *   上传统计随机上传的概率，1为全部上传，0为不上传，0.5为随机上传一半，2为关闭上传。默认0.3，
  */
 @property (nonatomic, assign) float upStatsRate;
 
+=======
+>>>>>>> 81d3788f120f7c5324797e9df455d966a4255be8
 @end
