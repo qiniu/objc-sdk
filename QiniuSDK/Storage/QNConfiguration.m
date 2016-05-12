@@ -55,41 +55,6 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
 }
 
 - (instancetype)initWithBuilder:(QNConfigurationBuilder *)builder {
-<<<<<<< HEAD
-	if (self = [super init]) {
-		_up = builder.zone.up;
-		_upBackup = builder.zone.upBackup == nil ? builder.zone.up : builder.zone.upBackup;
-
-		_chunkSize = builder.chunkSize;
-		_putThreshold = builder.putThreshold;
-		_retryMax = builder.retryMax;
-		_timeoutInterval = builder.timeoutInterval;
-
-		_recorder = builder.recorder;
-		_recorderKeyGen = builder.recorderKeyGen;
-
-		_proxy = builder.proxy;
-
-		_converter = builder.converter;
-
-		_upStatsDropRate = 1 - builder.upStatsRate;
-		if (_upStatsDropRate > 1) {
-			_upStatsDropRate = 1;
-		}
-		if (_upStatsDropRate < 0 && _upStatsDropRate != -1) {
-			_upStatsDropRate = 0;
-		}
-
-		_disableATS = builder.disableATS;
-		if (_disableATS || !hasAts()) {
-			_dns = initDns(builder);
-			addZoneToDns(builder.zone, _dns);
-		}else{
-			_dns = nil;
-		}
-	}
-	return self;
-=======
     if (self = [super init]) {
         _up = builder.zone.up;
         _upBackup = builder.zone.upBackup == nil ? builder.zone.up : builder.zone.upBackup;
@@ -115,7 +80,6 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
         }
     }
     return self;
->>>>>>> 81d3788f120f7c5324797e9df455d966a4255be8
 }
 
 @end
