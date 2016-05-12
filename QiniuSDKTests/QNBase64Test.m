@@ -6,8 +6,8 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-#import <XCTest/XCTest.h>
 #import "QiniuSDK.h"
+#import <XCTest/XCTest.h>
 
 @interface QNBase64Test : XCTestCase
 
@@ -16,10 +16,10 @@
 @implementation QNBase64Test
 
 - (void)testEncode {
-	// This is an example of a functional test case.
-	NSString *source = @"你好/+=";
+    // This is an example of a functional test case.
+    NSString *source = @"你好/+=";
 
-	XCTAssert([[QNUrlSafeBase64 encodeString:source] isEqual:@"5L2g5aW9Lys9"], @"Pass");
+    XCTAssert([[QNUrlSafeBase64 encodeString:source] isEqual:@"5L2g5aW9Lys9"], @"Pass");
 }
 
 @end

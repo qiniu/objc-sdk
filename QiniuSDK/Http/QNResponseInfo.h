@@ -101,17 +101,17 @@ extern const int kQNFileError;
 /**
  *    是否取消
  */
-@property (nonatomic, readonly, getter = isCancelled) BOOL canceled;
+@property (nonatomic, readonly, getter=isCancelled) BOOL canceled;
 
 /**
  *    成功的请求
  */
-@property (nonatomic, readonly, getter = isOK) BOOL ok;
+@property (nonatomic, readonly, getter=isOK) BOOL ok;
 
 /**
  *    是否网络错误
  */
-@property (nonatomic, readonly, getter = isConnectionBroken) BOOL broken;
+@property (nonatomic, readonly, getter=isConnectionBroken) BOOL broken;
 
 /**
  *    是否需要重试，内部使用
@@ -126,7 +126,7 @@ extern const int kQNFileError;
 /**
  *    是否为 七牛响应
  */
-@property (nonatomic, readonly, getter = isNotQiniu) BOOL notQiniu;
+@property (nonatomic, readonly, getter=isNotQiniu) BOOL notQiniu;
 
 /**
  *    工厂函数，内部使用

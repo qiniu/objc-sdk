@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9531" systemVersion="14F27" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="ICJ-el-kyi">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9529"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <scenes>
+        <!--Navigation Controller-->
+        <scene sceneID="OxZ-yA-b7f">
+            <objects>
+                <navigationController id="ICJ-el-kyi" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="0Ga-mq-GEB">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="a0v-GO-7Qr" kind="relationship" relationship="rootViewController" id="2R1-ci-XqW"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="sTu-mJ-tYz" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-3160" y="-337"/>
+        </scene>
+        <!--图片上传-->
+        <scene sceneID="PXq-te-KQD">
+            <objects>
+                <viewController id="a0v-GO-7Qr" customClass="ViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="TZn-al-ylh"/>
+                        <viewControllerLayoutGuide type="bottom" id="EaF-tv-BfV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="UJS-dn-gjX">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f8h-Tl-cef">
+                                <rect key="frame" x="70" y="114" width="460" height="50"/>
+                                <color key="backgroundColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="kgT-aZ-IJU"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="选择">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="chooseAction:" destination="a0v-GO-7Qr" eventType="touchUpInside" id="tAj-mW-jxy"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Psn-X6-kmD">
+                                <rect key="frame" x="70" y="194" width="460" height="50"/>
+                                <color key="backgroundColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="50" id="pu0-Bk-3Gw"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="上传">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="uploadAction:" destination="a0v-GO-7Qr" eventType="touchUpInside" id="QAY-9o-VbD"/>
+                                </connections>
+                            </button>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="PUC-cw-bND">
+                                <rect key="frame" x="20" y="274" width="560" height="326"/>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="f8h-Tl-cef" firstAttribute="leading" secondItem="UJS-dn-gjX" secondAttribute="leadingMargin" constant="50" id="93T-X6-QAQ"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="Psn-X6-kmD" secondAttribute="trailing" constant="50" id="MQh-ht-UJM"/>
+                            <constraint firstItem="f8h-Tl-cef" firstAttribute="top" secondItem="TZn-al-ylh" secondAttribute="bottom" constant="50" id="OwI-rE-nm1"/>
+                            <constraint firstItem="PUC-cw-bND" firstAttribute="leading" secondItem="UJS-dn-gjX" secondAttribute="leadingMargin" id="VV2-Av-yVE"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="PUC-cw-bND" secondAttribute="trailing" id="k8E-N3-8Zw"/>
+                            <constraint firstItem="EaF-tv-BfV" firstAttribute="top" secondItem="PUC-cw-bND" secondAttribute="bottom" id="o0v-n2-b55"/>
+                            <constraint firstItem="Psn-X6-kmD" firstAttribute="leading" secondItem="UJS-dn-gjX" secondAttribute="leadingMargin" constant="50" id="ot8-YA-bd8"/>
+                            <constraint firstItem="PUC-cw-bND" firstAttribute="top" secondItem="Psn-X6-kmD" secondAttribute="bottom" constant="30" id="rdv-4W-ASr"/>
+                            <constraint firstItem="Psn-X6-kmD" firstAttribute="top" secondItem="f8h-Tl-cef" secondAttribute="bottom" constant="30" id="sEq-Qn-Fuf"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="f8h-Tl-cef" secondAttribute="trailing" constant="50" id="uUk-RB-biH"/>
+                        </constraints>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="图片上传" id="NUn-lf-ojx"/>
+                    <navigationItem key="navigationItem" id="2o4-4g-hMF"/>
+                    <connections>
+                        <outlet property="chooseBtn" destination="f8h-Tl-cef" id="1Hw-tF-Mu2"/>
+                        <outlet property="preViewImage" destination="PUC-cw-bND" id="yaY-jN-JKD"/>
+                        <outlet property="uploadBtn" destination="Psn-X6-kmD" id="O4A-yG-lhj"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="0ur-tY-LLn" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-2316" y="-313"/>
+        </scene>
+    </scenes>
+</document>

@@ -6,8 +6,8 @@
 //  Copyright (c) 2015年 Qiniu. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
 #import "QNFileDelegate.h"
+#import <Foundation/Foundation.h>
 
 @interface QNFile : NSObject <QNFileDelegate>
 /**
