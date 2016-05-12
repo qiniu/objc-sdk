@@ -173,5 +173,4 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @property (assign) BOOL disableATS;
 
-
 @end
