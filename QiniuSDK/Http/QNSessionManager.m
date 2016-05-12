@@ -197,6 +197,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
           withDomain:(NSString *)domain
       withRetryTimes:(int)times
        withStartTime:(NSDate *)startTime {
+    
     NSURL *url = request.URL;
     __block NSString *ip = nil;
     if (ips != nil) {
