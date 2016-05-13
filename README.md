@@ -11,7 +11,7 @@
 通过 CocoaPods
 
 ```ruby
-pod "Qiniu", "~> 7.0"
+pod "Qiniu", :git => 'https://github.com/qiniu/objc-sdk.git', :branch => 'AFNetworking-3.x'
 ```
 
 ## 运行环境

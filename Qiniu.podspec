@@ -5,15 +5,15 @@ Pod::Spec.new do |s|
   s.homepage     = 'https://github.com/qiniu/objc-sdk'
   s.social_media_url = 'http://weibo.com/qiniutek'
   s.author       = 'Qiniu => sdk@qiniu.com'
-  s.source       = {:git => 'https://github.com/qiniu/objc-sdk.git', :tag => "v#{s.version}"}
+  s.source       = {:git => 'https://github.com/qiniu/objc-sdk.git', :branch => 'AFNetworking-3.x'}
 
-  s.ios.deployment_target = ‘7.0’
-  s.osx.deployment_target = '10.9’
+  s.ios.deployment_target = '7.0'
+  s.osx.deployment_target = '10.9'
 
   s.source_files = 'QiniuSDK/**/*.{h,m}'
   s.requires_arc = true
   s.libraries = 'z'
-  s.dependency 'AFNetworking', '~> 3’
+  s.dependency 'AFNetworking', '~> 3'
   s.dependency 'HappyDNS', '~> 0.2'
   s.license = { :type => 'MIT', :text => <<-LICENSE
 The MIT License (MIT)
