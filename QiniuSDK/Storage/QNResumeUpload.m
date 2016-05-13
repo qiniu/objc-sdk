@@ -9,7 +9,6 @@
 #import "QNResumeUpload.h"
 #import "QNConfiguration.h"
 #import "QNCrc32.h"
-#import "QNHttpManager.h"
 #import "QNRecorderDelegate.h"
 #import "QNResponseInfo.h"
 #import "QNUploadManager.h"
