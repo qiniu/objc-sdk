@@ -67,3 +67,13 @@ BOOL allowsArbitraryLoads() {
     }
     return ats.boolValue;
 }
+
+BOOL hasDns(){
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
+    float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
+    if ((sysVersion >= 8.0) && sysVersion < 9.0) {
+        return NO;
+    }
+#endif
+    return YES;
+}

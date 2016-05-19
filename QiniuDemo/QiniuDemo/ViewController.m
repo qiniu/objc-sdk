@@ -13,7 +13,6 @@
 @interface ViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
 @property (nonatomic, strong) NSString *token;
-@property (nonatomic, strong) NSString *domain;
 @property (nonatomic, strong) UIImage *pickImage;
 
 @end
@@ -40,29 +39,13 @@
             otherButtonTitles:nil];
         [alert show];
     } else {
-        [self getTokenFromQN];
-    }
-}
-
-- (void)getTokenFromQN {
-    //1.管理器
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-
-    //    //2.设置登录参数
-    //    NSDictionary *dict = @{ @"username":@"xn", @"password":@"123" };
-
-    //3.请求
-    [manager POST:@"http://115.231.183.102:9090/api/quick_start/simple_image_example_token.php" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        self.domain = responseObject[@"domain"];
-        self.token = responseObject[@"uptoken"];
         [self uploadImageToQNFilePath:[self getImagePath:self.pickImage]];
     }
-        failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-            NSLog(@"%@", error);
-        }];
 }
 
+
 - (void)uploadImageToQNFilePath:(NSString *)filePath {
+    self.token = @"你的token";
     QNUploadManager *upManager = [[QNUploadManager alloc] init];
     QNUploadOption *uploadOption = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
         NSLog(@"percent == %.2f", percent);
