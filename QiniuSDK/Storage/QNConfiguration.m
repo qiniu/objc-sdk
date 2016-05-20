@@ -78,6 +78,16 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
         } else {
             _dns = nil;
         }
+        
+        _disableDns = builder.disableDns;
+        if (_disableDns) {
+            _dns = initDns(builder);
+            addZoneToDns(builder.zone, _dns);
+        }else
+        {
+            _dns = nil;
+        }
+        
     }
     return self;
 }
@@ -105,6 +115,8 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
         } else {
             _disableATS = YES;
         }
+        
+        _disableDns = hasDns();
     }
     return self;
 }

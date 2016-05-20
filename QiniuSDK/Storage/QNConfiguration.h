@@ -78,6 +78,9 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @property (readonly) BOOL disableATS;
 
+//ip解析是否禁止
+@property (assign) BOOL disableDns;
+
 + (instancetype)build:(QNConfigurationBuilderBlock)block;
 
 @end
@@ -172,5 +175,8 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (nonatomic, strong) QNDnsManager *dns;
 
 @property (assign) BOOL disableATS;
+
+//ip解析是否禁止
+@property (assign) BOOL disableDns;
 
 @end

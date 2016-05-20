@@ -15,4 +15,6 @@ BOOL hasAts();
 
 BOOL allowsArbitraryLoads();
 
+BOOL hasDns();
+
 #endif /* QNSystem_h */
