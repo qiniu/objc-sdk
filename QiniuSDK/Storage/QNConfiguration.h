@@ -78,8 +78,8 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @property (readonly) BOOL disableATS;
 
-//ip解析是否禁止
-@property (assign) BOOL disableDns;
+//ios8 不支持ipv6
+@property (assign) BOOL isNotIOS8;
 
 + (instancetype)build:(QNConfigurationBuilderBlock)block;
 
@@ -176,7 +176,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @property (assign) BOOL disableATS;
 
-//ip解析是否禁止
-@property (assign) BOOL disableDns;
+//ios8 不支持ipv6
+@property (assign) BOOL isNotIOS8;
 
 @end

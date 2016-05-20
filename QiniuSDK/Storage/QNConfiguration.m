@@ -79,8 +79,7 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
             _dns = nil;
         }
         
-        _disableDns = builder.disableDns;
-        if (_disableDns) {
+        if (_isNotIOS8) {
             _dns = initDns(builder);
             addZoneToDns(builder.zone, _dns);
         }else
@@ -115,7 +114,7 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
             _disableATS = YES;
         }
         
-        _disableDns = hasDns();
+        _isNotIOS8 = hasDns();
     }
     return self;
 }
