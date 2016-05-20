@@ -56,11 +56,8 @@
     [upManager putFile:filePath key:nil token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         NSLog(@"info ===== %@", info);
         NSLog(@"resp ===== %@", resp);
-        NSLog(@"%@/%@", self.domain, resp[@"key"]);
-        [self.preViewImage setImageWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"%@/%@", self.domain, resp[@"key"]]] placeholderImage:[UIImage imageNamed:@"placeholder.jpg"]];
 
-    }
-                option:uploadOption];
+    }option:uploadOption];
 }
 
 - (void)gotoImageLibrary {
