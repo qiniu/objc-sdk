@@ -85,10 +85,6 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
         } else {
             _dns = nil;
         }
-        
-//        if () {
-//            _dns = nil;
-//        }
     }
     return self;
 }
