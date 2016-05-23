@@ -16,6 +16,6 @@ BOOL hasAts();
 BOOL allowsArbitraryLoads();
 
 //iOS8判断
-BOOL hasDns();
+BOOL isNotIOS8();
 
 #endif /* QNSystem_h */

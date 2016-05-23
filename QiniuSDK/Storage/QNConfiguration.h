@@ -173,6 +173,4 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @property (assign) BOOL disableATS;
 
-@property (assign) BOOL isNotIOS8;
-
 @end

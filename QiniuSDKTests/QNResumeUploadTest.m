@@ -265,18 +265,14 @@
 }
 
 - (void)testHosts {
-    __block BOOL isNotiOS8 = NO;
     QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
     QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        if(builder.isNotIOS8){
-            isNotiOS8 = YES;
-            NSArray *ips = [QNZone zone0].up.ips;
-            QNServiceAddress *s1 = [[QNServiceAddress alloc] init:@"http://uphosttest.qiniu.com" ips:ips];
-            QNServiceAddress *s2 = [[QNServiceAddress alloc] init:@"http://uphosttestbak.qiniu.com" ips:ips];
-            builder.zone = [[QNZone alloc] initWithUp:s1 upBackup:s2];
-            builder.dns = dns;
-        }
+        NSArray *ips = [QNZone zone0].up.ips;
+        QNServiceAddress *s1 = [[QNServiceAddress alloc] init:@"http://uphosttest.qiniu.com" ips:ips];
+        QNServiceAddress *s2 = [[QNServiceAddress alloc] init:@"http://uphosttestbak.qiniu.com" ips:ips];
+        builder.zone = [[QNZone alloc] initWithUp:s1 upBackup:s2];
+        builder.dns = dns;
     }];
     
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
@@ -296,12 +292,7 @@
     NSLog(@"info %@", info);
     XCTAssert(info.isOK, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
-    if(isNotiOS8){
     XCTAssert([info.host isEqual:@"uphosttest.qiniu.com"] || [info.host isEqual:@"uphosttestbak.qiniu.com"], @"Pass");
-    }else
-    {
-        XCTAssert([info.host isEqual:@"upload.qiniu.com"], @"Pass");
-    }
     [QNTempFile removeTempfile:tempFile];
 }
 

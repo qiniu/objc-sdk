@@ -14,6 +14,7 @@
 
 #import "HappyDns.h"
 #import "QNTestConfig.h"
+#import "QNSystem.h"
 
 @interface QNFormUploadTest : XCTestCase
 
@@ -273,7 +274,7 @@
     QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
     QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        if (builder.isNotIOS8) {
+        if (isNotIOS8()) {
             isNotiOS8 = YES;
             NSArray *ips = [QNZone zone0].up.ips;
             QNServiceAddress *s1 = [[QNServiceAddress alloc] init:@"http://uphosttest.qiniu.com" ips:ips];
