@@ -48,24 +48,24 @@
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
         flag = YES;
     }
-        params:@{ @"x:七牛" : @"objc",
-                  @"x:no" : @"",
-                  @"invalid" : @"invalid" }
-        checkCrc:NO
-        cancellationSignal:^BOOL() {
-            return flag;
-        }];
+                                                        params:@{ @"x:七牛" : @"objc",
+                                                                  @"x:no" : @"",
+                                                                  @"invalid" : @"invalid" }
+                                                      checkCrc:NO
+                                            cancellationSignal:^BOOL() {
+                                                return flag;
+                                            }];
     [_upManager putFile:tempFile.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
     }
                  option:opt];
-
+    
     AGWW_WAIT_WHILE(key == nil, 60 * 30);
     NSLog(@"info %@", info);
     XCTAssert(info.isCancelled, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
-
+    
     [QNTempFile removeTempfile:tempFile];
 }
 
@@ -87,7 +87,7 @@
     XCTAssert(info.isOK, @"Pass");
     XCTAssert(info.reqId, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
-
+    
     [QNTempFile removeTempfile:tempFile];
 }
 
@@ -99,13 +99,13 @@
     QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler:^(NSString *key, float percent) {
         NSLog(@"progress %f", percent);
     }];
-
+    
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         QNServiceAddress *s = [[QNServiceAddress alloc] init:@"https://uptemp.qbox.me" ips:nil];
         builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
-
+    
     [upManager putFile:tempFile.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
@@ -116,7 +116,7 @@
     XCTAssert(info.isOK, @"Pass");
     XCTAssert(info.reqId, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
-
+    
     [QNTempFile removeTempfile:tempFile];
 }
 
@@ -157,7 +157,7 @@
     NSLog(@"info %@", info);
     XCTAssert(info.statusCode == kQNZeroDataSize, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
-
+    
     [QNTempFile removeTempfile:tempFile];
 }
 
@@ -202,19 +202,19 @@
 
 - (void)testProxy {
     NSDictionary *proxyDict = @{
-        @"HTTPEnable" : [NSNumber numberWithInt:1],
-        (NSString *)kCFStreamPropertyHTTPProxyHost : @"183.136.139.16",
-        (NSString *)kCFStreamPropertyHTTPProxyPort : @8888,
-    };
-
+                                @"HTTPEnable" : [NSNumber numberWithInt:1],
+                                (NSString *)kCFStreamPropertyHTTPProxyHost : @"183.136.139.16",
+                                (NSString *)kCFStreamPropertyHTTPProxyPort : @8888,
+                                };
+    
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.proxy = proxyDict;
         QNServiceAddress *s = [[QNServiceAddress alloc] init:@"http://upnono.qiniu.com" ips:nil];
         builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
     }];
-
+    
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
-
+    
     int size = 600;
     NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
     NSString *keyUp = [NSString stringWithFormat:@"%dkproxy", size];
@@ -225,12 +225,12 @@
         info = i;
     }
                 option:nil];
-
+    
     AGWW_WAIT_WHILE(key == nil, 60 * 30);
     NSLog(@"info %@", info);
     XCTAssert(info.isOK, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
-
+    
     [QNTempFile removeTempfile:tempFile];
 }
 
@@ -242,9 +242,9 @@
         QNServiceAddress *s = [[QNServiceAddress alloc] init:@"http://upnono.qiniu.com" ips:nil];
         builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
     }];
-
+    
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
-
+    
     int size = 600;
     NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
     NSString *keyUp = [NSString stringWithFormat:@"%dkconvert", size];
@@ -255,7 +255,7 @@
         info = i;
     }
                 option:nil];
-
+    
     AGWW_WAIT_WHILE(key == nil, 60 * 30);
     NSLog(@"info %@", info);
     XCTAssert(info.isOK, @"Pass");
@@ -264,37 +264,46 @@
     [QNTempFile removeTempfile:tempFile];
 }
 
-//- (void)testHosts {
-//    QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
-//    QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
-//    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-//        NSArray *ips = [QNZone zone0].up.ips;
-//        QNServiceAddress *s1 = [[QNServiceAddress alloc] init:@"http://uphosttest.qiniu.com" ips:ips];
-//        QNServiceAddress *s2 = [[QNServiceAddress alloc] init:@"http://uphosttestbak.qiniu.com" ips:ips];
-//        builder.zone = [[QNZone alloc] initWithUp:s1 upBackup:s2];
-//        builder.dns = dns;
-//    }];
-//
-//    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
-//
-//    int size = 600;
-//    NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
-//    NSString *keyUp = [NSString stringWithFormat:@"%dkconvert", size];
-//    __block QNResponseInfo *info = nil;
-//    __block NSString *key = nil;
-//    [upManager putFile:tempFile.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-//        key = k;
-//        info = i;
-//    }
-//                option:nil];
-//
-//    AGWW_WAIT_WHILE(key == nil, 60 * 30);
-//    NSLog(@"info %@", info);
-//    XCTAssert(info.isOK, @"Pass");
-//    XCTAssert([keyUp isEqualToString:key], @"Pass");
-//    XCTAssert([info.host isEqual:@"uphosttest.qiniu.com"] || [info.host isEqual:@"uphosttestbak.qiniu.com"], @"Pass");
-//    [QNTempFile removeTempfile:tempFile];
-//}
+- (void)testHosts {
+    __block BOOL isNotiOS8 = NO;
+    QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
+    QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        if(builder.isNotIOS8){
+            isNotiOS8 = YES;
+            NSArray *ips = [QNZone zone0].up.ips;
+            QNServiceAddress *s1 = [[QNServiceAddress alloc] init:@"http://uphosttest.qiniu.com" ips:ips];
+            QNServiceAddress *s2 = [[QNServiceAddress alloc] init:@"http://uphosttestbak.qiniu.com" ips:ips];
+            builder.zone = [[QNZone alloc] initWithUp:s1 upBackup:s2];
+            builder.dns = dns;
+        }
+    }];
+    
+    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
+    
+    int size = 600;
+    NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
+    NSString *keyUp = [NSString stringWithFormat:@"%dkconvert", size];
+    __block QNResponseInfo *info = nil;
+    __block NSString *key = nil;
+    [upManager putFile:tempFile.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+        key = k;
+        info = i;
+    }
+                option:nil];
+    
+    AGWW_WAIT_WHILE(key == nil, 60 * 30);
+    NSLog(@"info %@", info);
+    XCTAssert(info.isOK, @"Pass");
+    XCTAssert([keyUp isEqualToString:key], @"Pass");
+    if(isNotiOS8){
+    XCTAssert([info.host isEqual:@"uphosttest.qiniu.com"] || [info.host isEqual:@"uphosttestbak.qiniu.com"], @"Pass");
+    }else
+    {
+        XCTAssert([info.host isEqual:@"upload.qiniu.com"], @"Pass");
+    }
+    [QNTempFile removeTempfile:tempFile];
+}
 
 #endif
 @end

@@ -46,6 +46,12 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
     return d;
 }
 
+@interface QNConfiguration()
+
+@property (assign) BOOL isNotIOS8;
+
+@end
+
 @implementation QNConfiguration
 
 + (instancetype)build:(QNConfigurationBuilderBlock)block {
@@ -72,20 +78,17 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
         _converter = builder.converter;
 
         _disableATS = builder.disableATS;
-        if (_disableATS) {
+        _isNotIOS8 = builder.isNotIOS8;
+        if (_disableATS && _isNotIOS8) {
             _dns = initDns(builder);
             addZoneToDns(builder.zone, _dns);
         } else {
             _dns = nil;
         }
         
-        if (_isNotIOS8) {
-            _dns = initDns(builder);
-            addZoneToDns(builder.zone, _dns);
-        }else
-        {
-            _dns = nil;
-        }
+//        if () {
+//            _dns = nil;
+//        }
     }
     return self;
 }
