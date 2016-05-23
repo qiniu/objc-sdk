@@ -16,6 +16,6 @@ BOOL hasAts();
 BOOL allowsArbitraryLoads();
 
 //iOS8判断
-BOOL isNotIOS8();
+BOOL isIOS8();
 
 #endif /* QNSystem_h */

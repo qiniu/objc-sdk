@@ -13,8 +13,8 @@
 #import "QiniuSDK.h"
 
 #import "HappyDns.h"
-#import "QNTestConfig.h"
 #import "QNSystem.h"
+#import "QNTestConfig.h"
 
 @interface QNFormUploadTest : XCTestCase
 
@@ -274,7 +274,7 @@
     QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
     QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        if (isNotIOS8()) {
+        if (isIOS8()) {
             isNotiOS8 = YES;
             NSArray *ips = [QNZone zone0].up.ips;
             QNServiceAddress *s1 = [[QNServiceAddress alloc] init:@"http://uphosttest.qiniu.com" ips:ips];
@@ -302,8 +302,7 @@
     XCTAssert(testInfo.reqId, @"Pass");
     if (isNotiOS8) {
         XCTAssert([testInfo.host isEqual:@"uphosttest.qiniu.com"], @"Pass");
-    }else
-    {
+    } else {
         XCTAssert([testInfo.host isEqual:@"upload.qiniu.com"], @"Pass");
     }
     XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");

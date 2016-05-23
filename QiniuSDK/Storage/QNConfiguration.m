@@ -100,13 +100,11 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
         _proxy = nil;
         _converter = nil;
 
-        if (hasAts() && !allowsArbitraryLoads()&& !isNotIOS8()) {
+        if (hasAts() && !allowsArbitraryLoads() && isIOS8()) {
             _disableATS = NO;
         } else {
             _disableATS = YES;
         }
-        
-        
     }
     return self;
 }
