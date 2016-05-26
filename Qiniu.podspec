@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = 'Qiniu'
-  s.version      = "7.0.19.1"
+  s.version      = "7.0.20"
   s.summary      = "Qiniu Resource Storage SDK for iOS and Mac"
   s.homepage     = "https://github.com/qiniu/objc-sdk"
   s.social_media_url = "http://weibo.com/qiniutek"
@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
   s.libraries = "z"
   s.dependency "AFNetworking", "~> 2.0"
-  s.dependency "HappyDNS", "~> 0.2"
+  s.dependency "HappyDNS", "~> 0.3"
   s.license = { :type => "MIT", :text => <<-LICENSE
 The MIT License (MIT)
 

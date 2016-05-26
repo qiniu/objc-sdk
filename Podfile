@@ -14,7 +14,7 @@ end
 target "QiniuSDK Mac" do
   platform :osx, "10.8"
   pod 'AFNetworking', '~> 2.5.0'
-  pod 'HappyDNS', '>= 0.2'
+  pod 'HappyDNS', '>= 0.3'
 end
 
 target "QiniuSDK MacTests" do

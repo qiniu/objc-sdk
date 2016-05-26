@@ -39,9 +39,11 @@ BOOL hasAts() {
 #else
     NSOperatingSystemVersion sysVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
 
-    if ((sysVersion.majorVersion <= 10 && sysVersion.minorVersion < 11)) {
+    if ((sysVersion.majorVersion < 10){
         return NO;
-    }
+    } else if( sysVersion.majorVersion == 10 && sysVersion.minorVersion < 11)) {
+        return NO;
+    } 
 #endif
     return YES;
 }
@@ -66,14 +68,4 @@ BOOL allowsArbitraryLoads() {
         return NO;
     }
     return ats.boolValue;
-}
-
-BOOL isIOS8() {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
-    float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
-    if ((sysVersion >= 8.0) && sysVersion < 9.0) {
-        return YES;
-    }
-#endif
-    return NO;
 }
