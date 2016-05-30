@@ -15,7 +15,8 @@ BOOL hasAts();
 
 BOOL allowsArbitraryLoads();
 
-//iOS8判断
-BOOL isIOS8();
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
+BOOL isLessIOS9();
+#endif
 
 #endif /* QNSystem_h */

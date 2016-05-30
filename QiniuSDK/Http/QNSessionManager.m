@@ -163,7 +163,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
         url = [[NSURL alloc] initWithString:_converter(u)];
         request.URL = url;
         domain = url.host;
-    } else if (_noProxy && _dns != nil && [url.scheme isEqualToString:@"http"]) {
+    } else if (_noProxy && _dns != nil && [url.scheme isEqualToString:@"http"] && !(isLessIOS9() && [QNIP isV6])) {
         ips = [_dns queryWithDomain:[[QNDomain alloc] init:domain hostsFirst:NO hasCname:YES maxTtl:1000]];
         double duration = [[NSDate date] timeIntervalSinceDate:startTime];
 
