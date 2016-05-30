@@ -1,23 +1,32 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
-target "QiniuSDK iOS" do
-  platform :ios, "6.0"
+def shared_dependencies
   pod 'AFNetworking', '~> 2.5.0'
-  pod 'HappyDNS', '>= 0.2'
+  pod 'HappyDNS', '>= 0.3'
 end
 
-target "QiniuSDK iOSTests" do
-  platform :ios, "6.0"
+def test_dependencies
   pod 'AGAsyncTestHelper/Shorthand'
 end
 
-target "QiniuSDK Mac" do
-  platform :osx, "10.8"
-  pod 'AFNetworking', '~> 2.5.0'
-  pod 'HappyDNS', '>= 0.2'
+target "QiniuSDK_iOS" do
+  platform :ios, "6.0"
+  shared_dependencies
 end
 
-target "QiniuSDK MacTests" do
+target "QiniuSDK_iOSTests" do
+  platform :ios, "6.0"
+  shared_dependencies
+  test_dependencies
+end
+
+target "QiniuSDK_Mac" do
   platform :osx, "10.8"
-  pod 'AGAsyncTestHelper/Shorthand'
+  shared_dependencies
+end
+
+target "QiniuSDK_MacTests" do
+  platform :osx, "10.8"
+  shared_dependencies
+  test_dependencies
 end
