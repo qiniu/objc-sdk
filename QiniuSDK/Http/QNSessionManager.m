@@ -13,7 +13,7 @@
 #import "QNConfiguration.h"
 #import "QNResponseInfo.h"
 #import "QNSessionManager.h"
-#import "QNSystem.h"
+#include "QNSystem.h"
 #import "QNUserAgent.h"
 
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
@@ -163,7 +163,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
         url = [[NSURL alloc] initWithString:_converter(u)];
         request.URL = url;
         domain = url.host;
-    } else if (_noProxy && _dns != nil && [url.scheme isEqualToString:@"http"]) {
+    } else if (_noProxy && _dns != nil && [url.scheme isEqualToString:@"http"] && !(isIpV6FullySupported() && [QNIP isV6])) {
         ips = [_dns queryWithDomain:[[QNDomain alloc] init:domain hostsFirst:NO hasCname:YES maxTtl:1000]];
         double duration = [[NSDate date] timeIntervalSinceDate:startTime];
 
