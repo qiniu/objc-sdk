@@ -71,17 +71,6 @@ BOOL allowsArbitraryLoads() {
     return ats.boolValue;
 }
 
-<<<<<<< HEAD
-BOOL isIOS8() {
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
-    float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
-    if ((sysVersion >= 8.0) && sysVersion < 9.0) {
-        return YES;
-    }
-#endif
-    return NO;
-}
-=======
 BOOL isIpV6FullySupported() {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
     float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
@@ -98,4 +87,3 @@ BOOL isIpV6FullySupported() {
 #endif
     return YES;
 }
->>>>>>> 7df8239736fc4228d005e77273ea78d4701e9805
