@@ -1,12 +1,14 @@
 language: objective-c
 before_install:
-  # - rvm install 2.2.2
-  # - rvm use 2.2.2
-  # - brew update
-  # - brew outdated xctool || brew upgrade xctool
+  - rvm install 2.3.1
+  - rvm use 2.3.1
+  - brew update
+  - brew outdated xctool || brew upgrade xctool
   - gem install cocoapods --pre
   - pod --version
-
+  - pod repo remove master
+  - pod setup
+  - pod install --verbose --no-repo-update
 before_script:
   - export QINIU_TEST_ENV="travis"
 script:
