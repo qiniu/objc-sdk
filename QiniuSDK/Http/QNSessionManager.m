@@ -163,18 +163,20 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
         url = [[NSURL alloc] initWithString:_converter(u)];
         request.URL = url;
         domain = url.host;
-    } else if (_noProxy && _dns != nil && [url.scheme isEqualToString:@"http"] && !(isIpV6FullySupported() && [QNIP isV6])) {
-        ips = [_dns queryWithDomain:[[QNDomain alloc] init:domain hostsFirst:NO hasCname:YES maxTtl:1000]];
-        double duration = [[NSDate date] timeIntervalSinceDate:startTime];
+    } else if (_noProxy && _dns != nil && [url.scheme isEqualToString:@"http"]) {
+        if (![QNIP isV6] || isIpV6FullySupported()) {
+            ips = [_dns queryWithDomain:[[QNDomain alloc] init:domain hostsFirst:NO hasCname:YES maxTtl:1000]];
+            double duration = [[NSDate date] timeIntervalSinceDate:startTime];
 
-        if (ips == nil || ips.count == 0) {
-            NSError *error = [[NSError alloc] initWithDomain:domain code:-1003 userInfo:@{ @"error" : @"unkonwn host" }];
+            if (ips == nil || ips.count == 0) {
+                NSError *error = [[NSError alloc] initWithDomain:domain code:-1003 userInfo:@{ @"error" : @"unkonwn host" }];
 
-            QNResponseInfo *info = [QNResponseInfo responseInfoWithNetError:error host:domain duration:duration];
-            NSLog(@"failure %@", info);
+                QNResponseInfo *info = [QNResponseInfo responseInfoWithNetError:error host:domain duration:duration];
+                NSLog(@"failure %@", info);
 
-            completeBlock(info, nil);
-            return;
+                completeBlock(info, nil);
+                return;
+            }
         }
     }
     [self sendRequest2:request withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:cancelBlock withIpArray:ips withIndex:0 withDomain:domain withRetryTimes:3 withStartTime:startTime];
