@@ -300,11 +300,16 @@
     XCTAssert(key == nil, @"Pass");
     XCTAssert(testInfo.isOK, @"Pass");
     XCTAssert(testInfo.reqId, @"Pass");
+<<<<<<< HEAD
     if (isNotiOS8) {
         XCTAssert([testInfo.host isEqual:@"uphosttest.qiniu.com"], @"Pass");
     } else {
         XCTAssert([testInfo.host isEqual:@"upload.qiniu.com"], @"Pass");
     }
+=======
+    XCTAssert([testInfo.host isEqual:@"uphosttest.qiniu.com"], @"Pass");
+
+>>>>>>> 7df8239736fc4228d005e77273ea78d4701e9805
     XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");
 }
 
