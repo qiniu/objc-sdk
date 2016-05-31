@@ -15,8 +15,6 @@ BOOL hasAts();
 
 BOOL allowsArbitraryLoads();
 
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
-BOOL isLessIOS9();
-#endif
+BOOL isIpV6FullySupported();
 
 #endif /* QNSystem_h */

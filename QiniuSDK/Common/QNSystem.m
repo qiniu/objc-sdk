@@ -25,7 +25,7 @@ BOOL hasNSURLSession() {
     NSOperatingSystemVersion sysVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
     if (sysVersion.majorVersion < 10) {
         return NO;
-    } else if ((sysVersion.majorVersion == 10)) {
+    } else if (sysVersion.majorVersion == 10) {
         return sysVersion.minorVersion >= 9;
     }
 #endif
@@ -42,7 +42,7 @@ BOOL hasAts() {
     NSOperatingSystemVersion sysVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
     if (sysVersion.majorVersion < 10) {
         return NO;
-    } else if ((sysVersion.majorVersion == 10)) {
+    } else if (sysVersion.majorVersion == 10) {
         return sysVersion.minorVersion >= 11;
     }
 #endif
@@ -71,9 +71,19 @@ BOOL allowsArbitraryLoads() {
     return ats.boolValue;
 }
 
+BOOL isIpV6FullySupported() {
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
-BOOL isLessIOS9() {
     float sysVersion = [[[UIDevice currentDevice] systemVersion] floatValue];
-    return sysVersion < 9.0;
-}
+    if (sysVersion < 9.0) {
+        return NO;
+    }
+#else
+    NSOperatingSystemVersion sysVersion = [[NSProcessInfo processInfo] operatingSystemVersion];
+    if (sysVersion.majorVersion < 10) {
+        return NO;
+    } else if (sysVersion.majorVersion == 10) {
+        return sysVersion.minorVersion >= 11;
+    }
 #endif
+    return YES;
+}
