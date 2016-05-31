@@ -178,7 +178,7 @@ static BOOL needRetry(AFHTTPRequestOperation *op, NSError *error) {
         request.URL = url;
         domain = url.host;
     } else if (_dns != nil && [url.scheme isEqual:@"http"]) {
-        if (![QNIP isV6] || isIpV6FullySupported()) {
+        if (isIpV6FullySupported() || ![QNIP isV6]) {
             ips = [_dns queryWithDomain:[[QNDomain alloc] init:domain hostsFirst:NO hasCname:YES maxTtl:1000]];
             double duration = [[NSDate date] timeIntervalSinceDate:startTime];
             if (ips == nil || ips.count == 0) {
