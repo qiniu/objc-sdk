@@ -1,12 +1,12 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
 def shared_dependencies
-  pod 'AFNetworking', '~> 2.5.0'
-  pod 'HappyDNS', '>= 0.3'
+  pod "AFNetworking", "~> 2.5.0"
+  pod "HappyDNS", ">= 0.3"
 end
 
 def test_dependencies
-  pod 'AGAsyncTestHelper/Shorthand'
+  pod "AGAsyncTestHelper/Shorthand"
 end
 
 target "QiniuSDK_iOS" do
