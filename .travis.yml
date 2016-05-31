@@ -1,7 +1,9 @@
 language: objective-c
 before_install:
+  - rvm install 2.3.1
+  - rvm use 2.3.1
   - brew update
-  - brew upgrade xctool
+  - brew outdated xctool || brew upgrade xctool
   - gem install cocoapods --pre
   - pod --version
 
