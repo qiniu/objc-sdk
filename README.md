@@ -53,7 +53,7 @@ $ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -con
 可以在单元测试上修改, 熟悉 SDK
 
 ``` bash
-$ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK Mac" -sdk macosx -configuration Debug test -test-sdk macosx -only "QiniuSDK MacTests:QNResumeUploadTest/test500k"
+$ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK_Mac" -sdk macosx -configuration Debug test -test-sdk macosx -only "QiniuSDK MacTests:QNResumeUploadTest/test500k"
 ```
 
 ## 示例代码

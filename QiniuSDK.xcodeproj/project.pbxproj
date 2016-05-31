@@ -7,19 +7,19 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		22019FE04FB937FAB13FDFFD /* libPods-QiniuSDK iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 389DF9365782A14F70933C3E /* libPods-QiniuSDK iOS.a */; };
-		5F0FFE6A946BAEFF741BC23E /* libPods-QiniuSDK Mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8924D07F6E137C6379C173D4 /* libPods-QiniuSDK Mac.a */; };
-		7277FD17389341BDCAD29727 /* libPods-QiniuSDK iOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D41D651AEAB89853C760E3A /* libPods-QiniuSDK iOSTests.a */; };
+		26E248753D83A9EAC073EE0A /* libPods-QiniuSDK_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2680270A9F1682A66A0A9762 /* libPods-QiniuSDK_iOS.a */; };
+		5C9E2521D9079C5FB327459D /* libPods-QiniuSDK_MacTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C47899D2411DFBA5E910BAEB /* libPods-QiniuSDK_MacTests.a */; };
 		93CEF47E1BDE11FF00750FE8 /* QNPHAssetFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 93CEF47C1BDE11FF00750FE8 /* QNPHAssetFile.h */; };
 		93CEF47F1BDE11FF00750FE8 /* QNPHAssetFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 93CEF47D1BDE11FF00750FE8 /* QNPHAssetFile.m */; };
 		93CEF4801BDE11FF00750FE8 /* QNPHAssetFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 93CEF47D1BDE11FF00750FE8 /* QNPHAssetFile.m */; };
 		93D01E641C7065C200E7F47C /* QNPHAssetResource.h in Headers */ = {isa = PBXBuildFile; fileRef = 93D01E621C7065C200E7F47C /* QNPHAssetResource.h */; };
 		93D01E651C7065C200E7F47C /* QNPHAssetResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D01E631C7065C200E7F47C /* QNPHAssetResource.m */; };
 		93D01E661C7065C200E7F47C /* QNPHAssetResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D01E631C7065C200E7F47C /* QNPHAssetResource.m */; };
+		AEE72FF3E1F2D41785B7DCAB /* libPods-QiniuSDK_iOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 01BF1BB8E4985026A2C1635E /* libPods-QiniuSDK_iOSTests.a */; };
 		BA8408541BE251010093B013 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA8408521BE250C80093B013 /* SystemConfiguration.framework */; };
-		DF0A03231B3BABEC00E3778C /* libQiniuSDK Mac.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DF2CDDFF19DAC05500CE01FB /* libQiniuSDK Mac.dylib */; };
+		DF0A03231B3BABEC00E3778C /* QiniuSDK_Mac.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DF2CDDFF19DAC05500CE01FB /* QiniuSDK_Mac.dylib */; };
 		DF0A03241B3BAC3900E3778C /* QNFormUploadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DF3C504619DD7BA6000F548F /* QNFormUploadTest.m */; };
-		DF0A03251B3BAC5700E3778C /* libQiniuSDK iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DF2CDE1A19DAC08400CE01FB /* libQiniuSDK iOS.a */; };
+		DF0A03251B3BAC5700E3778C /* libQiniuSDK_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DF2CDE1A19DAC08400CE01FB /* libQiniuSDK_iOS.a */; };
 		DF0A03261B3BAC6E00E3778C /* QNBase64Test.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE7019DAE90300CE01FB /* QNBase64Test.m */; };
 		DF0A03271B3BAC6E00E3778C /* QNCrc32Test.m in Sources */ = {isa = PBXBuildFile; fileRef = DF293C9619DB865800799011 /* QNCrc32Test.m */; };
 		DF0A03281B3BAC6E00E3778C /* QNFormUploadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DF3C504619DD7BA6000F548F /* QNFormUploadTest.m */; };
@@ -105,7 +105,7 @@
 		DFF525371A626A3700D02BA1 /* QNHttpDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = DFF525361A626A3700D02BA1 /* QNHttpDelegate.h */; };
 		DFF525391A64079B00D02BA1 /* QNSessionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFF525381A64079B00D02BA1 /* QNSessionTest.m */; };
 		DFFE0E6019E6575600D7A0FC /* QNFileRecorderTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */; };
-		EE76B381AF33E356C2C8FC56 /* libPods-QiniuSDK MacTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0EB0B4B6BA4EEC2DEF421644 /* libPods-QiniuSDK MacTests.a */; };
+		EF6C7F203CF82359E5E08280 /* libPods-QiniuSDK_Mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9988A8560D650D35C69DBDF3 /* libPods-QiniuSDK_Mac.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -121,23 +121,23 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		0EB0B4B6BA4EEC2DEF421644 /* libPods-QiniuSDK MacTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuSDK MacTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		389DF9365782A14F70933C3E /* libPods-QiniuSDK iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuSDK iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		3A754F11A7F09E90E2173E2A /* Pods-QiniuSDK Mac.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK Mac.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK Mac/Pods-QiniuSDK Mac.release.xcconfig"; sourceTree = "<group>"; };
-		4D41D651AEAB89853C760E3A /* libPods-QiniuSDK iOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuSDK iOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		75127E9F1F2BA68C9D5B463F /* Pods-QiniuSDK iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK iOS/Pods-QiniuSDK iOS.release.xcconfig"; sourceTree = "<group>"; };
-		7EFD2A2AD31548D6BD3FD007 /* Pods-QiniuSDK MacTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK MacTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK MacTests/Pods-QiniuSDK MacTests.release.xcconfig"; sourceTree = "<group>"; };
-		8924D07F6E137C6379C173D4 /* libPods-QiniuSDK Mac.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuSDK Mac.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		01BF1BB8E4985026A2C1635E /* libPods-QiniuSDK_iOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuSDK_iOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		07D3551E597C58F34BC738B1 /* Pods-QiniuSDK_Mac.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_Mac.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_Mac/Pods-QiniuSDK_Mac.debug.xcconfig"; sourceTree = "<group>"; };
+		2680270A9F1682A66A0A9762 /* libPods-QiniuSDK_iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuSDK_iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		346647FF7BC54FB8289EB58D /* Pods-QiniuSDK_iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_iOS/Pods-QiniuSDK_iOS.release.xcconfig"; sourceTree = "<group>"; };
+		37DA86D93D7D0E38B8C94F91 /* Pods-QiniuSDK_Mac.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_Mac.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_Mac/Pods-QiniuSDK_Mac.release.xcconfig"; sourceTree = "<group>"; };
+		4C0EA3B11B30A87BDE2D3B95 /* Pods-QiniuSDK_MacTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_MacTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_MacTests/Pods-QiniuSDK_MacTests.release.xcconfig"; sourceTree = "<group>"; };
+		6656C93F97DDA323F98DF5B9 /* Pods-QiniuSDK_iOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_iOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_iOSTests/Pods-QiniuSDK_iOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		93CEF47C1BDE11FF00750FE8 /* QNPHAssetFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNPHAssetFile.h; sourceTree = "<group>"; };
 		93CEF47D1BDE11FF00750FE8 /* QNPHAssetFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNPHAssetFile.m; sourceTree = "<group>"; };
 		93D01E621C7065C200E7F47C /* QNPHAssetResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNPHAssetResource.h; sourceTree = "<group>"; };
 		93D01E631C7065C200E7F47C /* QNPHAssetResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNPHAssetResource.m; sourceTree = "<group>"; };
-		948F5D59B2BD6CACC644FA14 /* Pods-QiniuSDK MacTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK MacTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK MacTests/Pods-QiniuSDK MacTests.debug.xcconfig"; sourceTree = "<group>"; };
-		9A0CE9E3B1F13E790C38CB75 /* Pods-QiniuSDK iOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK iOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK iOSTests/Pods-QiniuSDK iOSTests.release.xcconfig"; sourceTree = "<group>"; };
+		9988A8560D650D35C69DBDF3 /* libPods-QiniuSDK_Mac.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuSDK_Mac.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA8408521BE250C80093B013 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
-		C24CE1990894CD3CA9A17042 /* Pods-QiniuSDK iOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK iOSTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK iOSTests/Pods-QiniuSDK iOSTests.debug.xcconfig"; sourceTree = "<group>"; };
-		DB8C25D8ADEC1AAEAFE9BB8A /* Pods-QiniuSDK iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK iOS/Pods-QiniuSDK iOS.debug.xcconfig"; sourceTree = "<group>"; };
-		DEC82F60B1102AD44ABC9284 /* Pods-QiniuSDK Mac.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK Mac.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK Mac/Pods-QiniuSDK Mac.debug.xcconfig"; sourceTree = "<group>"; };
+		C47899D2411DFBA5E910BAEB /* libPods-QiniuSDK_MacTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuSDK_MacTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CDF2E2E5EB3EBCC2AB4A4A3F /* Pods-QiniuSDK_MacTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_MacTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_MacTests/Pods-QiniuSDK_MacTests.debug.xcconfig"; sourceTree = "<group>"; };
+		D3B98855CC9F979A9C4D0703 /* Pods-QiniuSDK_iOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_iOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_iOSTests/Pods-QiniuSDK_iOSTests.release.xcconfig"; sourceTree = "<group>"; };
+		D87F4FA2F41CD776B70CC693 /* Pods-QiniuSDK_iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_iOS/Pods-QiniuSDK_iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		DF0D23CC19DCE6C400D6B68F /* QNResponseInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNResponseInfo.h; sourceTree = "<group>"; };
 		DF0D23CE19DCE6E500D6B68F /* QNResponseInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNResponseInfo.m; sourceTree = "<group>"; };
 		DF1E81A91CC893D600E32E44 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -150,10 +150,10 @@
 		DF293CA519DC05B800799011 /* QNHttpManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNHttpManager.m; sourceTree = "<group>"; };
 		DF293CA819DC0AF000799011 /* QNResumeUpload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNResumeUpload.h; sourceTree = "<group>"; };
 		DF293CAA19DC0E5300799011 /* QNResumeUpload.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNResumeUpload.m; sourceTree = "<group>"; };
-		DF2CDDFF19DAC05500CE01FB /* libQiniuSDK Mac.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "libQiniuSDK Mac.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
-		DF2CDE0A19DAC05500CE01FB /* QiniuSDK MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "QiniuSDK MacTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		DF2CDE1A19DAC08400CE01FB /* libQiniuSDK iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libQiniuSDK iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		DF2CDE2419DAC08400CE01FB /* QiniuSDK iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "QiniuSDK iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF2CDDFF19DAC05500CE01FB /* QiniuSDK_Mac.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = QiniuSDK_Mac.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF2CDE0A19DAC05500CE01FB /* QiniuSDK_MacTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QiniuSDK_MacTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF2CDE1A19DAC08400CE01FB /* libQiniuSDK_iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libQiniuSDK_iOS.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		DF2CDE2419DAC08400CE01FB /* QiniuSDK_iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QiniuSDK_iOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF2CDE4F19DAC6A400CE01FB /* QNUrlSafeBase64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNUrlSafeBase64.h; sourceTree = "<group>"; };
 		DF2CDE5019DAC6A400CE01FB /* QNUrlSafeBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNUrlSafeBase64.m; sourceTree = "<group>"; };
 		DF2CDE5219DAC6A400CE01FB /* QNCrc32.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNCrc32.h; sourceTree = "<group>"; };
@@ -204,12 +204,20 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		C83FC3BEED8721A453A4FEEE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				26E248753D83A9EAC073EE0A /* libPods-QiniuSDK_iOS.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DF2CDDFC19DAC05500CE01FB /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				DF293C9119DB85CB00799011 /* libz.dylib in Frameworks */,
-				5F0FFE6A946BAEFF741BC23E /* libPods-QiniuSDK Mac.a in Frameworks */,
+				EF6C7F203CF82359E5E08280 /* libPods-QiniuSDK_Mac.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -217,17 +225,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DF0A03231B3BABEC00E3778C /* libQiniuSDK Mac.dylib in Frameworks */,
+				DF0A03231B3BABEC00E3778C /* QiniuSDK_Mac.dylib in Frameworks */,
 				DF293C9219DB85EB00799011 /* libz.dylib in Frameworks */,
-				EE76B381AF33E356C2C8FC56 /* libPods-QiniuSDK MacTests.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DF2CDE1719DAC08400CE01FB /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				22019FE04FB937FAB13FDFFD /* libPods-QiniuSDK iOS.a in Frameworks */,
+				5C9E2521D9079C5FB327459D /* libPods-QiniuSDK_MacTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -237,43 +237,42 @@
 			files = (
 				DF5AC8E81B5F509200728D30 /* libresolv.dylib in Frameworks */,
 				BA8408541BE251010093B013 /* SystemConfiguration.framework in Frameworks */,
-				DF0A03251B3BAC5700E3778C /* libQiniuSDK iOS.a in Frameworks */,
+				DF0A03251B3BAC5700E3778C /* libQiniuSDK_iOS.a in Frameworks */,
 				DF293C9A19DBC09400799011 /* libz.dylib in Frameworks */,
-				7277FD17389341BDCAD29727 /* libPods-QiniuSDK iOSTests.a in Frameworks */,
+				AEE72FF3E1F2D41785B7DCAB /* libPods-QiniuSDK_iOSTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		27A041BF8D48A1F173DD8FD3 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				DEC82F60B1102AD44ABC9284 /* Pods-QiniuSDK Mac.debug.xcconfig */,
-				3A754F11A7F09E90E2173E2A /* Pods-QiniuSDK Mac.release.xcconfig */,
-				948F5D59B2BD6CACC644FA14 /* Pods-QiniuSDK MacTests.debug.xcconfig */,
-				7EFD2A2AD31548D6BD3FD007 /* Pods-QiniuSDK MacTests.release.xcconfig */,
-				DB8C25D8ADEC1AAEAFE9BB8A /* Pods-QiniuSDK iOS.debug.xcconfig */,
-				75127E9F1F2BA68C9D5B463F /* Pods-QiniuSDK iOS.release.xcconfig */,
-				C24CE1990894CD3CA9A17042 /* Pods-QiniuSDK iOSTests.debug.xcconfig */,
-				9A0CE9E3B1F13E790C38CB75 /* Pods-QiniuSDK iOSTests.release.xcconfig */,
-			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
 		A955AABD20BF51BFE5032419 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				BA8408521BE250C80093B013 /* SystemConfiguration.framework */,
 				DF5AC8E71B5F509200728D30 /* libresolv.dylib */,
 				DF293C9319DB860200799011 /* libz.dylib */,
-				DF293C9019DB85CB00799011 /* libz.dylib */,
-				8924D07F6E137C6379C173D4 /* libPods-QiniuSDK Mac.a */,
-				0EB0B4B6BA4EEC2DEF421644 /* libPods-QiniuSDK MacTests.a */,
-				389DF9365782A14F70933C3E /* libPods-QiniuSDK iOS.a */,
-				4D41D651AEAB89853C760E3A /* libPods-QiniuSDK iOSTests.a */,
+				9988A8560D650D35C69DBDF3 /* libPods-QiniuSDK_Mac.a */,
+				C47899D2411DFBA5E910BAEB /* libPods-QiniuSDK_MacTests.a */,
+				2680270A9F1682A66A0A9762 /* libPods-QiniuSDK_iOS.a */,
+				01BF1BB8E4985026A2C1635E /* libPods-QiniuSDK_iOSTests.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		AA840E41D427BA4691D19564 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				07D3551E597C58F34BC738B1 /* Pods-QiniuSDK_Mac.debug.xcconfig */,
+				37DA86D93D7D0E38B8C94F91 /* Pods-QiniuSDK_Mac.release.xcconfig */,
+				CDF2E2E5EB3EBCC2AB4A4A3F /* Pods-QiniuSDK_MacTests.debug.xcconfig */,
+				4C0EA3B11B30A87BDE2D3B95 /* Pods-QiniuSDK_MacTests.release.xcconfig */,
+				D87F4FA2F41CD776B70CC693 /* Pods-QiniuSDK_iOS.debug.xcconfig */,
+				346647FF7BC54FB8289EB58D /* Pods-QiniuSDK_iOS.release.xcconfig */,
+				6656C93F97DDA323F98DF5B9 /* Pods-QiniuSDK_iOSTests.debug.xcconfig */,
+				D3B98855CC9F979A9C4D0703 /* Pods-QiniuSDK_iOSTests.release.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 		DF293C9B19DBC2AE00799011 /* Http */ = {
@@ -298,18 +297,18 @@
 				DF2CDE4D19DAC6A400CE01FB /* QiniuSDK */,
 				DF2CDE6F19DAE90300CE01FB /* QiniuSDKTests */,
 				DF2CDE0019DAC05500CE01FB /* Products */,
-				27A041BF8D48A1F173DD8FD3 /* Pods */,
 				A955AABD20BF51BFE5032419 /* Frameworks */,
+				AA840E41D427BA4691D19564 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
 		DF2CDE0019DAC05500CE01FB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DF2CDDFF19DAC05500CE01FB /* libQiniuSDK Mac.dylib */,
-				DF2CDE0A19DAC05500CE01FB /* QiniuSDK MacTests.xctest */,
-				DF2CDE1A19DAC08400CE01FB /* libQiniuSDK iOS.a */,
-				DF2CDE2419DAC08400CE01FB /* QiniuSDK iOSTests.xctest */,
+				DF2CDDFF19DAC05500CE01FB /* QiniuSDK_Mac.dylib */,
+				DF2CDE0A19DAC05500CE01FB /* QiniuSDK_MacTests.xctest */,
+				DF2CDE1A19DAC08400CE01FB /* libQiniuSDK_iOS.a */,
+				DF2CDE2419DAC08400CE01FB /* QiniuSDK_iOSTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -443,80 +442,82 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		DF2CDDFE19DAC05500CE01FB /* QiniuSDK Mac */ = {
+		DF2CDDFE19DAC05500CE01FB /* QiniuSDK_Mac */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DF2CDE1019DAC05500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK Mac" */;
+			buildConfigurationList = DF2CDE1019DAC05500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK_Mac" */;
 			buildPhases = (
-				20153B9EAB6E3686B73A8237 /* Check Pods Manifest.lock */,
+				63491072E8BBA5A3C670D63E /* 📦 Check Pods Manifest.lock */,
 				DF2CDDFB19DAC05500CE01FB /* Sources */,
 				DF2CDDFC19DAC05500CE01FB /* Frameworks */,
 				DF2CDDFD19DAC05500CE01FB /* Headers */,
-				299F72DC469BE0A3CBD28AD0 /* Copy Pods Resources */,
+				D4FFB530A396D2A42DBE8BF3 /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = "QiniuSDK Mac";
-			productName = "QiniuSDK Mac";
-			productReference = DF2CDDFF19DAC05500CE01FB /* libQiniuSDK Mac.dylib */;
+			name = QiniuSDK_Mac;
+			productName = QiniuSDK_Mac;
+			productReference = DF2CDDFF19DAC05500CE01FB /* QiniuSDK_Mac.dylib */;
 			productType = "com.apple.product-type.library.dynamic";
 		};
-		DF2CDE0919DAC05500CE01FB /* QiniuSDK MacTests */ = {
+		DF2CDE0919DAC05500CE01FB /* QiniuSDK_MacTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DF2CDE1319DAC05500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK MacTests" */;
+			buildConfigurationList = DF2CDE1319DAC05500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK_MacTests" */;
 			buildPhases = (
-				56B8F5235FF91A319A31B171 /* Check Pods Manifest.lock */,
+				ED014E4B9E9741D59E97AB00 /* 📦 Check Pods Manifest.lock */,
 				DF2CDE0619DAC05500CE01FB /* Sources */,
 				DF2CDE0719DAC05500CE01FB /* Frameworks */,
 				DF2CDE0819DAC05500CE01FB /* Resources */,
-				89DB25D6138DE224B6792894 /* Copy Pods Resources */,
+				45709498EC0FBC25DF665AD6 /* 📦 Embed Pods Frameworks */,
+				ECE0311EB7248B2E59D3C3C1 /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = "QiniuSDK MacTests";
-			productName = "QiniuSDK MacTests";
-			productReference = DF2CDE0A19DAC05500CE01FB /* QiniuSDK MacTests.xctest */;
+			name = QiniuSDK_MacTests;
+			productName = QiniuSDK_MacTests;
+			productReference = DF2CDE0A19DAC05500CE01FB /* QiniuSDK_MacTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		DF2CDE1919DAC08400CE01FB /* QiniuSDK iOS */ = {
+		DF2CDE1919DAC08400CE01FB /* QiniuSDK_iOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DF2CDE2819DAC08500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK iOS" */;
+			buildConfigurationList = DF2CDE2819DAC08500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK_iOS" */;
 			buildPhases = (
-				E79DAA00C82CEAE05AF2CC18 /* Check Pods Manifest.lock */,
+				E00A27F0062314186E860F7E /* 📦 Check Pods Manifest.lock */,
 				DF2CDE1619DAC08400CE01FB /* Sources */,
-				DF2CDE1719DAC08400CE01FB /* Frameworks */,
 				DF2CDE1819DAC08400CE01FB /* CopyFiles */,
-				B624CB8FAC63657F61956E85 /* Copy Pods Resources */,
+				C83FC3BEED8721A453A4FEEE /* Frameworks */,
+				FBF8D5F71C46CB91E08049EB /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = "QiniuSDK iOS";
-			productName = "QiniuSDK iOS";
-			productReference = DF2CDE1A19DAC08400CE01FB /* libQiniuSDK iOS.a */;
+			name = QiniuSDK_iOS;
+			productName = QiniuSDK_iOS;
+			productReference = DF2CDE1A19DAC08400CE01FB /* libQiniuSDK_iOS.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		DF2CDE2319DAC08400CE01FB /* QiniuSDK iOSTests */ = {
+		DF2CDE2319DAC08400CE01FB /* QiniuSDK_iOSTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = DF2CDE2B19DAC08500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK iOSTests" */;
+			buildConfigurationList = DF2CDE2B19DAC08500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK_iOSTests" */;
 			buildPhases = (
-				8B094B176B577162302BFF40 /* Check Pods Manifest.lock */,
+				2FB3D9EFD69476E23A585CC0 /* 📦 Check Pods Manifest.lock */,
 				DF2CDE2019DAC08400CE01FB /* Sources */,
 				DF2CDE2119DAC08400CE01FB /* Frameworks */,
 				DF2CDE2219DAC08400CE01FB /* Resources */,
-				A98F1AAF0833E00FD9DB35A9 /* Copy Pods Resources */,
+				FFB451DD14A8ADA6090C8BE5 /* 📦 Embed Pods Frameworks */,
+				BD0338B0B04FB6CC3A2E232D /* 📦 Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = "QiniuSDK iOSTests";
-			productName = "QiniuSDK iOSTests";
-			productReference = DF2CDE2419DAC08400CE01FB /* QiniuSDK iOSTests.xctest */;
+			name = QiniuSDK_iOSTests;
+			productName = QiniuSDK_iOSTests;
+			productReference = DF2CDE2419DAC08400CE01FB /* QiniuSDK_iOSTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -525,7 +526,7 @@
 		DF2CDDF719DAC05500CE01FB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0600;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = Qiniu;
 				TargetAttributes = {
 					DF2CDDFE19DAC05500CE01FB = {
@@ -554,10 +555,10 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				DF2CDDFE19DAC05500CE01FB /* QiniuSDK Mac */,
-				DF2CDE0919DAC05500CE01FB /* QiniuSDK MacTests */,
-				DF2CDE1919DAC08400CE01FB /* QiniuSDK iOS */,
-				DF2CDE2319DAC08400CE01FB /* QiniuSDK iOSTests */,
+				DF2CDDFE19DAC05500CE01FB /* QiniuSDK_Mac */,
+				DF2CDE0919DAC05500CE01FB /* QiniuSDK_MacTests */,
+				DF2CDE1919DAC08400CE01FB /* QiniuSDK_iOS */,
+				DF2CDE2319DAC08400CE01FB /* QiniuSDK_iOSTests */,
 			);
 		};
 /* End PBXProject section */
@@ -580,14 +581,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		20153B9EAB6E3686B73A8237 /* Check Pods Manifest.lock */ = {
+		2FB3D9EFD69476E23A585CC0 /* 📦 Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "📦 Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -595,29 +596,29 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		299F72DC469BE0A3CBD28AD0 /* Copy Pods Resources */ = {
+		45709498EC0FBC25DF665AD6 /* 📦 Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "📦 Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK Mac/Pods-QiniuSDK Mac-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_MacTests/Pods-QiniuSDK_MacTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		56B8F5235FF91A319A31B171 /* Check Pods Manifest.lock */ = {
+		63491072E8BBA5A3C670D63E /* 📦 Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "📦 Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -625,29 +626,44 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		89DB25D6138DE224B6792894 /* Copy Pods Resources */ = {
+		BD0338B0B04FB6CC3A2E232D /* 📦 Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "📦 Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK MacTests/Pods-QiniuSDK MacTests-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_iOSTests/Pods-QiniuSDK_iOSTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		8B094B176B577162302BFF40 /* Check Pods Manifest.lock */ = {
+		D4FFB530A396D2A42DBE8BF3 /* 📦 Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Check Pods Manifest.lock";
+			name = "📦 Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_Mac/Pods-QiniuSDK_Mac-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E00A27F0062314186E860F7E /* 📦 Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -655,49 +671,64 @@
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		A98F1AAF0833E00FD9DB35A9 /* Copy Pods Resources */ = {
+		ECE0311EB7248B2E59D3C3C1 /* 📦 Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
+			name = "📦 Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK iOSTests/Pods-QiniuSDK iOSTests-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_MacTests/Pods-QiniuSDK_MacTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B624CB8FAC63657F61956E85 /* Copy Pods Resources */ = {
+		ED014E4B9E9741D59E97AB00 /* 📦 Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK iOS/Pods-QiniuSDK iOS-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E79DAA00C82CEAE05AF2CC18 /* Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Check Pods Manifest.lock";
+			name = "📦 Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		FBF8D5F71C46CB91E08049EB /* 📦 Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_iOS/Pods-QiniuSDK_iOS-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FFB451DD14A8ADA6090C8BE5 /* 📦 Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "📦 Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_iOSTests/Pods-QiniuSDK_iOSTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -815,6 +846,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -872,179 +904,95 @@
 			};
 			name = Release;
 		};
-		DF2CDE1119DAC05500CE01FB /* Debug */ = {
+		DFBBFBD11CFC5F68003F7CD8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DEC82F60B1102AD44ABC9284 /* Pods-QiniuSDK Mac.debug.xcconfig */;
+			baseConfigurationReference = 07D3551E597C58F34BC738B1 /* Pods-QiniuSDK_Mac.debug.xcconfig */;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				EXECUTABLE_PREFIX = lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = QiniuSDK_Mac;
 			};
 			name = Debug;
 		};
-		DF2CDE1219DAC05500CE01FB /* Release */ = {
+		DFBBFBD21CFC5F68003F7CD8 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3A754F11A7F09E90E2173E2A /* Pods-QiniuSDK Mac.release.xcconfig */;
+			baseConfigurationReference = 37DA86D93D7D0E38B8C94F91 /* Pods-QiniuSDK_Mac.release.xcconfig */;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				EXECUTABLE_PREFIX = lib;
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				PRODUCT_NAME = QiniuSDK_Mac;
 			};
 			name = Release;
 		};
-		DF2CDE1419DAC05500CE01FB /* Debug */ = {
+		DFBBFBD31CFC5F68003F7CD8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 948F5D59B2BD6CACC644FA14 /* Pods-QiniuSDK MacTests.debug.xcconfig */;
+			baseConfigurationReference = CDF2E2E5EB3EBCC2AB4A4A3F /* Pods-QiniuSDK_MacTests.debug.xcconfig */;
 			buildSettings = {
-				BUNDLE_LOADER = "";
 				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = QiniuSDKTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-l\"Pods-QiniuSDK Mac-AFNetworking\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-framework",
-					"\"Foundation\"",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = QiniuSDK_MacTests;
 			};
 			name = Debug;
 		};
-		DF2CDE1519DAC05500CE01FB /* Release */ = {
+		DFBBFBD41CFC5F68003F7CD8 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7EFD2A2AD31548D6BD3FD007 /* Pods-QiniuSDK MacTests.release.xcconfig */;
+			baseConfigurationReference = 4C0EA3B11B30A87BDE2D3B95 /* Pods-QiniuSDK_MacTests.release.xcconfig */;
 			buildSettings = {
-				BUNDLE_LOADER = "";
 				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(DEVELOPER_FRAMEWORKS_DIR)",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = QiniuSDKTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.8;
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-l\"Pods-QiniuSDK Mac-AFNetworking\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-framework",
-					"\"Foundation\"",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				PRODUCT_NAME = QiniuSDK_MacTests;
 			};
 			name = Release;
 		};
-		DF2CDE2919DAC08500CE01FB /* Debug */ = {
+		DFBBFBD51CFC5F68003F7CD8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = DB8C25D8ADEC1AAEAFE9BB8A /* Pods-QiniuSDK iOS.debug.xcconfig */;
+			baseConfigurationReference = D87F4FA2F41CD776B70CC693 /* Pods-QiniuSDK_iOS.debug.xcconfig */;
 			buildSettings = {
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				MACH_O_TYPE = staticlib;
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = QiniuSDK_iOS;
 				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
-		DF2CDE2A19DAC08500CE01FB /* Release */ = {
+		DFBBFBD61CFC5F68003F7CD8 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 75127E9F1F2BA68C9D5B463F /* Pods-QiniuSDK iOS.release.xcconfig */;
+			baseConfigurationReference = 346647FF7BC54FB8289EB58D /* Pods-QiniuSDK_iOS.release.xcconfig */;
 			buildSettings = {
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				MACH_O_TYPE = staticlib;
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				OTHER_LDFLAGS = "";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				PRODUCT_NAME = QiniuSDK_iOS;
 				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
 		};
-		DF2CDE2C19DAC08500CE01FB /* Debug */ = {
+		DFBBFBD71CFC5F68003F7CD8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C24CE1990894CD3CA9A17042 /* Pods-QiniuSDK iOSTests.debug.xcconfig */;
+			baseConfigurationReference = 6656C93F97DDA323F98DF5B9 /* Pods-QiniuSDK_iOSTests.debug.xcconfig */;
 			buildSettings = {
-				BUNDLE_LOADER = "";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = QiniuSDKTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-l\"Pods-QiniuSDK iOS-AFNetworking\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-framework",
-					"\"Foundation\"",
-					"-l\"Pods-QiniuSDK iOS-HappyDNS\"",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				COPY_PHASE_STRIP = NO;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				PRODUCT_NAME = QiniuSDK_iOSTests;
 				SDKROOT = iphoneos;
-				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
 			name = Debug;
 		};
-		DF2CDE2D19DAC08500CE01FB /* Release */ = {
+		DFBBFBD81CFC5F68003F7CD8 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9A0CE9E3B1F13E790C38CB75 /* Pods-QiniuSDK iOSTests.release.xcconfig */;
+			baseConfigurationReference = D3B98855CC9F979A9C4D0703 /* Pods-QiniuSDK_iOSTests.release.xcconfig */;
 			buildSettings = {
-				BUNDLE_LOADER = "";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = QiniuSDKTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				ONLY_ACTIVE_ARCH = NO;
-				OTHER_LDFLAGS = (
-					"-ObjC",
-					"-l\"Pods-QiniuSDK iOS-AFNetworking\"",
-					"-framework",
-					"\"CFNetwork\"",
-					"-framework",
-					"\"Foundation\"",
-					"-l\"Pods-QiniuSDK iOS-HappyDNS\"",
-				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				PRODUCT_NAME = QiniuSDK_iOSTests;
 				SDKROOT = iphoneos;
-				VALIDATE_PRODUCT = YES;
-				VALID_ARCHS = "arm64 armv7 armv7s";
 			};
 			name = Release;
 		};
@@ -1060,38 +1008,38 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DF2CDE1019DAC05500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK Mac" */ = {
+		DF2CDE1019DAC05500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK_Mac" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DF2CDE1119DAC05500CE01FB /* Debug */,
-				DF2CDE1219DAC05500CE01FB /* Release */,
+				DFBBFBD11CFC5F68003F7CD8 /* Debug */,
+				DFBBFBD21CFC5F68003F7CD8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DF2CDE1319DAC05500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK MacTests" */ = {
+		DF2CDE1319DAC05500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK_MacTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DF2CDE1419DAC05500CE01FB /* Debug */,
-				DF2CDE1519DAC05500CE01FB /* Release */,
+				DFBBFBD31CFC5F68003F7CD8 /* Debug */,
+				DFBBFBD41CFC5F68003F7CD8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DF2CDE2819DAC08500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK iOS" */ = {
+		DF2CDE2819DAC08500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK_iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DF2CDE2919DAC08500CE01FB /* Debug */,
-				DF2CDE2A19DAC08500CE01FB /* Release */,
+				DFBBFBD51CFC5F68003F7CD8 /* Debug */,
+				DFBBFBD61CFC5F68003F7CD8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		DF2CDE2B19DAC08500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK iOSTests" */ = {
+		DF2CDE2B19DAC08500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK_iOSTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				DF2CDE2C19DAC08500CE01FB /* Debug */,
-				DF2CDE2D19DAC08500CE01FB /* Release */,
+				DFBBFBD71CFC5F68003F7CD8 /* Debug */,
+				DFBBFBD81CFC5F68003F7CD8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
