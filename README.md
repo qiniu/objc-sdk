@@ -62,6 +62,7 @@ $ xctool -workspace QiniuSDK.xcworkspace -scheme "QiniuSDK_Mac" -sdk macosx -con
 
 ## 常见问题
 
+- 由于还有很多客户在使用 2.0 ， 考虑到兼容性问题，所以 af3.0 是作为一个单独的分支来进行开发的，af3.0 分支代码：https://github.com/qiniu/objc-sdk/tree/AFNetworking-3.x
 - 如果碰到 crc 链接错误, 请把 libz.dylib 加入到项目中去
 - 如果碰到 res_9_ninit 链接错误, 请把 libresolv.dylib 加入到项目中去
 - 如果需要支持 iOS 5 或者支持 RestKit, 请用 AFNetworking 1.x 分支的版本
