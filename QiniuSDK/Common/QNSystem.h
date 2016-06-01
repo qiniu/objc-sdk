@@ -15,7 +15,6 @@ BOOL hasAts();
 
 BOOL allowsArbitraryLoads();
 
-//iOS8判断
-BOOL isIOS8();
+BOOL isIpV6FullySupported();
 
 #endif /* QNSystem_h */

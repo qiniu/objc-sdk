@@ -1,21 +1,21 @@
 Pod::Spec.new do |s|
   s.name         = 'Qiniu'
-  s.version      = '7.0.19.1'
-  s.summary      = 'Qiniu Resource Storage SDK for iOS and Mac'
-  s.homepage     = 'https://github.com/qiniu/objc-sdk'
-  s.social_media_url = 'http://weibo.com/qiniutek'
-  s.author       = 'Qiniu => sdk@qiniu.com'
+  s.version      = "7.0.20"
+  s.summary      = "Qiniu Resource Storage SDK for iOS and Mac"
+  s.homepage     = "https://github.com/qiniu/objc-sdk"
+  s.social_media_url = "http://weibo.com/qiniutek"
+  s.author       = "Qiniu => sdk@qiniu.com"
   s.source       = {:git => 'https://github.com/qiniu/objc-sdk.git', :branch => 'AFNetworking-3.x'}
 
-  s.ios.deployment_target = '7.0'
-  s.osx.deployment_target = '10.9'
+  s.ios.deployment_target = "7.0"
+  s.osx.deployment_target = "10.9"
 
-  s.source_files = 'QiniuSDK/**/*.{h,m}'
+  s.source_files = "QiniuSDK/**/*.{h,m}"
   s.requires_arc = true
-  s.libraries = 'z'
-  s.dependency 'AFNetworking', '~> 3'
-  s.dependency 'HappyDNS', '~> 0.2'
-  s.license = { :type => 'MIT', :text => <<-LICENSE
+  s.libraries = "z"
+  s.dependency "AFNetworking", "~> 3"
+  s.dependency "HappyDNS", "~> 0.3"
+  s.license = { :type => "MIT", :text => <<-LICENSE
 The MIT License (MIT)
 
 Copyright (c) 2011-2015 qiniu.com
