@@ -193,7 +193,6 @@
 		DFF525361A626A3700D02BA1 /* QNHttpDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNHttpDelegate.h; sourceTree = "<group>"; };
 		DFF525381A64079B00D02BA1 /* QNSessionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNSessionTest.m; sourceTree = "<group>"; };
 		DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNFileRecorderTest.m; sourceTree = "<group>"; };
-		E42535A061D5DC3FDD492397 /* Pods-QiniuSDK iOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK iOSTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK iOSTests/Pods-QiniuSDK iOSTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -582,7 +581,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK Mac/Pods-QiniuSDK Mac-resources.sh\"\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		45709498EC0FBC25DF665AD6 /* 📦 Embed Pods Frameworks */ = {
