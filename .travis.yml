@@ -1,5 +1,5 @@
 language: objective-c
- before_install:
+before_install:
   - rvm install 2.3.1
   - rvm use 2.3.1
   - brew update
