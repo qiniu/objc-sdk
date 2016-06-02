@@ -72,13 +72,7 @@
         }
         _config = config;
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
-        //        if (hasNSURLSession()) {
         _httpManager = [[QNSessionManager alloc] initWithProxy:config.proxy timeout:config.timeoutInterval urlConverter:config.converter dns:config.dns];
-//        } else {
-//            _httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter dns:config.dns];
-//        }
-#else
-        _httpManager = [[QNHttpManager alloc] initWithTimeout:config.timeoutInterval urlConverter:config.converter dns:config.dns];
 #endif
     }
     return self;

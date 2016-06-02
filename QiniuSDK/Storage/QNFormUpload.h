@@ -11,7 +11,6 @@
 #import "QNUploadManager.h"
 #import <Foundation/Foundation.h>
 
-@class QNHttpManager;
 @interface QNFormUpload : NSObject
 
 - (instancetype)initWithData:(NSData *)data
