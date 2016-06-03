@@ -252,6 +252,8 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
 
             completeBlock(info, resp);
         }];
+    delegate.task = uploadTask;
+    delegate.cancelBlock = cancelBlock;
 
     [uploadTask resume];
 }
