@@ -1,11 +1,11 @@
 Pod::Spec.new do |s|
   s.name         = 'Qiniu'
-  s.version      = "7.0.20"
+  s.version      = "7.1.0"
   s.summary      = "Qiniu Resource Storage SDK for iOS and Mac"
   s.homepage     = "https://github.com/qiniu/objc-sdk"
   s.social_media_url = "http://weibo.com/qiniutek"
   s.author       = "Qiniu => sdk@qiniu.com"
-  s.source       = {:git => 'https://github.com/qiniu/objc-sdk.git', :branch => 'AFNetworking-3.x'}
+  s.source       = {:git => "https://github.com/qiniu/objc-sdk.git", :tag => "v#{s.version}"}
 
   s.ios.deployment_target = "7.0"
   s.osx.deployment_target = "10.9"
@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.license = { :type => "MIT", :text => <<-LICENSE
 The MIT License (MIT)
 
-Copyright (c) 2011-2015 qiniu.com
+Copyright (c) 2011-2016 qiniu.com
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -11,15 +11,15 @@
 通过 CocoaPods
 
 ```ruby
-pod "Qiniu", :git => 'https://github.com/qiniu/objc-sdk.git', :branch => 'AFNetworking-3.x'
+pod "Qiniu" "~> 7.0"
 ```
 
 ## 运行环境
 
 | Qiniu SDK 版本 | 最低 iOS版本   | 最低 OS X 版本  |                                   Notes                                   |
 |:--------------------:|:---------------------------:|:----------------------------:|:-------------------------------------------------------------------------:|
-|          7.x         |            iOS 6            |           OS X 10.8          | Xcode 最低版本 5.  |
-|          [7.x / AFNetworking-3.x](https://github.com/qiniu/objc-sdk/tree/AFNetworking-3.x)         |            iOS 7            |           OS X 10.9          | Xcode 最低版本 6.  |
+|          7.1.x / AFNetworking-3.x       |            iOS 7            |           OS X 10.8          | Xcode 最低版本 5.  |
+|          [7.0.x / AFNetworking-2.x](https://github.com/qiniu/objc-sdk/tree/7.0.x/AFNetworking-2.x)         |            iOS 6            |           OS X 10.9          | Xcode 最低版本 6.  |
 |          [7.x / AFNetworking-1.x](https://github.com/qiniu/objc-sdk/tree/AFNetworking-1.x)         |            iOS 5            |         OS X 10.7        |Xcode 最低版本 5. |
 |          [6.x](https://github.com/qiniu/ios-sdk)         |            iOS 6            |         None        |Xcode 最低版本 5. |
 
