@@ -297,7 +297,6 @@
     XCTAssert(testInfo.isOK, @"Pass");
     XCTAssert(testInfo.reqId, @"Pass");
     XCTAssert([testInfo.host isEqual:@"uphosttest.qiniu.com"], @"Pass");
-
     XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");
 }
 
