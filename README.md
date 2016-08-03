@@ -11,7 +11,7 @@
 通过 CocoaPods
 
 ```ruby
-pod "Qiniu" "~> 7.1"
+pod "Qiniu", "~> 7.1"
 ```
 
 ## 运行环境
