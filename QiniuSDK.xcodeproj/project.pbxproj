@@ -434,11 +434,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DF2CDE1019DAC05500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK_Mac" */;
 			buildPhases = (
-				63491072E8BBA5A3C670D63E /* 📦 Check Pods Manifest.lock */,
+				63491072E8BBA5A3C670D63E /* [CP] Check Pods Manifest.lock */,
 				DF2CDDFB19DAC05500CE01FB /* Sources */,
 				DF2CDDFC19DAC05500CE01FB /* Frameworks */,
 				DF2CDDFD19DAC05500CE01FB /* Headers */,
-				D4FFB530A396D2A42DBE8BF3 /* 📦 Copy Pods Resources */,
+				D4FFB530A396D2A42DBE8BF3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -453,12 +453,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DF2CDE1319DAC05500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK_MacTests" */;
 			buildPhases = (
-				ED014E4B9E9741D59E97AB00 /* 📦 Check Pods Manifest.lock */,
+				ED014E4B9E9741D59E97AB00 /* [CP] Check Pods Manifest.lock */,
 				DF2CDE0619DAC05500CE01FB /* Sources */,
 				DF2CDE0719DAC05500CE01FB /* Frameworks */,
 				DF2CDE0819DAC05500CE01FB /* Resources */,
-				45709498EC0FBC25DF665AD6 /* 📦 Embed Pods Frameworks */,
-				ECE0311EB7248B2E59D3C3C1 /* 📦 Copy Pods Resources */,
+				45709498EC0FBC25DF665AD6 /* [CP] Embed Pods Frameworks */,
+				ECE0311EB7248B2E59D3C3C1 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -473,11 +473,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DF2CDE2819DAC08500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK_iOS" */;
 			buildPhases = (
-				E00A27F0062314186E860F7E /* 📦 Check Pods Manifest.lock */,
+				E00A27F0062314186E860F7E /* [CP] Check Pods Manifest.lock */,
 				DF2CDE1619DAC08400CE01FB /* Sources */,
 				DF2CDE1819DAC08400CE01FB /* CopyFiles */,
 				C83FC3BEED8721A453A4FEEE /* Frameworks */,
-				FBF8D5F71C46CB91E08049EB /* 📦 Copy Pods Resources */,
+				FBF8D5F71C46CB91E08049EB /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -492,12 +492,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DF2CDE2B19DAC08500CE01FB /* Build configuration list for PBXNativeTarget "QiniuSDK_iOSTests" */;
 			buildPhases = (
-				2FB3D9EFD69476E23A585CC0 /* 📦 Check Pods Manifest.lock */,
+				2FB3D9EFD69476E23A585CC0 /* [CP] Check Pods Manifest.lock */,
 				DF2CDE2019DAC08400CE01FB /* Sources */,
 				DF2CDE2119DAC08400CE01FB /* Frameworks */,
 				DF2CDE2219DAC08400CE01FB /* Resources */,
-				FFB451DD14A8ADA6090C8BE5 /* 📦 Embed Pods Frameworks */,
-				BD0338B0B04FB6CC3A2E232D /* 📦 Copy Pods Resources */,
+				FFB451DD14A8ADA6090C8BE5 /* [CP] Embed Pods Frameworks */,
+				BD0338B0B04FB6CC3A2E232D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -569,29 +569,29 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2FB3D9EFD69476E23A585CC0 /* 📦 Check Pods Manifest.lock */ = {
+		2FB3D9EFD69476E23A585CC0 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		45709498EC0FBC25DF665AD6 /* 📦 Embed Pods Frameworks */ = {
+		45709498EC0FBC25DF665AD6 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -599,29 +599,29 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_MacTests/Pods-QiniuSDK_MacTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		63491072E8BBA5A3C670D63E /* 📦 Check Pods Manifest.lock */ = {
+		63491072E8BBA5A3C670D63E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		BD0338B0B04FB6CC3A2E232D /* 📦 Copy Pods Resources */ = {
+		BD0338B0B04FB6CC3A2E232D /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -629,14 +629,14 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_iOSTests/Pods-QiniuSDK_iOSTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		D4FFB530A396D2A42DBE8BF3 /* 📦 Copy Pods Resources */ = {
+		D4FFB530A396D2A42DBE8BF3 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -644,29 +644,29 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_Mac/Pods-QiniuSDK_Mac-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E00A27F0062314186E860F7E /* 📦 Check Pods Manifest.lock */ = {
+		E00A27F0062314186E860F7E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		ECE0311EB7248B2E59D3C3C1 /* 📦 Copy Pods Resources */ = {
+		ECE0311EB7248B2E59D3C3C1 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -674,29 +674,29 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_MacTests/Pods-QiniuSDK_MacTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		ED014E4B9E9741D59E97AB00 /* 📦 Check Pods Manifest.lock */ = {
+		ED014E4B9E9741D59E97AB00 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Check Pods Manifest.lock";
+			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
-		FBF8D5F71C46CB91E08049EB /* 📦 Copy Pods Resources */ = {
+		FBF8D5F71C46CB91E08049EB /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Copy Pods Resources";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -704,14 +704,14 @@
 			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_iOS/Pods-QiniuSDK_iOS-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		FFB451DD14A8ADA6090C8BE5 /* 📦 Embed Pods Frameworks */ = {
+		FFB451DD14A8ADA6090C8BE5 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
-			name = "📦 Embed Pods Frameworks";
+			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
