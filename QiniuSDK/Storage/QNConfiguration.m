@@ -39,8 +39,8 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
     QNDnsManager *d = builder.dns;
     if (d == nil) {
         id<QNResolverDelegate> r1 = [QNResolver systemResolver];
-        id<QNResolverDelegate> r2 = [[QNResolver alloc] initWithAddres:@"119.29.29.29"];
-        id<QNResolverDelegate> r3 = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
+        id<QNResolverDelegate> r2 = [[QNResolver alloc] initWithAddress:@"119.29.29.29"];
+        id<QNResolverDelegate> r3 = [[QNResolver alloc] initWithAddress:@"114.114.115.115"];
         d = [[QNDnsManager alloc] init:[NSArray arrayWithObjects:r1, r2, r3, nil] networkInfo:[QNNetworkInfo normal]];
     }
     return d;

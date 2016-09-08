@@ -270,7 +270,7 @@
     __block QNResponseInfo *testInfo = nil;
     __block NSDictionary *testResp = nil;
     __block NSString *key = nil;
-    QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
+    QNResolver *resolver = [[QNResolver alloc] initWithAddress:@"114.114.115.115"];
     QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         NSArray *ips = [QNZone zone0].up.ips;
