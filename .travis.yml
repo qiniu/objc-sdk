@@ -5,6 +5,9 @@ rvm:
 
 before_install:
   - gem install cocoapods --pre
+  - rm -rf ~/.cocoapods
+  - pod setup
+  - pod install
 
 before_script:
   - export QINIU_TEST_ENV="travis"
