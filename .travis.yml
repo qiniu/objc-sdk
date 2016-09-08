@@ -1,13 +1,17 @@
 language: objective-c
-
-rvm:
-  - 2.3
+osx_image: xcode7
 
 before_install:
+  - rvm install 2.3.1
+  - rvm use 2.3.1
+  - brew update
+  - brew outdated xctool || brew upgrade xctool
   - gem install cocoapods --pre
+  - pod --version
+  - pod repo remove master
   - rm -rf ~/.cocoapods
   - pod setup
-  - pod install
+  - pod install --verbose --no-repo-update
 
 before_script:
   - export QINIU_TEST_ENV="travis"
