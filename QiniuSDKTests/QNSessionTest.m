@@ -139,7 +139,7 @@
 - (void)testPostIp {
     __block QNResponseInfo *testInfo = nil;
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-    QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
+    QNResolver *resolver = [[QNResolver alloc] initWithAddress:@"114.114.115.115"];
     QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
     [dns putHosts:@"upnonono.qiniu.com" ip:[QNZone zone0].up.ips[0]];
     QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:nil dns:dns];
