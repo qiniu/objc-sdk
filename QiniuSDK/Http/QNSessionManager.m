@@ -307,6 +307,25 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
     });
 }
 
+- (void)get:(NSString *)url
+ withHeaders:(NSDictionary *)headers
+withCompleteBlock:(QNCompleteBlock)completeBlock {
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc] initWithString:url]];
+    if (headers) {
+        [request setAllHTTPHeaderFields:headers];
+    }
+    
+    [request setHTTPMethod:@"GET"];
+    
+    QNAsyncRun(^{
+        [self sendRequest:request withCompleteBlock:completeBlock withProgressBlock:^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+            
+        } withCancelBlock:^BOOL{
+            return NO;
+        }];
+    });
+}
+
 @end
 
 #endif
