@@ -102,7 +102,7 @@
 
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         QNServiceAddress *s = [[QNServiceAddress alloc] init:@"https://uptemp.qbox.me" ips:nil];
-        builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
+        builder.zone = [[QNFixedZone alloc] initWithUp:s upBackup:nil];
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
@@ -210,7 +210,7 @@
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.proxy = proxyDict;
         QNServiceAddress *s = [[QNServiceAddress alloc] init:@"http://upnono.qiniu.com" ips:nil];
-        builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
+        builder.zone = [[QNFixedZone alloc] initWithUp:s upBackup:nil];
     }];
 
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
@@ -240,7 +240,7 @@
             return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
         };
         QNServiceAddress *s = [[QNServiceAddress alloc] init:@"http://upnono.qiniu.com" ips:nil];
-        builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
+        builder.zone = [[QNFixedZone alloc] initWithUp:s upBackup:nil];
     }];
 
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
@@ -265,13 +265,13 @@
 }
 
 - (void)testHosts {
-    QNResolver *resolver = [[QNResolver alloc] initWithAddres:@"114.114.115.115"];
+    QNResolver *resolver = [[QNResolver alloc] initWithAddress:@"114.114.115.115"];
     QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        NSArray *ips = [QNZone zone0].up.ips;
+        NSArray *ips = [[QNFixedZone zone0] up:nil].ips;
         QNServiceAddress *s1 = [[QNServiceAddress alloc] init:@"http://uphosttest.qiniu.com" ips:ips];
         QNServiceAddress *s2 = [[QNServiceAddress alloc] init:@"http://uphosttestbak.qiniu.com" ips:ips];
-        builder.zone = [[QNZone alloc] initWithUp:s1 upBackup:s2];
+        builder.zone = [[QNFixedZone alloc] initWithUp:s1 upBackup:s2];
         builder.dns = dns;
     }];
 
