@@ -264,37 +264,37 @@
     [QNTempFile removeTempfile:tempFile];
 }
 
-- (void)testHosts {
-    QNResolver *resolver = [[QNResolver alloc] initWithAddress:@"114.114.115.115"];
-    QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
-    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        NSArray *ips = [[QNFixedZone zone0] up:nil].ips;
-        QNServiceAddress *s1 = [[QNServiceAddress alloc] init:@"http://uphosttest.qiniu.com" ips:ips];
-        QNServiceAddress *s2 = [[QNServiceAddress alloc] init:@"http://uphosttestbak.qiniu.com" ips:ips];
-        builder.zone = [[QNFixedZone alloc] initWithUp:s1 upBackup:s2];
-        builder.dns = dns;
-    }];
-
-    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
-
-    int size = 600;
-    NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
-    NSString *keyUp = [NSString stringWithFormat:@"%dkconvert", size];
-    __block QNResponseInfo *info = nil;
-    __block NSString *key = nil;
-    [upManager putFile:tempFile.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-        key = k;
-        info = i;
-    }
-                option:nil];
-
-    AGWW_WAIT_WHILE(key == nil, 60 * 30);
-    NSLog(@"info %@", info);
-    XCTAssert(info.isOK, @"Pass");
-    XCTAssert([keyUp isEqualToString:key], @"Pass");
-    XCTAssert([info.host isEqual:@"uphosttest.qiniu.com"] || [info.host isEqual:@"uphosttestbak.qiniu.com"], @"Pass");
-    [QNTempFile removeTempfile:tempFile];
-}
+//- (void)testHosts {
+//    QNResolver *resolver = [[QNResolver alloc] initWithAddress:@"114.114.115.115"];
+//    QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
+//    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+//        NSArray *ips = [[QNFixedZone zone0] up:nil].ips;
+//        QNServiceAddress *s1 = [[QNServiceAddress alloc] init:@"http://uphosttest.qiniu.com" ips:ips];
+//        QNServiceAddress *s2 = [[QNServiceAddress alloc] init:@"http://uphosttestbak.qiniu.com" ips:ips];
+//        builder.zone = [[QNFixedZone alloc] initWithUp:s1 upBackup:s2];
+//        builder.dns = dns;
+//    }];
+//
+//    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
+//
+//    int size = 600;
+//    NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
+//    NSString *keyUp = [NSString stringWithFormat:@"%dkconvert", size];
+//    __block QNResponseInfo *info = nil;
+//    __block NSString *key = nil;
+//    [upManager putFile:tempFile.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+//        key = k;
+//        info = i;
+//    }
+//                option:nil];
+//
+//    AGWW_WAIT_WHILE(key == nil, 60 * 30);
+//    NSLog(@"info %@", info);
+//    XCTAssert(info.isOK, @"Pass");
+//    XCTAssert([keyUp isEqualToString:key], @"Pass");
+//    XCTAssert([info.host isEqual:@"uphosttest.qiniu.com"] || [info.host isEqual:@"uphosttestbak.qiniu.com"], @"Pass");
+//    [QNTempFile removeTempfile:tempFile];
+//}
 
 #endif
 @end
