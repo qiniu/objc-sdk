@@ -310,19 +310,30 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
 - (void)get:(NSString *)url
  withHeaders:(NSDictionary *)headers
 withCompleteBlock:(QNCompleteBlock)completeBlock {
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[[NSURL alloc] initWithString:url]];
-    if (headers) {
-        [request setAllHTTPHeaderFields:headers];
-    }
-    
-    [request setHTTPMethod:@"GET"];
-    
     QNAsyncRun(^{
-        [self sendRequest:request withCompleteBlock:completeBlock withProgressBlock:^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+        
+        NSURL *URL = [NSURL URLWithString:url];
+        NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+        
+        NSURLSessionDataTask *dataTask = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+            NSData* s = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
+            NSDictionary *resp = nil;
+            QNResponseInfo*  info;
+            if (error == nil) {
+                info = [QNSessionManager buildResponseInfo:httpResponse withError:nil withDuration:0 withResponse:s withHost:@"" withIp:@""];
+                if (info.isOK) {
+                    resp = responseObject;
+                }
+            } else {
+                info = [QNSessionManager buildResponseInfo:httpResponse withError:error withDuration:0 withResponse:s withHost:@"" withIp:@""];
+            }
             
-        } withCancelBlock:^BOOL{
-            return NO;
+            completeBlock(info, resp);
         }];
+        [dataTask resume];
     });
 }
 

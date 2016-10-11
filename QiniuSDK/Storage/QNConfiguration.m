@@ -183,11 +183,13 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
     NSMutableDictionary* cache;
     NSLock* lock;
     QNSessionManager* sesionManager;
+    QNDnsManager* dns;
 }
 
 - (instancetype)initWithHttps:(BOOL)flag
-                          dns:(QNDnsManager*)dns{
+                          dns:(QNDnsManager*)dns1{
     if (self = [super init]) {
+        dns = dns1;
         server = @"https://uc.qbox.me";
         https = flag;
         cache = [NSMutableDictionary new];
@@ -265,6 +267,15 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
                 [lock lock];
                 [cache setValue:info forKey:[token index]];
                 [lock unlock];
+                if (dns != nil) {
+                    QNServiceAddress* address
+                        = [[QNServiceAddress alloc] init:info.upHttps ips:@[info.upIp]];
+                    addServiceToDns(address, dns);
+                    address = [[QNServiceAddress alloc] init:info.upHost ips:@[info.upIp]];
+                    addServiceToDns(address, dns);
+                    address = [[QNServiceAddress alloc] init:info.upBackup ips:@[info.upIp]];
+                    addServiceToDns(address, dns);
+                }
             }
         }else{
             ret(kQNNetworkError);

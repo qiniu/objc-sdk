@@ -18,6 +18,9 @@
 #import "HappyDNS.h"
 #import "QNConfiguration.h"
 
+#import "QNTestConfig.h"
+#import "QNUpToken.h"
+
 @interface QNAutoZoneTest : XCTestCase
 @property QNAutoZone *autozone;
 
@@ -36,7 +39,16 @@
 }
 
 - (void)testHttp{
-    
+    QNAutoZone * autozone = [[QNAutoZone alloc] initWithHttps:NO dns:nil];
+    QNUpToken* tok = [QNUpToken parse:g_token];
+    __block int x = 0;
+    __block int c = 0;
+    [autozone preQuery:tok on:^(int code) {
+        x = 1;
+        c = code;
+    }];
+    AGWW_WAIT_WHILE(x == 0, 100.0);
+    XCTAssertEqual(0, c, @"Pass");
 }
 
 @end
