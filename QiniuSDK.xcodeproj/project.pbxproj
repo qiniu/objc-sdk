@@ -101,6 +101,8 @@
 		DFF525371A626A3700D02BA1 /* QNHttpDelegate.h in Headers */ = {isa = PBXBuildFile; fileRef = DFF525361A626A3700D02BA1 /* QNHttpDelegate.h */; };
 		DFF525391A64079B00D02BA1 /* QNSessionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFF525381A64079B00D02BA1 /* QNSessionTest.m */; };
 		DFFE0E6019E6575600D7A0FC /* QNFileRecorderTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */; };
+		FDEA88661DAC10D000D037E5 /* QNAutoZoneTest.m in Sources */ = {isa = PBXBuildFile; fileRef = FDEA88651DAC10D000D037E5 /* QNAutoZoneTest.m */; };
+		FDEA88671DAC10D000D037E5 /* QNAutoZoneTest.m in Sources */ = {isa = PBXBuildFile; fileRef = FDEA88651DAC10D000D037E5 /* QNAutoZoneTest.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -193,6 +195,7 @@
 		DFF525361A626A3700D02BA1 /* QNHttpDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNHttpDelegate.h; sourceTree = "<group>"; };
 		DFF525381A64079B00D02BA1 /* QNSessionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNSessionTest.m; sourceTree = "<group>"; };
 		DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNFileRecorderTest.m; sourceTree = "<group>"; };
+		FDEA88651DAC10D000D037E5 /* QNAutoZoneTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNAutoZoneTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -378,6 +381,7 @@
 				DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */,
 				DFF525381A64079B00D02BA1 /* QNSessionTest.m */,
 				DF437CDE1B243A2C0099587B /* QNUpTokenTest.m */,
+				FDEA88651DAC10D000D037E5 /* QNAutoZoneTest.m */,
 			);
 			path = QiniuSDKTests;
 			sourceTree = SOURCE_ROOT;
@@ -760,6 +764,7 @@
 				DF293C9719DB865800799011 /* QNCrc32Test.m in Sources */,
 				DFA9B64519DFE43500A15FD1 /* QNTempFile.m in Sources */,
 				DFF525391A64079B00D02BA1 /* QNSessionTest.m in Sources */,
+				FDEA88661DAC10D000D037E5 /* QNAutoZoneTest.m in Sources */,
 				DFA9B63F19DFD8C900A15FD1 /* QNEtagTest.m in Sources */,
 				DF2CDE7119DAE90300CE01FB /* QNBase64Test.m in Sources */,
 			);
@@ -803,6 +808,7 @@
 				DF0A032B1B3BAC6E00E3778C /* QNEtagTest.m in Sources */,
 				DF0A032C1B3BAC6E00E3778C /* QNTempFile.m in Sources */,
 				DF0A032D1B3BAC6E00E3778C /* QNFileRecorderTest.m in Sources */,
+				FDEA88671DAC10D000D037E5 /* QNAutoZoneTest.m in Sources */,
 				DF0A032F1B3BAC6E00E3778C /* QNSessionTest.m in Sources */,
 				DF0A03301B3BAC6E00E3778C /* QNUpTokenTest.m in Sources */,
 			);

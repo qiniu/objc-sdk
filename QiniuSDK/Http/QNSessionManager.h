@@ -29,6 +29,10 @@
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock;
 
+- (void)get:(NSString *)url
+withHeaders:(NSDictionary *)headers
+withCompleteBlock:(QNCompleteBlock)completeBlock;
+
 @end
 
 #endif

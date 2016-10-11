@@ -18,4 +18,6 @@
 
 @property (readonly) BOOL hasReturnUrl;
 
+-(NSString*)index;
+
 @end

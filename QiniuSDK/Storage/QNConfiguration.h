@@ -27,6 +27,7 @@ typedef NSString * (^QNUrlConvert)(NSString *url);
 @class QNConfigurationBuilder;
 @class QNDnsManager;
 @class QNServiceAddress;
+@class QNZone;
 /**
  *    Builder block
  *
@@ -37,14 +38,9 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @interface QNConfiguration : NSObject
 
 /**
- *    默认上传服务器地址
+ *    存储区域
  */
-@property (copy, nonatomic, readonly) QNServiceAddress *up;
-
-/**
- *    备用上传服务器地址
- */
-@property (copy, nonatomic, readonly) QNServiceAddress *upBackup;
+@property (copy, nonatomic, readonly) QNZone *zone;
 
 /**
  *    断点上传时的分片大小
@@ -94,29 +90,21 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @end
 
+typedef void (^QNPrequeryReturn)(int code);
+
+@class QNUpToken;
+
 @interface QNZone : NSObject
 
 /**
  *    默认上传服务器地址
  */
-@property (nonatomic, readonly) QNServiceAddress *up;
+- (QNServiceAddress *)up:(QNUpToken*)token;
 
 /**
  *    备用上传服务器地址
  */
-@property (nonatomic, readonly) QNServiceAddress *upBackup;
-
-/**
- *    Zone初始化方法
- *
- *    @param upHost     默认上传服务器地址
- *    @param upHostBackup     备用上传服务器地址
- *    @param upIp       备用上传IP
- *
- *    @return Zone实例
- */
-- (instancetype)initWithUp:(QNServiceAddress *)up
-                  upBackup:(QNServiceAddress *)upBackup;
+- (QNServiceAddress *)upBackup:(QNUpToken*)token;
 
 /**
  *    zone 0
@@ -131,6 +119,41 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  *    @return 实例
  */
 + (instancetype)zone1;
+
+/**
+ *    zone 2
+ *
+ *    @return 实例
+ */
++ (instancetype)zone2;
+
+- (void)preQuery:(QNUpToken*)token
+              on:(QNPrequeryReturn)ret;
+
++ (void)addIpToDns:(QNDnsManager*)dns;
+
+@end
+
+@interface QNFixedZone : QNZone
+/**
+ *    Zone初始化方法
+ *
+ *    @param upHost     默认上传服务器地址
+ *    @param upHostBackup     备用上传服务器地址
+ *    @param upIp       备用上传IP
+ *
+ *    @return Zone实例
+ */
+- (instancetype)initWithUp:(QNServiceAddress *)up
+                  upBackup:(QNServiceAddress *)upBackup;
+
+@end
+
+@interface QNAutoZone : QNZone
+
+- (instancetype)initWithHttps:(BOOL)flag
+                          dns:(QNDnsManager*)dns;
+
 
 @end
 
