@@ -9,8 +9,10 @@
 #import "QNConfiguration.h"
 #import "HappyDNS.h"
 #import "QNNetworkInfo.h"
-
+#import "QNUpToken.h"
+#import "QNSessionManager.h"
 #import "QNSystem.h"
+#import "QNResponseInfo.h"
 
 const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 
@@ -27,12 +29,8 @@ static void addServiceToDns(QNServiceAddress *address, QNDnsManager *dns) {
 }
 
 static void addZoneToDns(QNZone *zone, QNDnsManager *dns) {
-    if (zone.up != nil) {
-        addServiceToDns(zone.up, dns);
-    }
-    if (zone.upBackup != nil) {
-        addServiceToDns(zone.upBackup, dns);
-    }
+    addServiceToDns([zone up:nil], dns);
+    addServiceToDns([zone upBackup:nil], dns);
 }
 
 static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
@@ -48,6 +46,7 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
 
 @implementation QNConfiguration
 
+
 + (instancetype)build:(QNConfigurationBuilderBlock)block {
     QNConfigurationBuilder *builder = [[QNConfigurationBuilder alloc] init];
     block(builder);
@@ -56,9 +55,7 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
 
 - (instancetype)initWithBuilder:(QNConfigurationBuilder *)builder {
     if (self = [super init]) {
-        _up = builder.zone.up;
-        _upBackup = builder.zone.upBackup == nil ? builder.zone.up : builder.zone.upBackup;
-
+        
         _chunkSize = builder.chunkSize;
         _putThreshold = builder.putThreshold;
         _retryMax = builder.retryMax;
@@ -74,10 +71,11 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
         _disableATS = builder.disableATS;
         if (_disableATS) {
             _dns = initDns(builder);
-            addZoneToDns(builder.zone, _dns);
+            [QNZone addIpToDns:_dns];
         } else {
             _dns = nil;
         }
+        _zone = builder.zone;
     }
     return self;
 }
@@ -123,16 +121,186 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
 
 @end
 
+@implementation QNFixedZone{
+    QNServiceAddress *up;
+    QNServiceAddress *upBackup;
+}
+
+/**
+ *    备用上传服务器地址
+ */
+- (QNServiceAddress *)upBackup:(NSString*)token{
+    return upBackup;
+}
+
+- (QNServiceAddress *)up:(NSString*)token{
+    return up;
+}
+
+- (instancetype)initWithUp:(QNServiceAddress *)up1
+                  upBackup:(QNServiceAddress *)upBackup1 {
+    if (self = [super init]) {
+        up = up1;
+        upBackup = upBackup1;
+    }
+    
+    return self;
+}
+@end
+
+@interface QNAutoZoneInfo : NSObject
+@property (readonly, nonatomic) NSString* upHost;
+@property (readonly, nonatomic) NSString* upIp;
+@property (readonly, nonatomic) NSString* upBackup;
+@property (readonly, nonatomic) NSString* upHttps;
+
+-(instancetype)init:(NSString*)uphost
+               upIp:(NSString*)upip
+           upBackup:(NSString*)upbackup
+            upHttps:(NSString*)uphttps;
+@end
+
+@implementation QNAutoZoneInfo
+
+-(instancetype)init:(NSString*)uphost
+               upIp:(NSString*)upip
+           upBackup:(NSString*)upbackup
+            upHttps:(NSString*)uphttps{
+    if (self = [super init]) {
+        _upHost = uphost;
+        _upIp = upip;
+        _upBackup = upbackup;
+        _upHttps = uphttps;
+    }
+    return self;
+}
+
+@end
+
+@implementation QNAutoZone{
+    NSString* server;
+    BOOL https;
+    NSMutableDictionary* cache;
+    NSLock* lock;
+    QNSessionManager* sesionManager;
+    QNDnsManager* dns;
+}
+
+- (instancetype)initWithHttps:(BOOL)flag
+                          dns:(QNDnsManager*)dns1{
+    if (self = [super init]) {
+        dns = dns1;
+        server = @"https://uc.qbox.me";
+        https = flag;
+        cache = [NSMutableDictionary new];
+        lock = [NSLock new];
+        sesionManager = [[QNSessionManager alloc] initWithProxy:nil timeout:10 urlConverter:nil dns:dns];
+    }
+    return self;
+}
+
+- (QNServiceAddress *)upBackup:(QNUpToken*)token{
+    NSString* index = [token index];
+    [lock lock];
+    QNAutoZoneInfo* info = [cache objectForKey:index];
+    [lock unlock];
+    if (info == nil) {
+        return nil;
+    }
+    if (https) {
+        return [[QNServiceAddress alloc] init:info.upHttps ips:@[info.upIp]];
+    }
+    return [[QNServiceAddress alloc] init:info.upBackup ips:@[info.upIp]];
+}
+
+- (QNServiceAddress *)up:(QNUpToken*)token{
+    NSString* index = [token index];
+    [lock lock];
+    QNAutoZoneInfo* info = [cache objectForKey:index];
+    [lock unlock];
+    if (info == nil) {
+        return nil;
+    }
+    if (https) {
+        return [[QNServiceAddress alloc] init:info.upHttps ips:@[info.upIp]];
+    }
+    return [[QNServiceAddress alloc] init:info.upHost ips:@[info.upIp]];
+}
+
+- (QNAutoZoneInfo*)buildInfoFromJson:(NSDictionary*) resp{
+    NSDictionary* http = [resp objectForKey:@"http"];
+    NSArray* up = [http objectForKey:@"up"];
+    NSString* upHost = [up objectAtIndex:1];
+    NSString* upBackup = [up objectAtIndex:0];
+    NSString* ipTemp = [up objectAtIndex:2];
+    NSArray* a1 = [ipTemp componentsSeparatedByString:@" "];
+    NSString* ip1 = [a1 objectAtIndex:2];
+    NSArray* a2 = [ip1 componentsSeparatedByString:@"//"];
+    NSString* upIp = [a2 objectAtIndex:1];
+    NSDictionary* https_ = [resp objectForKey:@"https"];
+    NSArray* a3 = [https_ objectForKey:@"up"];
+    NSString* upHttps = [a3 objectAtIndex:0];
+    return [[QNAutoZoneInfo alloc] init:upHost upIp:upIp upBackup:upBackup upHttps:upHttps];
+}
+
+- (void)preQuery:(QNUpToken*)token
+              on:(QNPrequeryReturn)ret{
+    if (token == nil) {
+        ret(-1);
+    }
+    [lock lock];
+    QNAutoZoneInfo* info = [cache objectForKey:[token index]];
+    [lock unlock];
+    if (info != nil) {
+        ret(0);
+        return;
+    }
+    
+    NSString* url = [NSString stringWithFormat:@"%@/v1/query?ak=%@&bucket=%@", server, token.access, token.bucket];
+    [sesionManager get:url withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {
+        if ([info isOK]) {
+            QNAutoZoneInfo* info = [self buildInfoFromJson:resp];
+            if (info == nil) {
+                ret(kQNInvalidToken);
+            }else{
+                ret(0);
+                [lock lock];
+                [cache setValue:info forKey:[token index]];
+                [lock unlock];
+                if (dns != nil) {
+                    QNServiceAddress* address
+                        = [[QNServiceAddress alloc] init:info.upHttps ips:@[info.upIp]];
+                    addServiceToDns(address, dns);
+                    address = [[QNServiceAddress alloc] init:info.upHost ips:@[info.upIp]];
+                    addServiceToDns(address, dns);
+                    address = [[QNServiceAddress alloc] init:info.upBackup ips:@[info.upIp]];
+                    addServiceToDns(address, dns);
+                }
+            }
+        }else{
+            ret(kQNNetworkError);
+        }
+    }];
+}
+
+@end
+
 @implementation QNZone
 
-- (instancetype)initWithUp:(QNServiceAddress *)up
-                  upBackup:(QNServiceAddress *)upBackup {
-    if (self = [super init]) {
-        _up = up;
-        _upBackup = upBackup;
-    }
-
+- (instancetype)init {
+    self = [super init];
     return self;
+}
+
+/**
+ *    备用上传服务器地址
+ */
+- (QNServiceAddress *)upBackup:(QNUpToken*)token{
+    return nil;
+}
+
+- (QNServiceAddress *)up:(QNUpToken*)token{
+    return nil;
 }
 
 + (instancetype)createWithHost:(NSString *)up backupHost:(NSString *)backup ip1:(NSString *)ip1 ip2:(NSString *)ip2 {
@@ -141,7 +309,7 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
     QNServiceAddress *s1 = [[QNServiceAddress alloc] init:a ips:ips];
     NSString *b = [NSString stringWithFormat:@"http://%@", backup];
     QNServiceAddress *s2 = [[QNServiceAddress alloc] init:b ips:ips];
-    return [[QNZone alloc] initWithUp:s1 upBackup:s2];
+    return [[QNFixedZone alloc] initWithUp:s1 upBackup:s2];
 }
 
 + (instancetype)zone0 {
@@ -160,6 +328,26 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
         z1 = [QNZone createWithHost:@"upload-z1.qiniu.com" backupHost:@"up-z1.qiniu.com" ip1:@"106.38.227.28" ip2:@"106.38.227.27"];
     });
     return z1;
+}
+
++ (instancetype)zone2 {
+    static QNZone *z2 = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        z2 = [QNZone createWithHost:@"upload-z2.qiniu.com" backupHost:@"up-z2.qiniu.com" ip1:@"14.152.37.7" ip2:@"183.60.214.199"];
+    });
+    return z2;
+}
+
++ (void)addIpToDns:(QNDnsManager*)dns{
+    addZoneToDns([QNZone zone0], dns);
+    addZoneToDns([QNZone zone1], dns);
+    addZoneToDns([QNZone zone2], dns);
+}
+
+- (void)preQuery:(QNUpToken*)token
+              on:(QNPrequeryReturn)ret{
+    ret(0);
 }
 
 @end

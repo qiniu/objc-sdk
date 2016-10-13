@@ -307,6 +307,36 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
     });
 }
 
+- (void)get:(NSString *)url
+ withHeaders:(NSDictionary *)headers
+withCompleteBlock:(QNCompleteBlock)completeBlock {
+    QNAsyncRun(^{
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        AFURLSessionManager *manager = [[AFURLSessionManager alloc] initWithSessionConfiguration:configuration];
+        
+        NSURL *URL = [NSURL URLWithString:url];
+        NSURLRequest *request = [NSURLRequest requestWithURL:URL];
+        
+        NSURLSessionDataTask *dataTask = [manager dataTaskWithRequest:request completionHandler:^(NSURLResponse *response, id responseObject, NSError *error) {
+            NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+            NSData* s = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
+            NSDictionary *resp = nil;
+            QNResponseInfo*  info;
+            if (error == nil) {
+                info = [QNSessionManager buildResponseInfo:httpResponse withError:nil withDuration:0 withResponse:s withHost:@"" withIp:@""];
+                if (info.isOK) {
+                    resp = responseObject;
+                }
+            } else {
+                info = [QNSessionManager buildResponseInfo:httpResponse withError:error withDuration:0 withResponse:s withHost:@"" withIp:@""];
+            }
+            
+            completeBlock(info, resp);
+        }];
+        [dataTask resume];
+    });
+}
+
 @end
 
 #endif
