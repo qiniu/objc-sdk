@@ -1,5 +1,9 @@
 #Changelog
 
+## 7.1.4 (2016-11-07)
+## 修改
+* PHAssetResourceRequestOptions 参数类型
+
 ## 7.1.3 (2016-11-07)
 ## 增加
 * 增加zoneNa0 北美

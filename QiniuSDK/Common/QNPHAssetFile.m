@@ -144,11 +144,10 @@
         if (resource.originalFilename) {
             fileName = resource.originalFilename;
         }
-        PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
-        options.version = PHImageRequestOptionsVersionCurrent;
+        PHAssetResourceRequestOptions *options = [PHAssetResourceRequestOptions new];
         //不支持icloud上传
         options.networkAccessAllowed = NO;
-        options.deliveryMode = PHVideoRequestOptionsDeliveryModeAutomatic;
+
         NSString *PATH_VIDEO_FILE = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
         [[NSFileManager defaultManager] removeItemAtPath:PATH_VIDEO_FILE error:nil];
         [[PHAssetResourceManager defaultManager] writeDataForAssetResource:resource toFile:[NSURL fileURLWithPath:PATH_VIDEO_FILE] options:options completionHandler:^(NSError *_Nullable error) {
