@@ -66,7 +66,7 @@
     return [[QNUpToken alloc] init:dict token:token];
 }
 
--(NSString*)index{
+- (NSString *)index {
     return [NSString stringWithFormat:@"%@:%@", _access, _bucket];
 }
 

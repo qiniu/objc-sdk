@@ -99,12 +99,12 @@ typedef void (^QNPrequeryReturn)(int code);
 /**
  *    默认上传服务器地址
  */
-- (QNServiceAddress *)up:(QNUpToken*)token;
+- (QNServiceAddress *)up:(QNUpToken *)token;
 
 /**
  *    备用上传服务器地址
  */
-- (QNServiceAddress *)upBackup:(QNUpToken*)token;
+- (QNServiceAddress *)upBackup:(QNUpToken *)token;
 
 /**
  *    zone 0
@@ -127,10 +127,10 @@ typedef void (^QNPrequeryReturn)(int code);
  */
 + (instancetype)zone2;
 
-- (void)preQuery:(QNUpToken*)token
+- (void)preQuery:(QNUpToken *)token
               on:(QNPrequeryReturn)ret;
 
-+ (void)addIpToDns:(QNDnsManager*)dns;
++ (void)addIpToDns:(QNDnsManager *)dns;
 
 @end
 
@@ -152,8 +152,7 @@ typedef void (^QNPrequeryReturn)(int code);
 @interface QNAutoZone : QNZone
 
 - (instancetype)initWithHttps:(BOOL)flag
-                          dns:(QNDnsManager*)dns;
-
+                          dns:(QNDnsManager *)dns;
 
 @end
 
