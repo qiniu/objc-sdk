@@ -337,6 +337,15 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
     return z2;
 }
 
++ (instancetype)zoneNa0 {
+    static QNZone *zNa0 = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        zNa0 = [QNZone createWithHost:@"upload-na0.qiniu.com" backupHost:@"up-na0.qiniu.com" ip1:@"14.152.37.7" ip2:@"183.60.214.199"];
+    });
+    return zNa0;
+}
+
 + (void)addIpToDns:(QNDnsManager *)dns {
     addZoneToDns([QNZone zone0], dns);
     addZoneToDns([QNZone zone1], dns);

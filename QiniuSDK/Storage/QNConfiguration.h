@@ -107,25 +107,32 @@ typedef void (^QNPrequeryReturn)(int code);
 - (QNServiceAddress *)upBackup:(QNUpToken *)token;
 
 /**
- *    zone 0
+ *    zone 0 华东
  *
  *    @return 实例
  */
 + (instancetype)zone0;
 
 /**
- *    zone 1
+ *    zone 1 华北
  *
  *    @return 实例
  */
 + (instancetype)zone1;
 
 /**
- *    zone 2
+ *    zone 2 华南
  *
  *    @return 实例
  */
 + (instancetype)zone2;
+
+/**
+ *    zone Na0 北美
+ *
+ *    @return 实例
+ */
++ (instancetype)zoneNa0;
 
 - (void)preQuery:(QNUpToken *)token
               on:(QNPrequeryReturn)ret;
