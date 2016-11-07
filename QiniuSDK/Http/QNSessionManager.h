@@ -30,8 +30,8 @@
       withCancelBlock:(QNCancelBlock)cancelBlock;
 
 - (void)get:(NSString *)url
-withHeaders:(NSDictionary *)headers
-withCompleteBlock:(QNCompleteBlock)completeBlock;
+          withHeaders:(NSDictionary *)headers
+    withCompleteBlock:(QNCompleteBlock)completeBlock;
 
 @end
 

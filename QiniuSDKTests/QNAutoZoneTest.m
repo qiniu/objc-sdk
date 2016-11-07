@@ -22,8 +22,7 @@
 #import "QNUpToken.h"
 
 @interface QNAutoZoneTest : XCTestCase
-@property QNAutoZone *autozone;
-
+@property QNAutoZone* autozone;
 
 @end
 
@@ -38,8 +37,8 @@
     [super tearDown];
 }
 
-- (void)testHttp{
-    QNAutoZone * autozone = [[QNAutoZone alloc] initWithHttps:NO dns:nil];
+- (void)testHttp {
+    QNAutoZone* autozone = [[QNAutoZone alloc] initWithHttps:NO dns:nil];
     QNUpToken* tok = [QNUpToken parse:g_token];
     __block int x = 0;
     __block int c = 0;
