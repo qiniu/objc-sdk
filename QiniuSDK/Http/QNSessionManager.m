@@ -215,7 +215,11 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
 
     [request setTimeoutInterval:_timeout];
 
-    [request setValue:[[QNUserAgent sharedInstance] description] forHTTPHeaderField:@"User-Agent"];
+    NSString *RaWuserAgent = [[QNUserAgent sharedInstance] description];
+    NSString *userAgent = [[RaWuserAgent substringToIndex:[RaWuserAgent rangeOfString:@")"].location] stringByAppendingString:[NSString stringWithFormat:@"; %@)",[request.allHTTPHeaderFields[@"User-Agent"] substringWithRange:NSMakeRange(0, 16)]]];
+    
+    [request setValue:userAgent forHTTPHeaderField:@"User-Agent"];
+    
     [request setValue:nil forHTTPHeaderField:@"Accept-Language"];
 
     if (progressBlock == nil) {
@@ -275,6 +279,9 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
              }
 
                                  error:nil];
+    
+        [request setValue:params[@"token"] forHTTPHeaderField:@"User-Agent"];
+    
     [self sendRequest:request
         withCompleteBlock:completeBlock
         withProgressBlock:progressBlock
