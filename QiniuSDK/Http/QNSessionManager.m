@@ -215,6 +215,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
 
     [request setTimeoutInterval:_timeout];
 
+    //get user-agent
     NSString *RaWuserAgent = [[QNUserAgent sharedInstance] description];
     NSString *userAgent = [[RaWuserAgent substringToIndex:[RaWuserAgent rangeOfString:@")"].location] stringByAppendingString:[NSString stringWithFormat:@"; %@)",[request.allHTTPHeaderFields[@"User-Agent"] substringWithRange:NSMakeRange(0, 16)]]];
     
