@@ -217,7 +217,12 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
 
     //get user-agent
     NSString *RaWuserAgent = [[QNUserAgent sharedInstance] description];
-    NSString *userAgent = [[RaWuserAgent substringToIndex:[RaWuserAgent rangeOfString:@")"].location] stringByAppendingString:[NSString stringWithFormat:@"; %@)",[request.allHTTPHeaderFields[@"User-Agent"] substringWithRange:NSMakeRange(0, 16)]]];
+    NSString *userAgent =nil;
+    if (!request.allHTTPHeaderFields[@"Authorization"]) {
+        userAgent = [[RaWuserAgent substringToIndex:[RaWuserAgent rangeOfString:@")"].location] stringByAppendingString:[NSString stringWithFormat:@"; %@)",[request.allHTTPHeaderFields[@"User-Agent"] substringWithRange:NSMakeRange(0, 16)]]];
+    } else{
+        userAgent= [[RaWuserAgent substringToIndex:[RaWuserAgent rangeOfString:@")"].location] stringByAppendingString:[NSString stringWithFormat:@"; %@)",[request.allHTTPHeaderFields[@"Authorization"] substringWithRange:NSMakeRange(8, 16)]]];
+    }
     
     [request setValue:userAgent forHTTPHeaderField:@"User-Agent"];
     
@@ -281,7 +286,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
 
                                  error:nil];
     
-        [request setValue:params[@"token"] forHTTPHeaderField:@"User-Agent"];
+   [request setValue:params[@"token"] forHTTPHeaderField:@"User-Agent"];
     
     [self sendRequest:request
         withCompleteBlock:completeBlock
