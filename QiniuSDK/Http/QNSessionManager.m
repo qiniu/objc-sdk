@@ -164,7 +164,6 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock
            withAccess:(NSString *)access{
-    
     NSMutableURLRequest *request = [_httpManager.requestSerializer
      multipartFormRequestWithMethod:@"POST"
      URLString:url
@@ -172,13 +171,11 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
      constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
     [formData appendPartWithFileData:data name:@"file" fileName:key mimeType:mime];
           } error:nil];
-    
     [self sendRequest:request
     withCompleteBlock:completeBlock
     withProgressBlock:progressBlock
       withCancelBlock:cancelBlock
      withAccess:access];
-    
 }
 
 - (void)post:(NSString *)url
@@ -193,9 +190,7 @@ withCancelBlock:(QNCancelBlock)cancelBlock
     if (headers) {
         [request setAllHTTPHeaderFields:headers];
     }
-    
     [request setHTTPMethod:@"POST"];
-    
     if (params) {
         [request setValuesForKeysWithDictionary:params];
     }
@@ -209,7 +204,6 @@ withCancelBlock:(QNCancelBlock)cancelBlock
     });
 }
 
-#pragma mark - add request
 - (void)sendRequest:(NSMutableURLRequest *)request
   withCompleteBlock:(QNCompleteBlock)completeBlock
   withProgressBlock:(QNInternalProgressBlock)progressBlock
@@ -217,9 +211,7 @@ withCancelBlock:(QNCancelBlock)cancelBlock
          withAccess:(NSString *)access
 {
     __block NSDate *startTime = [NSDate date];
-    
     NSString *domain = request.URL.host;
-    
     NSString *u = request.URL.absoluteString;
     NSURL *url = request.URL;
     NSArray *ips = nil;
@@ -267,16 +259,11 @@ withCancelBlock:(QNCancelBlock)cancelBlock
         }
         url = buildUrl(ip, url.port, path);
         [request setValue:domain forHTTPHeaderField:@"Host"];
-    }
-    
+    }    
     request.URL = url;
-    
     [request setTimeoutInterval:_timeout];
-    
     [request setValue:[[QNUserAgent sharedInstance] getUserAgent:access] forHTTPHeaderField:@"User-Agent"];
-    
     [request setValue:nil forHTTPHeaderField:@"Accept-Language"];
-    
     if (progressBlock == nil) {
         progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
         };
