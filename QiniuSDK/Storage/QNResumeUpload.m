@@ -43,6 +43,10 @@ typedef void (^task)(void);
 
 @property (nonatomic) float previousPercent;
 
+//add
+@property (nonatomic ,strong) NSString *access;
+
+
 - (void)makeBlock:(NSString *)uphost
            offset:(UInt32)offset
         blockSize:(UInt32)blockSize
@@ -91,6 +95,8 @@ typedef void (^task)(void);
 
         _token = token;
         _previousPercent = 0;
+        
+        _access = token.access;
     }
     return self;
 }
@@ -320,7 +326,8 @@ typedef void (^task)(void);
              withData:(NSData *)data
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock {
-    [_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal];
+    
+    [_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal withAccess:_access];
 }
 
 - (void)run {

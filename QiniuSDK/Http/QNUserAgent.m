@@ -57,6 +57,19 @@ static NSString *qn_userAgent(NSString *id) {
     return self;
 }
 
+-(NSString *)getUserAgent:(NSString *)access{
+    NSString *usreAgent;
+    if (access.length > 0 && access.length < 16) {
+        usreAgent = access;
+    }else{
+        usreAgent = [access substringWithRange:NSMakeRange(0, 16)];
+    }
+    
+    NSString *user = [_ua stringByReplacingOccurrencesOfString:@")" withString:@"; "];
+    
+    return [user stringByAppendingString:[NSString stringWithFormat:@"%@)",usreAgent]];
+}
+
 /**
  *  单例
  */

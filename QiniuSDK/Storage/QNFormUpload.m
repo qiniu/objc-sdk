@@ -27,6 +27,7 @@
 @property (nonatomic, strong) QNConfiguration *config;
 @property (nonatomic) float previousPercent;
 
+@property (nonatomic, strong) NSString *access;
 @end
 
 @implementation QNFormUpload
@@ -47,6 +48,7 @@
         _httpManager = http;
         _config = config;
         _previousPercent = 0;
+        _access = token.access;
     }
     return self;
 }
@@ -105,14 +107,15 @@
             _complete(info, _key, resp);
         };
 
-        [_httpManager multipartPost:nextHost
+    [_httpManager multipartPost:nextHost
                            withData:_data
                          withParams:parameters
                        withFileName:fileName
                        withMimeType:_option.mimeType
                   withCompleteBlock:retriedComplete
                   withProgressBlock:p
-                    withCancelBlock:_option.cancellationSignal];
+                    withCancelBlock:_option.cancellationSignal
+              withAccess:_access];
     };
 
     [_httpManager multipartPost:[_config.zone up:_token].address
@@ -122,7 +125,8 @@
                    withMimeType:_option.mimeType
               withCompleteBlock:complete
               withProgressBlock:p
-                withCancelBlock:_option.cancellationSignal];
+                withCancelBlock:_option.cancellationSignal
+               withAccess:_access];
 }
 
 @end
