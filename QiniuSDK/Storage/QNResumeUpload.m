@@ -43,7 +43,7 @@ typedef void (^task)(void);
 
 @property (nonatomic) float previousPercent;
 
-@property (nonatomic, strong) NSString *access;
+@property (nonatomic, strong) NSString *access; //AK
 
 - (void)makeBlock:(NSString *)uphost
            offset:(UInt32)offset

@@ -57,6 +57,9 @@ static NSString *qn_userAgent(NSString *id) {
     return self;
 }
 
+/**
+ *  UserAgent
+ */
 -(NSString *)getUserAgent:(NSString *)access{
     NSString *usreAgent;
     if (access.length > 0 && access.length < 16) {

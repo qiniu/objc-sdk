@@ -27,7 +27,7 @@
 @property (nonatomic, strong) QNConfiguration *config;
 @property (nonatomic) float previousPercent;
 
-@property (nonatomic, strong) NSString *access;
+@property (nonatomic, strong) NSString *access; //AK
 
 @end
 
