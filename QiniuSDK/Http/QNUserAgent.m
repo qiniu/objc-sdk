@@ -58,6 +58,20 @@ static NSString *qn_userAgent(NSString *id) {
 }
 
 /**
+ *  UserAgent
+ */
+-(NSString *)getUserAgent:(NSString *)access{
+    
+    if (access.length == 0) {
+        return access;
+    }else{
+        NSUInteger index = access.length > 16 ? 16 : access.length;
+        NSString *user = [_ua stringByReplacingOccurrencesOfString:@")" withString:@"; "];
+        return [NSString stringWithFormat:@"%@%@)",user,[access substringToIndex:index]];
+    }
+}
+
+/**
  *  单例
  */
 + (instancetype)sharedInstance {
