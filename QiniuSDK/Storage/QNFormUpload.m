@@ -107,8 +107,8 @@
             }
             _complete(info, _key, resp);
         };
-        
-    [_httpManager multipartPost:nextHost
+
+        [_httpManager multipartPost:nextHost
                            withData:_data
                          withParams:parameters
                        withFileName:fileName
@@ -118,7 +118,7 @@
                     withCancelBlock:_option.cancellationSignal
                          withAccess:_access];
     };
-    
+
     [_httpManager multipartPost:[_config.zone up:_token].address
                        withData:_data
                      withParams:parameters
@@ -129,5 +129,5 @@
                 withCancelBlock:_option.cancellationSignal
                      withAccess:_access];
 }
-        
+
 @end

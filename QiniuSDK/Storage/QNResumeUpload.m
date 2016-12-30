@@ -93,7 +93,7 @@ typedef void (^task)(void);
 
         _token = token;
         _previousPercent = 0;
-        
+
         _access = token.access;
     }
     return self;

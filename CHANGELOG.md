@@ -1,5 +1,9 @@
 #Changelog
 
+## 7.1.5 (2016-12-29)
+## 修改
+* UA 加入识别字段
+
 ## 7.1.4 (2016-11-07)
 ## 修改
 * PHAssetResourceRequestOptions 参数类型

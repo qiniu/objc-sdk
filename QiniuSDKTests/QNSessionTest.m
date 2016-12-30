@@ -38,47 +38,62 @@
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
     [_httpManager post:@"http://www.baidu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {
         testInfo = info;
-    } withProgressBlock:nil withCancelBlock:nil withAccess:nil];
-    
+    }
+        withProgressBlock:nil
+          withCancelBlock:nil
+               withAccess:nil];
+
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
-    
+
     XCTAssert(testInfo.reqId == nil, @"Pass");
-    
+
     testInfo = nil;
     [_httpManager post:@"http://up.qiniu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {
         testInfo = info;
-    } withProgressBlock:nil withCancelBlock:nil withAccess:nil];
-    
+    }
+        withProgressBlock:nil
+          withCancelBlock:nil
+               withAccess:nil];
+
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
     XCTAssert(testInfo.reqId, @"Pass");
-    
+
     testInfo = nil;
     [_httpManager post:@"http://httpbin.org/status/500" withData:data withParams:nil withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {
         testInfo = info;
-    } withProgressBlock:nil withCancelBlock:nil withAccess:nil];
-    
+    }
+        withProgressBlock:nil
+          withCancelBlock:nil
+               withAccess:nil];
+
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
     XCTAssert(testInfo.statusCode == 500, @"Pass");
     XCTAssert(testInfo.error != nil, @"Pass");
-    
+
     testInfo = nil;
     [_httpManager post:@"http://httpbin.org/status/418" withData:data withParams:nil withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {
         testInfo = info;
-    } withProgressBlock:nil withCancelBlock:nil withAccess:nil];
-    
+    }
+        withProgressBlock:nil
+          withCancelBlock:nil
+               withAccess:nil];
+
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
     XCTAssert(testInfo.statusCode == 418, @"Pass");
     XCTAssert(testInfo.error != nil, @"Pass");
-    
+
     testInfo = nil;
     [_httpManager post:@"http://httpbin.org/status/200" withData:data withParams:nil withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {
         testInfo = info;
-    } withProgressBlock:nil withCancelBlock:nil withAccess:nil];
-    
+    }
+        withProgressBlock:nil
+          withCancelBlock:nil
+               withAccess:nil];
+
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
     XCTAssert(testInfo.statusCode == 200, @"Pass");
@@ -88,18 +103,21 @@
 
 - (void)testProxy {
     NSDictionary *proxyDict = @{
-                                @"HTTPEnable" : [NSNumber numberWithInt:1],
-                                (NSString *)kCFStreamPropertyHTTPProxyHost : @"183.136.139.16",
-                                (NSString *)kCFStreamPropertyHTTPProxyPort : @8888,
-                                };
-    
+        @"HTTPEnable" : [NSNumber numberWithInt:1],
+        (NSString *)kCFStreamPropertyHTTPProxyHost : @"183.136.139.16",
+        (NSString *)kCFStreamPropertyHTTPProxyPort : @8888,
+    };
+
     QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:proxyDict timeout:60 urlConverter:nil dns:nil];
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
     __block QNResponseInfo *testInfo = nil;
     [httpManager post:@"http://up123.qiniu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {
         testInfo = info;
-    } withProgressBlock:nil withCancelBlock:nil withAccess:nil];
-    
+    }
+        withProgressBlock:nil
+          withCancelBlock:nil
+               withAccess:nil];
+
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
     XCTAssert(testInfo.reqId, @"Pass");
@@ -109,14 +127,17 @@
     QNUrlConvert c = ^NSString *(NSString *url) {
         return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
     };
-    
+
     QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:c dns:nil];
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
     __block QNResponseInfo *testInfo = nil;
     [httpManager post:@"http://upnono.qiniu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {
         testInfo = info;
-    } withProgressBlock:nil withCancelBlock:nil withAccess:nil];
-    
+    }
+        withProgressBlock:nil
+          withCancelBlock:nil
+               withAccess:nil];
+
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
     XCTAssert(testInfo.reqId, @"Pass");
@@ -132,8 +153,11 @@
     QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:nil dns:dns];
     [httpManager post:@"http://upnonono.qiniu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {
         testInfo = info;
-    } withProgressBlock:nil withCancelBlock:nil withAccess:nil];
-    
+    }
+        withProgressBlock:nil
+          withCancelBlock:nil
+               withAccess:nil];
+
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
     XCTAssert(testInfo.reqId, @"Pass");

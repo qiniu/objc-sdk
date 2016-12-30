@@ -23,13 +23,13 @@
            withAccess:(NSString *)access;
 
 - (void)post:(NSString *)url
-    withData:(NSData *)data
-  withParams:(NSDictionary *)params
- withHeaders:(NSDictionary *)headers
-withCompleteBlock:(QNCompleteBlock)completeBlock
-withProgressBlock:(QNInternalProgressBlock)progressBlock
-withCancelBlock:(QNCancelBlock)cancelBlock
-  withAccess:(NSString *)access;
+             withData:(NSData *)data
+           withParams:(NSDictionary *)params
+          withHeaders:(NSDictionary *)headers
+    withCompleteBlock:(QNCompleteBlock)completeBlock
+    withProgressBlock:(QNInternalProgressBlock)progressBlock
+      withCancelBlock:(QNCancelBlock)cancelBlock
+           withAccess:(NSString *)access;
 
 - (void)get:(NSString *)url
           withHeaders:(NSDictionary *)headers

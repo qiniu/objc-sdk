@@ -8,7 +8,7 @@
 
 - **代码规范** 参考 https://github.com/NYTimes/objective-c-style-guide https://github.com/objc-zen/objc-zen-book 。
 
-- **代码格式** 提交前请使用Xcode格式化插件 BBUncrustifyPlugin 默认风格进行格式化。
+- **代码格式** 提交前请使用项目里的format.sh进行格式化。
 
 - **必须添加测试！** - 如果没有测试（单元测试、集成测试都可以），那么提交的补丁是不会通过的。
 
