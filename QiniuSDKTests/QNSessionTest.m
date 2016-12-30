@@ -40,7 +40,9 @@
         testInfo = info;
     }
         withProgressBlock:nil
-          withCancelBlock:nil];
+          withCancelBlock:nil
+               withAccess:nil];
+
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
 
@@ -51,7 +53,8 @@
         testInfo = info;
     }
         withProgressBlock:nil
-          withCancelBlock:nil];
+          withCancelBlock:nil
+               withAccess:nil];
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
@@ -62,7 +65,8 @@
         testInfo = info;
     }
         withProgressBlock:nil
-          withCancelBlock:nil];
+          withCancelBlock:nil
+               withAccess:nil];
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
@@ -74,7 +78,8 @@
         testInfo = info;
     }
         withProgressBlock:nil
-          withCancelBlock:nil];
+          withCancelBlock:nil
+               withAccess:nil];
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
@@ -86,7 +91,8 @@
         testInfo = info;
     }
         withProgressBlock:nil
-          withCancelBlock:nil];
+          withCancelBlock:nil
+               withAccess:nil];
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
@@ -109,7 +115,8 @@
         testInfo = info;
     }
         withProgressBlock:nil
-          withCancelBlock:nil];
+          withCancelBlock:nil
+               withAccess:nil];
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
@@ -128,7 +135,8 @@
         testInfo = info;
     }
         withProgressBlock:nil
-          withCancelBlock:nil];
+          withCancelBlock:nil
+               withAccess:nil];
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
@@ -147,7 +155,8 @@
         testInfo = info;
     }
         withProgressBlock:nil
-          withCancelBlock:nil];
+          withCancelBlock:nil
+               withAccess:nil];
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);

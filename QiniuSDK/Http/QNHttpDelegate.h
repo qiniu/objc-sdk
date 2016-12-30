@@ -18,7 +18,8 @@ typedef BOOL (^QNCancelBlock)(void);
          withMimeType:(NSString *)mime
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
-      withCancelBlock:(QNCancelBlock)cancelBlock;
+      withCancelBlock:(QNCancelBlock)cancelBlock
+           withAccess:(NSString *)access;
 
 - (void)post:(NSString *)url
              withData:(NSData *)data
@@ -26,6 +27,7 @@ typedef BOOL (^QNCancelBlock)(void);
           withHeaders:(NSDictionary *)headers
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
-      withCancelBlock:(QNCancelBlock)cancelBlock;
+      withCancelBlock:(QNCancelBlock)cancelBlock
+           withAccess:(NSString *)access;
 
 @end
