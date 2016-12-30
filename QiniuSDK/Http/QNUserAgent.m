@@ -31,11 +31,11 @@ static NSString *qn_clientId(void) {
 #endif
 }
 
-static NSString *qn_userAgent(NSString *id) {
+static NSString *qn_userAgent(NSString *id, NSString *ak) {
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
-    return [NSString stringWithFormat:@"QiniuObject-C/%@ (%@; iOS %@; %@)", kQiniuVersion, [[UIDevice currentDevice] model], [[UIDevice currentDevice] systemVersion], id];
+    return [NSString stringWithFormat:@"QiniuObject-C/%@ (%@; iOS %@; %@; %@)", kQiniuVersion, [[UIDevice currentDevice] model], [[UIDevice currentDevice] systemVersion], id, ak];
 #else
-    return [NSString stringWithFormat:@"QiniuObject-C/%@ (Mac OS X %@; %@)", kQiniuVersion, [[NSProcessInfo processInfo] operatingSystemVersionString], id];
+    return [NSString stringWithFormat:@"QiniuObject-C/%@ (Mac OS X %@; %@; %@)", kQiniuVersion, [[NSProcessInfo processInfo] operatingSystemVersionString], id, ak];
 #endif
 }
 
@@ -52,7 +52,6 @@ static NSString *qn_userAgent(NSString *id) {
 - (instancetype)init {
     if (self = [super init]) {
         _id = qn_clientId();
-        _ua = qn_userAgent(_id);
     }
     return self;
 }
@@ -61,14 +60,13 @@ static NSString *qn_userAgent(NSString *id) {
  *  UserAgent
  */
 - (NSString *)getUserAgent:(NSString *)access {
-
-    if (access.length == 0) {
-        return access;
+    NSString *ak;
+    if (access == nil || access.length == 0) {
+        ak = @"-";
     } else {
-        NSUInteger index = access.length > 16 ? 16 : access.length;
-        NSString *user = [_ua stringByReplacingOccurrencesOfString:@")" withString:@"; "];
-        return [NSString stringWithFormat:@"%@%@)", user, [access substringToIndex:index]];
+        ak = access;
     }
+    return qn_userAgent(_id, ak);
 }
 
 /**
