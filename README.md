@@ -8,8 +8,6 @@
 
 ## 安装
 
-
-
 通过 CocoaPods
 
 ```ruby
@@ -42,6 +40,22 @@ pod "Qiniu", "~> 7.1"
 ```
 
 建议 QNUploadManager 创建一次重复使用, 或者使用单例方式创建.
+
+
+
+**注意**： 如使用最新版的sdk(7.1.4),可自动判断上传空间。按如下方式使用：
+
+```objective-c
+QNConfiguration *config =[QNConfiguration  	build:^(QNConfigurationBuilder *builder) {
+  NSMutableArray *array = [[NSMutableArray alloc] init];
+  [array addObject:[QNResolver systemResolver]];
+  QNDnsManager *dns = [[QNDnsManager alloc] init:array networkInfo:[QNNetworkInfo normal]];//是否选择  https  上传
+  builder.zone = [[QNAutoZone alloc] initWithHttps:YES dns:dns];//设置断点续传
+  NSError *error;
+  builder.recorder =  [QNFileRecorder fileRecorderWithFolder:@"保存目录" error:&error];}];
+```
+
+
 
 ## 测试
 
