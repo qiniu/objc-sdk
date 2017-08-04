@@ -10,11 +10,10 @@
 
 #import <AGAsyncTestHelper.h>
 
-#import "QNConfiguration.h"
-#import "QNFileRecorder.h"
+#import "QiniuSDK.h"
+
 #import "QNTempFile.h"
 #import "QNTestConfig.h"
-#import "QiniuSDK.h"
 
 @interface QNFileRecorderTest : XCTestCase
 @property QNUploadManager *upManager;
