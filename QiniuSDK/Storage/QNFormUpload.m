@@ -62,15 +62,15 @@
     } else {
         fileName = @"?";
     }
-
+    
     parameters[@"token"] = _token.token;
-
+    
     [parameters addEntriesFromDictionary:_option.params];
-
-    if (_option.checkCrc) {
-        parameters[@"crc32"] = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:_data]];
-    }
-
+    
+    //    if (_option.checkCrc) {
+    parameters[@"crc32"] = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:_data]];
+    //    }
+    
     QNInternalProgressBlock p = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
         float percent = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
         if (percent > 0.95) {
@@ -83,7 +83,7 @@
         }
         _option.progressHandler(_key, percent);
     };
-
+    
     QNCompleteBlock complete = ^(QNResponseInfo *info, NSDictionary *resp) {
         if (info.isOK) {
             _option.progressHandler(_key, 1.0);
@@ -100,14 +100,14 @@
         if (info.isConnectionBroken || info.needSwitchServer) {
             nextHost = [_config.zone upBackup:_token].address;
         }
-
+        
         QNCompleteBlock retriedComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
             if (info.isOK) {
                 _option.progressHandler(_key, 1.0);
             }
             _complete(info, _key, resp);
         };
-
+        
         [_httpManager multipartPost:nextHost
                            withData:_data
                          withParams:parameters
@@ -118,7 +118,7 @@
                     withCancelBlock:_option.cancellationSignal
                          withAccess:_access];
     };
-
+    
     [_httpManager multipartPost:[_config.zone up:_token].address
                        withData:_data
                      withParams:parameters
