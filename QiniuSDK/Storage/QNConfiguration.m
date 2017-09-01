@@ -249,7 +249,7 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
     dispatch_once(&onceToken, ^{
         static const NSArray <NSString *> * uplist = nil;
         if (! uplist) {
-            uplist = [[NSArray alloc] initWithObjects:/*@"upload.qiniup.com"*/@"baidus.com", @"upload-nb.qiniup.com",
+            uplist = [[NSArray alloc] initWithObjects:@"upload.qiniup.com", @"upload-nb.qiniup.com",
                       @"upload-xs.qiniup.com", @"up.qiniup.com",
                       @"up-nb.qiniup.com", @"up-xs.qiniup.com",
                       @"upload.qbox.me", @"up.qbox.me", nil];

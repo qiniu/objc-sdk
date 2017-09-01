@@ -128,7 +128,7 @@
                              withParams:parameters
                            withFileName:fileName
                            withMimeType:_option.mimeType
-                      withCompleteBlock:retriedComplete
+                      withCompleteBlock:thirdComplete
                       withProgressBlock:p
                         withCancelBlock:_option.cancellationSignal
                              withAccess:_access];
