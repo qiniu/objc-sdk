@@ -101,8 +101,9 @@
     }];
 
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        QNServiceAddress *s = [[QNServiceAddress alloc] init:@"https://uptemp.qbox.me" ips:nil];
-        builder.zone = [[QNFixedZone alloc] initWithUp:s upBackup:nil];
+        NSArray * upList = [[NSArray alloc] initWithObjects:@"uptemp.qbox.me", nil];
+        builder.useHttps = YES;
+        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
