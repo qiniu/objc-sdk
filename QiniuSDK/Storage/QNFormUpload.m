@@ -67,9 +67,7 @@
     
     [parameters addEntriesFromDictionary:_option.params];
     
-    //    if (_option.checkCrc) {
     parameters[@"crc32"] = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:_data]];
-    //    }
     
     QNInternalProgressBlock p = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
         float percent = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
@@ -84,6 +82,8 @@
         _option.progressHandler(_key, percent);
     };
     
+    __block NSString *upHost = [_config.zone up:_token isHttps:_config.useHttps frozenDomain:nil];
+    
     QNCompleteBlock complete = ^(QNResponseInfo *info, NSDictionary *resp) {
         if (info.isOK) {
             _option.progressHandler(_key, 1.0);
@@ -96,16 +96,42 @@
             _complete([QNResponseInfo cancel], _key, nil);
             return;
         }
-        NSString *nextHost = [_config.zone up:_token].address;
+        __block NSString * nextHost = upHost;
         if (info.isConnectionBroken || info.needSwitchServer) {
-            nextHost = [_config.zone upBackup:_token].address;
+            nextHost = [_config.zone up:_token isHttps:_config.useHttps frozenDomain:nextHost];
         }
-        
         QNCompleteBlock retriedComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
             if (info.isOK) {
                 _option.progressHandler(_key, 1.0);
             }
-            _complete(info, _key, resp);
+            if (info.isOK || !info.couldRetry) {
+                _complete(info, _key, resp);
+                return;
+            }
+            if (_option.cancellationSignal()) {
+                _complete([QNResponseInfo cancel], _key, nil);
+                return;
+            }
+            NSString * thirdHost = nextHost;
+            if (info.isConnectionBroken || info.needSwitchServer) {
+                thirdHost = [_config.zone up:_token isHttps:_config.useHttps frozenDomain:nextHost];
+            }
+            
+            QNCompleteBlock thirdComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
+                if (info.isOK) {
+                    _option.progressHandler(_key, 1.0);
+                }
+                _complete(info, _key, resp);
+            };
+            [_httpManager multipartPost:thirdHost
+                               withData:_data
+                             withParams:parameters
+                           withFileName:fileName
+                           withMimeType:_option.mimeType
+                      withCompleteBlock:thirdComplete
+                      withProgressBlock:p
+                        withCancelBlock:_option.cancellationSignal
+                             withAccess:_access];
         };
         
         [_httpManager multipartPost:nextHost
@@ -119,7 +145,7 @@
                          withAccess:_access];
     };
     
-    [_httpManager multipartPost:[_config.zone up:_token].address
+    [_httpManager multipartPost:upHost
                        withData:_data
                      withParams:parameters
                    withFileName:fileName
