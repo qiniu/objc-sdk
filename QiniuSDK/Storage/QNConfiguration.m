@@ -70,8 +70,8 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
 - (instancetype)init {
     if (self = [super init]) {
         _zone = [[QNAutoZone alloc] initWithDns:nil];
-        _chunkSize = 256 * 1024;
-        _putThreshold = 512 * 1024;
+        _chunkSize = 2 * 1024 * 1024;
+        _putThreshold = 4 * 1024 * 1024;
         _retryMax = 3;
         _timeoutInterval = 60;
         
@@ -126,9 +126,7 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
                 [domainDic setObject:[NSDate dateWithTimeIntervalSince1970:0] forKey:mainDomainList[i]];
             }
         }
-    }
-    //backup
-    for (int i = 0; i < urlDicList.count; i ++) {
+        //backup
         if ([[urlDicList[i] allKeys]  containsObject: @"backup"]){
             NSArray * mainDomainList = urlDicList[i][@"backup"];
             for (int i = 0; i < mainDomainList.count; i ++) {
@@ -137,6 +135,7 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
             }
         }
     }
+    
     
     return [[QNZoneInfo alloc] init:ttl upDomainsList:domainList upDomainsDic:domainDic];
     
