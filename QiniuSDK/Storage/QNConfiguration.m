@@ -131,7 +131,7 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
             NSArray * mainDomainList = urlDicList[i][@"backup"];
             for (int i = 0; i < mainDomainList.count; i ++) {
                 [domainList addObject:mainDomainList[i]];
-                [domainDic setObject:mainDomainList[i] forKey:[NSDate dateWithTimeIntervalSince1970:0]];
+                [domainDic setObject:[NSDate dateWithTimeIntervalSince1970:0] forKey:mainDomainList[i]];
             }
         }
     }
