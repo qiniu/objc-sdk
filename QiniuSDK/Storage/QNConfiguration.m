@@ -110,7 +110,7 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
 - (QNZoneInfo *)buildInfoFromJson:(NSDictionary *)resp {
     long ttl = [[resp objectForKey:@"ttl"] longValue];
     NSDictionary *up = [resp objectForKey:@"up"];
-    NSDictionary *acc= [up objectForKey:@"acc"];
+    NSDictionary *acc = [up objectForKey:@"acc"];
     NSDictionary *src = [up objectForKey:@"src"];
     NSDictionary *old_acc = [up objectForKey:@"old_acc"];
     NSDictionary *old_src = [up objectForKey:@"old_src"];

@@ -1,5 +1,11 @@
 #Changelog
 
+## 7.1.8 (2016-09-18)
+## 修改
+*audioZone zone访问对象排序更新
+*chunkSize 默认增加为 2M
+*putThreshold 默认增加为 4M
+
 ## 7.1.7 (2017-09-06)
 ## 增加
 * 默认 Form 表单上传方式添加 CRC32 校验
