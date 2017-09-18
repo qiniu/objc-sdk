@@ -371,8 +371,8 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
         ret(0);
         return;
     }
-    //    https://uc.qbox.me/v2/query?ak=T3sAzrwItclPGkbuV4pwmszxK7Ki46qRXXGBBQz3&bucket=if-pbl
-
+    
+    //https://uc.qbox.me/v2/query?ak=T3sAzrwItclPGkbuV4pwmszxK7Ki46qRXXGBBQz3&bucket=if-pbl
     NSString *url = [NSString stringWithFormat:@"%@/v2/query?ak=%@&bucket=%@", server, token.access, token.bucket];
     [sesionManager get:url withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {
         if (!info.error) {
