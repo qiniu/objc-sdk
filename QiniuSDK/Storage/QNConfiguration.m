@@ -110,11 +110,11 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
 - (QNZoneInfo *)buildInfoFromJson:(NSDictionary *)resp {
     long ttl = [[resp objectForKey:@"ttl"] longValue];
     NSDictionary *up = [resp objectForKey:@"up"];
-    NSDictionary *aac = [up objectForKey:@"acc"];
+    NSDictionary *acc= [up objectForKey:@"acc"];
     NSDictionary *src = [up objectForKey:@"src"];
     NSDictionary *old_acc = [up objectForKey:@"old_acc"];
     NSDictionary *old_src = [up objectForKey:@"old_src"];
-    NSArray * urlDicList = [[NSArray alloc] initWithObjects:aac,src,old_acc,old_src,nil];
+    NSArray * urlDicList = [[NSArray alloc] initWithObjects:acc,src,old_acc,old_src,nil];
     NSMutableArray * domainList = [[NSMutableArray alloc] init];
     NSMutableDictionary * domainDic = [[NSMutableDictionary alloc] init];
     //main
@@ -371,8 +371,8 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
         ret(0);
         return;
     }
-    //    https://uc.qbox.me/v2/query?ak=T3sAzrwItclPGkbuV4pwmszxK7Ki46qRXXGBBQz3&bucket=if-pbl
-
+    
+    //https://uc.qbox.me/v2/query?ak=T3sAzrwItclPGkbuV4pwmszxK7Ki46qRXXGBBQz3&bucket=if-pbl
     NSString *url = [NSString stringWithFormat:@"%@/v2/query?ak=%@&bucket=%@", server, token.access, token.bucket];
     [sesionManager get:url withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {
         if (!info.error) {
