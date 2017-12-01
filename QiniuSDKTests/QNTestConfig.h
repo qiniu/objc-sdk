@@ -6,4 +6,4 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-static NSString *const g_token = @"QWYn5TFQsLLU1pL5MFEmX3s5DmHdUThav9WyOWOm:FRHDJVxqvEregQ2N_h8xCtJ0n1k=:eyJzY29wZSI6Imlvc3NkayIsImRlYWRsaW5lIjoyMDQzMzcxNDYzfQ==";
+static NSString *const g_token = @"QzdCUKE0lXmIJsvJ_yQJTeIsJYeK6liEdWAn9JuU:R4ONfXZ37vRS0Fu_fRuM_BTalIQ=:eyJzY29wZSI6ImNvbW1vbmRhdGEiLCJkZWFkbGluZSI6ODc5MTIxMTQ1ODN9Cg==";

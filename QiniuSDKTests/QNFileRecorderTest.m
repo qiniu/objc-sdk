@@ -53,6 +53,7 @@
     __block QNResponseInfo *info = nil;
     __block BOOL flag = NO;
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
+
         if (percent >= pos) {
             flag = YES;
         }
@@ -104,7 +105,7 @@
 }
 
 - (void)test600k {
-    [self template:600 pos:0.7];
+    [self template:600 pos:0.3];
 }
 
 - (void)test700k {

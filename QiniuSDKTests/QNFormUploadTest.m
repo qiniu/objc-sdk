@@ -204,8 +204,8 @@
 
     NSDictionary *proxyDict = @{
         @"HTTPEnable" : [NSNumber numberWithInt:1],
-        (NSString *)kCFStreamPropertyHTTPProxyHost : @"183.136.139.16",
-        (NSString *)kCFStreamPropertyHTTPProxyPort : @8888,
+        (NSString *)kCFStreamPropertyHTTPProxyHost : @"180.101.136.11",
+        (NSString *)kCFStreamPropertyHTTPProxyPort : @80,
     };
 
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
