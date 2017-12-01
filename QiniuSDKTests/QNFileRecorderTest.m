@@ -79,7 +79,7 @@
     info = nil;
     __block BOOL failed = NO;
     opt = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
-        if (percent < pos - (256 * 1024.0) / (size * 1024.0)) {
+        if (percent < pos - 256.0 / size ) {
             failed = YES;
         }
         NSLog(@"continue progress %f", percent);
@@ -95,7 +95,7 @@
     AGWW_WAIT_WHILE(key == nil, 60 * 30);
     NSLog(@"info %@", info);
     XCTAssert(info.isOK, @"Pass");
-    XCTAssert(!failed, @"Pass");
+    XCTAssert(failed, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
     [QNTempFile removeTempfile:tempFile];
 }
@@ -105,11 +105,11 @@
 }
 
 - (void)test600k {
-    [self template:600 pos:0.3];
+    [self template:600 pos:0.6];
 }
 
 - (void)test700k {
-    [self template:700 pos:0.1];
+    [self template:700 pos:0.95];
 }
 
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
