@@ -380,10 +380,10 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
             if (info == nil) {
                 ret(kQNInvalidToken);
             } else {
-                ret(0);
                 [lock lock];
                 [cache setValue:info forKey:[token index]];
                 [lock unlock];
+                ret(0);
             }
         } else {
             ret(kQNNetworkError);
