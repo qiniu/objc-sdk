@@ -65,7 +65,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
         self.task =nil;
         self.cancelBlock = nil;
         self.progressBlock = nil;
-        [session finishTasksAndInvalidate];
+//        [session finishTasksAndInvalidate];
     }
 }
 
@@ -92,8 +92,9 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
         } else {
             _noProxy = YES;
         }
-
-        _httpManager = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration] delegate:[[QNProgessDelegate alloc] initWithProgress:nil] delegateQueue:[NSOperationQueue currentQueue]];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        configuration.connectionProxyDictionary = proxyDict;
+        _httpManager = [NSURLSession sessionWithConfiguration:configuration delegate:[[QNProgessDelegate alloc] initWithProgress:nil] delegateQueue:[NSOperationQueue currentQueue]];
 
         _timeout = timeout;
         _converter = converter;
@@ -103,7 +104,11 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
     return self;
 }
 
-
+- (void)dealloc {
+    if (self.httpManager) {
+        [self.httpManager finishTasksAndInvalidate];
+    }
+}
 
 
 - (instancetype)init {
