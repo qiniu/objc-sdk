@@ -1,11 +1,10 @@
 language: objective-c
-osx_image: xcode7
+osx_image: xcode9
 
 before_install:
   - rvm install 2.3.1
   - rvm use 2.3.1
   - brew update
-  - brew outdated xctool || brew upgrade xctool
   - gem install cocoapods --pre
   - pod --version
   - pod repo remove master
@@ -17,5 +16,5 @@ before_script:
   - export QINIU_TEST_ENV="travis"
 
 script:
-  - xctool -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -sdk iphonesimulator -configuration Release test -test-sdk iphonesimulator9.0 -freshInstall -freshSimulator
-  - xctool -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -sdk macosx -configuration Release test -test-sdk macosx
+  - xcodebuild  -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -configuration Release ARCHS="armv7 armv7s arm64" build
+  - xcodebuild  -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -configuration Release ARCHS="x86_64" build
