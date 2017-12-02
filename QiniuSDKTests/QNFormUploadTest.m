@@ -210,7 +210,7 @@
 
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.proxy = proxyDict;
-        NSArray * upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com",@"upnono.qiniu.com", nil];
+        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com", @"upnono.qiniu.com", nil];
         builder.useHttps = NO;
         builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
     }];
@@ -243,7 +243,7 @@
         builder.converter = ^NSString *(NSString *url) {
             return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
         };
-        NSArray * upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com",@"upnono.qiniu.com", nil];
+        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com", @"upnono.qiniu.com", nil];
         builder.useHttps = NO;
         builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
     }];

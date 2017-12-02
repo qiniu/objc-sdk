@@ -6,7 +6,6 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-
 #import "HappyDNS.h"
 #import "QNAsyncRun.h"
 #import "QNConfiguration.h"
@@ -51,23 +50,22 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
-   didSendBodyData:(int64_t)bytesSent
-    totalBytesSent:(int64_t)totalBytesSent
-totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
-    
+             didSendBodyData:(int64_t)bytesSent
+              totalBytesSent:(int64_t)totalBytesSent
+    totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
+
     _progressBlock(totalBytesSent, totalBytesExpectedToSend);
     if (_cancelBlock && _cancelBlock()) {
         [_task cancel];
     }
-    
+
     float progress = (float)totalBytesSent / totalBytesExpectedToSend;
-    if (progress==1.0f) {
-        self.task =nil;
+    if (progress == 1.0f) {
+        self.task = nil;
         self.cancelBlock = nil;
         self.progressBlock = nil;
     }
 }
-
 
 @end
 
@@ -108,7 +106,6 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
         [self.httpManager finishTasksAndInvalidate];
     }
 }
-
 
 - (instancetype)init {
     return [self initWithProxy:nil timeout:60 urlConverter:nil dns:nil];
@@ -206,10 +203,10 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
     QNInternalProgressBlock progressBlock2 = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
         progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
     };
-    QNProgessDelegate *delegate =(QNProgessDelegate *)_httpManager.delegate;
+    QNProgessDelegate *delegate = (QNProgessDelegate *)_httpManager.delegate;
     delegate.progressBlock = progressBlock2;
-    NSURLSessionUploadTask *uploadTask = [_httpManager uploadTaskWithRequest:request fromData:nil completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        
+    NSURLSessionUploadTask *uploadTask = [_httpManager uploadTaskWithRequest:request fromData:nil completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
+
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
         double duration = [[NSDate date] timeIntervalSinceDate:startTime];
         QNResponseInfo *info;
@@ -234,7 +231,6 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
     [uploadTask resume];
 }
 
-
 - (void)multipartPost:(NSString *)url
              withData:(NSData *)data
            withParams:(NSDictionary *)params
@@ -244,35 +240,35 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock
            withAccess:(NSString *)access {
-    NSURL *URL = [[NSURL alloc]initWithString:url];
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc]initWithURL:URL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
+    NSURL *URL = [[NSURL alloc] initWithString:url];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:URL cachePolicy:NSURLRequestUseProtocolCachePolicy timeoutInterval:30];
     request.HTTPMethod = @"POST";
     NSString *boundary = @"werghnvt54wef654rjuhgb56trtg34tweuyrgf";
     request.allHTTPHeaderFields = @{
-                                    @"Content-Type":[NSString stringWithFormat:@"multipart/form-data; boundary=%@",boundary]
-                                    };
-    NSMutableData *postData = [[NSMutableData alloc]init];
+        @"Content-Type" : [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary]
+    };
+    NSMutableData *postData = [[NSMutableData alloc] init];
     for (NSString *paramsKey in params) {
-        NSString *pair = [NSString stringWithFormat:@"--%@\r\nContent-Disposition: form-data; name=\"%@\"\r\n\r\n",boundary,paramsKey];
+        NSString *pair = [NSString stringWithFormat:@"--%@\r\nContent-Disposition: form-data; name=\"%@\"\r\n\r\n", boundary, paramsKey];
         [postData appendData:[pair dataUsingEncoding:NSUTF8StringEncoding]];
-        
+
         id value = [params objectForKey:paramsKey];
         if ([value isKindOfClass:[NSString class]]) {
             [postData appendData:[value dataUsingEncoding:NSUTF8StringEncoding]];
-        }else if ([value isKindOfClass:[NSData class]]){
+        } else if ([value isKindOfClass:[NSData class]]) {
             [postData appendData:value];
         }
         [postData appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
     }
-    NSString *filePair = [NSString stringWithFormat:@"--%@\r\nContent-Disposition: form-data; name=\"%@\"; filename=\"%@\"\nContent-Type:%@\r\n\r\n",boundary,@"file",key,mime];
+    NSString *filePair = [NSString stringWithFormat:@"--%@\r\nContent-Disposition: form-data; name=\"%@\"; filename=\"%@\"\nContent-Type:%@\r\n\r\n", boundary, @"file", key, mime];
     [postData appendData:[filePair dataUsingEncoding:NSUTF8StringEncoding]];
     [postData appendData:data];
-    [postData appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n",boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    [postData appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
     request.HTTPBody = postData;
-    [request setValue:[NSString stringWithFormat:@"%lu",(unsigned long)postData.length] forHTTPHeaderField:@"Content-Length"];
-    
+    [request setValue:[NSString stringWithFormat:@"%lu", (unsigned long)postData.length] forHTTPHeaderField:@"Content-Length"];
+
     [self sendRequest:request withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:cancelBlock
-           withAccess:access];
+               withAccess:access];
 }
 
 - (void)post:(NSString *)url
@@ -307,8 +303,8 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
     QNAsyncRun(^{
         NSURL *URL = [NSURL URLWithString:url];
         NSURLRequest *request = [NSURLRequest requestWithURL:URL];
-        
-        NSURLSessionDataTask *dataTask = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+
+        NSURLSessionDataTask *dataTask = [[NSURLSession sharedSession] dataTaskWithRequest:request completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
             NSData *s = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
             NSDictionary *resp = nil;
@@ -327,12 +323,11 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
             } else {
                 info = [QNSessionManager buildResponseInfo:httpResponse withError:error withDuration:0 withResponse:s withHost:@"" withIp:@""];
             }
-            
+
             completeBlock(info, resp);
         }];
         [dataTask resume];
-        
-        
+
     });
 }
 

@@ -101,7 +101,7 @@
     }];
 
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        NSArray * upList = [[NSArray alloc] initWithObjects:@"uptemp.qbox.me", nil];
+        NSArray *upList = [[NSArray alloc] initWithObjects:@"uptemp.qbox.me", nil];
         builder.useHttps = YES;
         builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
     }];
@@ -218,7 +218,7 @@
 
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.proxy = proxyDict;
-        NSArray * upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com",@"upnono.qiniu.com", nil];
+        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com", @"upnono.qiniu.com", nil];
         builder.useHttps = NO;
         builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
     }];
@@ -249,7 +249,7 @@
         builder.converter = ^NSString *(NSString *url) {
             return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
         };
-        NSArray * upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com",@"upnono.qiniu.com", nil];
+        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com", @"upnono.qiniu.com", nil];
         builder.useHttps = NO;
         builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
     }];

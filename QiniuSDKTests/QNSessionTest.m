@@ -88,7 +88,7 @@
 
     testInfo = nil;
     [_httpManager post:@"http://httpbin.org/status/200" withData:data withParams:nil withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {
-        
+
         testInfo = info;
     }
         withProgressBlock:nil
