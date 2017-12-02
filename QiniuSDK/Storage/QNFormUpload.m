@@ -62,13 +62,9 @@
     } else {
         fileName = @"?";
     }
-
     parameters[@"token"] = _token.token;
-
     [parameters addEntriesFromDictionary:_option.params];
-
     parameters[@"crc32"] = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:_data]];
-
     QNInternalProgressBlock p = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
         float percent = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
         if (percent > 0.95) {
@@ -81,9 +77,7 @@
         }
         _option.progressHandler(_key, percent);
     };
-
     __block NSString *upHost = [_config.zone up:_token isHttps:_config.useHttps frozenDomain:nil];
-
     QNCompleteBlock complete = ^(QNResponseInfo *info, NSDictionary *resp) {
         if (info.isOK) {
             _option.progressHandler(_key, 1.0);
@@ -116,7 +110,6 @@
             if (info.isConnectionBroken || info.needSwitchServer) {
                 thirdHost = [_config.zone up:_token isHttps:_config.useHttps frozenDomain:nextHost];
             }
-
             QNCompleteBlock thirdComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
                 if (info.isOK) {
                     _option.progressHandler(_key, 1.0);
@@ -133,7 +126,6 @@
                         withCancelBlock:_option.cancellationSignal
                              withAccess:_access];
         };
-
         [_httpManager multipartPost:nextHost
                            withData:_data
                          withParams:parameters
@@ -144,7 +136,6 @@
                     withCancelBlock:_option.cancellationSignal
                          withAccess:_access];
     };
-
     [_httpManager multipartPost:upHost
                        withData:_data
                      withParams:parameters
@@ -155,5 +146,4 @@
                 withCancelBlock:_option.cancellationSignal
                      withAccess:_access];
 }
-
 @end
