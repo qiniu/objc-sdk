@@ -91,7 +91,7 @@
     NSString *path = [QNFileRecorder pathJoin:key path:dir];
     [[NSFileManager defaultManager] removeItemAtPath:path error:&error];
     if (error) {
-        NSLog(@"%s,%@",__func__,error);
+        NSLog(@"%s,%@", __func__, error);
     }
 }
 

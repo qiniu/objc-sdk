@@ -79,7 +79,7 @@
     info = nil;
     __block BOOL failed = NO;
     opt = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
-        if (percent < pos - 256.0 / size ) {
+        if (percent < pos - 256.0 / size) {
             failed = YES;
         }
         NSLog(@"continue progress %f", percent);

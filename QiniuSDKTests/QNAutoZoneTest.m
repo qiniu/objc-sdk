@@ -38,7 +38,7 @@
 }
 
 - (void)testHttp {
-    QNAutoZone * autoZone = [[QNAutoZone alloc] initWithDns:nil];
+    QNAutoZone* autoZone = [[QNAutoZone alloc] initWithDns:nil];
     QNUpToken* tok = [QNUpToken parse:g_token];
     __block int x = 0;
     __block int c = 0;
