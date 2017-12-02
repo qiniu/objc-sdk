@@ -70,7 +70,7 @@
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == 500, @"Pass");
+    XCTAssert((testInfo.statusCode == 500), @"Pass");
     XCTAssert(testInfo.error != nil, @"Pass");
 
     testInfo = nil;
@@ -88,6 +88,7 @@
 
     testInfo = nil;
     [_httpManager post:@"http://httpbin.org/status/200" withData:data withParams:nil withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {
+        
         testInfo = info;
     }
         withProgressBlock:nil

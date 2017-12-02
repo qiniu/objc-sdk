@@ -65,7 +65,6 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
         self.task =nil;
         self.cancelBlock = nil;
         self.progressBlock = nil;
-//        [session finishTasksAndInvalidate];
     }
 }
 
