@@ -105,11 +105,11 @@
 }
 
 - (void)test600k {
-    [self template:600 pos:0.6];
+    [self template:600 pos:0.7];
 }
 
 - (void)test700k {
-    [self template:700 pos:0.95];
+    [self template:700 pos:0.1];
 }
 
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
