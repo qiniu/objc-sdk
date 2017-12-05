@@ -82,7 +82,7 @@
         if (percent < pos - 256.0 / size) {
             failed = YES;
         }
-        NSLog(@"continue progress %f,%f", percent,pos - 256.0 / size);
+        NSLog(@"continue progress %f,%f", percent, pos - 256.0 / size);
     }
                                         params:nil
                                       checkCrc:NO
@@ -92,7 +92,7 @@
         info = i;
     }
                  option:opt];
-    NSLog(@"failed: %@",failed ? @"YES" : @"NO");
+    NSLog(@"failed: %@", failed ? @"YES" : @"NO");
     AGWW_WAIT_WHILE(key == nil, 60 * 30);
     NSLog(@"info %@", info);
     XCTAssert(info.isOK, @"Pass");
