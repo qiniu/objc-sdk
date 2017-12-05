@@ -58,13 +58,6 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
     if (_cancelBlock && _cancelBlock()) {
         [_task cancel];
     }
-
-    float progress = (float)totalBytesSent / totalBytesExpectedToSend;
-    if (progress == 1.0f) {
-        self.task = nil;
-        self.cancelBlock = nil;
-        self.progressBlock = nil;
-    }
 }
 
 @end
@@ -203,7 +196,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
     QNInternalProgressBlock progressBlock2 = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
         progressBlock(totalBytesWritten, totalBytesExpectedToWrite);
     };
-    QNProgessDelegate *delegate = (QNProgessDelegate *)_httpManager.delegate;
+    __block QNProgessDelegate *delegate = (QNProgessDelegate *)_httpManager.delegate;
     delegate.progressBlock = progressBlock2;
     NSURLSessionUploadTask *uploadTask = [_httpManager uploadTaskWithRequest:request fromData:nil completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
 
@@ -224,6 +217,9 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
         } else {
             info = [QNSessionManager buildResponseInfo:httpResponse withError:error withDuration:duration withResponse:data withHost:domain withIp:ip];
         }
+        delegate.task = nil;
+        delegate.cancelBlock = nil;
+        delegate.progressBlock = nil;
         completeBlock(info, resp);
     }];
     delegate.task = uploadTask;
