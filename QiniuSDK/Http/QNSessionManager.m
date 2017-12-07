@@ -68,9 +68,9 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
 @property UInt32 timeout;
 @property (nonatomic, strong) QNUrlConvert converter;
 @property bool noProxy;
-@property (nonatomic,strong) NSDictionary *proxyDict;
+@property (nonatomic, strong) NSDictionary *proxyDict;
 @property (nonatomic) QNDnsManager *dns;
-@property (nonatomic,strong) NSOperationQueue *delegateQueue;
+@property (nonatomic, strong) NSOperationQueue *delegateQueue;
 @end
 
 @implementation QNSessionManager
