@@ -62,5 +62,4 @@
     XCTAssert([t.bucket isEqualToString:@""], @"Pass");
 }
 
-
 @end
