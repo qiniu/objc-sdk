@@ -56,4 +56,11 @@
     XCTAssert(t.hasReturnUrl, @"Pass");
 }
 
+- (void)testScopeNull {
+    QNUpToken *t = [QNUpToken parse:@"k4MXrVJes7RoS7N7teQDfkVqDDXqNOZq5BOfjzPn:MDllYmMxYTkyNjIxZTg0N2NjYTUwNDg0MGIyOWQxYjhjMTBlZTc0Ngo=:eyJzY29wZSI6bnVsbCwiZGVhZGxpbmUiOjE1MTM3Njg3ODl9Cg=="];
+    // This is an example of a functional test case.
+    XCTAssert([t.bucket isEqualToString:@""], @"Pass");
+}
+
+
 @end
