@@ -148,6 +148,13 @@ typedef void (^QNPrequeryReturn)(int code);
 + (instancetype)zoneNa0;
 
 /**
+ *    zone As0 新加坡
+ *
+ *    @return 实例
+*/
++ (instancetype)zoneAs0;
+
+/**
  *    Zone初始化方法
  *
  *    @param upList     默认上传服务器地址列表
