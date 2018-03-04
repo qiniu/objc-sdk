@@ -70,7 +70,7 @@
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == 500, @"Pass");
+    XCTAssert((testInfo.statusCode == 500), @"Pass");
     XCTAssert(testInfo.error != nil, @"Pass");
 
     testInfo = nil;
@@ -88,6 +88,7 @@
 
     testInfo = nil;
     [_httpManager post:@"http://httpbin.org/status/200" withData:data withParams:nil withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {
+
         testInfo = info;
     }
         withProgressBlock:nil
@@ -104,8 +105,8 @@
 - (void)testProxy {
     NSDictionary *proxyDict = @{
         @"HTTPEnable" : [NSNumber numberWithInt:1],
-        (NSString *)kCFStreamPropertyHTTPProxyHost : @"183.136.139.16",
-        (NSString *)kCFStreamPropertyHTTPProxyPort : @8888,
+        (NSString *)kCFStreamPropertyHTTPProxyHost : @"180.101.136.11",
+        (NSString *)kCFStreamPropertyHTTPProxyPort : @80,
     };
 
     QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:proxyDict timeout:60 urlConverter:nil dns:nil];

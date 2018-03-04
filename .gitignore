@@ -19,7 +19,7 @@ DerivedData
 *.hmap
 *.ipa
 *.xcuserstate
-
+*.xccoverage.plist
 
 # Subversion
 .svn
