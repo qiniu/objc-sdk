@@ -289,13 +289,29 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
     dispatch_once(&onceToken, ^{
         static const NSArray<NSString *> *uplist = nil;
         if (!uplist) {
-            uplist = [[NSArray alloc] initWithObjects:@"upload-na0.qiniu.com", @"up-na0.qiniup.com",
+            uplist = [[NSArray alloc] initWithObjects:@"upload-na0.qiniup.com", @"up-na0.qiniup.com",
                                                       @"upload-na0.qbox.me", @"up-na0.qbox.me", nil];
             zNa0 = [QNFixedZone createWithHost:(NSArray<NSString *> *)uplist];
         }
     });
     return zNa0;
 }
+    
++ (instancetype)zoneAs0 {
+    static QNFixedZone *zAs0 = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        static const NSArray<NSString *> *uplist = nil;
+        if (!uplist) {
+            uplist = [[NSArray alloc] initWithObjects:@"upload-as0.qiniup.com", @"up-as0.qiniup.com",
+                      @"upload-as0.qbox.me", @"up-as0.qbox.me", nil];
+            zAs0 = [QNFixedZone createWithHost:(NSArray<NSString *> *)uplist];
+        }
+    });
+    return zAs0;
+}
+    
+    
 
 - (void)preQuery:(QNUpToken *)token
               on:(QNPrequeryReturn)ret {
