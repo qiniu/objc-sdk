@@ -79,10 +79,10 @@
     info = nil;
     __block BOOL failed = NO;
     opt = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
-        if (percent < pos - 256.0 / size) {
+        if (percent < pos - 2 * 1024.0 / size) {
             failed = YES;
         }
-        NSLog(@"continue progress %f,%f", percent, pos - 256.0 / size);
+        NSLog(@"continue progress %f,%f", percent, pos - 2 * 1024.0 / size);
     }
                                         params:nil
                                       checkCrc:NO
@@ -112,6 +112,14 @@
 //- (void)test700k {
 //    [self template:700 pos:0.1];
 //}
+
+
+- (void)test4M {
+    if (_inTravis) {
+        return;
+    }
+    [self template:4 * 1024 + 1 pos:0.9];
+}
 
 //#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
 
