@@ -212,6 +212,11 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
     return nil;
 }
 
+- (void)preQuery:(QNUpToken *)token
+              on:(QNPrequeryReturn)ret {
+    ret(0);
+}
+
 @end
 
 @interface QNFixedZone () {
@@ -296,7 +301,7 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
     });
     return zNa0;
 }
-    
+
 + (instancetype)zoneAs0 {
     static QNFixedZone *zAs0 = nil;
     static dispatch_once_t onceToken;
@@ -304,14 +309,12 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
         static const NSArray<NSString *> *uplist = nil;
         if (!uplist) {
             uplist = [[NSArray alloc] initWithObjects:@"upload-as0.qiniup.com", @"up-as0.qiniup.com",
-                      @"upload-as0.qbox.me", @"up-as0.qbox.me", nil];
+                                                      @"upload-as0.qbox.me", @"up-as0.qbox.me", nil];
             zAs0 = [QNFixedZone createWithHost:(NSArray<NSString *> *)uplist];
         }
     });
     return zAs0;
 }
-    
-    
 
 - (void)preQuery:(QNUpToken *)token
               on:(QNPrequeryReturn)ret {
