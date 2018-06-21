@@ -15,7 +15,6 @@
 #import "QNResponseInfo.h"
 #import "QNSessionManager.h"
 
-#import "HappyDNS.h"
 #import "QNConfiguration.h"
 
 #import "QNTestConfig.h"
@@ -38,7 +37,7 @@
 }
 
 - (void)testHttp {
-    QNAutoZone* autoZone = [[QNAutoZone alloc] initWithDns:nil];
+    QNAutoZone* autoZone = [[QNAutoZone alloc] init];
     QNUpToken* tok = [QNUpToken parse:g_token];
     __block int x = 0;
     __block int c = 0;

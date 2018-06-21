@@ -7,8 +7,6 @@
 //
 
 #import "QNConfiguration.h"
-#import "HappyDNS.h"
-#import "QNNetworkInfo.h"
 #import "QNResponseInfo.h"
 #import "QNSessionManager.h"
 #import "QNSystem.h"
@@ -16,16 +14,6 @@
 
 const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 
-static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
-    QNDnsManager *d = builder.dns;
-    if (d == nil) {
-        id<QNResolverDelegate> r1 = [QNResolver systemResolver];
-        id<QNResolverDelegate> r2 = [[QNResolver alloc] initWithAddress:@"119.29.29.29"];
-        id<QNResolverDelegate> r3 = [[QNResolver alloc] initWithAddress:@"114.114.115.115"];
-        d = [[QNDnsManager alloc] init:[NSArray arrayWithObjects:r1, r2, r3, nil] networkInfo:[QNNetworkInfo normal]];
-    }
-    return d;
-}
 
 @implementation QNConfiguration
 
@@ -51,11 +39,7 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
         _converter = builder.converter;
 
         _disableATS = builder.disableATS;
-        if (_disableATS) {
-            _dns = initDns(builder);
-        } else {
-            _dns = nil;
-        }
+        
         _zone = builder.zone;
 
         _useHttps = builder.useHttps;
@@ -69,7 +53,7 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
 
 - (instancetype)init {
     if (self = [super init]) {
-        _zone = [[QNAutoZone alloc] initWithDns:nil];
+        _zone = [[QNAutoZone alloc] init];
         _chunkSize = 2 * 1024 * 1024;
         _putThreshold = 4 * 1024 * 1024;
         _retryMax = 3;
@@ -346,16 +330,14 @@ static QNDnsManager *initDns(QNConfigurationBuilder *builder) {
     NSMutableDictionary *cache;
     NSLock *lock;
     QNSessionManager *sesionManager;
-    QNDnsManager *dns;
 }
 
-- (instancetype)initWithDns:(QNDnsManager *)dns1 {
+- (instancetype)init{
     if (self = [super init]) {
-        dns = dns1;
         server = @"https://uc.qbox.me";
         cache = [NSMutableDictionary new];
         lock = [NSLock new];
-        sesionManager = [[QNSessionManager alloc] initWithProxy:nil timeout:10 urlConverter:nil dns:dns];
+        sesionManager = [[QNSessionManager alloc] initWithProxy:nil timeout:10 urlConverter:nil];
     }
     return self;
 }

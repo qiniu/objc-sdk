@@ -25,7 +25,6 @@ extern const UInt32 kQNBlockSize;
 typedef NSString * (^QNUrlConvert)(NSString *url);
 
 @class QNConfigurationBuilder;
-@class QNDnsManager;
 @class QNZone;
 /**
  *    Builder block
@@ -74,7 +73,6 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @property (nonatomic, readonly) QNUrlConvert converter;
 
-@property (nonatomic, readonly) QNDnsManager *dns;
 
 @property (readonly) BOOL disableATS;
 
@@ -182,7 +180,6 @@ typedef void (^QNPrequeryReturn)(int code);
 
 @interface QNAutoZone : QNZone
 
-- (instancetype)initWithDns:(QNDnsManager *)dns;
 
 - (NSString *)up:(QNUpToken *)token
          isHttps:(BOOL)isHttps
@@ -230,7 +227,6 @@ typedef void (^QNPrequeryReturn)(int code);
 
 @property (nonatomic, strong) QNUrlConvert converter;
 
-@property (nonatomic, strong) QNDnsManager *dns;
 
 @property (assign) BOOL disableATS;
 
