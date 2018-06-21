@@ -10,7 +10,6 @@
 
 #import <AGAsyncTestHelper.h>
 
-#import "HappyDNS.h"
 #import "QiniuSDK.h"
 
 #import "QNTempFile.h"

@@ -15,7 +15,6 @@
 #import "QNResponseInfo.h"
 #import "QNSessionManager.h"
 
-#import "HappyDNS.h"
 #import "QNConfiguration.h"
 
 @interface QNSessionTest : XCTestCase
@@ -109,7 +108,7 @@
         (NSString *)kCFStreamPropertyHTTPProxyPort : @80,
     };
 
-    QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:proxyDict timeout:60 urlConverter:nil dns:nil];
+    QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:proxyDict timeout:60 urlConverter:nil];
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
     __block QNResponseInfo *testInfo = nil;
     [httpManager post:@"http://up123.qiniu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {
@@ -129,7 +128,7 @@
         return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
     };
 
-    QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:c dns:nil];
+    QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:nil timeout:60 urlConverter:c];
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
     __block QNResponseInfo *testInfo = nil;
     [httpManager post:@"http://upnono.qiniu.com" withData:data withParams:nil withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {

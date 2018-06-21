@@ -6,7 +6,6 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-#import "HappyDNS.h"
 #import "QNAsyncRun.h"
 #import "QNConfiguration.h"
 #import "QNResponseInfo.h"
@@ -69,7 +68,6 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
 @property (nonatomic, strong) QNUrlConvert converter;
 @property bool noProxy;
 @property (nonatomic, strong) NSDictionary *proxyDict;
-@property (nonatomic) QNDnsManager *dns;
 @property (nonatomic, strong) NSOperationQueue *delegateQueue;
 @end
 
@@ -77,8 +75,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
 
 - (instancetype)initWithProxy:(NSDictionary *)proxyDict
                       timeout:(UInt32)timeout
-                 urlConverter:(QNUrlConvert)converter
-                          dns:(QNDnsManager *)dns {
+                 urlConverter:(QNUrlConvert)converter {
     if (self = [super init]) {
         if (proxyDict != nil) {
             _noProxy = NO;
@@ -89,14 +86,13 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
         _delegateQueue = [[NSOperationQueue alloc] init];
         _timeout = timeout;
         _converter = converter;
-        _dns = dns;
     }
 
     return self;
 }
 
 - (instancetype)init {
-    return [self initWithProxy:nil timeout:60 urlConverter:nil dns:nil];
+    return [self initWithProxy:nil timeout:60 urlConverter:nil];
 }
 
 + (QNResponseInfo *)buildResponseInfo:(NSHTTPURLResponse *)response
@@ -140,21 +136,6 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
         url = [[NSURL alloc] initWithString:_converter(u)];
         request.URL = url;
         domain = url.host;
-    } else if (_noProxy && _dns != nil && [url.scheme isEqualToString:@"http"]) {
-        if (isIpV6FullySupported() || ![QNIP isV6]) {
-            ips = [_dns queryWithDomain:[[QNDomain alloc] init:domain hostsFirst:NO hasCname:YES maxTtl:1000]];
-            double duration = [[NSDate date] timeIntervalSinceDate:startTime];
-
-            if (ips == nil || ips.count == 0) {
-                NSError *error = [[NSError alloc] initWithDomain:domain code:-1003 userInfo:@{ @"error" : @"unkonwn host" }];
-
-                QNResponseInfo *info = [QNResponseInfo responseInfoWithNetError:error host:domain duration:duration];
-                NSLog(@"failure %@", info);
-
-                completeBlock(info, nil);
-                return;
-            }
-        }
     }
     [self sendRequest2:request withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:cancelBlock withIpArray:ips withIndex:0 withDomain:domain withRetryTimes:3 withStartTime:startTime withAccess:access];
 }
