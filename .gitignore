@@ -20,7 +20,7 @@ DerivedData
 *.ipa
 *.xcuserstate
 *.xccoverage.plist
-
+QiniuSDK.xcworkspace/xcshareddata/
 # Subversion
 .svn
 
@@ -35,3 +35,4 @@ DerivedData
 #
 Pods/
 Podfile.lock
+.Podfile.swo
