@@ -25,6 +25,7 @@
 @property (nonatomic, strong) QNUploadOption *option;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) QNConfiguration *config;
+@property (nonatomic, strong) NSString *fileName;
 @property (nonatomic) float previousPercent;
 
 @property (nonatomic, strong) NSString *access; //AK
@@ -35,6 +36,7 @@
 
 - (instancetype)initWithData:(NSData *)data
                      withKey:(NSString *)key
+                withFileName:(NSString *)fileName
                    withToken:(QNUpToken *)token
        withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option
@@ -48,6 +50,7 @@
         _complete = block;
         _httpManager = http;
         _config = config;
+        _fileName = fileName != nil ? fileName : @"?";
         _previousPercent = 0;
         _access = token.access;
     }
@@ -56,11 +59,8 @@
 
 - (void)put {
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    NSString *fileName = _key;
     if (_key) {
         parameters[@"key"] = _key;
-    } else {
-        fileName = @"?";
     }
     parameters[@"token"] = _token.token;
     [parameters addEntriesFromDictionary:_option.params];
@@ -119,7 +119,7 @@
             [_httpManager multipartPost:thirdHost
                                withData:_data
                              withParams:parameters
-                           withFileName:fileName
+                           withFileName:_fileName
                            withMimeType:_option.mimeType
                       withCompleteBlock:thirdComplete
                       withProgressBlock:p
@@ -129,7 +129,7 @@
         [_httpManager multipartPost:nextHost
                            withData:_data
                          withParams:parameters
-                       withFileName:fileName
+                       withFileName:_fileName
                        withMimeType:_option.mimeType
                   withCompleteBlock:retriedComplete
                   withProgressBlock:p
@@ -139,7 +139,7 @@
     [_httpManager multipartPost:upHost
                        withData:_data
                      withParams:parameters
-                   withFileName:fileName
+                   withFileName:_fileName
                    withMimeType:_option.mimeType
               withCompleteBlock:complete
               withProgressBlock:p
