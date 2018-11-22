@@ -48,9 +48,12 @@ pod "Qiniu", "~> 7.2"
 #import <QiniuSDK.h>
 ...
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        NSArray *upList = [[NSArray alloc] initWithObjects:@"上传域名1", @"上传域名2", nil];// 指定上传区域
         builder.useHttps = YES;// 是否使用https
-        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+        builder.zone = [QNFixedZone zone0];// 指定华东区域
+        // builder.zone = [QNFixedZone zone1];// 指定华北区域
+        // builder.zone = [QNFixedZone zone2];// 指定华南区域
+        // builder.zone = [QNFixedZone zoneNa0];// 指定北美区域
+        // builder.zone = [QNFixedZone zoneAs0];// 指定东南亚区域
     }];
     
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
