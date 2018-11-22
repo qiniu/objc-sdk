@@ -28,6 +28,7 @@ pod "Qiniu", "~> 7.2"
 
 ## 使用方法
 
+#简单上传
 ```Objective-C
 #import <QiniuSDK.h>
 ...
@@ -38,27 +39,36 @@ pod "Qiniu", "~> 7.2"
         complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         NSLog(@"%@", info);
         NSLog(@"%@", resp);
-    } option:nil];
+    } option:[QNUploadOption defaultOptions]];
+...
+```
+
+#如使用最新版的sdk(>7.1.4)，默认自动判断上传空间。如需要指定上传区域，可以按如下方式上传：
+```Objective-C
+#import <QiniuSDK.h>
+...
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+    NSArray *upList = [[NSArray alloc] initWithObjects:@"上传域名1", @"上传域名2", nil];// 指定上传区域
+    builder.useHttps = YES;// 是否使用https
+    builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+    }];
+    
+    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
+    QNUploadOption *option = [[QNUploadOption alloc] initWithProgressHandler:^(NSString *key, float percent) {
+    NSLog(@"progress %f", percent);
+    }];
+    
+    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *token = @"从服务端SDK获取";
+    [upManager putData:data key:@"hello" token:token
+    complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+    NSLog(@"%@", info);
+    NSLog(@"%@", resp);
+    } option:option];
 ...
 ```
 
 建议 QNUploadManager 创建一次重复使用, 或者使用单例方式创建.
-
-
-
-**注意**： 如使用最新版的sdk(>7.1.4),可自动判断上传空间。按如下方式使用：
-
-```objective-c
-QNConfiguration *config =[QNConfiguration  	build:^(QNConfigurationBuilder *builder) {
-  NSMutableArray *array = [[NSMutableArray alloc] init];
-  [array addObject:[QNResolver systemResolver]];
-  QNDnsManager *dns = [[QNDnsManager alloc] init:array networkInfo:[QNNetworkInfo normal]];//是否选择  https  上传
-  builder.zone = [[QNAutoZone alloc] initWithHttps:YES dns:dns];//设置断点续传
-  NSError *error;
-  builder.recorder =  [QNFileRecorder fileRecorderWithFolder:@"保存目录" error:&error];}];
-```
-
-
 
 ## 测试
 
@@ -84,6 +94,7 @@ $ xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -configur
 - 如果碰到 crc 链接错误, 请把 libz.dylib 加入到项目中去
 - 如果碰到 res_9_ninit 链接错误, 请把 libresolv.dylib 加入到项目中去
 - 如果需要支持 iOS 5 或者支持 RestKit, 请用 AFNetworking 1.x 分支的版本
+- 各存储区域对应的上传域名可参见 https://developer.qiniu.com/kodo/manual/1671/region-endpoint
 - 如果碰到其他编译错误, 请参考 CocoaPods 的 [troubleshooting](http://guides.cocoapods.org/using/troubleshooting.html)
 - iOS 9+ 强制使用https，需要在project build info 添加NSAppTransportSecurity类型Dictionary。在NSAppTransportSecurity下添加NSAllowsArbitraryLoads类型Boolean,值设为YES。 具体操作可参见 http://blog.csdn.net/guoer9973/article/details/48622823
 
