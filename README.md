@@ -28,6 +28,7 @@ pod "Qiniu", "~> 7.2"
 
 ## 使用方法
 
+### 简单上传
 ```Objective-C
 #import <QiniuSDK.h>
 ...
@@ -38,27 +39,38 @@ pod "Qiniu", "~> 7.2"
         complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         NSLog(@"%@", info);
         NSLog(@"%@", resp);
-    } option:nil];
+    } option:[QNUploadOption defaultOptions]];
+...
+```
+
+### 如使用最新版的sdk，默认自动判断上传空间。如需要指定上传区域，可以按如下方式上传：
+```Objective-C
+#import <QiniuSDK.h>
+...
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.useHttps = NO;// 是否使用https
+        builder.zone = [QNFixedZone zone0];// 指定华东区域
+        // builder.zone = [QNFixedZone zone1];// 指定华北区域
+        // builder.zone = [QNFixedZone zone2];// 指定华南区域
+        // builder.zone = [QNFixedZone zoneNa0];// 指定北美区域
+        // builder.zone = [QNFixedZone zoneAs0];// 指定东南亚区域
+    }];
+    
+    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
+    QNUploadOption *option = [[QNUploadOption alloc] initWithProgressHandler:^(NSString *key, float percent) {
+        NSLog(@"progress %f", percent);
+    }];
+    
+    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *token = @"从服务端SDK获取";
+    [upManager putData:data key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+        NSLog(@"%@", info);
+        NSLog(@"%@", resp);
+    } option:option];
 ...
 ```
 
 建议 QNUploadManager 创建一次重复使用, 或者使用单例方式创建.
-
-
-
-**注意**： 如使用最新版的sdk(>7.1.4),可自动判断上传空间。按如下方式使用：
-
-```objective-c
-QNConfiguration *config =[QNConfiguration  	build:^(QNConfigurationBuilder *builder) {
-  NSMutableArray *array = [[NSMutableArray alloc] init];
-  [array addObject:[QNResolver systemResolver]];
-  QNDnsManager *dns = [[QNDnsManager alloc] init:array networkInfo:[QNNetworkInfo normal]];//是否选择  https  上传
-  builder.zone = [[QNAutoZone alloc] initWithHttps:YES dns:dns];//设置断点续传
-  NSError *error;
-  builder.recorder =  [QNFileRecorder fileRecorderWithFolder:@"保存目录" error:&error];}];
-```
-
-
 
 ## 测试
 
