@@ -48,22 +48,21 @@ pod "Qiniu", "~> 7.2"
 #import <QiniuSDK.h>
 ...
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-    NSArray *upList = [[NSArray alloc] initWithObjects:@"上传域名1", @"上传域名2", nil];// 指定上传区域
-    builder.useHttps = YES;// 是否使用https
-    builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+        NSArray *upList = [[NSArray alloc] initWithObjects:@"上传域名1", @"上传域名2", nil];// 指定上传区域
+        builder.useHttps = YES;// 是否使用https
+        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
     }];
     
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
     QNUploadOption *option = [[QNUploadOption alloc] initWithProgressHandler:^(NSString *key, float percent) {
-    NSLog(@"progress %f", percent);
+        NSLog(@"progress %f", percent);
     }];
     
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
     NSString *token = @"从服务端SDK获取";
-    [upManager putData:data key:@"hello" token:token
-    complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-    NSLog(@"%@", info);
-    NSLog(@"%@", resp);
+    [upManager putData:data key:@"hello" token:token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+        NSLog(@"%@", info);
+        NSLog(@"%@", resp);
     } option:option];
 ...
 ```
