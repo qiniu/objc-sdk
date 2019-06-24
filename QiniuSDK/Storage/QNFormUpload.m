@@ -14,6 +14,7 @@
 #import "QNUploadManager.h"
 #import "QNUploadOption+Private.h"
 #import "QNUrlSafeBase64.h"
+#import "QNUploadInfoReporter.h"
 
 @interface QNFormUpload ()
 
@@ -79,6 +80,7 @@
     };
     __block NSString *upHost = [_config.zone up:_token isHttps:_config.useHttps frozenDomain:nil];
     QNCompleteBlock complete = ^(QNResponseInfo *info, NSDictionary *resp) {
+        [UploadInfoReporter recordWithUploadResult:[info buildUploadInfoWithRequestType:RequestType_form bytesSent:(UInt32)_data.length fileSize:(UInt32)_data.length] uploadToken:_token.token];
         if (info.isOK) {
             _option.progressHandler(_key, 1.0);
         }
@@ -95,6 +97,7 @@
             nextHost = [_config.zone up:_token isHttps:_config.useHttps frozenDomain:nextHost];
         }
         QNCompleteBlock retriedComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
+            [UploadInfoReporter recordWithUploadResult:[info buildUploadInfoWithRequestType:RequestType_form bytesSent:(UInt32)_data.length fileSize:(UInt32)_data.length] uploadToken:_token.token];
             if (info.isOK) {
                 _option.progressHandler(_key, 1.0);
             }
@@ -111,6 +114,7 @@
                 thirdHost = [_config.zone up:_token isHttps:_config.useHttps frozenDomain:nextHost];
             }
             QNCompleteBlock thirdComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
+                [UploadInfoReporter recordWithUploadResult:[info buildUploadInfoWithRequestType:RequestType_form bytesSent:(UInt32)_data.length fileSize:(UInt32)_data.length] uploadToken:_token.token];
                 if (info.isOK) {
                     _option.progressHandler(_key, 1.0);
                 }

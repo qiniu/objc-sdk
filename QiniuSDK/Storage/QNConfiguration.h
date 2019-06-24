@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #import "QNRecorderDelegate.h"
+#import "QNReportConfig.h"
 
 /**
  *    断点上传时的分块大小
@@ -65,6 +66,8 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  */
 @property (nonatomic, assign) BOOL useHttps;
 
+@property (nonatomic, readonly) QNReportConfig *reportConfig;
+
 @property (nonatomic, readonly) id<QNRecorderDelegate> recorder;
 
 @property (nonatomic, readonly) QNRecorderKeyGenerator recorderKeyGen;
@@ -72,7 +75,6 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (nonatomic, readonly) NSDictionary *proxy;
 
 @property (nonatomic, readonly) QNUrlConvert converter;
-
 
 @property (readonly) BOOL disableATS;
 
@@ -219,6 +221,8 @@ typedef void (^QNPrequeryReturn)(int code);
  */
 @property (nonatomic, assign) BOOL useHttps;
 
+@property (nonatomic, readonly) QNReportConfig *reportConfig;
+
 @property (nonatomic, strong) id<QNRecorderDelegate> recorder;
 
 @property (nonatomic, strong) QNRecorderKeyGenerator recorderKeyGen;
@@ -226,7 +230,6 @@ typedef void (^QNPrequeryReturn)(int code);
 @property (nonatomic, strong) NSDictionary *proxy;
 
 @property (nonatomic, strong) QNUrlConvert converter;
-
 
 @property (assign) BOOL disableATS;
 

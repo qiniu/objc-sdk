@@ -14,6 +14,7 @@
 #import "QNUploadManager.h"
 #import "QNUploadOption+Private.h"
 #import "QNUrlSafeBase64.h"
+#import "QNUploadInfoReporter.h"
 
 typedef void (^task)(void);
 
@@ -29,6 +30,7 @@ typedef void (^task)(void);
 @property (nonatomic, strong) QNUpToken *token;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) NSMutableArray *contexts;
+@property (nonatomic, assign) QNUploadRequestType requestType;
 
 @property int64_t modifyTime;
 @property (nonatomic, strong) id<QNRecorderDelegate> recorder;
@@ -184,6 +186,7 @@ typedef void (^task)(void);
 
     if (offset == self.size) {
         QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
+            [UploadInfoReporter recordWithUploadResult:[info buildUploadInfoWithRequestType:_requestType bytesSent:_size fileSize:_size] uploadToken:_token.token];
             if (info.isOK) {
                 [self removeRecord];
                 self.option.progressHandler(self.key, 1.0);
@@ -212,6 +215,7 @@ typedef void (^task)(void);
     };
 
     QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
+        [UploadInfoReporter recordWithUploadResult:[info buildUploadInfoWithRequestType:_requestType bytesSent:chunkSize fileSize:_size] uploadToken:_token.token];
         if (info.error != nil) {
             if (info.statusCode == 701) {
                 [self nextTask:(offset / kQNBlockSize) * kQNBlockSize retriedTimes:0 host:host];
@@ -271,6 +275,7 @@ typedef void (^task)(void);
         chunkSize:(UInt32)chunkSize
          progress:(QNInternalProgressBlock)progressBlock
          complete:(QNCompleteBlock)complete {
+    _requestType = RequestType_mkblk;
     NSData *data = [self.file read:offset size:chunkSize];
     NSString *url = [[NSString alloc] initWithFormat:@"%@/mkblk/%u", uphost, (unsigned int)blockSize];
     _chunkCrc = [QNCrc32 data:data];
@@ -283,6 +288,7 @@ typedef void (^task)(void);
          context:(NSString *)context
         progress:(QNInternalProgressBlock)progressBlock
         complete:(QNCompleteBlock)complete {
+    _requestType = RequestType_bput;
     NSData *data = [self.file read:offset size:size];
     UInt32 chunkOffset = offset % kQNBlockSize;
     NSString *url = [[NSString alloc] initWithFormat:@"%@/bput/%@/%u", uphost, context, (unsigned int)chunkOffset];
@@ -292,6 +298,7 @@ typedef void (^task)(void);
 
 - (void)makeFile:(NSString *)uphost
         complete:(QNCompleteBlock)complete {
+    _requestType = RequestType_mkfile;
     NSString *mime = [[NSString alloc] initWithFormat:@"/mimeType/%@", [QNUrlSafeBase64 encodeString:self.option.mimeType]];
 
     __block NSString *url = [[NSString alloc] initWithFormat:@"%@/mkfile/%u%@", uphost, (unsigned int)self.size, mime];

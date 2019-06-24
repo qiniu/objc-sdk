@@ -7,8 +7,6 @@
 //
 
 #import "ViewController.h"
-#import "AFNetworking.h"
-#import "UIImageView+AFNetworking.h"
 
 @interface ViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 

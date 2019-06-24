@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "QNHttpDelegate.h"
 
 /**
  *    中途取消的状态码
@@ -202,5 +203,18 @@ extern const int kQNFileError;
               withIp:(NSString *)ip
         withDuration:(double)duration
             withBody:(NSData *)body;
+
+/**
+ *    上报信息字符串生成api
+ *
+ *    @param requestType 请求类型
+ *    @param bytesSent  已发送的字节数
+ *    @param fileSize   总字节数
+ *
+ *    @return 上报信息字符串
+ */
+- (NSString *)buildUploadInfoWithRequestType:(QNUploadRequestType)requestType
+                                   bytesSent:(UInt32)bytesSent
+                                    fileSize:(UInt32)fileSize;
 
 @end
