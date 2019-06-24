@@ -7,11 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-
-NS_ASSUME_NONNULL_BEGIN
+@class QNReportConfig;
 
 @interface QNUploadInfoReporter : NSObject
 
-@end
+- (instancetype)initWithReportConfiguration:(QNReportConfig *)config;
 
-NS_ASSUME_NONNULL_END
+@end

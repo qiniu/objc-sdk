@@ -14,6 +14,7 @@
 #import "QNUploadManager.h"
 #import "QNUploadOption+Private.h"
 #import "QNUrlSafeBase64.h"
+#import "QNUploadInfoReporter.h"
 
 @interface QNFormUpload ()
 
@@ -25,6 +26,7 @@
 @property (nonatomic, strong) QNUploadOption *option;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) QNConfiguration *config;
+@property (nonatomic, strong) QNUploadInfoReporter *reporter;
 @property (nonatomic, strong) NSString *fileName;
 @property (nonatomic) float previousPercent;
 

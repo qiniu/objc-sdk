@@ -14,11 +14,12 @@
     self = [super init];
     if (self) {
         _recordEnable = YES;
+        _interval = 10;
         _serverURL = @"https://uplog.qbox.me/log/3";
         _recordDirectory = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingString:@"/uploadRecord/"];
         _maxRecordFileSize = 2 * 1024 * 1024;
         _uploadThreshold = 4 * 1024;
-        _interval = 10;
+        _timeoutInterval = 10;
     }
     return self;
 }

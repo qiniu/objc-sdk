@@ -10,16 +10,18 @@
 
 @interface QNReportConfig : NSObject
 
+@property (nonatomic, assign, getter=isRecordEnable) BOOL recordEnable;
+
+@property (nonatomic, assign) int interval;
+
 @property (nonatomic, copy, readonly) NSString *serverURL;
 
 @property (nonatomic, copy, readonly) NSString *recordDirectory;
 
-@property (nonatomic, assign, getter=isRecordEnable) BOOL recordEnable;
+@property (nonatomic, assign, readonly) int64_t maxRecordFileSize;
 
-@property (nonatomic, assign) long maxRecordFileSize;
+@property (nonatomic, assign, readonly) int64_t uploadThreshold;
 
-@property (nonatomic, assign) long uploadThreshold;
-
-@property (nonatomic, assign) int interval;
+@property (nonatomic, assign, readonly) UInt32 timeoutInterval;
 
 @end

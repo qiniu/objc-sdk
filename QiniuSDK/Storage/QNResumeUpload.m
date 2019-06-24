@@ -14,6 +14,7 @@
 #import "QNUploadManager.h"
 #import "QNUploadOption+Private.h"
 #import "QNUrlSafeBase64.h"
+#import "QNUploadInfoReporter.h"
 
 typedef void (^task)(void);
 
@@ -26,6 +27,7 @@ typedef void (^task)(void);
 @property (nonatomic, strong) NSString *recorderKey;
 @property (nonatomic) NSDictionary *headers;
 @property (nonatomic, strong) QNUploadOption *option;
+@property (nonatomic, strong) QNUploadInfoReporter *reporter;
 @property (nonatomic, strong) QNUpToken *token;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) NSMutableArray *contexts;

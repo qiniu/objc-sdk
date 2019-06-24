@@ -43,6 +43,8 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
         _zone = builder.zone;
 
         _useHttps = builder.useHttps;
+        
+        _reportConfig = builder.reportConfig;
     }
     return self;
 }
@@ -58,6 +60,7 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
         _putThreshold = 4 * 1024 * 1024;
         _retryMax = 3;
         _timeoutInterval = 60;
+        _reportConfig = [[QNReportConfig alloc] init];
 
         _recorder = nil;
         _recorderKeyGen = nil;
