@@ -22,6 +22,6 @@
 
 @property (nonatomic, assign, readonly) int64_t uploadThreshold;
 
-@property (nonatomic, assign, readonly) UInt32 timeoutInterval;
+@property (nonatomic, assign, readonly) NSTimeInterval timeoutInterval;
 
 @end

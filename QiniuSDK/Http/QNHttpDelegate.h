@@ -6,6 +6,13 @@ typedef void (^QNInternalProgressBlock)(long long totalBytesWritten, long long t
 typedef void (^QNCompleteBlock)(QNResponseInfo *info, NSDictionary *resp);
 typedef BOOL (^QNCancelBlock)(void);
 
+typedef NS_ENUM(NSUInteger, QNUploadRequestType) {
+    RequestType_mkblk,
+    RequestType_bput,
+    RequestType_mkfile,
+    RequestType_form,
+};
+
 /**
  *    Http 客户端接口
  */

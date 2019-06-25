@@ -7,10 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+
 @class QNReportConfig;
+@class QNResponseInfo;
 
 @interface QNUploadInfoReporter : NSObject
 
+- (id)init __attribute__((unavailable("Use initWithReportConfiguration: instead.")));
+
 - (instancetype)initWithReportConfiguration:(QNReportConfig *)config;
+
+- (void)recordWithUploadResult:(NSString *)result uploadToken:(NSString *)token;
 
 @end
