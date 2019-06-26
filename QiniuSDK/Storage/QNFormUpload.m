@@ -26,7 +26,6 @@
 @property (nonatomic, strong) QNUploadOption *option;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) QNConfiguration *config;
-@property (nonatomic, strong) QNUploadInfoReporter *reporter;
 @property (nonatomic, strong) NSString *fileName;
 @property (nonatomic) float previousPercent;
 
@@ -55,7 +54,6 @@
         _fileName = fileName != nil ? fileName : @"?";
         _previousPercent = 0;
         _access = token.access;
-        _reporter = [[QNUploadInfoReporter alloc] initWithReportConfiguration:config.reportConfig];
     }
     return self;
 }
@@ -82,7 +80,7 @@
     };
     __block NSString *upHost = [_config.zone up:_token isHttps:_config.useHttps frozenDomain:nil];
     QNCompleteBlock complete = ^(QNResponseInfo *info, NSDictionary *resp) {
-        [_reporter recordWithUploadResult:[info buildUploadInfoWithRequestType:RequestType_form bytesSent:(UInt32)_data.length fileSize:(UInt32)_data.length] uploadToken:_token.token];
+        [UploadInfoReporter recordWithUploadResult:[info buildUploadInfoWithRequestType:RequestType_form bytesSent:(UInt32)_data.length fileSize:(UInt32)_data.length] uploadToken:_token.token];
         if (info.isOK) {
             _option.progressHandler(_key, 1.0);
         }
@@ -99,7 +97,7 @@
             nextHost = [_config.zone up:_token isHttps:_config.useHttps frozenDomain:nextHost];
         }
         QNCompleteBlock retriedComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
-            [_reporter recordWithUploadResult:[info buildUploadInfoWithRequestType:RequestType_form bytesSent:(UInt32)_data.length fileSize:(UInt32)_data.length] uploadToken:_token.token];
+            [UploadInfoReporter recordWithUploadResult:[info buildUploadInfoWithRequestType:RequestType_form bytesSent:(UInt32)_data.length fileSize:(UInt32)_data.length] uploadToken:_token.token];
             if (info.isOK) {
                 _option.progressHandler(_key, 1.0);
             }
@@ -116,7 +114,7 @@
                 thirdHost = [_config.zone up:_token isHttps:_config.useHttps frozenDomain:nextHost];
             }
             QNCompleteBlock thirdComplete = ^(QNResponseInfo *info, NSDictionary *resp) {
-                [_reporter recordWithUploadResult:[info buildUploadInfoWithRequestType:RequestType_form bytesSent:(UInt32)_data.length fileSize:(UInt32)_data.length] uploadToken:_token.token];
+                [UploadInfoReporter recordWithUploadResult:[info buildUploadInfoWithRequestType:RequestType_form bytesSent:(UInt32)_data.length fileSize:(UInt32)_data.length] uploadToken:_token.token];
                 if (info.isOK) {
                     _option.progressHandler(_key, 1.0);
                 }

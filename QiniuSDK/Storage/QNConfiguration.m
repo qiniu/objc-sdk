@@ -60,7 +60,7 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
         _putThreshold = 4 * 1024 * 1024;
         _retryMax = 3;
         _timeoutInterval = 60;
-        _reportConfig = [[QNReportConfig alloc] init];
+        _reportConfig = [QNReportConfig sharedInstance];
 
         _recorder = nil;
         _recorderKeyGen = nil;

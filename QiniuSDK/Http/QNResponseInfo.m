@@ -210,7 +210,7 @@ static NSString *domain = @"qiniu.com";
 - (NSString *)buildUploadInfoWithRequestType:(QNUploadRequestType)requestType bytesSent:(UInt32)bytesSent fileSize:(UInt32)fileSize {
     
     NSArray *requestTypeItems = @[@"mkblk", @"bput", @"mkfile", @"form"];
-    NSString *nullString = @"\"\"";
+    NSString *nullString = @"";
     NSArray *reportItems = @[
                               [NSString stringWithFormat:@"%d", _statusCode] ? [NSString stringWithFormat:@"%d", _statusCode] : nullString,
                               _reqId ? _reqId : nullString,

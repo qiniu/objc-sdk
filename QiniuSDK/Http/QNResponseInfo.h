@@ -204,6 +204,15 @@ extern const int kQNFileError;
         withDuration:(double)duration
             withBody:(NSData *)body;
 
+/**
+ *    上报信息字符串生成api
+ *
+ *    @param requestType 请求类型
+ *    @param bytesSent  已发送的字节数
+ *    @param fileSize   总字节数
+ *
+ *    @return 上报信息字符串
+ */
 - (NSString *)buildUploadInfoWithRequestType:(QNUploadRequestType)requestType
                                    bytesSent:(UInt32)bytesSent
                                     fileSize:(UInt32)fileSize;

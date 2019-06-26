@@ -8,15 +8,20 @@
 
 #import <Foundation/Foundation.h>
 
-@class QNReportConfig;
-@class QNResponseInfo;
+#define UploadInfoReporter [QNUploadInfoReporter sharedInstance]
 
 @interface QNUploadInfoReporter : NSObject
 
-- (id)init __attribute__((unavailable("Use initWithReportConfiguration: instead.")));
+- (id)init __attribute__((unavailable("Use sharedInstance: instead.")));
++ (instancetype)sharedInstance;
 
-- (instancetype)initWithReportConfiguration:(QNReportConfig *)config;
-
+/**
+ *    记录&上报统计信息
+ *
+ *    @param result  统计结果
+ *    @param token  用户上传token
+ *
+ */
 - (void)recordWithUploadResult:(NSString *)result uploadToken:(NSString *)token;
 
 @end

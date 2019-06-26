@@ -12,23 +12,40 @@
 #import "QNFile.h"
 #import "QNUpToken.h"
 #import "QNUserAgent.h"
+#import "QNAsyncRun.h"
 
 static const NSString *recorderFileName = @"recorder";
 
 @interface QNUploadInfoReporter ()
+
 @property (nonatomic, strong) QNReportConfig *config;
 @property (nonatomic, strong) NSFileManager *fileManager;
 @property (nonatomic, strong) NSString *recorderFilePath;
+@property (nonatomic, strong) dispatch_queue_t recordQueue;
+@property (nonatomic, strong) dispatch_semaphore_t semaphore;
+
 @end
 
 @implementation QNUploadInfoReporter
-- (instancetype)initWithReportConfiguration:(QNReportConfig *)config
-{
+
++ (instancetype)sharedInstance {
+    
+    static QNUploadInfoReporter *sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[self alloc] init];
+    });
+    return sharedInstance;
+}
+
+- (instancetype)init {
+    
     self = [super init];
     if (self) {
-        _config = config;
+        _config = [QNReportConfig sharedInstance];
         _recorderFilePath = [NSString stringWithFormat:@"%@/%@", _config.recordDirectory, recorderFileName];
         _fileManager = [NSFileManager defaultManager];
+        _recordQueue = dispatch_queue_create("com.qiniu.report", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
@@ -39,6 +56,9 @@ static const NSString *recorderFileName = @"recorder";
         NSError *error = nil;
         [_fileManager removeItemAtPath:_recorderFilePath error:&error];
         if (error) {
+            QNAsyncRunInMain(^{
+                NSLog(@"remove recorder file failed: %@", error);
+            });
             return;
         }
     }
@@ -50,20 +70,29 @@ static const NSString *recorderFileName = @"recorder";
     if (!_config.isRecordEnable) return;
     if (!_config.recordDirectory || [_config.recordDirectory isEqualToString:@""]) return;
     if (!result || [result isEqualToString:@""] || !token || [token isEqualToString:@""]) return;
-
-    NSError *error = nil;
     
-    // 检查recorder文件是否存在
+    // 串行队列处理文件读写
+    dispatch_async(_recordQueue, ^{
+        [self innerRecordWithUploadResult:result uploadToken:token];
+    });
+}
+
+- (void)innerRecordWithUploadResult:(NSString *)result uploadToken:(NSString *)token {
+        
+    // 检查recorder文件夹是否存在
+    NSError *error = nil;
     if (![_fileManager fileExistsAtPath:_config.recordDirectory]) {
         [_fileManager createDirectoryAtPath:_config.recordDirectory withIntermediateDirectories:YES attributes:nil error:&error];
         if (error) {
+            QNAsyncRunInMain(^{
+                NSLog(@"create record directory failed: %@", error.localizedDescription);
+            });
             return;
         }
     }
     
     // 拼接换行符
     NSString *finalRecordInfo = [result stringByAppendingString:@"\n"];
-    
     if (![_fileManager fileExistsAtPath:_recorderFilePath]) {
         // 如果recordFile不存在，创建文件并写入首行
         [finalRecordInfo writeToFile:_recorderFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
@@ -71,6 +100,9 @@ static const NSString *recorderFileName = @"recorder";
         // recordFile存在，拼接文件内容、上传到服务器
         QNFile *file = [[QNFile alloc] init:_recorderFilePath error:&error];
         if (error) {
+            QNAsyncRunInMain(^{
+                NSLog(@"create QNFile with path failed: %@", error.localizedDescription);
+            });
             return;
         }
         
@@ -98,15 +130,20 @@ static const NSString *recorderFileName = @"recorder";
                 if (httpResponse.statusCode == 200) {
                     [self clean];
                 } else {
-                    NSLog(@"upload info report failed");
+                    QNAsyncRunInMain(^{
+                        NSLog(@"upload info report failed: %@", error.localizedDescription);
+                    });
                 }
+                dispatch_semaphore_signal(self.semaphore);
                 [session finishTasksAndInvalidate];
             }];
             [uploadTask resume];
+            
+            // 控制上传过程中，文件内容不被修改
+            _semaphore = dispatch_semaphore_create(0);
+            dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
         }
     }
-    
-    
 }
 
 @end

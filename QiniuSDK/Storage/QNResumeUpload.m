@@ -27,7 +27,6 @@ typedef void (^task)(void);
 @property (nonatomic, strong) NSString *recorderKey;
 @property (nonatomic) NSDictionary *headers;
 @property (nonatomic, strong) QNUploadOption *option;
-@property (nonatomic, strong) QNUploadInfoReporter *reporter;
 @property (nonatomic, strong) QNUpToken *token;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) NSMutableArray *contexts;
@@ -98,7 +97,6 @@ typedef void (^task)(void);
         _previousPercent = 0;
 
         _access = token.access;
-        _reporter = [[QNUploadInfoReporter alloc] initWithReportConfiguration:_config.reportConfig];
     }
     return self;
 }
@@ -188,7 +186,7 @@ typedef void (^task)(void);
 
     if (offset == self.size) {
         QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
-            [_reporter recordWithUploadResult:[info buildUploadInfoWithRequestType:_requestType bytesSent:_size fileSize:_size] uploadToken:_token.token];
+            [UploadInfoReporter recordWithUploadResult:[info buildUploadInfoWithRequestType:_requestType bytesSent:_size fileSize:_size] uploadToken:_token.token];
             if (info.isOK) {
                 [self removeRecord];
                 self.option.progressHandler(self.key, 1.0);
@@ -217,7 +215,7 @@ typedef void (^task)(void);
     };
 
     QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
-        [_reporter recordWithUploadResult:[info buildUploadInfoWithRequestType:_requestType bytesSent:chunkSize fileSize:_size] uploadToken:_token.token];
+        [UploadInfoReporter recordWithUploadResult:[info buildUploadInfoWithRequestType:_requestType bytesSent:chunkSize fileSize:_size] uploadToken:_token.token];
         if (info.error != nil) {
             if (info.statusCode == 701) {
                 [self nextTask:(offset / kQNBlockSize) * kQNBlockSize retriedTimes:0 host:host];
