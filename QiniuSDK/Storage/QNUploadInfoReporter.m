@@ -19,6 +19,7 @@ static const NSString *recorderFileName = @"recorder";
 @interface QNUploadInfoReporter ()
 
 @property (nonatomic, strong) QNReportConfig *config;
+@property (nonatomic, assign) NSTimeInterval lastReportTime;
 @property (nonatomic, strong) NSFileManager *fileManager;
 @property (nonatomic, strong) NSString *recorderFilePath;
 @property (nonatomic, strong) dispatch_queue_t recordQueue;
@@ -43,6 +44,7 @@ static const NSString *recorderFileName = @"recorder";
     self = [super init];
     if (self) {
         _config = [QNReportConfig sharedInstance];
+        _lastReportTime = 0;
         _recorderFilePath = [NSString stringWithFormat:@"%@/%@", _config.recordDirectory, recorderFileName];
         _fileManager = [NSFileManager defaultManager];
         _recordQueue = dispatch_queue_create("com.qiniu.report", DISPATCH_QUEUE_SERIAL);
@@ -68,8 +70,14 @@ static const NSString *recorderFileName = @"recorder";
     
     // 检查信息搜集是否开启、文件路径是否存在
     if (!_config.isRecordEnable) return;
-    if (!_config.recordDirectory || [_config.recordDirectory isEqualToString:@""]) return;
     if (!result || [result isEqualToString:@""] || !token || [token isEqualToString:@""]) return;
+    
+    if (!(_config.maxRecordFileSize > _config.uploadThreshold)) {
+        QNAsyncRunInMain(^{
+            NSLog(@"maxRecordFileSize must be larger than uploadThreshold");
+        });
+        return;
+    }
     
     // 串行队列处理文件读写
     dispatch_async(_recordQueue, ^{
@@ -85,7 +93,7 @@ static const NSString *recorderFileName = @"recorder";
         [_fileManager createDirectoryAtPath:_config.recordDirectory withIntermediateDirectories:YES attributes:nil error:&error];
         if (error) {
             QNAsyncRunInMain(^{
-                NSLog(@"create record directory failed: %@", error.localizedDescription);
+                NSLog(@"create record directory failed, please check record directory: %@", error.localizedDescription);
             });
             return;
         }
@@ -115,9 +123,9 @@ static const NSString *recorderFileName = @"recorder";
             [fileHandler closeFile];
         }
         
-        // 判断是否满足上传条件
-        //    NSTimeInterval currentTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970];
-        if (file.size > _config.uploadThreshold) {
+        // 判断是否满足上传条件：文件大于上报临界值 && (首次上传 || 距上次上传时间大于_config.interval)
+        NSTimeInterval currentTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970];
+        if (file.size > _config.uploadThreshold && (_lastReportTime == 0 || currentTime - _lastReportTime > _config.interval * 60)) {
             
             NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:_config.serverURL]];
             [request setValue:[NSString stringWithFormat:@"UpToken %@", token] forHTTPHeaderField:@"Authorization"];
@@ -128,6 +136,7 @@ static const NSString *recorderFileName = @"recorder";
             NSURLSessionUploadTask *uploadTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:_recorderFilePath] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
                 if (httpResponse.statusCode == 200) {
+                    self.lastReportTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970];
                     [self clean];
                 } else {
                     QNAsyncRunInMain(^{

@@ -24,4 +24,9 @@
  */
 - (void)recordWithUploadResult:(NSString *)result uploadToken:(NSString *)token;
 
+/**
+ *    清空统计信息
+ */
+- (void)clean;
+
 @end
