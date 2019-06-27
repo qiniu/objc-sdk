@@ -12,6 +12,8 @@
 
 @interface QNUploadInfoReporter : NSObject
 
+@property (nonatomic, assign, readonly) NSTimeInterval lastReportTime;
+
 - (id)init __attribute__((unavailable("Use sharedInstance: instead.")));
 + (instancetype)sharedInstance;
 

@@ -102,7 +102,7 @@ static const NSString *recorderFileName = @"recorder";
     // 拼接换行符
     NSString *finalRecordInfo = [result stringByAppendingString:@"\n"];
     if (![_fileManager fileExistsAtPath:_recorderFilePath]) {
-        // 如果recordFile不存在，创建文件并写入首行
+        // 如果recordFile不存在，创建文件并写入首行，首次不上传
         [finalRecordInfo writeToFile:_recorderFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
     } else {
         // recordFile存在，拼接文件内容、上传到服务器
