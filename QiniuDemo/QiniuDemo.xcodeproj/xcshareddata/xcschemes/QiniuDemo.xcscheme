@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DF2CDDFE19DAC05500CE01FB"
-               BuildableName = "QiniuSDK_Mac.dylib"
-               BlueprintName = "QiniuSDK_Mac"
-               ReferencedContainer = "container:QiniuSDK.xcodeproj">
+               BlueprintIdentifier = "93D2301E1C86D7F700434F6D"
+               BuildableName = "QiniuDemo.app"
+               BlueprintName = "QiniuDemo"
+               ReferencedContainer = "container:QiniuDemo.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -28,20 +28,10 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "DF2CDE0919DAC05500CE01FB"
-               BuildableName = "QiniuSDK_MacTests.xctest"
-               BlueprintName = "QiniuSDK_MacTests"
-               ReferencedContainer = "container:QiniuSDK.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
-      buildConfiguration = "Release"
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
@@ -50,15 +40,16 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "DF2CDDFE19DAC05500CE01FB"
-            BuildableName = "QiniuSDK_Mac.dylib"
-            BlueprintName = "QiniuSDK_Mac"
-            ReferencedContainer = "container:QiniuSDK.xcodeproj">
+            BlueprintIdentifier = "93D2301E1C86D7F700434F6D"
+            BuildableName = "QiniuDemo.app"
+            BlueprintName = "QiniuDemo"
+            ReferencedContainer = "container:QiniuDemo.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -66,6 +57,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "93D2301E1C86D7F700434F6D"
+            BuildableName = "QiniuDemo.app"
+            BlueprintName = "QiniuDemo"
+            ReferencedContainer = "container:QiniuDemo.xcodeproj">
+         </BuildableReference>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

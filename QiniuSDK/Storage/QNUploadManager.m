@@ -165,8 +165,8 @@
                         withToken:t
             withCompletionHandler:complete
                        withOption:option
-                  withHttpManager:_httpManager
-                withConfiguration:_config];
+                  withHttpManager:self.httpManager
+                withConfiguration:self.config];
         QNAsyncRun(^{
             [up put];
         });
@@ -201,7 +201,7 @@
                 });
             };
 
-            if ([file size] <= _config.putThreshold) {
+            if ([file size] <= self.config.putThreshold) {
                 NSData *data = [file readAll];
                 NSString *fileName = [[file path] lastPathComponent];
                 [self putData:data fileName:fileName key:key token:token complete:completionHandler option:option];
@@ -209,11 +209,11 @@
             }
 
             NSString *recorderKey = key;
-            if (_config.recorder != nil && _config.recorderKeyGen != nil) {
-                recorderKey = _config.recorderKeyGen(key, [file path]);
+            if (self.config.recorder != nil && self.config.recorderKeyGen != nil) {
+                recorderKey = self.config.recorderKeyGen(key, [file path]);
             }
 
-            NSLog(@"recorder %@", _config.recorder);
+            NSLog(@"recorder %@", self.config.recorder);
 
             QNResumeUpload *up = [[QNResumeUpload alloc]
                          initWithFile:file
@@ -221,10 +221,10 @@
                             withToken:t
                 withCompletionHandler:complete
                            withOption:option
-                         withRecorder:_config.recorder
+                         withRecorder:self.config.recorder
                       withRecorderKey:recorderKey
-                      withHttpManager:_httpManager
-                    withConfiguration:_config];
+                      withHttpManager:self.httpManager
+                    withConfiguration:self.config];
             QNAsyncRun(^{
                 [up run];
             });
@@ -260,7 +260,6 @@
              token:(NSString *)token
           complete:(QNUpCompletionHandler)completionHandler
             option:(QNUploadOption *)option {
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
     if ([QNUploadManager checkAndNotifyError:key token:token input:asset complete:completionHandler]) {
         return;
     }
@@ -277,7 +276,6 @@
         }
         [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
-#endif
 }
 
 - (void)putPHAsset:(PHAsset *)asset
@@ -285,7 +283,6 @@
              token:(NSString *)token
           complete:(QNUpCompletionHandler)completionHandler
             option:(QNUploadOption *)option {
-#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000)
     if ([QNUploadManager checkAndNotifyError:key token:token input:asset complete:completionHandler]) {
         return;
     }
@@ -302,7 +299,6 @@
         }
         [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
-#endif
 }
 
 - (void)putPHAssetResource:(PHAssetResource *)assetResource
@@ -310,7 +306,6 @@
                      token:(NSString *)token
                   complete:(QNUpCompletionHandler)completionHandler
                     option:(QNUploadOption *)option {
-#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 90100)
     if ([QNUploadManager checkAndNotifyError:key token:token input:assetResource complete:completionHandler]) {
         return;
     }
@@ -326,7 +321,6 @@
         }
         [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
-#endif
 }
 
 @end

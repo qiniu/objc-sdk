@@ -10,13 +10,14 @@
 
 #import "QNFileDelegate.h"
 
-#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000)
+API_AVAILABLE_BEGIN(macos(10.13), ios(9.1), tvos(10))
+
 @class PHAsset;
 @interface QNPHAssetFile : NSObject <QNFileDelegate>
 /**
  *    打开指定文件
  *
- *    @param path      文件路径
+ *    @param phAsset      文件资源
  *    @param error     输出的错误信息
  *
  *    @return 实例
@@ -24,4 +25,5 @@
 - (instancetype)init:(PHAsset *)phAsset
                error:(NSError *__autoreleasing *)error;
 @end
-#endif
+
+API_AVAILABLE_END

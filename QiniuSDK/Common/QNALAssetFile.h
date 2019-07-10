@@ -17,7 +17,7 @@
 /**
  *    打开指定文件
  *
- *    @param path      文件路径
+ *    @param asset      资源文件
  *    @param error     输出的错误信息
  *
  *    @return 实例
