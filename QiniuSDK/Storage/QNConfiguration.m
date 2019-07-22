@@ -43,6 +43,10 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
         _zone = builder.zone;
 
         _useHttps = builder.useHttps;
+        
+        _concurrentResumeUpload = builder.concurrentResumeUpload;
+        
+        _concurrentTaskCount = builder.concurrentTaskCount;
     }
     return self;
 }
@@ -72,6 +76,8 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
         }
 
         _useHttps = YES;
+        _concurrentResumeUpload = NO;
+        _concurrentTaskCount = 3;
     }
     return self;
 }

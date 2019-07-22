@@ -14,6 +14,7 @@
 #import "QNUploadManager.h"
 #import "QNUploadOption+Private.h"
 #import "QNUrlSafeBase64.h"
+#import "QNCommonTool.h"
 
 typedef void (^task)(void);
 
@@ -44,6 +45,8 @@ typedef void (^task)(void);
 @property (nonatomic) float previousPercent;
 
 @property (nonatomic, strong) NSString *access; //AK
+
+@property (nonatomic, copy) NSString *taskIdentifier;
 
 - (void)makeBlock:(NSString *)uphost
            offset:(UInt32)offset
@@ -95,6 +98,7 @@ typedef void (^task)(void);
         _previousPercent = 0;
 
         _access = token.access;
+        _taskIdentifier = [QNCommonTool getRandomStringWithLength:32];
     }
     return self;
 }
@@ -324,7 +328,7 @@ typedef void (^task)(void);
              withData:(NSData *)data
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock {
-    [_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal withAccess:_access];
+    [_httpManager post:url withData:data withParams:nil withHeaders:_headers withTaskIdentifier:_taskIdentifier withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal withAccess:_access];
 }
 
 - (void)run {

@@ -17,6 +17,12 @@
 		93D01E661C7065C200E7F47C /* QNPHAssetResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D01E631C7065C200E7F47C /* QNPHAssetResource.m */; };
 		A31ADA71DBBF1F4D8A065061 /* libPods-QiniuSDK_Mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 73B66D8E78B0B3A0BEEA45A6 /* libPods-QiniuSDK_Mac.a */; };
 		BA8408541BE251010093B013 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA8408521BE250C80093B013 /* SystemConfiguration.framework */; };
+		CC498FDE22E082CF00A41926 /* QNCommonTool.h in Headers */ = {isa = PBXBuildFile; fileRef = CC498FDC22E082CE00A41926 /* QNCommonTool.h */; };
+		CC498FDF22E082CF00A41926 /* QNCommonTool.m in Sources */ = {isa = PBXBuildFile; fileRef = CC498FDD22E082CE00A41926 /* QNCommonTool.m */; };
+		CC498FE022E0836D00A41926 /* QNCommonTool.m in Sources */ = {isa = PBXBuildFile; fileRef = CC498FDD22E082CE00A41926 /* QNCommonTool.m */; };
+		CCC3A50822DC10CB00D835B1 /* QNConcurrentResumeUpload.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC3A50622DC10CB00D835B1 /* QNConcurrentResumeUpload.h */; };
+		CCC3A50922DC10CB00D835B1 /* QNConcurrentResumeUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = CCC3A50722DC10CB00D835B1 /* QNConcurrentResumeUpload.m */; };
+		CCC3A50A22DC10CB00D835B1 /* QNConcurrentResumeUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = CCC3A50722DC10CB00D835B1 /* QNConcurrentResumeUpload.m */; };
 		DF0A03231B3BABEC00E3778C /* QiniuSDK_Mac.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DF2CDDFF19DAC05500CE01FB /* QiniuSDK_Mac.dylib */; };
 		DF0A03241B3BAC3900E3778C /* QNFormUploadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DF3C504619DD7BA6000F548F /* QNFormUploadTest.m */; };
 		DF0A03251B3BAC5700E3778C /* libQiniuSDK_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DF2CDE1A19DAC08400CE01FB /* libQiniuSDK_iOS.a */; };
@@ -139,6 +145,10 @@
 		B62E937FF4E75CDD482C35E8 /* Pods-QiniuSDK_MacTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_MacTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_MacTests/Pods-QiniuSDK_MacTests.release.xcconfig"; sourceTree = "<group>"; };
 		BA8408521BE250C80093B013 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		C1D8890E270C769A9E798A8E /* libPods-QiniuSDK_iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuSDK_iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CC498FDC22E082CE00A41926 /* QNCommonTool.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNCommonTool.h; sourceTree = "<group>"; };
+		CC498FDD22E082CE00A41926 /* QNCommonTool.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNCommonTool.m; sourceTree = "<group>"; };
+		CCC3A50622DC10CB00D835B1 /* QNConcurrentResumeUpload.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNConcurrentResumeUpload.h; sourceTree = "<group>"; };
+		CCC3A50722DC10CB00D835B1 /* QNConcurrentResumeUpload.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNConcurrentResumeUpload.m; sourceTree = "<group>"; };
 		D84AF95CA892E1089E26F959 /* Pods-QiniuSDK_iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_iOS/Pods-QiniuSDK_iOS.release.xcconfig"; sourceTree = "<group>"; };
 		DF0D23CC19DCE6C400D6B68F /* QNResponseInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNResponseInfo.h; sourceTree = "<group>"; };
 		DF0D23CE19DCE6E500D6B68F /* QNResponseInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNResponseInfo.m; sourceTree = "<group>"; };
@@ -278,6 +288,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		CCC3A50522DC0CFF00D835B1 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				DF293C9019DB85CB00799011 /* libz.dylib */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 		DF293C9B19DBC2AE00799011 /* Http */ = {
 			isa = PBXGroup;
 			children = (
@@ -300,6 +318,7 @@
 				DF2CDE0019DAC05500CE01FB /* Products */,
 				A955AABD20BF51BFE5032419 /* Frameworks */,
 				15E6E080F2F167B7B3D5F460 /* Pods */,
+				CCC3A50522DC0CFF00D835B1 /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -330,6 +349,8 @@
 		DF2CDE4E19DAC6A400CE01FB /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				CC498FDC22E082CE00A41926 /* QNCommonTool.h */,
+				CC498FDD22E082CE00A41926 /* QNCommonTool.m */,
 				DFA39AA219F1272800A1A158 /* QNAsyncRun.h */,
 				DFA39AA319F1272800A1A158 /* QNAsyncRun.m */,
 				DF2CDE4F19DAC6A400CE01FB /* QNUrlSafeBase64.h */,
@@ -363,6 +384,8 @@
 				DF2CDE5B19DAC6A400CE01FB /* QNUploadManager.m */,
 				DF293CA819DC0AF000799011 /* QNResumeUpload.h */,
 				DF293CAA19DC0E5300799011 /* QNResumeUpload.m */,
+				CCC3A50622DC10CB00D835B1 /* QNConcurrentResumeUpload.h */,
+				CCC3A50722DC10CB00D835B1 /* QNConcurrentResumeUpload.m */,
 				DFA9B64719E0018800A15FD1 /* QNUploadOption.h */,
 				DFA9B64819E0018800A15FD1 /* QNUploadOption.m */,
 				DF609A031A58E39D00AC7297 /* QNFormUpload.h */,
@@ -432,7 +455,9 @@
 				DF437CD91B2429E10099587B /* QNUpToken.h in Headers */,
 				DFA9B65819E0B53700A15FD1 /* QNFileRecorder.h in Headers */,
 				DFF126EE1B63909A0005C39C /* QNFileDelegate.h in Headers */,
+				CC498FDE22E082CF00A41926 /* QNCommonTool.h in Headers */,
 				DF482FD81B0DA8A2000DAD98 /* QNConfiguration.h in Headers */,
+				CCC3A50822DC10CB00D835B1 /* QNConcurrentResumeUpload.h in Headers */,
 				DF609A051A58E39D00AC7297 /* QNFormUpload.h in Headers */,
 				DFF525371A626A3700D02BA1 /* QNHttpDelegate.h in Headers */,
 				93CEF47E1BDE11FF00750FE8 /* QNPHAssetFile.h in Headers */,
@@ -462,7 +487,6 @@
 				DF2CDDFB19DAC05500CE01FB /* Sources */,
 				DF2CDDFC19DAC05500CE01FB /* Frameworks */,
 				DF2CDDFD19DAC05500CE01FB /* Headers */,
-				13110C17BA296E0C06CAB606 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -481,8 +505,6 @@
 				DF2CDE0619DAC05500CE01FB /* Sources */,
 				DF2CDE0719DAC05500CE01FB /* Frameworks */,
 				DF2CDE0819DAC05500CE01FB /* Resources */,
-				1C7E5BD458995D384C89A52F /* [CP] Embed Pods Frameworks */,
-				FDA3C80D593D05262D856960 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -501,7 +523,6 @@
 				DF2CDE1619DAC08400CE01FB /* Sources */,
 				DF2CDE1819DAC08400CE01FB /* CopyFiles */,
 				C83FC3BEED8721A453A4FEEE /* Frameworks */,
-				B014382FCFA218172365E0CA /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -520,8 +541,6 @@
 				DF2CDE2019DAC08400CE01FB /* Sources */,
 				DF2CDE2119DAC08400CE01FB /* Frameworks */,
 				DF2CDE2219DAC08400CE01FB /* Resources */,
-				706525AE4AB50881D3890333 /* [CP] Embed Pods Frameworks */,
-				8EF9E1F34EB1A56FC0E43228 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -560,6 +579,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = DF2CDDF619DAC05500CE01FB;
@@ -611,36 +631,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		13110C17BA296E0C06CAB606 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_Mac/Pods-QiniuSDK_Mac-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		1C7E5BD458995D384C89A52F /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_MacTests/Pods-QiniuSDK_MacTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		51663589B6278952CB36F876 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -677,36 +667,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		706525AE4AB50881D3890333 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_iOSTests/Pods-QiniuSDK_iOSTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		8EF9E1F34EB1A56FC0E43228 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_iOSTests/Pods-QiniuSDK_iOSTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		9635BFBB21C34ACD5AEDC9EB /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -725,36 +685,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		B014382FCFA218172365E0CA /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_iOS/Pods-QiniuSDK_iOS-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		FDA3C80D593D05262D856960 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-QiniuSDK_MacTests/Pods-QiniuSDK_MacTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -762,6 +692,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC498FDF22E082CF00A41926 /* QNCommonTool.m in Sources */,
 				DF2CDE5D19DAC6A400CE01FB /* QNUrlSafeBase64.m in Sources */,
 				DFBF636E1BCCE28300A771D8 /* QNSystem.m in Sources */,
 				DF0D23CF19DCE6E500D6B68F /* QNResponseInfo.m in Sources */,
@@ -769,6 +700,7 @@
 				DF437CD31B2426270099587B /* QN_GTM_Base64.m in Sources */,
 				DF482FD91B0DA8A2000DAD98 /* QNConfiguration.m in Sources */,
 				DF609A061A58E39D00AC7297 /* QNFormUpload.m in Sources */,
+				CCC3A50922DC10CB00D835B1 /* QNConcurrentResumeUpload.m in Sources */,
 				FDEA5C001F27A27700D9D731 /* QNPipeline.m in Sources */,
 				DF293C9F19DBC2AE00799011 /* QNUserAgent.m in Sources */,
 				DFA9B65919E0B53700A15FD1 /* QNFileRecorder.m in Sources */,
@@ -808,6 +740,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC498FE022E0836D00A41926 /* QNCommonTool.m in Sources */,
 				DF24DDA11B63FF1800EF57E6 /* QNALAssetFile.m in Sources */,
 				DFBF636F1BCCE28300A771D8 /* QNSystem.m in Sources */,
 				DF24DDA01B63FF0E00EF57E6 /* QNFile.m in Sources */,
@@ -815,6 +748,7 @@
 				DF0D23D019DCE6E500D6B68F /* QNResponseInfo.m in Sources */,
 				DFA9B63D19DF904000A15FD1 /* QNEtag.m in Sources */,
 				DF437CD51B2426270099587B /* QN_GTM_Base64.m in Sources */,
+				CCC3A50A22DC10CB00D835B1 /* QNConcurrentResumeUpload.m in Sources */,
 				FDEA5C011F27A27700D9D731 /* QNPipeline.m in Sources */,
 				DF482FDA1B0DA8A2000DAD98 /* QNConfiguration.m in Sources */,
 				DF609A081A58E39D00AC7297 /* QNFormUpload.m in Sources */,

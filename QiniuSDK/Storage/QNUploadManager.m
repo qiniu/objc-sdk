@@ -39,6 +39,7 @@
 #import "QNUpToken.h"
 #import "QNUploadManager.h"
 #import "QNUploadOption+Private.h"
+#import "QNConcurrentResumeUpload.h"
 
 @interface QNUploadManager ()
 @property (nonatomic) id<QNHttpDelegate> httpManager;
@@ -207,27 +208,41 @@
                 [self putData:data fileName:fileName key:key token:token complete:completionHandler option:option];
                 return;
             }
-
-            NSString *recorderKey = key;
-            if (_config.recorder != nil && _config.recorderKeyGen != nil) {
-                recorderKey = _config.recorderKeyGen(key, [file path]);
+            
+            if (_config.concurrentResumeUpload) {
+                QNConcurrentResumeUpload *up = [[QNConcurrentResumeUpload alloc]
+                                                initWithFile:file
+                                                withKey:key
+                                                withToken:t
+                                                withHttpManager:_httpManager
+                                                withCompletionHandler:completionHandler
+                                                withOption:option
+                                                withConfiguration:_config];
+                QNAsyncRun(^{
+                    [up run];
+                });
+            } else {
+                NSString *recorderKey = key;
+                if (_config.recorder != nil && _config.recorderKeyGen != nil) {
+                    recorderKey = _config.recorderKeyGen(key, [file path]);
+                }
+                
+                NSLog(@"recorder %@", _config.recorder);
+                
+                QNResumeUpload *up = [[QNResumeUpload alloc]
+                                      initWithFile:file
+                                      withKey:key
+                                      withToken:t
+                                      withCompletionHandler:complete
+                                      withOption:option
+                                      withRecorder:_config.recorder
+                                      withRecorderKey:recorderKey
+                                      withHttpManager:_httpManager
+                                      withConfiguration:_config];
+                QNAsyncRun(^{
+                    [up run];
+                });
             }
-
-            NSLog(@"recorder %@", _config.recorder);
-
-            QNResumeUpload *up = [[QNResumeUpload alloc]
-                         initWithFile:file
-                              withKey:key
-                            withToken:t
-                withCompletionHandler:complete
-                           withOption:option
-                         withRecorder:_config.recorder
-                      withRecorderKey:recorderKey
-                      withHttpManager:_httpManager
-                    withConfiguration:_config];
-            QNAsyncRun(^{
-                [up run];
-            });
         }];
     }
 }
