@@ -16,18 +16,22 @@ typedef BOOL (^QNCancelBlock)(void);
            withParams:(NSDictionary *)params
          withFileName:(NSString *)key
          withMimeType:(NSString *)mime
+   withTaskIdentifier:(NSString *)taskIdentifier
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock
            withAccess:(NSString *)access;
 
 - (void)post:(NSString *)url
-             withData:(NSData *)data
-           withParams:(NSDictionary *)params
-          withHeaders:(NSDictionary *)headers
-    withCompleteBlock:(QNCompleteBlock)completeBlock
-    withProgressBlock:(QNInternalProgressBlock)progressBlock
-      withCancelBlock:(QNCancelBlock)cancelBlock
-           withAccess:(NSString *)access;
+    withData:(NSData *)data
+  withParams:(NSDictionary *)params
+ withHeaders:(NSDictionary *)headers
+withTaskIdentifier:(NSString *)taskIdentifier
+withCompleteBlock:(QNCompleteBlock)completeBlock
+withProgressBlock:(QNInternalProgressBlock)progressBlock
+withCancelBlock:(QNCancelBlock)cancelBlock
+  withAccess:(NSString *)access;
+
+- (void)invalidateSessionWithIdentifier:(NSString *)identifier;
 
 @end

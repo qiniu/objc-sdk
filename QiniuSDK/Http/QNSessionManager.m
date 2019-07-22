@@ -69,6 +69,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
 @property bool noProxy;
 @property (nonatomic, strong) NSDictionary *proxyDict;
 @property (nonatomic, strong) NSOperationQueue *delegateQueue;
+@property (nonatomic, strong) NSMutableArray *sessionArray;
 @end
 
 @implementation QNSessionManager
@@ -86,6 +87,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
         _delegateQueue = [[NSOperationQueue alloc] init];
         _timeout = timeout;
         _converter = converter;
+        _sessionArray = [NSMutableArray array];
     }
 
     return self;
@@ -123,6 +125,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
 }
 
 - (void)sendRequest:(NSMutableURLRequest *)request
+ withTaskIdentifier:(NSString *)taskIdentifier
   withCompleteBlock:(QNCompleteBlock)completeBlock
   withProgressBlock:(QNInternalProgressBlock)progressBlock
     withCancelBlock:(QNCancelBlock)cancelBlock
@@ -137,10 +140,11 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
         request.URL = url;
         domain = url.host;
     }
-    [self sendRequest2:request withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:cancelBlock withIpArray:ips withIndex:0 withDomain:domain withRetryTimes:3 withStartTime:startTime withAccess:access];
+    [self sendRequest2:request withTaskIdentifier:taskIdentifier withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:cancelBlock withIpArray:ips withIndex:0 withDomain:domain withRetryTimes:3 withStartTime:startTime withAccess:access];
 }
 
 - (void)sendRequest2:(NSMutableURLRequest *)request
+  withTaskIdentifier:(NSString *)taskIdentifier
    withCompleteBlock:(QNCompleteBlock)completeBlock
    withProgressBlock:(QNInternalProgressBlock)progressBlock
      withCancelBlock:(QNCancelBlock)cancelBlock
@@ -179,6 +183,9 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
         configuration.connectionProxyDictionary = _proxyDict;
     }
     __block NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:delegate delegateQueue:_delegateQueue];
+    if (taskIdentifier) {
+        [_sessionArray addObject:@{@"taskIdentifier":taskIdentifier,@"session":session}];
+    }
     NSURLSessionUploadTask *uploadTask = [session uploadTaskWithRequest:request fromData:nil completionHandler:^(NSData *_Nullable data, NSURLResponse *_Nullable response, NSError *_Nullable error) {
 
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
@@ -186,7 +193,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
         QNResponseInfo *info;
         NSDictionary *resp = nil;
         if (_converter != nil && _noProxy && (index + 1 < ips.count || times > 0) && needRetry(httpResponse, error)) {
-            [self sendRequest2:request withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:cancelBlock withIpArray:ips withIndex:index + 1 withDomain:domain withRetryTimes:times - 1 withStartTime:startTime withAccess:access];
+            [self sendRequest2:request withTaskIdentifier:taskIdentifier withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:cancelBlock withIpArray:ips withIndex:index + 1 withDomain:domain withRetryTimes:times - 1 withStartTime:startTime withAccess:access];
             return;
         }
         if (error == nil) {
@@ -201,8 +208,8 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
         delegate.task = nil;
         delegate.cancelBlock = nil;
         delegate.progressBlock = nil;
+        [self finishSession:session];
         completeBlock(info, resp);
-        [session finishTasksAndInvalidate];
     }];
     delegate.task = uploadTask;
     delegate.cancelBlock = cancelBlock;
@@ -214,6 +221,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
            withParams:(NSDictionary *)params
          withFileName:(NSString *)key
          withMimeType:(NSString *)mime
+   withTaskIdentifier:(NSString *)taskIdentifier
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock
@@ -245,7 +253,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
     request.HTTPBody = postData;
     [request setValue:[NSString stringWithFormat:@"%lu", (unsigned long)postData.length] forHTTPHeaderField:@"Content-Length"];
 
-    [self sendRequest:request withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:cancelBlock
+    [self sendRequest:request withTaskIdentifier:taskIdentifier withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:cancelBlock
                withAccess:access];
 }
 
@@ -253,6 +261,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
              withData:(NSData *)data
            withParams:(NSDictionary *)params
           withHeaders:(NSDictionary *)headers
+    withTaskIdentifier:(NSString *)taskIdentifier
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock
@@ -268,6 +277,7 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
     [request setHTTPBody:data];
     QNAsyncRun(^{
         [self sendRequest:request
+         withTaskIdentifier:(NSString *)taskIdentifier
             withCompleteBlock:completeBlock
             withProgressBlock:progressBlock
               withCancelBlock:cancelBlock
@@ -307,6 +317,29 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
         [dataTask resume];
 
     });
+}
+
+- (void)finishSession:(NSURLSession *)session {
+    for (int i = 0; i < _sessionArray.count; i++) {
+        NSDictionary *sessionInfo = _sessionArray[i];
+        if (sessionInfo[@"session"] == session) {
+            [session finishTasksAndInvalidate];
+            [_sessionArray removeObject:sessionInfo];
+            break;
+        }
+    }
+}
+
+- (void)invalidateSessionWithIdentifier:(NSString *)identifier {
+    
+    for (int i = 0; i < _sessionArray.count; i++) {
+        NSDictionary *sessionInfo = _sessionArray[i];
+        if ([sessionInfo[@"taskIdentifier"] isEqualToString:identifier]) {
+            NSURLSession *session = sessionInfo[@"session"];
+            [session invalidateAndCancel];
+            [_sessionArray removeObject:sessionInfo];
+        }
+    }
 }
 
 @end
