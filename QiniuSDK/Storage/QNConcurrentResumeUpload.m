@@ -318,6 +318,7 @@
     UInt32 blockCrc = [QNCrc32 data:data];
     
     QNInternalProgressBlock progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+        if (self.taskQueue.isConcurrentTaskError) return;
         if (totalBytesWritten >= task.uploadedSize) {
             task.uploadedSize = (unsigned int)totalBytesWritten;
         }
