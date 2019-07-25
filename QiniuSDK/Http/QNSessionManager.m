@@ -208,8 +208,8 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
         delegate.task = nil;
         delegate.cancelBlock = nil;
         delegate.progressBlock = nil;
-        completeBlock(info, resp);
         [self finishSession:session];
+        completeBlock(info, resp);
     }];
     delegate.task = uploadTask;
     delegate.cancelBlock = cancelBlock;
@@ -319,32 +319,25 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
     });
 }
 
-- (NSString *)getTaskIdentifier {
-    
-    char data[32];
-    for (int x=0; x < 32; data[x++] = (char)('A' + (arc4random_uniform(26))));
-    NSString *randomStr = [[NSString alloc] initWithBytes:data length:32 encoding:NSUTF8StringEncoding];
-    NSString *string = [NSString stringWithFormat:@"%@",randomStr];
-    return string;
-}
-
 - (void)finishSession:(NSURLSession *)session {
     for (int i = 0; i < _sessionArray.count; i++) {
-        if (_sessionArray[i][@"session"] == session) {
+        NSDictionary *sessionInfo = _sessionArray[i];
+        if (sessionInfo[@"session"] == session) {
             [session finishTasksAndInvalidate];
-            [_sessionArray removeObjectAtIndex:i];
+            [_sessionArray removeObject:sessionInfo];
             break;
         }
     }
 }
 
-- (void)cancelSessionWithIdentifier:(NSString *)identifier {
+- (void)invalidateSessionWithIdentifier:(NSString *)identifier {
     
     for (int i = 0; i < _sessionArray.count; i++) {
-        if ([_sessionArray[i][@"taskIdentifier"] isEqualToString:identifier]) {
-            NSURLSession *session = _sessionArray[i][@"session"];
+        NSDictionary *sessionInfo = _sessionArray[i];
+        if ([sessionInfo[@"taskIdentifier"] isEqualToString:identifier]) {
+            NSURLSession *session = sessionInfo[@"session"];
             [session invalidateAndCancel];
-            [_sessionArray removeObjectAtIndex:i];
+            [_sessionArray removeObject:sessionInfo];
         }
     }
 }

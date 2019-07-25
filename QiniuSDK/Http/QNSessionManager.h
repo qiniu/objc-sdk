@@ -36,7 +36,7 @@
           withHeaders:(NSDictionary *)headers
     withCompleteBlock:(QNCompleteBlock)completeBlock;
 
-- (void)cancelSessionWithIdentifier:(NSString *)identifier;
+- (void)invalidateSessionWithIdentifier:(NSString *)identifier;
 
 @end
 

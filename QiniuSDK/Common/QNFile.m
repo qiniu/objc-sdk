@@ -21,6 +21,8 @@
 
 @property (nonatomic) NSFileHandle *file;
 
+@property (nonatomic) NSLock *lock;
+
 @end
 
 @implementation QNFile
@@ -67,6 +69,7 @@
         }
         _file = f;
         _data = d;
+        _lock = [[NSLock alloc] init];
     }
 
     return self;
@@ -74,15 +77,24 @@
 
 - (NSData *)read:(long)offset
             size:(long)size {
+    NSData *data = nil;
+    [_lock lock];
     if (_data != nil) {
-        return [_data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
+        data = [_data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
+        return data;
     }
     [_file seekToFileOffset:offset];
-    return [_file readDataOfLength:size];
+    data = [_file readDataOfLength:size];
+    [_lock unlock];
+    return data;
 }
 
 - (NSData *)readAll {
-    return [self read:0 size:(long)_fileSize];
+    NSData *data = nil;
+    [_lock lock];
+    data = [self read:0 size:(long)_fileSize];
+    [_lock unlock];
+    return data;
 }
 
 - (void)close {

@@ -32,6 +32,6 @@ withProgressBlock:(QNInternalProgressBlock)progressBlock
 withCancelBlock:(QNCancelBlock)cancelBlock
   withAccess:(NSString *)access;
 
-- (void)cancelSessionWithIdentifier:(NSString *)identifier;
+- (void)invalidateSessionWithIdentifier:(NSString *)identifier;
 
 @end

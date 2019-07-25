@@ -20,6 +20,8 @@
 - (instancetype)initWithFile:(id<QNFileDelegate>)file
                      withKey:(NSString *)key
                    withToken:(QNUpToken *)token
+                withRecorder:(id<QNRecorderDelegate>)recorder
+             withRecorderKey:(NSString *)recorderKey
              withHttpManager:(id<QNHttpDelegate>)http
        withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option

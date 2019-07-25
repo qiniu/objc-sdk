@@ -209,11 +209,19 @@
                 return;
             }
             
-            if (_config.concurrentResumeUpload) {
+            NSString *recorderKey = key;
+            if (_config.recorder != nil && _config.recorderKeyGen != nil) {
+                recorderKey = _config.recorderKeyGen(key, [file path]);
+            }
+            NSLog(@"recorder %@", _config.recorder);
+            
+            if (_config.useConcurrentResumeUpload) {
                 QNConcurrentResumeUpload *up = [[QNConcurrentResumeUpload alloc]
                                                 initWithFile:file
                                                 withKey:key
                                                 withToken:t
+                                                withRecorder:_config.recorder
+                                                withRecorderKey:recorderKey
                                                 withHttpManager:_httpManager
                                                 withCompletionHandler:completionHandler
                                                 withOption:option
@@ -222,13 +230,6 @@
                     [up run];
                 });
             } else {
-                NSString *recorderKey = key;
-                if (_config.recorder != nil && _config.recorderKeyGen != nil) {
-                    recorderKey = _config.recorderKeyGen(key, [file path]);
-                }
-                
-                NSLog(@"recorder %@", _config.recorder);
-                
                 QNResumeUpload *up = [[QNResumeUpload alloc]
                                       initWithFile:file
                                       withKey:key
