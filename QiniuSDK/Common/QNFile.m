@@ -91,9 +91,7 @@
 
 - (NSData *)readAll {
     NSData *data = nil;
-    [_lock lock];
     data = [self read:0 size:(long)_fileSize];
-    [_lock unlock];
     return data;
 }
 
