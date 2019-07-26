@@ -81,18 +81,16 @@
     [_lock lock];
     if (_data != nil) {
         data = [_data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
-        return data;
+    } else {
+        [_file seekToFileOffset:offset];
+        data = [_file readDataOfLength:size];
     }
-    [_file seekToFileOffset:offset];
-    data = [_file readDataOfLength:size];
     [_lock unlock];
     return data;
 }
 
 - (NSData *)readAll {
-    NSData *data = nil;
-    data = [self read:0 size:(long)_fileSize];
-    return data;
+    return [self read:0 size:(long)_fileSize];;
 }
 
 - (void)close {
