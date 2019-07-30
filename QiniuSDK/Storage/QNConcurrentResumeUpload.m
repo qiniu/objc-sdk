@@ -13,7 +13,6 @@
 #import "QNResponseInfo.h"
 #import "QNUrlSafeBase64.h"
 #import "QNCrc32.h"
-#import "QNCommonTool.h"
 
 @interface QNConcurrentTask: NSObject
 
@@ -68,7 +67,7 @@
 
 @property (nonatomic, strong) NSLock *lock;
 
-- (instancetype)init __attribute__((unavailable("use taskQueueWithFile:totalSize:concurrentTaskCount: instead.")));
+- (instancetype)init __attribute__((unavailable("use taskQueueWithFile:totalSize:concurrentTaskCount:recordInfo: instead.")));
 
 @end
 
@@ -276,7 +275,7 @@
         _token = token;
         _access = token.access;
         _httpManager = http;
-        _taskIdentifier = [QNCommonTool getRandomStringWithLength:32];
+        _taskIdentifier = [[NSUUID UUID] UUIDString];
         
         _taskQueue = [QNConcurrentTaskQueue taskQueueWithFile:file totalSize:_size concurrentTaskCount:_config.concurrentTaskCount recordInfo:[self recoveryFromRecord]];
     }

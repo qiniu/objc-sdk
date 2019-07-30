@@ -14,7 +14,6 @@
 #import "QNUploadManager.h"
 #import "QNUploadOption+Private.h"
 #import "QNUrlSafeBase64.h"
-#import "QNCommonTool.h"
 
 @interface QNFormUpload ()
 
@@ -55,7 +54,7 @@
         _fileName = fileName != nil ? fileName : @"?";
         _previousPercent = 0;
         _access = token.access;
-        _taskIdentifier = [QNCommonTool getRandomStringWithLength:32];
+        _taskIdentifier = [[NSUUID UUID] UUIDString];
     }
     return self;
 }

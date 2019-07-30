@@ -14,7 +14,6 @@
 #import "QNUploadManager.h"
 #import "QNUploadOption+Private.h"
 #import "QNUrlSafeBase64.h"
-#import "QNCommonTool.h"
 
 typedef void (^task)(void);
 
@@ -98,7 +97,7 @@ typedef void (^task)(void);
         _previousPercent = 0;
 
         _access = token.access;
-        _taskIdentifier = [QNCommonTool getRandomStringWithLength:32];
+        _taskIdentifier = [[NSUUID UUID] UUIDString];
     }
     return self;
 }
