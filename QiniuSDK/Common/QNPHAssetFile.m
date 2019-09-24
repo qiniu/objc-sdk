@@ -150,13 +150,17 @@
 
         NSString *PATH_VIDEO_FILE = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
         [[NSFileManager defaultManager] removeItemAtPath:PATH_VIDEO_FILE error:nil];
+        
+        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
         [[PHAssetResourceManager defaultManager] writeDataForAssetResource:resource toFile:[NSURL fileURLWithPath:PATH_VIDEO_FILE] options:options completionHandler:^(NSError *_Nullable error) {
             if (error) {
                 filePath = nil;
             } else {
                 filePath = PATH_VIDEO_FILE;
             }
+            dispatch_semaphore_signal(semaphore);
         }];
+        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     }
     return filePath;
 }
