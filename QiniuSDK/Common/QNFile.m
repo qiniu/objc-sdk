@@ -90,7 +90,7 @@
 }
 
 - (NSData *)readAll {
-    return [self read:0 size:(long)_fileSize];;
+    return [self read:0 size:(long)_fileSize];
 }
 
 - (void)close {

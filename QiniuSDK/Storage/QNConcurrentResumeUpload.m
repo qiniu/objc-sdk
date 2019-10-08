@@ -16,7 +16,6 @@
 
 @interface QNConcurrentTask: NSObject
 
-@property (nonatomic, strong) NSLock *lock;
 @property (nonatomic, assign) int index; // block index in the file
 @property (nonatomic, assign) UInt32 size; // total size of the block
 @property (atomic, assign) UInt32 uploadedSize; // uploaded size of the block
@@ -37,7 +36,6 @@
 {
     self = [super init];
     if (self) {
-        _lock = [[NSLock alloc] init];
         _isTaskCompleted = NO;
         _uploadedSize = 0;
         _size = size;
@@ -59,7 +57,7 @@
 @property (nonatomic, assign) BOOL isAllCompleted; // completed
 @property (nonatomic, assign) float totalPercent; // 上传总进度
 @property (nonatomic, assign) UInt32 taskQueueCount; // 实际并发任务数量
-@property (nonatomic, assign) int nextTaskIndex; // 下一个任务的index
+@property (atomic, assign) int nextTaskIndex; // 下一个任务的index
 
 @property (nonatomic, assign) BOOL isConcurrentTaskError; // error
 @property (nonatomic, strong) QNResponseInfo *info; // errorInfo if error
@@ -160,20 +158,17 @@
 
 - (BOOL)completeTask:(QNConcurrentTask *)task withContext:(NSString *)context {
     
-    [_lock lock];
     task.uploadedSize = task.size;
     task.isTaskCompleted = YES;
     task.context = context;
     
     BOOL hasMore = _nextTaskIndex < _taskQueueArray.count;
-    [_lock unlock];
     return hasMore;
 }
 
 - (NSArray *)getRecordInfo {
     
     NSMutableArray *infoArray = [NSMutableArray array];
-    [_lock lock];
     for (QNConcurrentTask *task in _taskQueueArray) {
         if (task.isTaskCompleted) {
             [infoArray addObject:@{
@@ -183,7 +178,6 @@
                                    }];
         }
     }
-    [_lock unlock];
     return infoArray;
 }
 
@@ -219,9 +213,7 @@
     
     long long totalUploadSize = 0;
     for (QNConcurrentTask *task in _taskQueueArray) {
-        [task.lock lock];
         totalUploadSize += task.uploadedSize;
-        [task.lock unlock];
     }
     return totalUploadSize / (float)_totalSize < 0.95 ? totalUploadSize / (float)_totalSize : 0.95;
 }
@@ -464,7 +456,7 @@
     
     UInt32 t = [modify_time unsignedIntValue];
     if (t != _modifyTime) {
-        NSLog(@"modify time changed %u, %llu", t, _modifyTime);
+        NSLog(@"modify time changed %u, %llu", (unsigned int)t, _modifyTime);
         return nil;
     }
     

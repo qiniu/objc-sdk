@@ -208,11 +208,12 @@
                 [self putData:data fileName:fileName key:key token:token complete:completionHandler option:option];
                 return;
             }
-            
+
             NSString *recorderKey = key;
             if (_config.recorder != nil && _config.recorderKeyGen != nil) {
                 recorderKey = _config.recorderKeyGen(key, [file path]);
             }
+            
             NSLog(@"recorder %@", _config.recorder);
             
             if (_config.useConcurrentResumeUpload) {
