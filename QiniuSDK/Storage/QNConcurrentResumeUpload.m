@@ -104,10 +104,10 @@
             int block_index = [info[@"block_index"] intValue];
             UInt32 block_size = [info[@"block_size"] unsignedIntValue];
             NSString *context = info[@"context"];
-            QNConcurrentTask *recoveryTask = [[QNConcurrentTask alloc] initWithBlockIndex:block_index  blockSize:block_size];
+            QNConcurrentTask *recoveryTask = [QNConcurrentTask concurrentTaskWithBlockIndex:block_index blockSize:block_size];
             recoveryTask.uploadedSize = block_size;
-            recoveryTask.isTaskCompleted = YES;
             recoveryTask.context = context;
+            recoveryTask.isTaskCompleted = YES;
             [_taskQueueArray addObject:recoveryTask];
         }
     }
@@ -159,10 +159,12 @@
 - (BOOL)completeTask:(QNConcurrentTask *)task withContext:(NSString *)context {
     
     task.uploadedSize = task.size;
-    task.isTaskCompleted = YES;
     task.context = context;
+    task.isTaskCompleted = YES;
     
+    [_lock lock];
     BOOL hasMore = _nextTaskIndex < _taskQueueArray.count;
+    [_lock unlock];
     return hasMore;
 }
 
@@ -224,7 +226,7 @@
 
 @property (nonatomic, strong) id<QNHttpDelegate> httpManager;
 @property (nonatomic, copy) NSString *key;
-@property (nonatomic, strong) NSDictionary *headers;
+@property (nonatomic, copy) NSDictionary *headers;
 @property (nonatomic, strong) QNUploadOption *option;
 @property (nonatomic, strong) QNUpToken *token;
 @property (nonatomic, strong) QNUpCompletionHandler complete;
