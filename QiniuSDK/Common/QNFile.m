@@ -77,15 +77,21 @@
 
 - (NSData *)read:(long)offset
             size:(long)size {
+    
     NSData *data = nil;
-    [_lock lock];
-    if (_data != nil) {
-        data = [_data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
-    } else {
-        [_file seekToFileOffset:offset];
-        data = [_file readDataOfLength:size];
+    @try {
+        [_lock lock];
+        if (_data != nil) {
+            data = [_data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
+        } else {
+            [_file seekToFileOffset:offset];
+            data = [_file readDataOfLength:size];
+        }
+    } @catch (NSException *exception) {
+        NSLog(@"read file failed reason: %@ \n%@", exception.reason, exception.callStackSymbols);
+    } @finally {
+        [_lock unlock];
     }
-    [_lock unlock];
     return data;
 }
 
