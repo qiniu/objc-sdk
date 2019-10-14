@@ -203,7 +203,14 @@
             };
 
             if ([file size] <= _config.putThreshold) {
-                NSData *data = [file readAll];
+                NSError *error;
+                NSData *data = [file readAllWithError:&error];
+                if (error) {
+                    QNAsyncRunInMain(^{
+                        completionHandler([QNResponseInfo responseInfoWithFileError:error], key, nil);
+                    });
+                    return;
+                }
                 NSString *fileName = [[file path] lastPathComponent];
                 [self putData:data fileName:fileName key:key token:token complete:completionHandler option:option];
                 return;

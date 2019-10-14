@@ -307,7 +307,13 @@
         return;
     }
     
-    NSData *data = [self.file read:task.index * kQNBlockSize size:task.size];
+    NSError *error;
+    NSData *data = [self.file read:task.index * kQNBlockSize size:task.size error:&error];
+    if (error) {
+        self.complete([QNResponseInfo responseInfoWithFileError:error], self.key, nil);
+        return;
+    }
+    
     UInt32 blockCrc = [QNCrc32 data:data];
     
     QNInternalProgressBlock progressBlock = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {

@@ -20,6 +20,9 @@
 		CCC3A50822DC10CB00D835B1 /* QNConcurrentResumeUpload.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC3A50622DC10CB00D835B1 /* QNConcurrentResumeUpload.h */; };
 		CCC3A50922DC10CB00D835B1 /* QNConcurrentResumeUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = CCC3A50722DC10CB00D835B1 /* QNConcurrentResumeUpload.m */; };
 		CCC3A50A22DC10CB00D835B1 /* QNConcurrentResumeUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = CCC3A50722DC10CB00D835B1 /* QNConcurrentResumeUpload.m */; };
+		CCF661062355C2C00018A41E /* QNConcurrentResumeUploadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CCF661052355C2C00018A41E /* QNConcurrentResumeUploadTest.m */; };
+		CCF661072355C4480018A41E /* QNConcurrentResumeUploadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CCF661052355C2C00018A41E /* QNConcurrentResumeUploadTest.m */; };
+		CCF661082355C5120018A41E /* QiniuSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = DF2CDE5819DAC6A400CE01FB /* QiniuSDK.h */; };
 		DF0A03231B3BABEC00E3778C /* QiniuSDK_Mac.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = DF2CDDFF19DAC05500CE01FB /* QiniuSDK_Mac.dylib */; };
 		DF0A03241B3BAC3900E3778C /* QNFormUploadTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DF3C504619DD7BA6000F548F /* QNFormUploadTest.m */; };
 		DF0A03251B3BAC5700E3778C /* libQiniuSDK_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DF2CDE1A19DAC08400CE01FB /* libQiniuSDK_iOS.a */; };
@@ -54,7 +57,6 @@
 		DF2CDE6119DAC6A400CE01FB /* QNCrc32.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5319DAC6A400CE01FB /* QNCrc32.m */; };
 		DF2CDE6219DAC6A400CE01FB /* QNCrc32.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5319DAC6A400CE01FB /* QNCrc32.m */; };
 		DF2CDE6719DAC6A400CE01FB /* QNVersion.h in Headers */ = {isa = PBXBuildFile; fileRef = DF2CDE5719DAC6A400CE01FB /* QNVersion.h */; };
-		DF2CDE6819DAC6A400CE01FB /* QiniuSDK.h in Headers */ = {isa = PBXBuildFile; fileRef = DF2CDE5819DAC6A400CE01FB /* QiniuSDK.h */; };
 		DF2CDE6919DAC6A400CE01FB /* QNUploadManager.h in Headers */ = {isa = PBXBuildFile; fileRef = DF2CDE5A19DAC6A400CE01FB /* QNUploadManager.h */; };
 		DF2CDE6A19DAC6A400CE01FB /* QNUploadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5B19DAC6A400CE01FB /* QNUploadManager.m */; };
 		DF2CDE6B19DAC6A400CE01FB /* QNUploadManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DF2CDE5B19DAC6A400CE01FB /* QNUploadManager.m */; };
@@ -144,6 +146,7 @@
 		C1D8890E270C769A9E798A8E /* libPods-QiniuSDK_iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuSDK_iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CCC3A50622DC10CB00D835B1 /* QNConcurrentResumeUpload.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNConcurrentResumeUpload.h; sourceTree = "<group>"; };
 		CCC3A50722DC10CB00D835B1 /* QNConcurrentResumeUpload.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNConcurrentResumeUpload.m; sourceTree = "<group>"; };
+		CCF661052355C2C00018A41E /* QNConcurrentResumeUploadTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNConcurrentResumeUploadTest.m; sourceTree = "<group>"; };
 		D84AF95CA892E1089E26F959 /* Pods-QiniuSDK_iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_iOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_iOS/Pods-QiniuSDK_iOS.release.xcconfig"; sourceTree = "<group>"; };
 		DF0D23CC19DCE6C400D6B68F /* QNResponseInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNResponseInfo.h; sourceTree = "<group>"; };
 		DF0D23CE19DCE6E500D6B68F /* QNResponseInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNResponseInfo.m; sourceTree = "<group>"; };
@@ -399,6 +402,7 @@
 				DF293C9619DB865800799011 /* QNCrc32Test.m */,
 				DF3C504619DD7BA6000F548F /* QNFormUploadTest.m */,
 				DF3C504919DD7D9F000F548F /* QNResumeUploadTest.m */,
+				CCF661052355C2C00018A41E /* QNConcurrentResumeUploadTest.m */,
 				DFA9B63E19DFD8C900A15FD1 /* QNEtagTest.m */,
 				DFA9B64319DFE43500A15FD1 /* QNTempFile.h */,
 				DFA9B64419DFE43500A15FD1 /* QNTempFile.m */,
@@ -455,13 +459,13 @@
 				93CEF47E1BDE11FF00750FE8 /* QNPHAssetFile.h in Headers */,
 				DF2CDE6019DAC6A400CE01FB /* QNCrc32.h in Headers */,
 				DFF126F11B639F3B0005C39C /* QNFile.h in Headers */,
+				CCF661082355C5120018A41E /* QiniuSDK.h in Headers */,
 				DFA9B63B19DF904000A15FD1 /* QNEtag.h in Headers */,
 				DF2CDE5C19DAC6A400CE01FB /* QNUrlSafeBase64.h in Headers */,
 				93D01E641C7065C200E7F47C /* QNPHAssetResource.h in Headers */,
 				DFA9B64919E0018800A15FD1 /* QNUploadOption.h in Headers */,
 				DFA9B65C19E0B58900A15FD1 /* QNRecorderDelegate.h in Headers */,
 				DFF525311A6235D100D02BA1 /* QNSessionManager.h in Headers */,
-				DF2CDE6819DAC6A400CE01FB /* QiniuSDK.h in Headers */,
 				DF2CDE6919DAC6A400CE01FB /* QNUploadManager.h in Headers */,
 				DF293CA919DC0AF000799011 /* QNResumeUpload.h in Headers */,
 				DFA39AA419F1272800A1A158 /* QNAsyncRun.h in Headers */,
@@ -718,6 +722,7 @@
 				DF437CDF1B243A2C0099587B /* QNUpTokenTest.m in Sources */,
 				DF3C504A19DD7D9F000F548F /* QNResumeUploadTest.m in Sources */,
 				DF293C9719DB865800799011 /* QNCrc32Test.m in Sources */,
+				CCF661062355C2C00018A41E /* QNConcurrentResumeUploadTest.m in Sources */,
 				FD4FEE441F298D58003A38B8 /* QNPipelineTest.m in Sources */,
 				DFA9B64519DFE43500A15FD1 /* QNTempFile.m in Sources */,
 				DFF525391A64079B00D02BA1 /* QNSessionTest.m in Sources */,
@@ -765,6 +770,7 @@
 				DF0A03281B3BAC6E00E3778C /* QNFormUploadTest.m in Sources */,
 				DF0A03291B3BAC6E00E3778C /* QNResumeUploadTest.m in Sources */,
 				DF0A032B1B3BAC6E00E3778C /* QNEtagTest.m in Sources */,
+				CCF661072355C4480018A41E /* QNConcurrentResumeUploadTest.m in Sources */,
 				FD4FEE451F298D58003A38B8 /* QNPipelineTest.m in Sources */,
 				DF0A032C1B3BAC6E00E3778C /* QNTempFile.m in Sources */,
 				DF0A032D1B3BAC6E00E3778C /* QNFileRecorderTest.m in Sources */,

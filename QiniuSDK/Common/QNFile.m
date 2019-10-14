@@ -76,7 +76,8 @@
 }
 
 - (NSData *)read:(long)offset
-            size:(long)size {
+            size:(long)size
+           error:(NSError **)error {
     
     NSData *data = nil;
     @try {
@@ -88,6 +89,7 @@
             data = [_file readDataOfLength:size];
         }
     } @catch (NSException *exception) {
+        *error = [NSError errorWithDomain:NSCocoaErrorDomain code:kQNFileError userInfo:@{NSLocalizedDescriptionKey : exception.reason}];
         NSLog(@"read file failed reason: %@ \n%@", exception.reason, exception.callStackSymbols);
     } @finally {
         [_lock unlock];
@@ -95,8 +97,8 @@
     return data;
 }
 
-- (NSData *)readAll {
-    return [self read:0 size:(long)_fileSize];
+- (NSData *)readAllWithError:(NSError **)error {
+    return [self read:0 size:(long)_fileSize error:error];
 }
 
 - (void)close {
