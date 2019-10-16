@@ -39,6 +39,7 @@
 #import "QNUpToken.h"
 #import "QNUploadManager.h"
 #import "QNUploadOption+Private.h"
+#import "QNConcurrentResumeUpload.h"
 
 @interface QNUploadManager ()
 @property (nonatomic) id<QNHttpDelegate> httpManager;
@@ -202,7 +203,14 @@
             };
 
             if ([file size] <= _config.putThreshold) {
-                NSData *data = [file readAll];
+                NSError *error;
+                NSData *data = [file readAllWithError:&error];
+                if (error) {
+                    QNAsyncRunInMain(^{
+                        completionHandler([QNResponseInfo responseInfoWithFileError:error], key, nil);
+                    });
+                    return;
+                }
                 NSString *fileName = [[file path] lastPathComponent];
                 [self putData:data fileName:fileName key:key token:token complete:completionHandler option:option];
                 return;
@@ -212,22 +220,38 @@
             if (_config.recorder != nil && _config.recorderKeyGen != nil) {
                 recorderKey = _config.recorderKeyGen(key, [file path]);
             }
-
+            
             NSLog(@"recorder %@", _config.recorder);
-
-            QNResumeUpload *up = [[QNResumeUpload alloc]
-                         initWithFile:file
-                              withKey:key
-                            withToken:t
-                withCompletionHandler:complete
-                           withOption:option
-                         withRecorder:_config.recorder
-                      withRecorderKey:recorderKey
-                      withHttpManager:_httpManager
-                    withConfiguration:_config];
-            QNAsyncRun(^{
-                [up run];
-            });
+            
+            if (_config.useConcurrentResumeUpload) {
+                QNConcurrentResumeUpload *up = [[QNConcurrentResumeUpload alloc]
+                                                initWithFile:file
+                                                withKey:key
+                                                withToken:t
+                                                withRecorder:_config.recorder
+                                                withRecorderKey:recorderKey
+                                                withHttpManager:_httpManager
+                                                withCompletionHandler:completionHandler
+                                                withOption:option
+                                                withConfiguration:_config];
+                QNAsyncRun(^{
+                    [up run];
+                });
+            } else {
+                QNResumeUpload *up = [[QNResumeUpload alloc]
+                                      initWithFile:file
+                                      withKey:key
+                                      withToken:t
+                                      withCompletionHandler:complete
+                                      withOption:option
+                                      withRecorder:_config.recorder
+                                      withRecorderKey:recorderKey
+                                      withHttpManager:_httpManager
+                                      withConfiguration:_config];
+                QNAsyncRun(^{
+                    [up run];
+                });
+            }
         }];
     }
 }

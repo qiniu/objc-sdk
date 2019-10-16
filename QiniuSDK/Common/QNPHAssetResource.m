@@ -38,6 +38,8 @@ enum {
 
 @property (nonatomic, strong) NSURL *assetURL;
 
+@property (nonatomic, strong) NSLock *lock;
+
 @end
 
 @implementation QNPHAssetResource
@@ -52,23 +54,35 @@ enum {
         }
         _fileModifyTime = t;
         _phAssetResource = phAssetResource;
+        _lock = [[NSLock alloc] init];
         [self getInfo];
     }
     return self;
 }
 
-- (NSData *)read:(long)offset size:(long)size {
-    NSRange subRange = NSMakeRange(offset, size);
-    if (!self.assetData) {
-        self.assetData = [self fetchDataFromAsset:self.phAssetResource];
+- (NSData *)read:(long)offset
+            size:(long)size
+           error:(NSError **)error {
+    
+    NSData *data = nil;
+    @try {
+        [_lock lock];
+        NSRange subRange = NSMakeRange(offset, size);
+        if (!self.assetData) {
+            self.assetData = [self fetchDataFromAsset:self.phAssetResource error:error];
+        }
+        data = [self.assetData subdataWithRange:subRange];
+    } @catch (NSException *exception) {
+        *error = [NSError errorWithDomain:NSCocoaErrorDomain code:kQNFileError userInfo:@{NSLocalizedDescriptionKey : exception.reason}];
+        NSLog(@"read file failed reason: %@ \n%@", exception.reason, exception.callStackSymbols);
+    } @finally {
+        [_lock unlock];
     }
-    NSData *subData = [self.assetData subdataWithRange:subRange];
-
-    return subData;
+    return data;
 }
 
-- (NSData *)readAll {
-    return [self read:0 size:(long)_fileSize];
+- (NSData *)readAllWithError:(NSError **)error {
+    return [self read:0 size:(long)_fileSize error:error];
 }
 
 - (void)close {
@@ -109,16 +123,9 @@ enum {
 
             BOOL blHave = [[NSFileManager defaultManager] fileExistsAtPath:pathToWrite];
             if (!blHave) {
-                NSLog(@"no  have");
                 return;
             } else {
-                NSLog(@" have");
-                BOOL blDele = [[NSFileManager defaultManager] removeItemAtPath:pathToWrite error:nil];
-                if (blDele) {
-                    NSLog(@"dele success");
-                } else {
-                    NSLog(@"dele fail");
-                }
+                [[NSFileManager defaultManager] removeItemAtPath:pathToWrite error:nil];
             }
             [assetReadLock lock];
             [assetReadLock unlockWithCondition:kAMASSETMETADATA_ALLFINISHED];
@@ -130,8 +137,9 @@ enum {
     }
 }
 
-- (NSData *)fetchDataFromAsset:(PHAssetResource *)videoResource {
+- (NSData *)fetchDataFromAsset:(PHAssetResource *)videoResource error:(NSError **)err {
     __block NSData *tmpData = [NSData data];
+    __block NSError *innerError = *err;
 
     NSConditionLock *assetReadLock = [[NSConditionLock alloc] initWithCondition:kAMASSETMETADATA_PENDINGREADS];
 
@@ -145,20 +153,13 @@ enum {
             NSData *videoData = [NSData dataWithContentsOfURL:urlAsset.URL];
             tmpData = [NSData dataWithData:videoData];
         } else {
-            NSLog(@"%@", error);
+            innerError = error;
         }
         BOOL blHave = [[NSFileManager defaultManager] fileExistsAtPath:pathToWrite];
         if (!blHave) {
-            NSLog(@"no  have");
             return;
         } else {
-            NSLog(@" have");
-            BOOL blDele = [[NSFileManager defaultManager] removeItemAtPath:pathToWrite error:nil];
-            if (blDele) {
-                NSLog(@"dele success");
-            } else {
-                NSLog(@"dele fail");
-            }
+            [[NSFileManager defaultManager] removeItemAtPath:pathToWrite error:nil];
         }
         [assetReadLock lock];
         [assetReadLock unlockWithCondition:kAMASSETMETADATA_ALLFINISHED];

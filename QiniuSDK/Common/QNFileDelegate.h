@@ -18,18 +18,21 @@
  *
  *    @param offset 偏移地址
  *    @param size   大小
+ *    @param error 错误信息
  *
  *    @return 数据
  */
 - (NSData *)read:(long)offset
-            size:(long)size;
+            size:(long)size
+           error:(NSError **)error;
 
 /**
  *    读取所有文件内容
  *
  *    @return 数据
+ *    @error 错误信息
  */
-- (NSData *)readAll;
+- (NSData *)readAllWithError:(NSError **)error;
 
 /**
  *    关闭文件

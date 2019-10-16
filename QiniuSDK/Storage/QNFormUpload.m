@@ -30,6 +30,7 @@
 @property (nonatomic) float previousPercent;
 
 @property (nonatomic, strong) NSString *access; //AK
+@property (nonatomic, copy) NSString *taskIdentifier;
 
 @end
 
@@ -54,6 +55,7 @@
         _fileName = fileName != nil ? fileName : @"?";
         _previousPercent = 0;
         _access = token.access;
+        _taskIdentifier = [[NSUUID UUID] UUIDString];
     }
     return self;
 }
@@ -125,6 +127,7 @@
                              withParams:parameters
                            withFileName:_fileName
                            withMimeType:_option.mimeType
+                        withTaskIdentifier:_taskIdentifier
                       withCompleteBlock:thirdComplete
                       withProgressBlock:p
                         withCancelBlock:_option.cancellationSignal
@@ -135,6 +138,7 @@
                          withParams:parameters
                        withFileName:_fileName
                        withMimeType:_option.mimeType
+                 withTaskIdentifier:_taskIdentifier
                   withCompleteBlock:retriedComplete
                   withProgressBlock:p
                     withCancelBlock:_option.cancellationSignal
@@ -145,6 +149,7 @@
                      withParams:parameters
                    withFileName:_fileName
                    withMimeType:_option.mimeType
+             withTaskIdentifier:_taskIdentifier
               withCompleteBlock:complete
               withProgressBlock:p
                 withCancelBlock:_option.cancellationSignal
