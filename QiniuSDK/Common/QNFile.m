@@ -21,6 +21,8 @@
 
 @property (nonatomic) NSFileHandle *file;
 
+@property (nonatomic) NSLock *lock;
+
 @end
 
 @implementation QNFile
@@ -67,22 +69,36 @@
         }
         _file = f;
         _data = d;
+        _lock = [[NSLock alloc] init];
     }
 
     return self;
 }
 
 - (NSData *)read:(long)offset
-            size:(long)size {
-    if (_data != nil) {
-        return [_data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
+            size:(long)size
+           error:(NSError **)error {
+    
+    NSData *data = nil;
+    @try {
+        [_lock lock];
+        if (_data != nil) {
+            data = [_data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
+        } else {
+            [_file seekToFileOffset:offset];
+            data = [_file readDataOfLength:size];
+        }
+    } @catch (NSException *exception) {
+        *error = [NSError errorWithDomain:NSCocoaErrorDomain code:kQNFileError userInfo:@{NSLocalizedDescriptionKey : exception.reason}];
+        NSLog(@"read file failed reason: %@ \n%@", exception.reason, exception.callStackSymbols);
+    } @finally {
+        [_lock unlock];
     }
-    [_file seekToFileOffset:offset];
-    return [_file readDataOfLength:size];
+    return data;
 }
 
-- (NSData *)readAll {
-    return [self read:0 size:(long)_fileSize];
+- (NSData *)readAllWithError:(NSError **)error {
+    return [self read:0 size:(long)_fileSize error:error];
 }
 
 - (void)close {

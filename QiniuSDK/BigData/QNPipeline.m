@@ -132,7 +132,7 @@ static NSMutableString* formatPoints(NSArray<NSDictionary*>* events) {
          handler:(QNPipelineCompletionHandler)handler {
     NSDictionary* headers = @{ @"Authorization" : token,
                                @"Content-Type" : @"text/plain" };
-    [_httpManager post:[self url:repo] withData:[str dataUsingEncoding:NSUTF8StringEncoding] withParams:nil withHeaders:headers withCompleteBlock:^(QNResponseInfo* info, NSDictionary* resp) {
+    [_httpManager post:[self url:repo] withData:[str dataUsingEncoding:NSUTF8StringEncoding] withParams:nil withHeaders:headers withTaskIdentifier:nil withCompleteBlock:^(QNResponseInfo* info, NSDictionary* resp) {
         handler(info);
     }
         withProgressBlock:nil

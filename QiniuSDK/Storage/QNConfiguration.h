@@ -63,7 +63,17 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 /**
  *    是否使用 https，默认为 YES
  */
-@property (nonatomic, assign) BOOL useHttps;
+@property (nonatomic, assign, readonly) BOOL useHttps;
+
+/**
+  *   是否开启并发分片上传，默认为NO
+  */
+@property (nonatomic, assign, readonly) BOOL useConcurrentResumeUpload;
+
+/**
+ *   并发分片上传的并发任务个数，在concurrentResumeUpload为YES时有效，默认为3个
+ */
+@property (nonatomic, assign, readonly) UInt32 concurrentTaskCount;
 
 @property (nonatomic, readonly) id<QNRecorderDelegate> recorder;
 
@@ -218,6 +228,16 @@ typedef void (^QNPrequeryReturn)(int code);
  *    是否使用 https，默认为 YES
  */
 @property (nonatomic, assign) BOOL useHttps;
+
+/**
+ *   是否开启并发分片上传，默认为NO
+ */
+@property (nonatomic, assign) BOOL useConcurrentResumeUpload;
+
+/**
+ *   并发分片上传的并发任务个数，在concurrentResumeUpload为YES时有效，默认为3个
+ */
+@property (nonatomic, assign) UInt32 concurrentTaskCount;
 
 @property (nonatomic, strong) id<QNRecorderDelegate> recorder;
 

@@ -45,6 +45,8 @@ typedef void (^task)(void);
 
 @property (nonatomic, strong) NSString *access; //AK
 
+@property (nonatomic, copy) NSString *taskIdentifier;
+
 - (void)makeBlock:(NSString *)uphost
            offset:(UInt32)offset
         blockSize:(UInt32)blockSize
@@ -95,6 +97,7 @@ typedef void (^task)(void);
         _previousPercent = 0;
 
         _access = token.access;
+        _taskIdentifier = [[NSUUID UUID] UUIDString];
     }
     return self;
 }
@@ -271,7 +274,12 @@ typedef void (^task)(void);
         chunkSize:(UInt32)chunkSize
          progress:(QNInternalProgressBlock)progressBlock
          complete:(QNCompleteBlock)complete {
-    NSData *data = [self.file read:offset size:chunkSize];
+    NSError *error;
+    NSData *data = [self.file read:offset size:chunkSize error:&error];
+    if (error) {
+        self.complete([QNResponseInfo responseInfoWithFileError:error], self.key, nil);
+        return;
+    }
     NSString *url = [[NSString alloc] initWithFormat:@"%@/mkblk/%u", uphost, (unsigned int)blockSize];
     _chunkCrc = [QNCrc32 data:data];
     [self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
@@ -283,7 +291,12 @@ typedef void (^task)(void);
          context:(NSString *)context
         progress:(QNInternalProgressBlock)progressBlock
         complete:(QNCompleteBlock)complete {
-    NSData *data = [self.file read:offset size:size];
+    NSError *error;
+    NSData *data = [self.file read:offset size:size error:&error];
+    if (error) {
+        self.complete([QNResponseInfo responseInfoWithFileError:error], self.key, nil);
+        return;
+    }
     UInt32 chunkOffset = offset % kQNBlockSize;
     NSString *url = [[NSString alloc] initWithFormat:@"%@/bput/%@/%u", uphost, context, (unsigned int)chunkOffset];
     _chunkCrc = [QNCrc32 data:data];
@@ -324,7 +337,7 @@ typedef void (^task)(void);
              withData:(NSData *)data
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock {
-    [_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal withAccess:_access];
+    [_httpManager post:url withData:data withParams:nil withHeaders:_headers withTaskIdentifier:_taskIdentifier withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal withAccess:_access];
 }
 
 - (void)run {
