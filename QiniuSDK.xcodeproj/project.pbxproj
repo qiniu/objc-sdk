@@ -17,14 +17,9 @@
 		93D01E661C7065C200E7F47C /* QNPHAssetResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D01E631C7065C200E7F47C /* QNPHAssetResource.m */; };
 		A31ADA71DBBF1F4D8A065061 /* libPods-QiniuSDK_Mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 73B66D8E78B0B3A0BEEA45A6 /* libPods-QiniuSDK_Mac.a */; };
 		BA8408541BE251010093B013 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA8408521BE250C80093B013 /* SystemConfiguration.framework */; };
-		CC3F321C22C0CC3700F23681 /* QNReportConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = CC3F321A22C0CC3700F23681 /* QNReportConfig.h */; };
-		CC3F321D22C0CC3700F23681 /* QNReportConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3F321B22C0CC3700F23681 /* QNReportConfig.m */; };
-		CC3F321F22C0CC3700F23681 /* QNReportConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3F321B22C0CC3700F23681 /* QNReportConfig.m */; };
 		CC3F322322C0CCDF00F23681 /* QNUploadInfoReporter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC3F322122C0CCDF00F23681 /* QNUploadInfoReporter.h */; };
 		CC3F322422C0CCDF00F23681 /* QNUploadInfoReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3F322222C0CCDF00F23681 /* QNUploadInfoReporter.m */; };
 		CC3F322622C0CCDF00F23681 /* QNUploadInfoReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3F322222C0CCDF00F23681 /* QNUploadInfoReporter.m */; };
-		CC4B347522C496A800130D51 /* QNReporterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CC4B347422C496A800130D51 /* QNReporterTest.m */; };
-		CC4B347622C496A800130D51 /* QNReporterTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CC4B347422C496A800130D51 /* QNReporterTest.m */; };
 		CCC3A50822DC10CB00D835B1 /* QNConcurrentResumeUpload.h in Headers */ = {isa = PBXBuildFile; fileRef = CCC3A50622DC10CB00D835B1 /* QNConcurrentResumeUpload.h */; };
 		CCC3A50922DC10CB00D835B1 /* QNConcurrentResumeUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = CCC3A50722DC10CB00D835B1 /* QNConcurrentResumeUpload.m */; };
 		CCC3A50A22DC10CB00D835B1 /* QNConcurrentResumeUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = CCC3A50722DC10CB00D835B1 /* QNConcurrentResumeUpload.m */; };
@@ -152,8 +147,6 @@
 		B62E937FF4E75CDD482C35E8 /* Pods-QiniuSDK_MacTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_MacTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_MacTests/Pods-QiniuSDK_MacTests.release.xcconfig"; sourceTree = "<group>"; };
 		BA8408521BE250C80093B013 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		C1D8890E270C769A9E798A8E /* libPods-QiniuSDK_iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuSDK_iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CC3F321A22C0CC3700F23681 /* QNReportConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNReportConfig.h; sourceTree = "<group>"; };
-		CC3F321B22C0CC3700F23681 /* QNReportConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNReportConfig.m; sourceTree = "<group>"; };
 		CC3F322122C0CCDF00F23681 /* QNUploadInfoReporter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNUploadInfoReporter.h; sourceTree = "<group>"; };
 		CC3F322222C0CCDF00F23681 /* QNUploadInfoReporter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUploadInfoReporter.m; sourceTree = "<group>"; };
 		CCC3A50622DC10CB00D835B1 /* QNConcurrentResumeUpload.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNConcurrentResumeUpload.h; sourceTree = "<group>"; };
@@ -400,8 +393,6 @@
 				DF609A041A58E39D00AC7297 /* QNFormUpload.m */,
 				DF482FD61B0DA8A2000DAD98 /* QNConfiguration.h */,
 				DF482FD71B0DA8A2000DAD98 /* QNConfiguration.m */,
-				CC3F321A22C0CC3700F23681 /* QNReportConfig.h */,
-				CC3F321B22C0CC3700F23681 /* QNReportConfig.m */,
 				CC3F322122C0CCDF00F23681 /* QNUploadInfoReporter.h */,
 				CC3F322222C0CCDF00F23681 /* QNUploadInfoReporter.m */,
 				DF437CD71B2429E10099587B /* QNUpToken.h */,
@@ -428,7 +419,6 @@
 				DF437CDE1B243A2C0099587B /* QNUpTokenTest.m */,
 				FDEA88651DAC10D000D037E5 /* QNAutoZoneTest.m */,
 				FD4FEE431F298D58003A38B8 /* QNPipelineTest.m */,
-				CC4B347422C496A800130D51 /* QNReporterTest.m */,
 			);
 			path = QiniuSDKTests;
 			sourceTree = SOURCE_ROOT;
@@ -463,7 +453,6 @@
 				FDEA5BFE1F27A21900D9D731 /* QNPipeline.h in Headers */,
 				DFBF63711BCCE2A600A771D8 /* QNSystem.h in Headers */,
 				DFF126F61B63ABED0005C39C /* QNALAssetFile.h in Headers */,
-				CC4B347722C4995100130D51 /* QiniuSDK.h in Headers */,
 				DF437CD21B2426270099587B /* QN_GTM_Base64.h in Headers */,
 				DF293C9E19DBC2AE00799011 /* QNUserAgent.h in Headers */,
 				DF2CDE6719DAC6A400CE01FB /* QNVersion.h in Headers */,
@@ -480,7 +469,6 @@
 				DFF126F11B639F3B0005C39C /* QNFile.h in Headers */,
 				CCF661082355C5120018A41E /* QiniuSDK.h in Headers */,
 				DFA9B63B19DF904000A15FD1 /* QNEtag.h in Headers */,
-				CC3F321C22C0CC3700F23681 /* QNReportConfig.h in Headers */,
 				DF2CDE5C19DAC6A400CE01FB /* QNUrlSafeBase64.h in Headers */,
 				93D01E641C7065C200E7F47C /* QNPHAssetResource.h in Headers */,
 				DFA9B64919E0018800A15FD1 /* QNUploadOption.h in Headers */,
@@ -710,7 +698,6 @@
 			files = (
 				DF2CDE5D19DAC6A400CE01FB /* QNUrlSafeBase64.m in Sources */,
 				DFBF636E1BCCE28300A771D8 /* QNSystem.m in Sources */,
-				CC3F321D22C0CC3700F23681 /* QNReportConfig.m in Sources */,
 				DF0D23CF19DCE6E500D6B68F /* QNResponseInfo.m in Sources */,
 				DFA9B63C19DF904000A15FD1 /* QNEtag.m in Sources */,
 				DF437CD31B2426270099587B /* QN_GTM_Base64.m in Sources */,
@@ -760,7 +747,6 @@
 			files = (
 				DF24DDA11B63FF1800EF57E6 /* QNALAssetFile.m in Sources */,
 				DFBF636F1BCCE28300A771D8 /* QNSystem.m in Sources */,
-				CC3F321F22C0CC3700F23681 /* QNReportConfig.m in Sources */,
 				DF24DDA01B63FF0E00EF57E6 /* QNFile.m in Sources */,
 				DF2CDE5E19DAC6A400CE01FB /* QNUrlSafeBase64.m in Sources */,
 				DF0D23D019DCE6E500D6B68F /* QNResponseInfo.m in Sources */,

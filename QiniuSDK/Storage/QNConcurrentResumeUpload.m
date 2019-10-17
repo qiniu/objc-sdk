@@ -13,6 +13,7 @@
 #import "QNResponseInfo.h"
 #import "QNUrlSafeBase64.h"
 #import "QNCrc32.h"
+#import "QNUploadInfoReporter.h"
 
 @interface QNConcurrentTask: NSObject
 
@@ -325,6 +326,11 @@
     };
     
     QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
+        [UploadInfoReporter recordWithRequestType:ReportType_mkblk
+                                     responseInfo:info
+                                        bytesSent:task.size
+                                         fileSize:self.size
+                                            token:self.token.token];
         if (info.error != nil) {
             if (retried >= self.config.retryMax || !info.couldRetry) {
                 [self invalidateTasksWithErrorInfo:info resp:resp];
@@ -391,6 +397,11 @@
     [postData appendData:[bodyStr dataUsingEncoding:NSUTF8StringEncoding]];
     
     QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
+        [UploadInfoReporter recordWithRequestType:ReportType_mkfile
+                                     responseInfo:info
+                                        bytesSent:self.size
+                                         fileSize:self.size
+                                            token:self.token.token];
         if (info.isOK) {
             [self removeRecord];
             self.option.progressHandler(self.key, 1.0);

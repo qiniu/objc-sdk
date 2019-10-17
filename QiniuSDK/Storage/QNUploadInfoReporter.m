@@ -7,14 +7,42 @@
 //
 
 #import "QNUploadInfoReporter.h"
-#import "QNReportConfig.h"
 #import "QNResponseInfo.h"
 #import "QNFile.h"
 #import "QNUpToken.h"
 #import "QNUserAgent.h"
 #import "QNAsyncRun.h"
 
+@implementation QNReportConfig
+
++ (instancetype)sharedInstance {
+    
+    static QNReportConfig *sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[self alloc] init];
+    });
+    return sharedInstance;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _recordEnable = YES;
+        _interval = 10;
+        _serverURL = @"https://uplog.qbox.me/log/3";
+        _recordDirectory = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"com.qiniu.report"];
+        _maxRecordFileSize = 2 * 1024 * 1024;
+        _uploadThreshold = 4 * 1024;
+        _timeoutInterval = 10;
+    }
+    return self;
+}
+
+@end
+
 static const NSString *recorderFileName = @"recorder";
+static const NSString *reportTypeValueList[] = {@"form", @"mkblk", @"bput", @"mkfile", @"block"};
 
 @interface QNUploadInfoReporter ()
 
@@ -66,27 +94,48 @@ static const NSString *recorderFileName = @"recorder";
     }
 }
 
-- (void)recordWithUploadResult:(NSString *)result uploadToken:(NSString *)token {
+- (BOOL)checkReportAvailable {
     
-    // 检查信息搜集是否开启、文件路径是否存在
-    if (!_config.isRecordEnable) return;
-    if (!result || [result isEqualToString:@""] || !token || [token isEqualToString:@""]) return;
-    
+    if (!_config.isRecordEnable) return NO;
     if (!(_config.maxRecordFileSize > _config.uploadThreshold)) {
         QNAsyncRunInMain(^{
             NSLog(@"maxRecordFileSize must be larger than uploadThreshold");
         });
-        return;
+        return NO;
     }
+    return YES;
+}
+
+- (void)recordWithRequestType:(QNReportType)requestType
+                                responseInfo:(QNResponseInfo *)responseInfo
+                                   bytesSent:(UInt32)bytesSent
+                                    fileSize:(UInt32)fileSize
+                                    token:(NSString *)token {
+    
+    if (![self checkReportAvailable]) return;
+    
+    NSString *nullString = @"";
+    NSArray *reportItems = @[
+                              [NSString stringWithFormat:@"%d", responseInfo.statusCode] ? [NSString stringWithFormat:@"%d", responseInfo.statusCode] : nullString,
+                              responseInfo.reqId ? responseInfo.reqId : nullString,
+                              responseInfo.host ? responseInfo.host : nullString,
+                              responseInfo.serverIp ? responseInfo.serverIp : nullString,
+                              nullString,
+                              [NSString stringWithFormat:@"%.1f", responseInfo.duration * 1000] ? [NSString stringWithFormat:@"%.1f", responseInfo.duration * 1000] : nullString,
+                              [NSString stringWithFormat:@"%llu", responseInfo.timeStamp] ? [NSString stringWithFormat:@"%llu", responseInfo.timeStamp] : nullString,
+                              [NSString stringWithFormat:@"%u", (unsigned int)bytesSent] ? [NSString stringWithFormat:@"%u", (unsigned int)bytesSent] : nullString,
+                              reportTypeValueList[requestType],
+                              [NSString stringWithFormat:@"%u", (unsigned int)fileSize] ? [NSString stringWithFormat:@"%u", (unsigned int)fileSize] : nullString
+                              ];
     
     // 串行队列处理文件读写
     dispatch_async(_recordQueue, ^{
-        [self innerRecordWithUploadResult:result uploadToken:token];
+        [self innerRecordWithUploadResult:[reportItems componentsJoinedByString:@","] uploadToken:token];
     });
 }
 
 - (void)innerRecordWithUploadResult:(NSString *)result uploadToken:(NSString *)token {
-        
+    
     // 检查recorder文件夹是否存在
     NSError *error = nil;
     if (![_fileManager fileExistsAtPath:_config.recordDirectory]) {
@@ -98,7 +147,7 @@ static const NSString *recorderFileName = @"recorder";
             return;
         }
     }
-    
+
     // 拼接换行符
     NSString *finalRecordInfo = [result stringByAppendingString:@"\n"];
     if (![_fileManager fileExistsAtPath:_recorderFilePath]) {
@@ -143,8 +192,8 @@ static const NSString *recorderFileName = @"recorder";
                         NSLog(@"upload info report failed: %@", error.localizedDescription);
                     });
                 }
-                dispatch_semaphore_signal(self.semaphore);
                 [session finishTasksAndInvalidate];
+                dispatch_semaphore_signal(self.semaphore);
             }];
             [uploadTask resume];
             

@@ -11,6 +11,7 @@
 #import "QNSessionManager.h"
 #import "QNSystem.h"
 #import "QNUpToken.h"
+#import "QNUploadInfoReporter.h"
 
 const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 

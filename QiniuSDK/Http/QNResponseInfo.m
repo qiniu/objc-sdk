@@ -207,23 +207,4 @@ static NSString *domain = @"qiniu.com";
     return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == kQNNetworkError || _statusCode == 996 || _statusCode == 406 || (_statusCode == 200 && _error != nil) || _statusCode < -1000 || self.isNotQiniu;
 }
 
-- (NSString *)buildUploadInfoWithRequestType:(QNUploadRequestType)requestType bytesSent:(UInt32)bytesSent fileSize:(UInt32)fileSize {
-    
-    NSArray *requestTypeItems = @[@"mkblk", @"bput", @"mkfile", @"form"];
-    NSString *nullString = @"";
-    NSArray *reportItems = @[
-                              [NSString stringWithFormat:@"%d", _statusCode] ? [NSString stringWithFormat:@"%d", _statusCode] : nullString,
-                              _reqId ? _reqId : nullString,
-                              _host ? _host : nullString,
-                              _serverIp ? _serverIp : nullString,
-                              nullString,
-                              [NSString stringWithFormat:@"%.1f", _duration * 1000] ? [NSString stringWithFormat:@"%.1f", _duration * 1000] : nullString,
-                              [NSString stringWithFormat:@"%llu", _timeStamp] ? [NSString stringWithFormat:@"%llu", _timeStamp] : nullString,
-                              [NSString stringWithFormat:@"%d", bytesSent] ? [NSString stringWithFormat:@"%d", bytesSent] : nullString,
-                              requestTypeItems[requestType],
-                              [NSString stringWithFormat:@"%d", fileSize] ? [NSString stringWithFormat:@"%d", fileSize] : nullString
-                              ];
-    return [reportItems componentsJoinedByString:@","];
-}
-
 @end

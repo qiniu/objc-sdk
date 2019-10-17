@@ -7,9 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
 #import "QNRecorderDelegate.h"
-#import "QNReportConfig.h"
 
 /**
  *    断点上传时的分块大小
@@ -27,6 +25,7 @@ typedef NSString * (^QNUrlConvert)(NSString *url);
 
 @class QNConfigurationBuilder;
 @class QNZone;
+@class QNReportConfig;
 /**
  *    Builder block
  *
