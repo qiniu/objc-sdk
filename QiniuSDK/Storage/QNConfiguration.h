@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-
 #import "QNRecorderDelegate.h"
 
 /**
@@ -26,6 +25,7 @@ typedef NSString * (^QNUrlConvert)(NSString *url);
 
 @class QNConfigurationBuilder;
 @class QNZone;
+@class QNReportConfig;
 /**
  *    Builder block
  *
@@ -75,6 +75,8 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  */
 @property (nonatomic, assign, readonly) UInt32 concurrentTaskCount;
 
+@property (nonatomic, readonly) QNReportConfig *reportConfig;
+
 @property (nonatomic, readonly) id<QNRecorderDelegate> recorder;
 
 @property (nonatomic, readonly) QNRecorderKeyGenerator recorderKeyGen;
@@ -82,7 +84,6 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (nonatomic, readonly) NSDictionary *proxy;
 
 @property (nonatomic, readonly) QNUrlConvert converter;
-
 
 @property (readonly) BOOL disableATS;
 
@@ -243,10 +244,11 @@ typedef void (^QNPrequeryReturn)(int code);
 
 @property (nonatomic, strong) QNRecorderKeyGenerator recorderKeyGen;
 
+@property (nonatomic, strong) QNReportConfig *reportConfig;
+
 @property (nonatomic, strong) NSDictionary *proxy;
 
 @property (nonatomic, strong) QNUrlConvert converter;
-
 
 @property (assign) BOOL disableATS;
 

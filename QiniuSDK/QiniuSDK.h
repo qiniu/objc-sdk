@@ -15,3 +15,4 @@
 #import "QNUploadManager.h"
 #import "QNUploadOption.h"
 #import "QNUrlSafeBase64.h"
+#import "QNUploadInfoReporter.h"
