@@ -9,8 +9,10 @@
 #import <Foundation/Foundation.h>
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
+#if !TARGET_OS_MACCATALYST
 #import "QNALAssetFile.h"
 #import <AssetsLibrary/AssetsLibrary.h>
+#endif
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
 
@@ -279,6 +281,7 @@
     }
 }
 
+#if !TARGET_OS_MACCATALYST
 - (void)putALAsset:(ALAsset *)asset
                key:(NSString *)key
              token:(NSString *)token
@@ -303,6 +306,7 @@
     }
 #endif
 }
+#endif
 
 - (void)putPHAsset:(PHAsset *)asset
                key:(NSString *)key
