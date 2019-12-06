@@ -21,6 +21,8 @@
 
 @property (readonly) int64_t fileModifyTime;
 
+@property (nonatomic, strong) NSLock *lock;
+
 @end
 
 @implementation QNALAssetFile
@@ -35,22 +37,34 @@
         _fileModifyTime = t;
         _fileSize = asset.defaultRepresentation.size;
         _asset = asset;
+        _lock = [[NSLock alloc] init];
     }
 
     return self;
 }
 
 - (NSData *)read:(long)offset
-            size:(long)size {
-    ALAssetRepresentation *rep = [self.asset defaultRepresentation];
-    Byte *buffer = (Byte *)malloc(size);
-    NSUInteger buffered = [rep getBytes:buffer fromOffset:offset length:size error:nil];
-
-    return [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
+            size:(long)size
+           error:(NSError **)error {
+    
+    NSData *data = nil;
+    @try {
+        [_lock lock];
+        ALAssetRepresentation *rep = [self.asset defaultRepresentation];
+        Byte *buffer = (Byte *)malloc(size);
+        NSUInteger buffered = [rep getBytes:buffer fromOffset:offset length:size error:error];
+        data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
+    } @catch (NSException *exception) {
+        *error = [NSError errorWithDomain:NSCocoaErrorDomain code:kQNFileError userInfo:@{NSLocalizedDescriptionKey : exception.reason}];
+        NSLog(@"read file failed reason: %@ \n%@", exception.reason, exception.callStackSymbols);
+    } @finally {
+        [_lock unlock];
+    }
+    return data;
 }
 
-- (NSData *)readAll {
-    return [self read:0 size:(long)_fileSize];
+- (NSData *)readAllWithError:(NSError **)error {
+    return [self read:0 size:(long)_fileSize error:error];
 }
 
 - (void)close {

@@ -15,6 +15,7 @@
 #import "QNUploadOption+Private.h"
 #import "QNUrlSafeBase64.h"
 #import "QNAsyncRun.h"
+#import "QNUploadInfoReporter.h"
 
 @interface QNResumeUpload ()
 
@@ -28,10 +29,13 @@
 @property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) NSMutableArray *contexts;
 @property (nonatomic, assign) QNZoneInfoType currentZoneType;
+@property (nonatomic, assign) QNReportType reportType;
+
 @property (nonatomic, strong) id<QNRecorderDelegate> recorder;
 @property (nonatomic, strong) QNConfiguration *config;
 @property (nonatomic, strong) id<QNFileDelegate> file;
 @property (nonatomic, copy) NSString *recordHost; // upload host in last recorder file
+@property (nonatomic, copy) NSString *taskIdentifier;
 
 @property (nonatomic, assign) UInt32 chunkCrc;
 @property (nonatomic, assign) float previousPercent;
@@ -70,6 +74,7 @@
         _token = token;
         _previousPercent = 0;
         _access = token.access;
+        _taskIdentifier = [[NSUUID UUID] UUIDString];
     }
     return self;
 }
@@ -165,6 +170,11 @@
 
     if (offset == self.size) {
         QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
+            [UploadInfoReporter recordWithRequestType:self.reportType
+                                         responseInfo:info
+                                            bytesSent:self.size
+                                             fileSize:self.size
+                                                token:self.token.token];
             if (info.isOK) {
                 [self removeRecord];
                 self.option.progressHandler(self.key, 1.0);
@@ -225,6 +235,11 @@
     };
 
     QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
+        [UploadInfoReporter recordWithRequestType:self.reportType
+                                     responseInfo:info
+                                        bytesSent:chunkSize
+                                         fileSize:self.size
+                                            token:self.token.token];
         if (info.error != nil) {
             if (info.couldRetry) {
                 if (retried < self.config.retryMax) {
@@ -309,7 +324,13 @@
         chunkSize:(UInt32)chunkSize
          progress:(QNInternalProgressBlock)progressBlock
          complete:(QNCompleteBlock)complete {
-    NSData *data = [self.file read:offset size:chunkSize];
+    _reportType = ReportType_mkblk;
+    NSError *error;
+    NSData *data = [self.file read:offset size:chunkSize error:&error];
+    if (error) {
+        self.complete([QNResponseInfo responseInfoWithFileError:error], self.key, nil);
+        return;
+    }
     NSString *url = [[NSString alloc] initWithFormat:@"%@/mkblk/%u", uphost, (unsigned int)blockSize];
     _chunkCrc = [QNCrc32 data:data];
     [self post:url withData:data withCompleteBlock:complete withProgressBlock:progressBlock];
@@ -321,7 +342,13 @@
          context:(NSString *)context
         progress:(QNInternalProgressBlock)progressBlock
         complete:(QNCompleteBlock)complete {
-    NSData *data = [self.file read:offset size:size];
+    _reportType = ReportType_bput;
+    NSError *error;
+    NSData *data = [self.file read:offset size:size error:&error];
+    if (error) {
+        self.complete([QNResponseInfo responseInfoWithFileError:error], self.key, nil);
+        return;
+    }
     UInt32 chunkOffset = offset % kQNBlockSize;
     NSString *url = [[NSString alloc] initWithFormat:@"%@/bput/%@/%u", uphost, context, (unsigned int)chunkOffset];
     _chunkCrc = [QNCrc32 data:data];
@@ -330,6 +357,8 @@
 
 - (void)makeFile:(NSString *)uphost
         complete:(QNCompleteBlock)complete {
+
+    _reportType = ReportType_mkfile;
     
     NSString *mime = [[NSString alloc] initWithFormat:@"/mimeType/%@", [QNUrlSafeBase64 encodeString:self.option.mimeType]];
 
@@ -363,7 +392,7 @@
              withData:(NSData *)data
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock {
-    [_httpManager post:url withData:data withParams:nil withHeaders:_headers withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal withAccess:_access];
+    [_httpManager post:url withData:data withParams:nil withHeaders:_headers withTaskIdentifier:_taskIdentifier withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal withAccess:_access];
 }
 
 - (void)run {

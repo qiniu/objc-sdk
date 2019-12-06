@@ -15,6 +15,7 @@
 #import "QNUploadOption+Private.h"
 #import "QNUrlSafeBase64.h"
 #import "QNAsyncRun.h"
+#import "QNUploadInfoReporter.h"
 
 @interface QNFormUpload ()
 
@@ -30,6 +31,7 @@
 @property (nonatomic) float previousPercent;
 @property (nonatomic, assign) QNZoneInfoType currentZoneType;
 @property (nonatomic, strong) NSString *access; //AK
+@property (nonatomic, copy) NSString *taskIdentifier;
 
 @end
 
@@ -55,6 +57,7 @@
         _previousPercent = 0;
         _access = token.access;
         _currentZoneType = QNZoneInfoTypeMain;
+        _taskIdentifier = [[NSUUID UUID] UUIDString];
     }
     return self;
 }
@@ -97,6 +100,11 @@
         self.option.progressHandler(self.key, percent);
     };
     QNCompleteBlock complete = ^(QNResponseInfo *info, NSDictionary *resp) {
+        [UploadInfoReporter recordWithRequestType:ReportType_form
+                                     responseInfo:info
+                                        bytesSent:(UInt32)self.data.length
+                                         fileSize:(UInt32)self.data.length
+                                            token:self.token.token];
         if (info.isOK) {
             self.option.progressHandler(self.key, 1.0);
         }
@@ -108,6 +116,7 @@
             self.complete([QNResponseInfo cancel], self.key, nil);
             return;
         }
+
         if (retried < self.config.retryMax) {
             [self nextTask:retried + 1 needDelay:YES host:host param:param];
         } else {
@@ -134,6 +143,7 @@
                      withParams:param
                    withFileName:_fileName
                    withMimeType:_option.mimeType
+             withTaskIdentifier:_taskIdentifier
               withCompleteBlock:complete
               withProgressBlock:p
                 withCancelBlock:_option.cancellationSignal

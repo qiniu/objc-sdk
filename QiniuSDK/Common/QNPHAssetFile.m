@@ -27,6 +27,8 @@
 
 @property (nonatomic) NSFileHandle *file;
 
+@property (nonatomic, strong) NSLock *lock;
+
 @end
 
 @implementation QNPHAssetFile
@@ -41,6 +43,7 @@
         _fileModifyTime = t;
         _phAsset = phAsset;
         _filepath = [self getInfo];
+        _lock = [[NSLock alloc] init];
         if (PHAssetMediaTypeVideo == self.phAsset.mediaType) {
             NSError *error2 = nil;
             NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:_filepath error:&error2];
@@ -77,16 +80,30 @@
     return self;
 }
 
-- (NSData *)read:(long)offset size:(long)size {
-    if (_assetData != nil) {
-        return [_assetData subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
+- (NSData *)read:(long)offset
+            size:(long)size
+           error:(NSError **)error {
+    
+    NSData *data = nil;
+    @try {
+        [_lock lock];
+        if (_assetData != nil) {
+            data = [_assetData subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
+        } else {
+            [_file seekToFileOffset:offset];
+            data = [_file readDataOfLength:size];
+        }
+    } @catch (NSException *exception) {
+        *error = [NSError errorWithDomain:NSCocoaErrorDomain code:kQNFileError userInfo:@{NSLocalizedDescriptionKey : exception.reason}];
+        NSLog(@"read file failed reason: %@ \n%@", exception.reason, exception.callStackSymbols);
+    } @finally {
+        [_lock unlock];
     }
-    [_file seekToFileOffset:offset];
-    return [_file readDataOfLength:size];
+    return data;
 }
 
-- (NSData *)readAll {
-    return [self read:0 size:(long)_fileSize];
+- (NSData *)readAllWithError:(NSError **)error {
+    return [self read:0 size:(long)_fileSize error:error];
 }
 
 - (void)close {
