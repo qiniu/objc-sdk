@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
-#if !TARGET_OS_MACCATALYST
+#if (!defined(TARGET_OS_MACCATALYST) || !TARGET_OS_MACCATALYST)
 #import "QNALAssetFile.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #endif
@@ -281,7 +281,7 @@
     }
 }
 
-#if !TARGET_OS_MACCATALYST
+#if (!defined(TARGET_OS_MACCATALYST) || !TARGET_OS_MACCATALYST)
 - (void)putALAsset:(ALAsset *)asset
                key:(NSString *)key
              token:(NSString *)token

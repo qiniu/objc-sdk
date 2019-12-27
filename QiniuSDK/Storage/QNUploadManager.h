@@ -13,7 +13,7 @@
 @class QNResponseInfo;
 @class QNUploadOption;
 @class QNConfiguration;
-#if !TARGET_OS_MACCATALYST
+#if (!defined(TARGET_OS_MACCATALYST) || !TARGET_OS_MACCATALYST)
 @class ALAsset;
 #endif
 @class PHAsset;
@@ -108,7 +108,7 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
        complete:(QNUpCompletionHandler)completionHandler
          option:(QNUploadOption *)option;
 
-#if !TARGET_OS_MACCATALYST
+#if (!defined(TARGET_OS_MACCATALYST) || !TARGET_OS_MACCATALYST)
 /**
  *    上传ALAsset文件
  *

@@ -8,7 +8,7 @@
 
 #import "QNALAssetFile.h"
 
-#if !TARGET_OS_MACCATALYST
+#if (!defined(TARGET_OS_MACCATALYST) || !TARGET_OS_MACCATALYST)
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
 #import <AssetsLibrary/AssetsLibrary.h>
 

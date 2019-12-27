@@ -10,7 +10,7 @@
 
 #import "QNFileDelegate.h"
 
-#if !TARGET_OS_MACCATALYST
+#if (!defined(TARGET_OS_MACCATALYST) || !TARGET_OS_MACCATALYST)
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
 @class ALAsset;
 @interface QNALAssetFile : NSObject <QNFileDelegate>
