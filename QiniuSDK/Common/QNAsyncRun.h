@@ -14,4 +14,4 @@ void QNAsyncRun(QNRun run);
 
 void QNAsyncRunInMain(QNRun run);
 
-void QNAsyncRunAfter(NSTimeInterval time, QNRun run);
+void QNAsyncRunAfter(NSTimeInterval time, dispatch_queue_t queue, QNRun run);

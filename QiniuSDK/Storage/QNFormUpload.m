@@ -77,7 +77,7 @@
 - (void)nextTask:(int)retried needDelay:(BOOL)needDelay host:(NSString *)host param:(NSDictionary *)param {
     
     if (needDelay) {
-        QNAsyncRunAfter(_config.retryInterval, ^{
+        QNAsyncRunAfter(_config.retryInterval, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [self nextTask:retried host:host param:param];
         });
     } else {

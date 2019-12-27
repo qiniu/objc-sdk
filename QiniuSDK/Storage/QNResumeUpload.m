@@ -153,7 +153,7 @@
 
 - (void)nextTask:(UInt32)offset needDelay:(BOOL)needDelay retriedTimes:(int)retried host:(NSString *)host {
     if (needDelay) {
-        QNAsyncRunAfter(_config.retryInterval, ^{
+        QNAsyncRunAfter(_config.retryInterval, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [self nextTask:offset retriedTimes:retried host:host];
         });
     } else {
@@ -187,7 +187,9 @@
                         NSString *nextHost = nil;
                         UInt32 nextOffset = 0;
                         if (self.recordHost) {
+                            self.previousPercent = 0;
                             [self removeRecord];
+                            self.currentZoneType = QNZoneInfoTypeMain;
                             nextHost = [self.config.zone up:self.token zoneInfoType:self.currentZoneType isHttps:self.config.useHttps frozenDomain:nil];
                             nextOffset = 0;
                         } else {
@@ -249,7 +251,9 @@
                         NSString *nextHost = nil;
                         UInt32 nextOffset = 0;
                         if (self.recordHost) {
+                            self.previousPercent = 0;
                             [self removeRecord];
+                            self.currentZoneType = QNZoneInfoTypeMain;
                             nextHost = [self.config.zone up:self.token zoneInfoType:self.currentZoneType isHttps:self.config.useHttps frozenDomain:nil];
                             nextOffset = 0;
                         } else {
