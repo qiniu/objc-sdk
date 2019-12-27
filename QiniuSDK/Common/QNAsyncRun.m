@@ -20,3 +20,9 @@ void QNAsyncRunInMain(QNRun run) {
         run();
     });
 }
+
+void QNAsyncRunAfter(NSTimeInterval time, dispatch_queue_t queue, QNRun run) {
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(time * NSEC_PER_SEC)), queue, ^{
+        run();
+    });
+}

@@ -30,6 +30,7 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
         _chunkSize = builder.chunkSize;
         _putThreshold = builder.putThreshold;
         _retryMax = builder.retryMax;
+        _retryInterval = builder.retryInterval;
         _timeoutInterval = builder.timeoutInterval;
 
         _recorder = builder.recorder;
@@ -44,6 +45,8 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
         _zone = builder.zone;
 
         _useHttps = builder.useHttps;
+
+        _allowBackupHost = builder.allowBackupHost;
         
         _reportConfig = builder.reportConfig;
 
@@ -65,6 +68,7 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
         _putThreshold = 4 * 1024 * 1024;
         _retryMax = 3;
         _timeoutInterval = 60;
+        _retryInterval = 0.5;
         _reportConfig = [QNReportConfig sharedInstance];
 
         _recorder = nil;
@@ -80,6 +84,7 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
         }
 
         _useHttps = YES;
+        _allowBackupHost = YES;
         _useConcurrentResumeUpload = NO;
         _concurrentTaskCount = 3;
     }
@@ -88,7 +93,16 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 
 @end
 
-@implementation QNZoneInfo
+@interface QNBaseZoneInfo : NSObject
+
+@property (nonatomic, assign) QNZoneInfoType type;
+@property (nonatomic, assign) long ttl;
+@property (nonatomic, strong) NSMutableArray<NSString *> *upDomainsList;
+@property (nonatomic, strong) NSMutableDictionary *upDomainsDic;
+
+@end
+
+@implementation QNBaseZoneInfo
 
 - (instancetype)init:(long)ttl
        upDomainsList:(NSMutableArray<NSString *> *)upDomainsList
@@ -97,11 +111,12 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
         _ttl = ttl;
         _upDomainsList = upDomainsList;
         _upDomainsDic = upDomainsDic;
+        _type = QNZoneInfoTypeMain;
     }
     return self;
 }
 
-- (QNZoneInfo *)buildInfoFromJson:(NSDictionary *)resp {
+- (QNBaseZoneInfo *)buildInfoFromJson:(NSDictionary *)resp {
     long ttl = [[resp objectForKey:@"ttl"] longValue];
     NSDictionary *up = [resp objectForKey:@"up"];
     NSDictionary *acc = [up objectForKey:@"acc"];
@@ -120,7 +135,10 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
                 [domainDic setObject:[NSDate dateWithTimeIntervalSince1970:0] forKey:mainDomainList[i]];
             }
         }
-        //backup
+    }
+    
+    //backup
+    for (int i = 0; i < urlDicList.count; i++) {
         if ([[urlDicList[i] allKeys] containsObject:@"backup"]) {
             NSArray *mainDomainList = urlDicList[i][@"backup"];
             for (int i = 0; i < mainDomainList.count; i++) {
@@ -130,7 +148,7 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
         }
     }
 
-    return [[QNZoneInfo alloc] init:ttl upDomainsList:domainList upDomainsDic:domainDic];
+    return [[QNBaseZoneInfo alloc] init:ttl upDomainsList:domainList upDomainsDic:domainDic];
 }
 
 - (void)frozenDomain:(NSString *)domain {
@@ -141,18 +159,50 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 
 @end
 
-@implementation QNZone
+@implementation QNZonesInfo
 
-- (instancetype)init {
+- (instancetype)initWithZonesInfo:(NSArray<QNBaseZoneInfo *> *)zonesInfo
+{
     self = [super init];
+    if (self) {
+        _zonesInfo = zonesInfo;
+    }
     return self;
 }
 
-- (NSArray<NSString *> *)upDomainList:(NSString *)token {
-    return self.upDomainList;
++ (instancetype)buildZonesInfoWithResp:(NSDictionary *)resp {
+    
+    NSMutableArray *zonesInfo = [NSMutableArray array];
+    NSArray *hosts = resp[@"hosts"];
+    for (NSInteger i = 0; i < hosts.count; i++) {
+        QNBaseZoneInfo *zoneInfo = [[[QNBaseZoneInfo alloc] init] buildInfoFromJson:hosts[i]];
+        zoneInfo.type = i == 0 ? QNZoneInfoTypeMain : QNZoneInfoTypeBackup;
+        [zonesInfo addObject:zoneInfo];
+    }
+    return [[[self class] alloc] initWithZonesInfo:zonesInfo];
 }
 
-- (NSString *)upHost:(QNZoneInfo *)zoneInfo
+- (QNBaseZoneInfo *)getZoneInfoWithType:(QNZoneInfoType)type {
+    
+    QNBaseZoneInfo *zoneInfo = nil;
+    for (QNBaseZoneInfo *info in _zonesInfo) {
+        if (info.type == type) {
+            zoneInfo = info;
+            break;
+        }
+    }
+    return zoneInfo;
+}
+
+- (BOOL)hasBackupZone {
+    return _zonesInfo.count > 1;
+}
+
+@end
+
+@implementation QNZone
+
+- (NSString *)upHost:(QNBaseZoneInfo *)zoneInfo
              isHttps:(BOOL)isHttps
           lastUpHost:(NSString *)lastUpHost {
     NSString *upHost = nil;
@@ -181,12 +231,15 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
     if (upDomain) {
         [zoneInfo.upDomainsDic setObject:[NSDate dateWithTimeIntervalSince1970:0] forKey:upDomain];
     } else {
+        
         //reset all the up host frozen time
-        for (NSString *domain in zoneInfo.upDomainsList) {
-            [zoneInfo.upDomainsDic setObject:[NSDate dateWithTimeIntervalSince1970:0] forKey:domain];
-        }
-        if (zoneInfo.upDomainsList.count > 0) {
-            upDomain = zoneInfo.upDomainsList[0];
+        if (!lastUpHost) {
+            for (NSString *domain in zoneInfo.upDomainsList) {
+                [zoneInfo.upDomainsDic setObject:[NSDate dateWithTimeIntervalSince1970:0] forKey:domain];
+            }
+            if (zoneInfo.upDomainsList.count > 0) {
+                upDomain = zoneInfo.upDomainsList[0];
+            }
         }
     }
 
@@ -201,8 +254,13 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 }
 
 - (NSString *)up:(QNUpToken *)token
+zoneInfoType:(QNZoneInfoType)zoneInfoType
          isHttps:(BOOL)isHttps
     frozenDomain:(NSString *)frozenDomain {
+    return nil;
+}
+
+- (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token {
     return nil;
 }
 
@@ -213,11 +271,9 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 
 @end
 
-@interface QNFixedZone () {
-    NSString *server;
-    NSMutableDictionary *cache;
-    NSLock *lock;
-}
+@interface QNFixedZone ()
+
+@property (nonatomic, strong) QNZonesInfo *zonesInfo;
 
 @end
 
@@ -225,10 +281,8 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 
 - (instancetype)initWithupDomainList:(NSArray<NSString *> *)upList {
     if (self = [super init]) {
-        self.upDomainList = upList;
-        self.zoneInfo = [self createZoneInfo:upList];
+        self.zonesInfo = [self createZonesInfo:upList];
     }
-
     return self;
 }
 
@@ -310,29 +364,36 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
     return zAs0;
 }
 
+- (QNZonesInfo *)createZonesInfo:(NSArray<NSString *> *)upDomainList {
+    NSMutableDictionary *upDomainDic = [[NSMutableDictionary alloc] init];
+    for (NSString *upDomain in upDomainList) {
+        [upDomainDic setValue:[NSDate dateWithTimeIntervalSince1970:0] forKey:upDomain];
+    }
+    QNBaseZoneInfo *zoneInfo = [[QNBaseZoneInfo alloc] init:86400 upDomainsList:(NSMutableArray<NSString *> *)upDomainList upDomainsDic:upDomainDic];
+    QNZonesInfo *zonesInfo = [[QNZonesInfo alloc] initWithZonesInfo:@[zoneInfo]];
+    return zonesInfo;
+}
+
 - (void)preQuery:(QNUpToken *)token
               on:(QNPrequeryReturn)ret {
     ret(0);
 }
 
-- (QNZoneInfo *)createZoneInfo:(NSArray<NSString *> *)upDomainList {
-    NSMutableDictionary *upDomainDic = [[NSMutableDictionary alloc] init];
-    for (NSString *upDomain in upDomainList) {
-        [upDomainDic setValue:[NSDate dateWithTimeIntervalSince1970:0] forKey:upDomain];
-    }
-    QNZoneInfo *zoneInfo = [[QNZoneInfo alloc] init:86400 upDomainsList:(NSMutableArray<NSString *> *)upDomainList upDomainsDic:upDomainDic];
-    return zoneInfo;
+- (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token {
+    return self.zonesInfo;
 }
 
 - (NSString *)up:(QNUpToken *)token
+zoneInfoType:(QNZoneInfoType)zoneInfoType
          isHttps:(BOOL)isHttps
     frozenDomain:(NSString *)frozenDomain {
 
-    if (self.zoneInfo == nil) {
+    if (self.zonesInfo == nil) {
         return nil;
     }
-    return [super upHost:self.zoneInfo isHttps:isHttps lastUpHost:frozenDomain];
+    return [super upHost:[self.zonesInfo getZoneInfoWithType:QNZoneInfoTypeMain] isHttps:isHttps lastUpHost:frozenDomain];
 }
+
 @end
 
 @implementation QNAutoZone {
@@ -353,16 +414,25 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 }
 
 - (NSString *)up:(QNUpToken *)token
+    zoneInfoType:(QNZoneInfoType)zoneInfoType
          isHttps:(BOOL)isHttps
     frozenDomain:(NSString *)frozenDomain {
     NSString *index = [token index];
     [lock lock];
-    QNZoneInfo *info = [cache objectForKey:index];
+    QNZonesInfo *zonesInfo = [cache objectForKey:index];
     [lock unlock];
-    if (info == nil) {
+    if (zonesInfo == nil) {
         return nil;
     }
-    return [super upHost:info isHttps:isHttps lastUpHost:frozenDomain];
+    return  [self upHost:[zonesInfo getZoneInfoWithType:zoneInfoType] isHttps:isHttps lastUpHost:frozenDomain];
+}
+
+- (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token {
+    if (token == nil) return nil;
+    [lock lock];
+    QNZonesInfo *zonesInfo = [cache objectForKey:[token index]];
+    [lock unlock];
+    return zonesInfo;
 }
 
 - (void)preQuery:(QNUpToken *)token
@@ -371,24 +441,25 @@ const UInt32 kQNBlockSize = 4 * 1024 * 1024;
         ret(-1);
     }
     [lock lock];
-    QNZoneInfo *info = [cache objectForKey:[token index]];
+    QNZonesInfo *zonesInfo = [cache objectForKey:[token index]];
     [lock unlock];
-    if (info != nil) {
+    if (zonesInfo != nil) {
         ret(0);
         return;
     }
 
-    //https://uc.qbox.me/v2/query?ak=T3sAzrwItclPGkbuV4pwmszxK7Ki46qRXXGBBQz3&bucket=if-pbl
-    NSString *url = [NSString stringWithFormat:@"%@/v2/query?ak=%@&bucket=%@", server, token.access, token.bucket];
+    //https://uc.qbox.me/v3/query?ak=T3sAzrwItclPGkbuV4pwmszxK7Ki46qRXXGBBQz3&bucket=if-pbl
+    NSString *url = [NSString stringWithFormat:@"%@/v3/query?ak=%@&bucket=%@", server, token.access, token.bucket];
     [sesionManager get:url withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp) {
         if (!info.error) {
-            QNZoneInfo *info = [[[QNZoneInfo alloc] init] buildInfoFromJson:resp];
+        
+            QNZonesInfo *zonesInfo = [QNZonesInfo buildZonesInfoWithResp:resp];
             if (info == nil) {
                 ret(kQNInvalidToken);
             } else {
-                [lock lock];
-                [cache setValue:info forKey:[token index]];
-                [lock unlock];
+                [self->lock lock];
+                [self->cache setValue:zonesInfo forKey:[token index]];
+                [self->lock unlock];
                 ret(0);
             }
         } else {

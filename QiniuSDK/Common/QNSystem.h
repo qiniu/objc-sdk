@@ -9,12 +9,12 @@
 #ifndef QNSystem_h
 #define QNSystem_h
 
-BOOL hasNSURLSession();
+BOOL hasNSURLSession(void);
 
-BOOL hasAts();
+BOOL hasAts(void);
 
-BOOL allowsArbitraryLoads();
+BOOL allowsArbitraryLoads(void);
 
-BOOL isIpV6FullySupported();
+BOOL isIpV6FullySupported(void);
 
 #endif /* QNSystem_h */

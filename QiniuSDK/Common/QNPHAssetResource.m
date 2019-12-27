@@ -7,32 +7,26 @@
 //
 
 #import "QNPHAssetResource.h"
-#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 90100)
 #import <AVFoundation/AVFoundation.h>
 #import <Photos/Photos.h>
+#import "QNResponseInfo.h"
 
 enum {
     kAMASSETMETADATA_PENDINGREADS = 1,
     kAMASSETMETADATA_ALLFINISHED = 0
 };
 
-#import "QNResponseInfo.h"
-
-@interface QNPHAssetResource ()
-
-    {
+@interface QNPHAssetResource () {
     BOOL _hasGotInfo;
 }
 
 @property (nonatomic) PHAsset *phAsset;
 
-@property (nonatomic) PHLivePhoto *phLivePhoto;
-
 @property (nonatomic) PHAssetResource *phAssetResource;
 
-@property (readonly) int64_t fileSize;
+@property (nonatomic) int64_t fileSize;
 
-@property (readonly) int64_t fileModifyTime;
+@property (nonatomic) int64_t fileModifyTime;
 
 @property (nonatomic, strong) NSData *assetData;
 
@@ -114,8 +108,8 @@ enum {
                 AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:localpath options:nil];
                 NSNumber *fileSize = nil;
                 [urlAsset.URL getResourceValue:&fileSize forKey:NSURLFileSizeKey error:nil];
-                _fileSize = [fileSize unsignedLongLongValue];
-                _assetURL = urlAsset.URL;
+                self.fileSize = [fileSize unsignedLongLongValue];
+                self.assetURL = urlAsset.URL;
                 self.assetData = [NSData dataWithData:[NSData dataWithContentsOfURL:urlAsset.URL]];
             } else {
                 NSLog(@"%@", error);
@@ -173,4 +167,3 @@ enum {
 }
 
 @end
-#endif

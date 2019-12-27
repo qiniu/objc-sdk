@@ -192,7 +192,8 @@ static BOOL needRetry(NSHTTPURLResponse *httpResponse, NSError *error) {
         double duration = [[NSDate date] timeIntervalSinceDate:startTime];
         QNResponseInfo *info;
         NSDictionary *resp = nil;
-        if (_converter != nil && _noProxy && (index + 1 < ips.count || times > 0) && needRetry(httpResponse, error)) {
+
+        if (self.converter != nil && self.noProxy && (index + 1 < ips.count || times > 0) && needRetry(httpResponse, error)) {
             [self sendRequest2:request withTaskIdentifier:taskIdentifier withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:cancelBlock withIpArray:ips withIndex:index + 1 withDomain:domain withRetryTimes:times - 1 withStartTime:startTime withAccess:access];
             return;
         }

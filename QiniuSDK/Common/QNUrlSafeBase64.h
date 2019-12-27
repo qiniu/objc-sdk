@@ -33,7 +33,7 @@
 /**
  *    字符串解码
  *
- *    @param base64 字符串
+ *    @param data 字符串
  *
  *    @return 数据
  */

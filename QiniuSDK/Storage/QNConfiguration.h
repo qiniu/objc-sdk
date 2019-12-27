@@ -51,9 +51,14 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (readonly) UInt32 putThreshold;
 
 /**
- *    上传失败的重试次数
+ *    上传失败时每个上传域名的重试次数，默认重试3次
  */
 @property (readonly) UInt32 retryMax;
+
+/**
+ *    重试前等待时长，默认0.5s
+ */
+@property (readonly) NSTimeInterval retryInterval;
 
 /**
  *    超时时间 单位 秒
@@ -77,6 +82,11 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @property (nonatomic, readonly) QNReportConfig *reportConfig;
 
+/**
+ *    重试时是否允许使用备用上传域名，默认为YES
+ */
+@property (nonatomic, assign) BOOL allowBackupHost;
+
 @property (nonatomic, readonly) id<QNRecorderDelegate> recorder;
 
 @property (nonatomic, readonly) QNRecorderKeyGenerator recorderKeyGen;
@@ -92,14 +102,23 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @end
 
 typedef void (^QNPrequeryReturn)(int code);
+typedef NS_ENUM(NSUInteger, QNZoneInfoType) {
+    QNZoneInfoTypeMain,
+    QNZoneInfoTypeBackup,
+};
 
 @class QNUpToken;
-@class QNZoneInfo;
+@class QNBaseZoneInfo;
+
+@interface QNZonesInfo : NSObject
+
+@property (readonly, nonatomic) NSArray<QNBaseZoneInfo *> *zonesInfo;
+
+@property (readonly, nonatomic) BOOL hasBackupZone;
+
+@end
 
 @interface QNZone : NSObject
-
-@property (nonatomic, strong) NSArray<NSString *> *upDomainList;
-@property (nonatomic, strong) QNZoneInfo *zoneInfo;
 
 /**
  *    默认上传服务器地址列表
@@ -107,22 +126,12 @@ typedef void (^QNPrequeryReturn)(int code);
 - (void)preQuery:(QNUpToken *)token
               on:(QNPrequeryReturn)ret;
 
+- (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token;
+
 - (NSString *)up:(QNUpToken *)token
+zoneInfoType:(QNZoneInfoType)zoneInfoType
          isHttps:(BOOL)isHttps
     frozenDomain:(NSString *)frozenDomain;
-
-@end
-
-@interface QNZoneInfo : NSObject
-
-@property (readonly, nonatomic) long ttl;
-@property (readonly, nonatomic) NSMutableArray<NSString *> *upDomainsList;
-@property (readonly, nonatomic) NSMutableDictionary *upDomainsDic;
-
-- (instancetype)init:(long)ttl
-       upDomainsList:(NSMutableArray<NSString *> *)upDomainsList
-        upDomainsDic:(NSMutableDictionary *)upDomainsDic;
-- (QNZoneInfo *)buildInfoFromJson:(NSDictionary *)resp;
 
 @end
 
@@ -181,21 +190,10 @@ typedef void (^QNPrequeryReturn)(int code);
  */
 + (instancetype)createWithHost:(NSArray<NSString *> *)upList;
 
-- (void)preQuery:(QNUpToken *)token
-              on:(QNPrequeryReturn)ret;
-
-- (NSString *)up:(QNUpToken *)token
-         isHttps:(BOOL)isHttps
-    frozenDomain:(NSString *)frozenDomain;
 @end
 
 @interface QNAutoZone : QNZone
-
-
-- (NSString *)up:(QNUpToken *)token
-         isHttps:(BOOL)isHttps
-    frozenDomain:(NSString *)frozenDomain;
-
+ 
 @end
 
 @interface QNConfigurationBuilder : NSObject
@@ -216,9 +214,14 @@ typedef void (^QNPrequeryReturn)(int code);
 @property (assign) UInt32 putThreshold;
 
 /**
- *    上传失败的重试次数
+ *    上传失败时每个上传域名的重试次数，默认重试3次
  */
 @property (assign) UInt32 retryMax;
+
+/**
+ *    重试前等待时长，默认0.5s
+ */
+@property (assign) NSTimeInterval retryInterval;
 
 /**
  *    超时时间 单位 秒
@@ -229,6 +232,11 @@ typedef void (^QNPrequeryReturn)(int code);
  *    是否使用 https，默认为 YES
  */
 @property (nonatomic, assign) BOOL useHttps;
+
+/**
+ *    重试时是否允许使用备用上传域名，默认为YES
+ */
+@property (nonatomic, assign) BOOL allowBackupHost;
 
 /**
  *   是否开启并发分片上传，默认为NO
