@@ -284,6 +284,7 @@
              token:(NSString *)token
           complete:(QNUpCompletionHandler)completionHandler
             option:(QNUploadOption *)option {
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
     if ([QNUploadManager checkAndNotifyError:key token:token input:asset complete:completionHandler]) {
         return;
     }
@@ -300,6 +301,7 @@
         }
         [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
+#endif
 }
 
 - (void)putPHAsset:(PHAsset *)asset
@@ -307,6 +309,7 @@
              token:(NSString *)token
           complete:(QNUpCompletionHandler)completionHandler
             option:(QNUploadOption *)option {
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 90100)
     if ([QNUploadManager checkAndNotifyError:key token:token input:asset complete:completionHandler]) {
         return;
     }
@@ -323,6 +326,7 @@
         }
         [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
+#endif
 }
 
 - (void)putPHAssetResource:(PHAssetResource *)assetResource
@@ -330,6 +334,7 @@
                      token:(NSString *)token
                   complete:(QNUpCompletionHandler)completionHandler
                     option:(QNUploadOption *)option {
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000)
     if ([QNUploadManager checkAndNotifyError:key token:token input:assetResource complete:completionHandler]) {
         return;
     }
@@ -345,6 +350,7 @@
         }
         [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
+#endif
 }
 
 @end

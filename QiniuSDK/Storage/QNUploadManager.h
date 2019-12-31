@@ -119,7 +119,7 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
                key:(NSString *)key
              token:(NSString *)token
           complete:(QNUpCompletionHandler)completionHandler
-            option:(QNUploadOption *)option;
+            option:(QNUploadOption *)option API_UNAVAILABLE(macos, tvos);
 
 /**
  *    上传PHAsset文件(IOS8 andLater)
@@ -134,7 +134,7 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
                key:(NSString *)key
              token:(NSString *)token
           complete:(QNUpCompletionHandler)completionHandler
-            option:(QNUploadOption *)option API_AVAILABLE(macos(10.15), ios(9.1), tvos(10));
+            option:(QNUploadOption *)option API_AVAILABLE(ios(9.1)) API_UNAVAILABLE(macos, tvos);
 
 /**
  *    上传PHAssetResource文件(IOS9.1 andLater)
@@ -150,6 +150,6 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
                        key:(NSString *)key
                      token:(NSString *)token
                   complete:(QNUpCompletionHandler)completionHandler
-                    option:(QNUploadOption *)option API_AVAILABLE(macos(10.15), ios(9), tvos(10));
+                    option:(QNUploadOption *)option API_AVAILABLE(ios(9)) API_UNAVAILABLE(macos, tvos);
 
 @end
