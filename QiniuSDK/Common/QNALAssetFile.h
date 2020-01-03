@@ -11,6 +11,7 @@
 #import "QNFileDelegate.h"
 
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
+#if !TARGET_OS_MACCATALYST
 @class ALAsset;
 @interface QNALAssetFile : NSObject <QNFileDelegate>
 
@@ -25,4 +26,5 @@
 - (instancetype)init:(ALAsset *)asset
                error:(NSError *__autoreleasing *)error;
 @end
+#endif
 #endif

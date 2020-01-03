@@ -9,17 +9,20 @@
 #import <Foundation/Foundation.h>
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
-#import "QNALAssetFile.h"
-#import <AssetsLibrary/AssetsLibrary.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
+
+#if !TARGET_OS_MACCATALYST
+#import <AssetsLibrary/AssetsLibrary.h>
+#import "QNALAssetFile.h"
+#endif
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
 #import "QNPHAssetFile.h"
 #import <Photos/Photos.h>
 #endif
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90100
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000
 #import "QNPHAssetResource.h"
 #endif
 
@@ -279,6 +282,7 @@
     }
 }
 
+#if !TARGET_OS_MACCATALYST
 - (void)putALAsset:(ALAsset *)asset
                key:(NSString *)key
              token:(NSString *)token
@@ -303,6 +307,7 @@
     }
 #endif
 }
+#endif
 
 - (void)putPHAsset:(PHAsset *)asset
                key:(NSString *)key

@@ -13,9 +13,12 @@
 @class QNResponseInfo;
 @class QNUploadOption;
 @class QNConfiguration;
-@class ALAsset;
 @class PHAsset;
 @class PHAssetResource;
+
+#if !TARGET_OS_MACCATALYST
+@class ALAsset;
+#endif
 
 /**
  *    上传完成后的回调函数
@@ -106,6 +109,7 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
        complete:(QNUpCompletionHandler)completionHandler
          option:(QNUploadOption *)option;
 
+#if !TARGET_OS_MACCATALYST
 /**
  *    上传ALAsset文件
  *
@@ -120,6 +124,7 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
              token:(NSString *)token
           complete:(QNUpCompletionHandler)completionHandler
             option:(QNUploadOption *)option API_UNAVAILABLE(macos, tvos);
+#endif
 
 /**
  *    上传PHAsset文件(IOS8 andLater)
