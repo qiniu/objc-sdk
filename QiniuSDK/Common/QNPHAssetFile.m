@@ -11,6 +11,8 @@
 #import <Photos/Photos.h>
 #import "QNResponseInfo.h"
 
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 90100)
+
 @interface QNPHAssetFile ()
 
 @property (nonatomic) PHAsset *phAsset;
@@ -180,3 +182,5 @@
 }
 
 @end
+
+#endif

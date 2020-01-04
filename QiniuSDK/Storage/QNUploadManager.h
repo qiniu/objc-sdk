@@ -13,9 +13,12 @@
 @class QNResponseInfo;
 @class QNUploadOption;
 @class QNConfiguration;
-@class ALAsset;
 @class PHAsset;
 @class PHAssetResource;
+
+#if !TARGET_OS_MACCATALYST
+@class ALAsset;
+#endif
 
 /**
  *    上传完成后的回调函数
@@ -106,6 +109,7 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
        complete:(QNUpCompletionHandler)completionHandler
          option:(QNUploadOption *)option;
 
+#if !TARGET_OS_MACCATALYST
 /**
  *    上传ALAsset文件
  *
@@ -119,7 +123,8 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
                key:(NSString *)key
              token:(NSString *)token
           complete:(QNUpCompletionHandler)completionHandler
-            option:(QNUploadOption *)option;
+            option:(QNUploadOption *)option API_UNAVAILABLE(macos, tvos);
+#endif
 
 /**
  *    上传PHAsset文件(IOS8 andLater)
@@ -134,7 +139,7 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
                key:(NSString *)key
              token:(NSString *)token
           complete:(QNUpCompletionHandler)completionHandler
-            option:(QNUploadOption *)option API_AVAILABLE(macos(10.15), ios(9.1), tvos(10));
+            option:(QNUploadOption *)option API_AVAILABLE(ios(9.1)) API_UNAVAILABLE(macos, tvos);
 
 /**
  *    上传PHAssetResource文件(IOS9.1 andLater)
@@ -150,6 +155,6 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
                        key:(NSString *)key
                      token:(NSString *)token
                   complete:(QNUpCompletionHandler)completionHandler
-                    option:(QNUploadOption *)option API_AVAILABLE(macos(10.15), ios(9), tvos(10));
+                    option:(QNUploadOption *)option API_AVAILABLE(ios(9)) API_UNAVAILABLE(macos, tvos);
 
 @end

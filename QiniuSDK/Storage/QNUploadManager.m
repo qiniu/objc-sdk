@@ -9,17 +9,20 @@
 #import <Foundation/Foundation.h>
 
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
-#import "QNALAssetFile.h"
-#import <AssetsLibrary/AssetsLibrary.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <UIKit/UIKit.h>
+
+#if !TARGET_OS_MACCATALYST
+#import <AssetsLibrary/AssetsLibrary.h>
+#import "QNALAssetFile.h"
+#endif
 
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 80000
 #import "QNPHAssetFile.h"
 #import <Photos/Photos.h>
 #endif
 
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90100
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000
 #import "QNPHAssetResource.h"
 #endif
 
@@ -279,11 +282,13 @@
     }
 }
 
+#if !TARGET_OS_MACCATALYST
 - (void)putALAsset:(ALAsset *)asset
                key:(NSString *)key
              token:(NSString *)token
           complete:(QNUpCompletionHandler)completionHandler
             option:(QNUploadOption *)option {
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
     if ([QNUploadManager checkAndNotifyError:key token:token input:asset complete:completionHandler]) {
         return;
     }
@@ -300,13 +305,16 @@
         }
         [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
+#endif
 }
+#endif
 
 - (void)putPHAsset:(PHAsset *)asset
                key:(NSString *)key
              token:(NSString *)token
           complete:(QNUpCompletionHandler)completionHandler
             option:(QNUploadOption *)option {
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 90100)
     if ([QNUploadManager checkAndNotifyError:key token:token input:asset complete:completionHandler]) {
         return;
     }
@@ -323,6 +331,7 @@
         }
         [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
+#endif
 }
 
 - (void)putPHAssetResource:(PHAssetResource *)assetResource
@@ -330,6 +339,7 @@
                      token:(NSString *)token
                   complete:(QNUpCompletionHandler)completionHandler
                     option:(QNUploadOption *)option {
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000)
     if ([QNUploadManager checkAndNotifyError:key token:token input:assetResource complete:completionHandler]) {
         return;
     }
@@ -345,6 +355,7 @@
         }
         [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
+#endif
 }
 
 @end

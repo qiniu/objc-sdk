@@ -11,6 +11,8 @@
 #import <Photos/Photos.h>
 #import "QNResponseInfo.h"
 
+#if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 90000)
+
 enum {
     kAMASSETMETADATA_PENDINGREADS = 1,
     kAMASSETMETADATA_ALLFINISHED = 0
@@ -167,3 +169,5 @@ enum {
 }
 
 @end
+
+#endif

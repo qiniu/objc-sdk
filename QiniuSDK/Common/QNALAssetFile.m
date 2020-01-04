@@ -9,8 +9,8 @@
 #import "QNALAssetFile.h"
 
 #ifdef __IPHONE_OS_VERSION_MAX_ALLOWED
+#if !TARGET_OS_MACCATALYST
 #import <AssetsLibrary/AssetsLibrary.h>
-
 #import "QNResponseInfo.h"
 
 @interface QNALAssetFile ()
@@ -83,4 +83,5 @@
     return _fileSize;
 }
 @end
+#endif
 #endif
