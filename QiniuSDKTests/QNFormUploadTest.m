@@ -12,7 +12,6 @@
 
 #import "QiniuSDK.h"
 
-#import "QNSystem.h"
 #import "QNTestConfig.h"
 
 @interface QNFormUploadTest : XCTestCase
