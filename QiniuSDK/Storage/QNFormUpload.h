@@ -6,7 +6,7 @@
 //  Copyright (c) 2015年 Qiniu. All rights reserved.
 //
 
-#import "QNHttpDelegate.h"
+#import "QNSessionManager.h"
 #import "QNUpToken.h"
 #import "QNUploadManager.h"
 #import <Foundation/Foundation.h>
@@ -17,9 +17,10 @@
                      withKey:(NSString *)key
                 withFileName:(NSString *)fileName
                    withToken:(QNUpToken *)token
+              withIdentifier:(NSString *)identifier
        withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option
-             withHttpManager:(id<QNHttpDelegate>)http
+             withSessionManager:(QNSessionManager *)sessionManager
            withConfiguration:(QNConfiguration *)config;
 
 - (void)put;

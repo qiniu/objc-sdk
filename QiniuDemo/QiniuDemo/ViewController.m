@@ -7,11 +7,15 @@
 //
 
 #import "ViewController.h"
+#import "QNTempFile.h"
 
 @interface ViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
 @property (nonatomic, strong) NSString *token;
 @property (nonatomic, strong) UIImage *pickImage;
+@property (nonatomic, strong) QNConfiguration *config;
+@property (nonatomic, strong) QNUploadManager *upManager;
+@property (nonatomic, copy) NSString *filePath;
 
 @end
 
@@ -21,36 +25,65 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     self.title = @"七牛云上传";
+    self.token = @"bjtWBQXrcxgo7HWwlC_bgHg81j352_GhgBGZPeOW:HIMeg-8Cp7Xqwz14GDtDNia51k0=:eyJzY29wZSI6InNodWFuZ2h1bzEiLCJkZWFkbGluZSI6MTU4NzE3NDk2NH0K";
+    self.filePath = [[NSBundle mainBundle] pathForResource:@"image" ofType:@"jpg"];
+    _config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+//        builder.zone = [QNFixedZone zone1];
+//        builder.useConcurrentResumeUpload = YES;
+//        builder.concurrentTaskCount = 3;
+//        builder.recorder = [QNFileRecorder fileRecorderWithFolder:[[self class] fileCachePath] encodeKey:YES error:nil];
+        builder.reportConfig.reportEnable = YES;
+        builder.reportConfig.uploadThreshold = 2 * 1024 * 1024;
+        builder.reportConfig.maxRecordFileSize = 4 * 1024 * 1024;
+        builder.reportConfig.interval = 10;
+    }];
+    _upManager = [[QNUploadManager alloc] initWithConfiguration:_config];
 }
 
 - (IBAction)chooseAction:(id)sender {
-    [self gotoImageLibrary];
+//    [self gotoImageLibrary];
 }
 
 - (IBAction)uploadAction:(id)sender {
-    if (self.pickImage == nil) {
-        UIAlertView *alert = [[UIAlertView alloc]
-                initWithTitle:@"还未选择图片"
-                      message:@""
-                     delegate:nil
-            cancelButtonTitle:@"OK!"
-            otherButtonTitles:nil];
-        [alert show];
-    } else {
-        [self uploadImageToQNFilePath:[self getImagePath:self.pickImage]];
+//    if (self.pickImage == nil) {
+//        UIAlertView *alert = [[UIAlertView alloc]
+//                initWithTitle:@"还未选择图片"
+//                      message:@""
+//                     delegate:nil
+//            cancelButtonTitle:@"OK!"
+//            otherButtonTitles:nil];
+//        [alert show];
+//    } else {
+//        [self uploadImageToQNFilePath:[self getImagePath:self.pickImage]];
+//    }
+    
+    for (int i = 0; i < 1; i++) {
+        [self startUpload];
     }
 }
 
+- (void)startUpload {
+    
+    int randomLength = 6 * 1024 * 1024;
+    NSURL *fileUrl = [QNTempFile createTempfileWithSize:randomLength];
+    [self uploadImageToQNFilePath:fileUrl.path];
+}
+
++ (NSString *)fileCachePath {
+    NSString *cacheDirectory = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES).firstObject;
+    NSString *qiniuPath = [cacheDirectory stringByAppendingPathComponent:@"QiniuUpload"];
+    return qiniuPath;
+}
+
 - (void)uploadImageToQNFilePath:(NSString *)filePath {
-    self.token = @"你的token";
-    QNUploadManager *upManager = [[QNUploadManager alloc] init];
+
     QNUploadOption *uploadOption = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
         NSLog(@"percent == %.2f", percent);
     }
                                                                  params:nil
                                                                checkCrc:NO
                                                      cancellationSignal:nil];
-    [upManager putFile:filePath key:nil token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+    [_upManager putFile:filePath key:nil token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         NSLog(@"info ===== %@", info);
         NSLog(@"resp ===== %@", resp);
     }

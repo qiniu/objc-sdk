@@ -1,11 +1,41 @@
-#import "QNHttpDelegate.h"
-#import <Foundation/Foundation.h>
 
+
+#import <Foundation/Foundation.h>
 #import "QNConfiguration.h"
 
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 
-@interface QNSessionManager : NSObject <QNHttpDelegate>
+@class QNResponseInfo;
+@class QNSessionStatistics;
+
+typedef void (^QNInternalProgressBlock)(long long totalBytesWritten, long long totalBytesExpectedToWrite);
+typedef void (^QNCompleteBlock)(QNResponseInfo *info, NSDictionary *resp, QNSessionStatistics *sessionStatistics);
+typedef BOOL (^QNCancelBlock)(void);
+
+@interface QNSessionStatistics : NSObject
+
+@property (nonatomic, copy, readonly) NSString *remoteIp;
+@property (nonatomic, assign, readonly) uint16_t port;
+@property (nonatomic, assign, readonly) uint64_t totalElapsedTime;
+@property (nonatomic, assign, readonly) uint64_t dnsElapsedTime;
+@property (nonatomic, assign, readonly) uint64_t connectElapsedTime;
+@property (nonatomic, assign, readonly) uint64_t tlsConnectElapsedTime;
+@property (nonatomic, assign, readonly) uint64_t requestElapsedTime;
+@property (nonatomic, assign, readonly) uint64_t waitElapsedTime;
+@property (nonatomic, assign, readonly) uint64_t responseElapsedTime;
+@property (nonatomic, assign, readonly) uint64_t bytesSent;
+@property (nonatomic, assign, readonly) uint64_t bytesTotal;
+@property (nonatomic, assign, readonly) BOOL isProxyConnection;
+@property (nonatomic, copy, readonly) NSString *errorType;
+@property (nonatomic, copy, readonly) NSString *errorDescription;
+@property (nonatomic, assign, readonly) int64_t pid;
+@property (nonatomic, assign, readonly) int64_t tid;
+@property (nonatomic, copy, readonly) NSString *networkType;
+@property (nonatomic, assign, readonly) int64_t signalStrength;
+
+@end
+
+@interface QNSessionManager : NSObject
 
 - (instancetype)initWithProxy:(NSDictionary *)proxyDict
                       timeout:(UInt32)timeout
@@ -16,7 +46,7 @@
            withParams:(NSDictionary *)params
          withFileName:(NSString *)key
          withMimeType:(NSString *)mime
-   withTaskIdentifier:(NSString *)taskIdentifier
+   withIdentifier:(NSString *)identifier
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock
@@ -26,7 +56,7 @@
              withData:(NSData *)data
            withParams:(NSDictionary *)params
           withHeaders:(NSDictionary *)headers
-    withTaskIdentifier:(NSString *)taskIdentifier
+    withIdentifier:(NSString *)identifier
     withCompleteBlock:(QNCompleteBlock)completeBlock
     withProgressBlock:(QNInternalProgressBlock)progressBlock
       withCancelBlock:(QNCancelBlock)cancelBlock

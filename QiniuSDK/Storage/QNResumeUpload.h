@@ -7,8 +7,8 @@
 //
 
 #import "QNFileDelegate.h"
-#import "QNHttpDelegate.h"
 #import "QNUpToken.h"
+#import "QNSessionManager.h"
 #import "QNUploadManager.h"
 #import <Foundation/Foundation.h>
 
@@ -17,11 +17,12 @@
 - (instancetype)initWithFile:(id<QNFileDelegate>)file
                      withKey:(NSString *)key
                    withToken:(QNUpToken *)token
+              withIdentifier:(NSString *)identifier
        withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option
                 withRecorder:(id<QNRecorderDelegate>)recorder
              withRecorderKey:(NSString *)recorderKey
-             withHttpManager:(id<QNHttpDelegate>)http
+             withSessionManager:(QNSessionManager *)sessionManager
            withConfiguration:(QNConfiguration *)config;
 
 - (void)run;

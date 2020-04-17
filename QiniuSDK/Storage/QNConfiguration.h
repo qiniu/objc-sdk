@@ -26,6 +26,7 @@ typedef NSString * (^QNUrlConvert)(NSString *url);
 @class QNConfigurationBuilder;
 @class QNZone;
 @class QNReportConfig;
+@class QNReportRequestItem;
 /**
  *    Builder block
  *
@@ -95,13 +96,11 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @property (nonatomic, readonly) QNUrlConvert converter;
 
-@property (readonly) BOOL disableATS;
-
 + (instancetype)build:(QNConfigurationBuilderBlock)block;
 
 @end
 
-typedef void (^QNPrequeryReturn)(int code);
+typedef void (^QNPrequeryReturn)(int code, QNReportRequestItem *item);
 typedef NS_ENUM(NSUInteger, QNZoneInfoType) {
     QNZoneInfoTypeMain,
     QNZoneInfoTypeBackup,
@@ -116,6 +115,8 @@ typedef NS_ENUM(NSUInteger, QNZoneInfoType) {
 
 @property (readonly, nonatomic) BOOL hasBackupZone;
 
+- (NSString *)getZoneInfoRegionNameWithType:(QNZoneInfoType)type;
+
 @end
 
 @interface QNZone : NSObject
@@ -123,8 +124,9 @@ typedef NS_ENUM(NSUInteger, QNZoneInfoType) {
 /**
  *    默认上传服务器地址列表
  */
-- (void)preQuery:(QNUpToken *)token
-              on:(QNPrequeryReturn)ret;
+- (void)preQueryWithToken:(QNUpToken *)token
+                      key:(NSString *)key
+                       on:(QNPrequeryReturn)ret;
 
 - (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token;
 
@@ -180,15 +182,6 @@ zoneInfoType:(QNZoneInfoType)zoneInfoType
  *    @return Zone实例
  */
 - (instancetype)initWithupDomainList:(NSArray<NSString *> *)upList;
-
-/**
- *    Zone初始化方法
- *
- *    @param upList     默认上传服务器地址列表
- *
- *    @return Zone实例
- */
-+ (instancetype)createWithHost:(NSArray<NSString *> *)upList;
 
 @end
 
@@ -257,7 +250,5 @@ zoneInfoType:(QNZoneInfoType)zoneInfoType
 @property (nonatomic, strong) NSDictionary *proxy;
 
 @property (nonatomic, strong) QNUrlConvert converter;
-
-@property (assign) BOOL disableATS;
 
 @end

@@ -13,7 +13,7 @@
 #import "QNResponseInfo.h"
 #import "QNUrlSafeBase64.h"
 #import "QNCrc32.h"
-#import "QNUploadInfoReporter.h"
+#import "QNUploadInfoCollector.h"
 #import "QNAsyncRun.h"
 
 @interface QNConcurrentRecorderInfo : NSObject
@@ -337,7 +337,7 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
 
 @interface QNConcurrentResumeUpload ()
 
-@property (nonatomic, strong) id<QNHttpDelegate> httpManager;
+@property (nonatomic, strong) QNSessionManager *sessionManager;
 @property (nonatomic, strong) id<QNRecorderDelegate> recorder;
 @property (nonatomic, strong) id<QNFileDelegate> file;
 @property (nonatomic, strong) QNUploadOption *option;
@@ -350,7 +350,7 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
 @property (nonatomic, copy) NSString *key;
 @property (nonatomic, copy) NSString *recorderKey;
 @property (nonatomic, copy) NSString *access; //AK
-@property (nonatomic, copy) NSString *taskIdentifier;
+@property (nonatomic, copy) NSString *identifier;
 @property (nonatomic, strong) NSDictionary *headers;
 
 @property (nonatomic, strong) dispatch_group_t uploadGroup;
@@ -367,9 +367,10 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
 - (instancetype)initWithFile:(id<QNFileDelegate>)file
                      withKey:(NSString *)key
                    withToken:(QNUpToken *)token
+              withIdentifier:(NSString *)identifier
                 withRecorder:(id<QNRecorderDelegate>)recorder
              withRecorderKey:(NSString *)recorderKey
-             withHttpManager:(id<QNHttpDelegate>)http
+          withSessionManager:(QNSessionManager *)sessionManager
        withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option
            withConfiguration:(QNConfiguration *)config {
@@ -387,8 +388,8 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
         _config = config;
         _token = token;
         _access = token.access;
-        _httpManager = http;
-        _taskIdentifier = [[NSUUID UUID] UUIDString];
+        _sessionManager = sessionManager;
+        _identifier = identifier;
         _resettingTaskQueue = NO;
         _uploadGroup = dispatch_group_create();
         _uploadQueue = dispatch_queue_create("com.qiniu.concurrentUpload", DISPATCH_QUEUE_SERIAL);
@@ -420,6 +421,7 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
                 [self removeRecord];
                 [self run];
             } else {
+                [Collector resignWithIdentifier:self.identifier result:nil];
                 self.complete(self.taskQueue.info, self.key, self.taskQueue.resp);
             }
        }
@@ -483,12 +485,9 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
         self.option.progressHandler(self.key, self.taskQueue.totalPercent);
     };
     
-    QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
-        [UploadInfoReporter recordWithRequestType:ReportType_mkblk
-                                     responseInfo:info
-                                        bytesSent:task.size
-                                         fileSize:self.size
-                                            token:self.token.token];
+    QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp, QNSessionStatistics *sessionStatistic) {
+        
+        [self reportRequestItemWithUpType:up_type_mkblk info:info sessionStatistic:sessionStatistic fileOffset:task.index * task.size];
         
         dispatch_async(self.uploadQueue, ^{
             
@@ -582,17 +581,15 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
     NSMutableData *postData = [NSMutableData data];
     [postData appendData:[bodyStr dataUsingEncoding:NSUTF8StringEncoding]];
     
-    QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
-        [UploadInfoReporter recordWithRequestType:ReportType_mkfile
-                                     responseInfo:info
-                                        bytesSent:self.size
-                                         fileSize:self.size
-                                            token:self.token.token];
+    QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp, QNSessionStatistics *sessionStatistic) {
+        
+        [self reportRequestItemWithUpType:up_type_mkfile info:info sessionStatistic:sessionStatistic fileOffset:self.size];
         
         dispatch_async(self.uploadQueue, ^{
             if (info.isOK) {
                 [self removeRecord];
                 self.option.progressHandler(self.key, 1.0);
+                [Collector resignWithIdentifier:self.identifier result:upload_ok];
                 self.complete(info, self.key, resp);
             } else if (info.couldRetry) {
                 if (self.taskQueue.retriedTimes < self.config.retryMax) {
@@ -615,15 +612,18 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
                                     [self removeRecord];
                                     [self run];
                                 } else {
+                                    [Collector resignWithIdentifier:self.identifier result:sessionStatistic.errorType];
                                     self.complete(info, self.key, resp);
                                 }
                             }
                         }
                     } else {
+                        [Collector resignWithIdentifier:self.identifier result:sessionStatistic.errorType];
                         self.complete(info, self.key, resp);
                     }
                 }
             } else {
+                [Collector resignWithIdentifier:self.identifier result:sessionStatistic.errorType];
                 self.complete(info, self.key, resp);
             }
         });
@@ -704,13 +704,39 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
     withData:(NSData *)data
 withCompleteBlock:(QNCompleteBlock)completeBlock
 withProgressBlock:(QNInternalProgressBlock)progressBlock {
-    [_httpManager post:url withData:data withParams:nil withHeaders:_headers withTaskIdentifier:_taskIdentifier withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal withAccess:_access];
+    [_sessionManager post:url withData:data withParams:nil withHeaders:_headers withIdentifier:_identifier withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal withAccess:_access];
 }
 
 - (void)invalidateTasksWithErrorInfo:(QNResponseInfo *)info resp:(NSDictionary *)resp {
     if (_taskQueue.isConcurrentTaskError) return;
     [_taskQueue buildErrorWithInfo:info resp:resp];
-    [_httpManager invalidateSessionWithIdentifier:_taskIdentifier];
+    [_sessionManager invalidateSessionWithIdentifier:_identifier];
+}
+
+- (void)reportRequestItemWithUpType:(NSString *)upType info:(QNResponseInfo *)info sessionStatistic:(QNSessionStatistics *)sessionStatistic fileOffset:(uint64_t)fileOffset {
+    QNZonesInfo *zonesInfo = [self.config.zone getZonesInfoWithToken:self.token];
+    NSString *targetRegionId = [zonesInfo getZoneInfoRegionNameWithType:QNZoneInfoTypeMain];
+    NSString *currentRegionId = [zonesInfo getZoneInfoRegionNameWithType:self.currentZoneType];
+    
+    QNReportRequestItem *item = [QNReportRequestItem buildWithUpType:upType
+                                                        TargetBucket:self.token.bucket
+                                                           targetKey:self.key
+                                                          fileOffset:fileOffset
+                                                      targetRegionId:targetRegionId
+                                                     currentRegionId:currentRegionId
+                                                   prefetchedIpCount:0
+                                                                 pid:sessionStatistic.pid
+                                                                 tid:sessionStatistic.tid
+                                                          statusCode:info.statusCode
+                                                               reqId:info.reqId
+                                                                host:info.host
+                                                            remoteIp:sessionStatistic.remoteIp
+                                                                port:sessionStatistic.port totalElapsedTime:sessionStatistic.totalElapsedTime dnsElapsedTime:sessionStatistic.dnsElapsedTime connectElapsedTime:sessionStatistic.connectElapsedTime tlsConnectElapsedTime:sessionStatistic.tlsConnectElapsedTime requestElapsedTime:sessionStatistic.requestElapsedTime waitElapsedTime:sessionStatistic.waitElapsedTime responseElapsedTime:sessionStatistic.responseElapsedTime bytesSent:sessionStatistic.bytesSent bytesTotal:sessionStatistic.bytesTotal errorType:sessionStatistic.errorType errorDescription:sessionStatistic.errorDescription networkType:sessionStatistic.networkType signalStrength:sessionStatistic.signalStrength];
+    [Collector append:CK_requestItem value:item identifier:self.identifier];
+    if ([upType isEqualToString:up_type_mkblk] || [upType isEqualToString:up_type_bput]) {
+        [Collector append:CK_blockBytesSent value:@(sessionStatistic.bytesSent) identifier:self.identifier];
+    }
+    [Collector append:CK_totalBytesSent value:@(sessionStatistic.bytesSent) identifier:self.identifier];
 }
 
 @end
