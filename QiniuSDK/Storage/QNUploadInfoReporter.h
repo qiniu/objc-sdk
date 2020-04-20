@@ -10,26 +10,6 @@
 
 @class QNResponseInfo;
 
-typedef NS_ENUM(NSUInteger, QNReportType) {
-    ReportType_form,
-    ReportType_mkblk,
-    ReportType_bput,
-    ReportType_mkfile,
-    ReportType_block
-};
-
-// request types
-extern NSString *const up_type_form;
-extern NSString *const up_type_mkblk;
-extern NSString *const up_type_bput;
-extern NSString *const up_type_mkfile;
-extern NSString *const up_type_put;
-extern NSString *const up_type_init_parts;
-extern NSString *const up_type_upload_part;
-extern NSString *const up_type_complete_part;
-extern NSString *const up_type_uc_query;
-extern NSString *const up_type_httpdns_query;
-
 // Upload Result Type
 extern NSString *const upload_ok;   // 上传成功
 extern NSString *const zero_size_file;  // ⽂件⼤小错误
@@ -159,7 +139,7 @@ extern NSString *const bad_request;   // API 失败是由于客户端的参数�
 
 
 
-#define UploadInfoReporter [QNUploadInfoReporter sharedInstance]
+#define Reporter [QNUploadInfoReporter sharedInstance]
 
 @interface QNUploadInfoReporter : NSObject
 

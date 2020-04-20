@@ -20,6 +20,12 @@
 		CC0F85F82447343B008A1ABA /* QNUploadInfoCollector.h in Headers */ = {isa = PBXBuildFile; fileRef = CC0F85F62447343B008A1ABA /* QNUploadInfoCollector.h */; };
 		CC0F85F92447343B008A1ABA /* QNUploadInfoCollector.m in Sources */ = {isa = PBXBuildFile; fileRef = CC0F85F72447343B008A1ABA /* QNUploadInfoCollector.m */; };
 		CC0F85FA2447343C008A1ABA /* QNUploadInfoCollector.m in Sources */ = {isa = PBXBuildFile; fileRef = CC0F85F72447343B008A1ABA /* QNUploadInfoCollector.m */; };
+		CC251352244C026A003F4C65 /* QNHttpResponseInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CC251350244C026A003F4C65 /* QNHttpResponseInfo.h */; };
+		CC251353244C026A003F4C65 /* QNHttpResponseInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CC251351244C026A003F4C65 /* QNHttpResponseInfo.m */; };
+		CC251354244C026A003F4C65 /* QNHttpResponseInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CC251351244C026A003F4C65 /* QNHttpResponseInfo.m */; };
+		CC25135C244C7EB3003F4C65 /* QNBaseUpload.h in Headers */ = {isa = PBXBuildFile; fileRef = CC25135A244C7EB3003F4C65 /* QNBaseUpload.h */; };
+		CC25135D244C7EB3003F4C65 /* QNBaseUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = CC25135B244C7EB3003F4C65 /* QNBaseUpload.m */; };
+		CC25135E244C7EB3003F4C65 /* QNBaseUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = CC25135B244C7EB3003F4C65 /* QNBaseUpload.m */; };
 		CC3F322322C0CCDF00F23681 /* QNUploadInfoReporter.h in Headers */ = {isa = PBXBuildFile; fileRef = CC3F322122C0CCDF00F23681 /* QNUploadInfoReporter.h */; };
 		CC3F322422C0CCDF00F23681 /* QNUploadInfoReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3F322222C0CCDF00F23681 /* QNUploadInfoReporter.m */; };
 		CC3F322622C0CCDF00F23681 /* QNUploadInfoReporter.m in Sources */ = {isa = PBXBuildFile; fileRef = CC3F322222C0CCDF00F23681 /* QNUploadInfoReporter.m */; };
@@ -151,6 +157,10 @@
 		C1D8890E270C769A9E798A8E /* libPods-QiniuSDK_iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuSDK_iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CC0F85F62447343B008A1ABA /* QNUploadInfoCollector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNUploadInfoCollector.h; sourceTree = "<group>"; };
 		CC0F85F72447343B008A1ABA /* QNUploadInfoCollector.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUploadInfoCollector.m; sourceTree = "<group>"; };
+		CC251350244C026A003F4C65 /* QNHttpResponseInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNHttpResponseInfo.h; sourceTree = "<group>"; };
+		CC251351244C026A003F4C65 /* QNHttpResponseInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNHttpResponseInfo.m; sourceTree = "<group>"; };
+		CC25135A244C7EB3003F4C65 /* QNBaseUpload.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNBaseUpload.h; sourceTree = "<group>"; };
+		CC25135B244C7EB3003F4C65 /* QNBaseUpload.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNBaseUpload.m; sourceTree = "<group>"; };
 		CC3F322122C0CCDF00F23681 /* QNUploadInfoReporter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNUploadInfoReporter.h; sourceTree = "<group>"; };
 		CC3F322222C0CCDF00F23681 /* QNUploadInfoReporter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUploadInfoReporter.m; sourceTree = "<group>"; };
 		CC676CBC2434B443006A7372 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS13.4.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -311,6 +321,8 @@
 				DF293C9D19DBC2AE00799011 /* QNUserAgent.m */,
 				DF0D23CC19DCE6C400D6B68F /* QNResponseInfo.h */,
 				DF0D23CE19DCE6E500D6B68F /* QNResponseInfo.m */,
+				CC251350244C026A003F4C65 /* QNHttpResponseInfo.h */,
+				CC251351244C026A003F4C65 /* QNHttpResponseInfo.m */,
 				DFF5252F1A6235D100D02BA1 /* QNSessionManager.h */,
 				DFF525301A6235D100D02BA1 /* QNSessionManager.m */,
 			);
@@ -386,6 +398,8 @@
 			children = (
 				DF2CDE5A19DAC6A400CE01FB /* QNUploadManager.h */,
 				DF2CDE5B19DAC6A400CE01FB /* QNUploadManager.m */,
+				CC25135A244C7EB3003F4C65 /* QNBaseUpload.h */,
+				CC25135B244C7EB3003F4C65 /* QNBaseUpload.m */,
 				DF293CA819DC0AF000799011 /* QNResumeUpload.h */,
 				DF293CAA19DC0E5300799011 /* QNResumeUpload.m */,
 				CCC3A50622DC10CB00D835B1 /* QNConcurrentResumeUpload.h */,
@@ -449,6 +463,7 @@
 			files = (
 				DF0D23CD19DCE6C400D6B68F /* QNResponseInfo.h in Headers */,
 				DFF126F61B63ABED0005C39C /* QNALAssetFile.h in Headers */,
+				CC251352244C026A003F4C65 /* QNHttpResponseInfo.h in Headers */,
 				DF437CD21B2426270099587B /* QN_GTM_Base64.h in Headers */,
 				DF293C9E19DBC2AE00799011 /* QNUserAgent.h in Headers */,
 				DF2CDE6719DAC6A400CE01FB /* QNVersion.h in Headers */,
@@ -459,6 +474,7 @@
 				DF482FD81B0DA8A2000DAD98 /* QNConfiguration.h in Headers */,
 				CCC3A50822DC10CB00D835B1 /* QNConcurrentResumeUpload.h in Headers */,
 				DF609A051A58E39D00AC7297 /* QNFormUpload.h in Headers */,
+				CC25135C244C7EB3003F4C65 /* QNBaseUpload.h in Headers */,
 				CC8F10DD2437706D00D1ED95 /* QNTestResponse.h in Headers */,
 				93CEF47E1BDE11FF00750FE8 /* QNPHAssetFile.h in Headers */,
 				DF2CDE6019DAC6A400CE01FB /* QNCrc32.h in Headers */,
@@ -559,7 +575,7 @@
 		DF2CDDF719DAC05500CE01FB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1100;
+				LastUpgradeCheck = 1140;
 				ORGANIZATIONNAME = Qiniu;
 				TargetAttributes = {
 					DF2CDDFE19DAC05500CE01FB = {
@@ -581,7 +597,6 @@
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 			);
@@ -701,6 +716,7 @@
 				DF437CD31B2426270099587B /* QN_GTM_Base64.m in Sources */,
 				DF482FD91B0DA8A2000DAD98 /* QNConfiguration.m in Sources */,
 				DF609A061A58E39D00AC7297 /* QNFormUpload.m in Sources */,
+				CC251353244C026A003F4C65 /* QNHttpResponseInfo.m in Sources */,
 				CCC3A50922DC10CB00D835B1 /* QNConcurrentResumeUpload.m in Sources */,
 				DF293C9F19DBC2AE00799011 /* QNUserAgent.m in Sources */,
 				DFA9B65919E0B53700A15FD1 /* QNFileRecorder.m in Sources */,
@@ -708,6 +724,7 @@
 				93CEF47F1BDE11FF00750FE8 /* QNPHAssetFile.m in Sources */,
 				DF2CDE6119DAC6A400CE01FB /* QNCrc32.m in Sources */,
 				DF293CAB19DC0E5300799011 /* QNResumeUpload.m in Sources */,
+				CC25135D244C7EB3003F4C65 /* QNBaseUpload.m in Sources */,
 				DF437CDA1B2429E10099587B /* QNUpToken.m in Sources */,
 				CC676CC124357778006A7372 /* QNSystemTool.m in Sources */,
 				DFF126F71B63ABED0005C39C /* QNALAssetFile.m in Sources */,
@@ -751,6 +768,7 @@
 				DF0D23D019DCE6E500D6B68F /* QNResponseInfo.m in Sources */,
 				DFA9B63D19DF904000A15FD1 /* QNEtag.m in Sources */,
 				DF437CD51B2426270099587B /* QN_GTM_Base64.m in Sources */,
+				CC251354244C026A003F4C65 /* QNHttpResponseInfo.m in Sources */,
 				CCC3A50A22DC10CB00D835B1 /* QNConcurrentResumeUpload.m in Sources */,
 				DF482FDA1B0DA8A2000DAD98 /* QNConfiguration.m in Sources */,
 				DF609A081A58E39D00AC7297 /* QNFormUpload.m in Sources */,
@@ -758,6 +776,7 @@
 				93CEF4801BDE11FF00750FE8 /* QNPHAssetFile.m in Sources */,
 				DF293CA019DBC2AE00799011 /* QNUserAgent.m in Sources */,
 				DFA9B65A19E0B53700A15FD1 /* QNFileRecorder.m in Sources */,
+				CC25135E244C7EB3003F4C65 /* QNBaseUpload.m in Sources */,
 				DF2CDE6219DAC6A400CE01FB /* QNCrc32.m in Sources */,
 				CC676CC224357779006A7372 /* QNSystemTool.m in Sources */,
 				DF293CAC19DC0E5300799011 /* QNResumeUpload.m in Sources */,
@@ -798,6 +817,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -852,6 +872,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;

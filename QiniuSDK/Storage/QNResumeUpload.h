@@ -6,13 +6,11 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-#import "QNFileDelegate.h"
-#import "QNUpToken.h"
-#import "QNSessionManager.h"
-#import "QNUploadManager.h"
+#import "QNBaseUpload.h"
 #import <Foundation/Foundation.h>
+#import "QNFileDelegate.h"
 
-@interface QNResumeUpload : NSObject
+@interface QNResumeUpload : QNBaseUpload
 
 - (instancetype)initWithFile:(id<QNFileDelegate>)file
                      withKey:(NSString *)key

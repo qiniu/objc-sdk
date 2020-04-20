@@ -7,15 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "QNUploadManager.h"
-#import "QNSessionManager.h"
+#import "QNBaseUpload.h"
 #import "QNFileDelegate.h"
 
 @class QNUpToken;
 @class QNUploadOption;
 @class QNConfiguration;
 
-@interface QNConcurrentResumeUpload : NSObject
+@interface QNConcurrentResumeUpload : QNBaseUpload
 
 - (instancetype)initWithFile:(id<QNFileDelegate>)file
                      withKey:(NSString *)key

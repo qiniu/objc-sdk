@@ -7,10 +7,11 @@
 //
 
 #import "QNConfiguration.h"
+#import "QNHttpResponseInfo.h"
 #import "QNResponseInfo.h"
 #import "QNSessionManager.h"
 #import "QNUpToken.h"
-#import "QNUploadInfoCollector.h"
+#import "QNUploadInfoReporter.h"
 #import "QNTestResponse.h"
 
 const UInt32 kQNBlockSize = 4 * 1024 * 1024;
@@ -296,7 +297,6 @@ zoneInfoType:(QNZoneInfoType)zoneInfoType
 }
 
 - (void)preQueryWithToken:(QNUpToken *)token
-                      key:(NSString *)key
               on:(QNPrequeryReturn)ret {
     ret(0, nil);
 }
@@ -407,7 +407,6 @@ zoneInfoType:(QNZoneInfoType)zoneInfoType
 }
 
 - (void)preQueryWithToken:(QNUpToken *)token
-                      key:(NSString *)key
                        on:(QNPrequeryReturn)ret {
     ret(0, nil);
 }
@@ -469,7 +468,6 @@ zoneInfoType:(QNZoneInfoType)zoneInfoType
 }
 
 - (void)preQueryWithToken:(QNUpToken *)token
-                      key:(NSString *)key
                        on:(QNPrequeryReturn)ret {
     if (token == nil) {
         ret(-1, nil);
@@ -484,26 +482,20 @@ zoneInfoType:(QNZoneInfoType)zoneInfoType
 
     //https://uc.qbox.me/v3/query?ak=T3sAzrwItclPGkbuV4pwmszxK7Ki46qRXXGBBQz3&bucket=if-pbl
     NSString *url = [NSString stringWithFormat:@"%@/v3/query?ak=%@&bucket=%@", server, token.access, token.bucket];
-    [sesionManager get:url withHeaders:nil withCompleteBlock:^(QNResponseInfo *info, NSDictionary *resp, QNSessionStatistics *sessionStatistic) {
+    [sesionManager get:url withHeaders:nil withCompleteBlock:^(QNHttpResponseInfo *httpResponseInfo, NSDictionary *respBody) {
+        if (!httpResponseInfo.error) {
         
-        NSString *host = [[NSURL URLWithString:url] host];
-        
-        // request report
-        QNReportRequestItem *item = [QNReportRequestItem buildWithUpType:up_type_uc_query TargetBucket:token.bucket targetKey:key fileOffset:0 targetRegionId:nil currentRegionId:nil prefetchedIpCount:0 pid:sessionStatistic.pid tid:sessionStatistic.tid statusCode:info.statusCode reqId:info.reqId host:host remoteIp:sessionStatistic.remoteIp port:sessionStatistic.port totalElapsedTime:sessionStatistic.totalElapsedTime dnsElapsedTime:sessionStatistic.dnsElapsedTime connectElapsedTime:sessionStatistic.connectElapsedTime tlsConnectElapsedTime:sessionStatistic.tlsConnectElapsedTime requestElapsedTime:sessionStatistic.requestElapsedTime waitElapsedTime:sessionStatistic.waitElapsedTime responseElapsedTime:sessionStatistic.responseElapsedTime bytesSent:sessionStatistic.bytesSent bytesTotal:sessionStatistic.bytesTotal errorType:sessionStatistic.errorType errorDescription:sessionStatistic.errorDescription networkType:sessionStatistic.networkType signalStrength:sessionStatistic.signalStrength];
-        
-        if (!info.error) {
-        
-            QNZonesInfo *zonesInfo = [QNZonesInfo buildZonesInfoWithResp:resp];
-            if (info == nil) {
-                ret(kQNInvalidToken, item);
+            QNZonesInfo *zonesInfo = [QNZonesInfo buildZonesInfoWithResp:respBody];
+            if (httpResponseInfo == nil) {
+                ret(kQNInvalidToken, httpResponseInfo);
             } else {
                 [self->lock lock];
                 [self->cache setValue:zonesInfo forKey:[token index]];
                 [self->lock unlock];
-                ret(0, item);
+                ret(0, httpResponseInfo);
             }
         } else {
-            ret(kQNNetworkError, item);
+            ret(kQNNetworkError, httpResponseInfo);
         }
     }];
 }

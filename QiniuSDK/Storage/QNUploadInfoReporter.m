@@ -16,18 +16,6 @@
 #import "QNVersion.h"
 #import <objc/runtime.h>
 
-// request types
-NSString *const up_type_form = @"form";
-NSString *const up_type_mkblk = @"mkblk";
-NSString *const up_type_bput = @"bput";
-NSString *const up_type_mkfile = @"mkfile";
-NSString *const up_type_put = @"put";
-NSString *const up_type_init_parts = @"init_parts";
-NSString *const up_type_upload_part = @"upload_part";
-NSString *const up_type_complete_part = @"complete_part";
-NSString *const up_type_uc_query = @"uc_query";
-NSString *const up_type_httpdns_query = @"httpdns_query";
-
 // Upload Result Type
 NSString *const upload_ok = @"ok";
 NSString *const zero_size_file = @"zero_size_file";

@@ -8,7 +8,7 @@
 
 #import "QNAsyncRun.h"
 #import "QNConfiguration.h"
-#import "QNResponseInfo.h"
+#import "QNHttpResponseInfo.h"
 #import "QNSessionManager.h"
 #import "QNUserAgent.h"
 #import "QNSystemTool.h"
@@ -16,169 +16,34 @@
 
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 
-
-
-@interface QNSessionStatistics ()
-
-@property (nonatomic, copy, readwrite) NSString *remoteIp;
-@property (nonatomic, assign, readwrite) uint16_t port;
-@property (nonatomic, assign, readwrite) uint64_t totalElapsedTime;
-@property (nonatomic, assign, readwrite) uint64_t dnsElapsedTime;
-@property (nonatomic, assign, readwrite) uint64_t connectElapsedTime;
-@property (nonatomic, assign, readwrite) uint64_t tlsConnectElapsedTime;
-@property (nonatomic, assign, readwrite) uint64_t requestElapsedTime;
-@property (nonatomic, assign, readwrite) uint64_t waitElapsedTime;
-@property (nonatomic, assign, readwrite) uint64_t responseElapsedTime;
-@property (nonatomic, assign, readwrite) uint64_t bytesSent;
-@property (nonatomic, assign, readwrite) uint64_t bytesTotal;
-@property (nonatomic, assign, readwrite) BOOL isProxyConnection;
-@property (nonatomic, copy, readwrite) NSString *errorType;
-@property (nonatomic, copy, readwrite) NSString *errorDescription;
-@property (nonatomic, assign, readwrite) int64_t pid;
-@property (nonatomic, assign, readwrite) int64_t tid;
-@property (nonatomic, copy, readwrite) NSString *networkType;
-@property (nonatomic, assign, readwrite) int64_t signalStrength;
-
-@end
-
-@implementation QNSessionStatistics
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        self.isProxyConnection = NO;
-    }
-    return self;
-}
-@end
-
-typedef void (^QNSessionComplete)(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error, QNSessionStatistics *sessionStatistics);
+typedef void (^QNSessionComplete)(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error, NSURLSessionTaskMetrics *metrics, uint64_t bytesSent, uint64_t bytesTotal);
 @interface QNSessionDelegateHandler : NSObject <NSURLSessionDataDelegate>
 
 @property (nonatomic, copy) QNInternalProgressBlock progressBlock;
 @property (nonatomic, copy) QNCancelBlock cancelBlock;
 @property (nonatomic, copy) QNSessionComplete completeBlock;
-@property (nonatomic, strong) QNSessionStatistics *sessionStatistics;
 @property (nonatomic, strong) NSData *responseData;
+@property (nonatomic, strong) NSURLSessionTaskMetrics *taskMetrics;
 
 @end
 
 @implementation QNSessionDelegateHandler
-- (instancetype)init
-{
-    self = [super init];
-    if (self) {
-        _sessionStatistics = [[QNSessionStatistics alloc] init];
-    }
-    return self;
-}
-
-- (uint64_t)getTimeintervalWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate {
-    
-    if (!startDate || !endDate) return 0;
-    NSTimeInterval interval = [endDate timeIntervalSinceDate:startDate];
-    return interval * 1000;
-}
-
 #pragma mark - NSURLSessionDataDelegate
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveResponse:(NSURLResponse *)response completionHandler:(void (^)(NSURLSessionResponseDisposition))completionHandler {
     completionHandler(NSURLSessionResponseAllow);
 }
 
 - (void)URLSession:(NSURLSession *)session dataTask:(NSURLSessionDataTask *)dataTask didReceiveData:(NSData *)data {
-    
     _responseData = data;
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
 didCompleteWithError:(nullable NSError *)error {
-        
-    // pid & tid
-    _sessionStatistics.pid = [QNSystemTool getCurrentProcessID];
-    _sessionStatistics.tid = [QNSystemTool getCurrentThreadID];
-    
-    // networkType & signalStrength
-    _sessionStatistics.networkType = [QNSystemTool getCurrentNetworkType];
-    _sessionStatistics.signalStrength = [QNSystemTool getCurrentNetworkSignalStrength];
-    
-    // errorType & errorDescription
-    NSHTTPURLResponse *response = (NSHTTPURLResponse *)task.response;
-    if (response) {
-        if (response.statusCode != 200) {
-            if (response.statusCode / 100 == 4) {
-                _sessionStatistics.errorType = bad_request;
-            }  else {
-                _sessionStatistics.errorType = response_error;
-            }
-        }
-    } else {
-        if (_sessionStatistics.isProxyConnection) {
-            _sessionStatistics.errorType = proxy_error;
-        } else {
-            if (error) {
-                if (error.code == -1) {
-                    _sessionStatistics.errorType = network_error;
-                } else if (error.code == -1001) {
-                    _sessionStatistics.errorType = timeout;
-                } else if (error.code == -1003 || error.code == -1006) {
-                    _sessionStatistics.errorType = unknown_host;
-                } else if (error.code == -1004) {
-                    _sessionStatistics.errorType = cannot_connect_to_host;
-                } else if (error.code == -1005 || error.code == -1009 || error.code == -1011) {
-                    _sessionStatistics.errorType = transmission_error;
-                } else if (error.code > -2001 || error.code < -1199) {
-                    _sessionStatistics.errorType = ssl_error;
-                } else if (error.code == -1007 || error.code == -1010) {
-                    _sessionStatistics.errorType = malicious_response;
-                } else if (error.code == -1015 || error.code == -1016 || error.code == -1017) {
-                    _sessionStatistics.errorType = parse_error;
-                } else if (error.code == -999) {
-                    _sessionStatistics.errorType = user_canceled;
-                } else {
-                    _sessionStatistics.errorType = unknown_error;
-                }
-            } else {
-                _sessionStatistics.errorType = unknown_error;
-            }
-        }
-    }
-    _sessionStatistics.errorDescription = error ? error.localizedDescription : nil;
-    self.completeBlock(_responseData, task.response, error, _sessionStatistics);
+    self.completeBlock(_responseData, task.response, error, _taskMetrics, task.countOfBytesSent, task.countOfBytesExpectedToSend);
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didFinishCollectingMetrics:(NSURLSessionTaskMetrics *)metrics  API_AVAILABLE(ios(10.0)) {
-    
-    if (metrics.transactionMetrics.count > 0) {
-        NSURLSessionTaskTransactionMetrics *transactionMetrics = metrics.transactionMetrics[0];
-        
-        // status_code
-        _sessionStatistics.bytesSent = task.countOfBytesSent;
-        _sessionStatistics.bytesTotal = task.countOfBytesExpectedToSend;
-        
-        // remote_ip & port
-        if (@available(iOS 13.0, *)) {
-            _sessionStatistics.remoteIp = transactionMetrics.remoteAddress;
-            _sessionStatistics.port = [transactionMetrics.remotePort unsignedShortValue];
-        } else {
-            NSString *remoteIpAddressAndPort = [transactionMetrics valueForKey:@"__remoteAddressAndPort"];
-            NSRange indexRange = [remoteIpAddressAndPort rangeOfString:@":"];
-            _sessionStatistics.remoteIp = [remoteIpAddressAndPort substringToIndex:indexRange.location];
-            _sessionStatistics.port = [[remoteIpAddressAndPort substringFromIndex:indexRange.location + 1] intValue ];
-        }
-        
-        // time
-        _sessionStatistics.totalElapsedTime = metrics.taskInterval.duration * 1000;
-        _sessionStatistics.dnsElapsedTime = [self getTimeintervalWithStartDate:transactionMetrics.domainLookupStartDate endDate:transactionMetrics.domainLookupEndDate];
-        _sessionStatistics.connectElapsedTime =
-        [self getTimeintervalWithStartDate:transactionMetrics.connectStartDate endDate:transactionMetrics.connectEndDate];
-        _sessionStatistics.tlsConnectElapsedTime = [self getTimeintervalWithStartDate:transactionMetrics.secureConnectionStartDate endDate:transactionMetrics.secureConnectionEndDate];
-        _sessionStatistics.requestElapsedTime = [self getTimeintervalWithStartDate:transactionMetrics.requestStartDate endDate:transactionMetrics.requestEndDate];
-        _sessionStatistics.waitElapsedTime = [self getTimeintervalWithStartDate:transactionMetrics.requestEndDate endDate:transactionMetrics.responseStartDate];
-        _sessionStatistics.responseElapsedTime = [self getTimeintervalWithStartDate:transactionMetrics.responseStartDate endDate:transactionMetrics.responseEndDate];
-        
-        // proxy
-        _sessionStatistics.isProxyConnection = transactionMetrics.isProxyConnection;
-    }
+    _taskMetrics = metrics;
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
@@ -222,33 +87,6 @@ didCompleteWithError:(nullable NSError *)error {
     return [self initWithProxy:nil timeout:60 urlConverter:nil];
 }
 
-+ (QNResponseInfo *)buildResponseInfo:(NSHTTPURLResponse *)response
-                            withError:(NSError *)error
-                         withDuration:(double)duration
-                         withResponse:(NSData *)body
-                             withHost:(NSString *)host
-                               withIp:(NSString *)ip {
-    QNResponseInfo *info;
-
-    if (response) {
-        int status = (int)[response statusCode];
-        NSDictionary *headers = [response allHeaderFields];
-        NSString *reqId = headers[@"X-Reqid"];
-        NSString *xlog = headers[@"X-Log"];
-        NSString *xvia = headers[@"X-Via"];
-        if (xvia == nil) {
-            xvia = headers[@"X-Px"];
-        }
-        if (xvia == nil) {
-            xvia = headers[@"Fw-Via"];
-        }
-        info = [[QNResponseInfo alloc] init:status withReqId:reqId withXLog:xlog withXVia:xvia withHost:host withIp:ip withDuration:duration withBody:body];
-    } else {
-        info = [QNResponseInfo responseInfoWithNetError:error host:host duration:duration];
-    }
-    return info;
-}
-
 - (void)sendRequest:(NSMutableURLRequest *)request
      withIdentifier:(NSString *)identifier
   withCompleteBlock:(QNCompleteBlock)completeBlock
@@ -256,7 +94,6 @@ didCompleteWithError:(nullable NSError *)error {
     withCancelBlock:(QNCancelBlock)cancelBlock
          withAccess:(NSString *)access {
     
-    NSDate *startTime = [NSDate date];
     NSString *domain = request.URL.host;
     NSString *u = request.URL.absoluteString;
     NSURL *url = request.URL;
@@ -278,24 +115,11 @@ didCompleteWithError:(nullable NSError *)error {
     delegate.cancelBlock = cancelBlock;
     delegate.progressBlock = progressBlock ? progressBlock : ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
     };
-    delegate.completeBlock = ^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error, QNSessionStatistics *sessionStatistics) {
-        
-        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-        double duration = [[NSDate date] timeIntervalSinceDate:startTime];
-        QNResponseInfo *info;
-        NSDictionary *resp = nil;
-        
-        if (error == nil) {
-            info = [QNSessionManager buildResponseInfo:httpResponse withError:nil withDuration:duration withResponse:data withHost:domain withIp:nil];
-            if (info.isOK) {
-                NSError *tmp;
-                resp = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&tmp];
-            }
-        } else {
-            info = [QNSessionManager buildResponseInfo:httpResponse withError:error withDuration:duration withResponse:data withHost:domain withIp:nil];
-        }
+    delegate.completeBlock = ^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error, NSURLSessionTaskMetrics *metrics, uint64_t bytesSent, uint64_t bytesTotal) {
         [self finishSession:session];
-        completeBlock(info, resp, sessionStatistics);
+        NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+        QNHttpResponseInfo *info = [QNHttpResponseInfo buildResponseInfoHost:domain response:httpResponse body:data error:nil metrics:metrics bytesSent:bytesSent bytesTotal:bytesTotal];
+        completeBlock(info, [info getResponseBody]);
     };
     
     NSURLSessionDataTask *uploadTask = [session dataTaskWithRequest:request];
@@ -376,6 +200,7 @@ withIdentifier:(NSString *)identifier
     withCompleteBlock:(QNCompleteBlock)completeBlock {
     QNAsyncRun(^{
         NSURL *URL = [NSURL URLWithString:url];
+        NSString *domain = URL.host;
         NSURLRequest *request = [NSURLRequest requestWithURL:URL];
 
         QNSessionDelegateHandler *delegate = [[QNSessionDelegateHandler alloc] init];
@@ -384,26 +209,11 @@ withIdentifier:(NSString *)identifier
         NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request];
         delegate.cancelBlock = nil;
         delegate.progressBlock = nil;
-        delegate.completeBlock = ^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error, QNSessionStatistics *sessionStatistics) {
+        delegate.completeBlock = ^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error, NSURLSessionTaskMetrics *metrics, uint64_t bytesSent, uint64_t bytesTotal) {
+            [self finishSession:session];
             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-            NSData *s = [@"{}" dataUsingEncoding:NSUTF8StringEncoding];
-            NSDictionary *resp = nil;
-            QNResponseInfo *info;
-            if (error == nil) {
-                info = [QNSessionManager buildResponseInfo:httpResponse withError:nil withDuration:0 withResponse:s withHost:@"" withIp:@""];
-                if (info.isOK) {
-                    NSError *jsonError;
-                    id unMarshel = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&jsonError];
-                    if (jsonError) {
-                        info = [QNSessionManager buildResponseInfo:httpResponse withError:jsonError withDuration:0 withResponse:s withHost:@"" withIp:@""];
-                    } else if ([unMarshel isKindOfClass:[NSDictionary class]]) {
-                        resp = unMarshel;
-                    }
-                }
-            } else {
-                info = [QNSessionManager buildResponseInfo:httpResponse withError:error withDuration:0 withResponse:s withHost:@"" withIp:@""];
-            }
-            completeBlock(info, resp, sessionStatistics);
+            QNHttpResponseInfo *info = [QNHttpResponseInfo buildResponseInfoHost:domain response:httpResponse body:data error:nil metrics:metrics bytesSent:bytesSent bytesTotal:bytesTotal];
+            completeBlock(info, [info getResponseBody]);
         };
         [dataTask resume];
     });

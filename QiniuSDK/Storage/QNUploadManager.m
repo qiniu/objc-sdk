@@ -107,14 +107,13 @@
     }
     if (input == nil) {
         desc = @"no input data";
-        [Collector resignWithIdentifier:identifier result:invalid_args];
     } else if (token == nil || [token isEqual:[NSNull null]] || [token isEqualToString:@""]) {
         desc = @"no token";
-        [Collector resignWithIdentifier:identifier result:zero_size_file];
     }
     if (desc != nil) {
         QNAsyncRunInMain(^{
-            completionHandler([QNResponseInfo responseInfoWithInvalidArgument:desc], key, nil);
+            QNResponseInfo *info = [Collector completeWithInvalidArgument:desc identifier:identifier];
+            completionHandler(info, key, nil);
         });
         return YES;
     }
@@ -146,28 +145,29 @@
     QNUpToken *t = [QNUpToken parse:token];
     if (t == nil) {
         QNAsyncRunInMain(^{
-            [Collector resignWithIdentifier:identifier result:invalid_args];
-            completionHandler([QNResponseInfo responseInfoWithInvalidToken:@"invalid token"], key, nil);
+            QNResponseInfo *info = [Collector completeWithInvalidToken:@"invalid token" identifier:identifier];
+            completionHandler(info, key, nil);
         });
         return;
+    } else {
+        [Collector update:CK_bucket value:t.bucket identifier:identifier];
+        [Collector update:CK_key value:key identifier:identifier];
     }
-
-    [_config.zone preQueryWithToken:t key:key on:^(int code, QNReportRequestItem *item) {
+    
+    [_config.zone preQueryWithToken:t on:^(int code, QNHttpResponseInfo *httpResponseInfo) {
         [Collector update:CK_cloudType value:@"public" identifier:identifier];
-        if (item) {
-            [Collector append:CK_requestItem value:item identifier:identifier];
-        }
+        [Collector addRequestWithType:QNRequestType_ucQuery httpResponseInfo:httpResponseInfo fileOffset:0 targetRegionId:nil currentRegionId:nil identifier:identifier];
         if (code != 0) {
             QNAsyncRunInMain(^{
-                [Collector resignWithIdentifier:identifier result:[item valueForKey:@"error_type"]];
-                completionHandler([QNResponseInfo responseInfoWithInvalidToken:@"get zone failed"], key, nil);
+                QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:identifier];
+                completionHandler(info, key, nil);
             });
             return;
         }
         if ([data length] == 0) {
             QNAsyncRunInMain(^{
-                [Collector resignWithIdentifier:identifier result:zero_size_file];
-                completionHandler([QNResponseInfo responseInfoOfZeroData:nil], key, nil);
+                QNResponseInfo *info = [Collector completeWithZeroData:nil identifier:identifier];
+                completionHandler(info, key, nil);
             });
             return;
         }
@@ -202,21 +202,22 @@
         QNUpToken *t = [QNUpToken parse:token];
         if (t == nil) {
             QNAsyncRunInMain(^{
-                [Collector resignWithIdentifier:identifier result:invalid_args];
-                completionHandler([QNResponseInfo responseInfoWithInvalidToken:@"invalid token"], key, nil);
+                QNResponseInfo *info = [Collector completeWithInvalidToken:@"invalid token" identifier:identifier];
+                completionHandler(info, key, nil);
             });
             return;
+        } else {
+            [Collector update:CK_bucket value:t.bucket identifier:identifier];
+            [Collector update:CK_key value:key identifier:identifier];
         }
 
-        [_config.zone preQueryWithToken:t key:key on:^(int code, QNReportRequestItem *item) {
+        [_config.zone preQueryWithToken:t on:^(int code, QNHttpResponseInfo *httpResponseInfo) {
             [Collector update:CK_cloudType value:@"public" identifier:identifier];
-            if (item) {
-                [Collector append:CK_requestItem value:item identifier:identifier];
-            }
+            [Collector addRequestWithType:QNRequestType_ucQuery httpResponseInfo:httpResponseInfo fileOffset:0 targetRegionId:nil currentRegionId:nil identifier:identifier];
             if (code != 0) {
                 QNAsyncRunInMain(^{
-                    [Collector resignWithIdentifier:identifier result:[item valueForKey:@"error_type"]];
-                    completionHandler([QNResponseInfo responseInfoWithInvalidToken:@"get zone failed"], key, nil);
+                    QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:identifier];
+                    completionHandler(info, key, nil);
                 });
                 return;
             }
@@ -232,8 +233,8 @@
                 NSData *data = [file readAllWithError:&error];
                 if (error) {
                     QNAsyncRunInMain(^{
-                        [Collector resignWithIdentifier:identifier result:invalid_file];
-                        completionHandler([QNResponseInfo responseInfoWithFileError:error], key, nil);
+                        QNResponseInfo *info = [Collector completeWithFileError:error identifier:identifier];
+                        completionHandler(info, key, nil);
                     });
                     return;
                 }
@@ -292,7 +293,6 @@
     
     NSString *identifier = [[NSUUID UUID] UUIDString];
     [Collector registerWithIdentifier:identifier token:token];
-    
     if ([QNUploadManager checkAndNotifyError:key token:token input:filePath identifier:identifier complete:completionHandler]) {
         return;
     }
@@ -302,8 +302,7 @@
         __block QNFile *file = [[QNFile alloc] init:filePath error:&error];
         if (error) {
             QNAsyncRunInMain(^{
-                [Collector resignWithIdentifier:identifier result:invalid_file];
-                QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+                QNResponseInfo *info = [Collector completeWithFileError:error identifier:identifier];
                 completionHandler(info, key, nil);
             });
             return;
@@ -331,8 +330,7 @@
         __block QNALAssetFile *file = [[QNALAssetFile alloc] init:asset error:&error];
         if (error) {
             QNAsyncRunInMain(^{
-                [Collector resignWithIdentifier:identifier result:invalid_file];
-                QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+                QNResponseInfo *info = [Collector completeWithFileError:error identifier:identifier];
                 completionHandler(info, key, nil);
             });
             return;
@@ -361,8 +359,7 @@
         __block QNPHAssetFile *file = [[QNPHAssetFile alloc] init:asset error:&error];
         if (error) {
             QNAsyncRunInMain(^{
-                [Collector resignWithIdentifier:identifier result:invalid_file];
-                QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+                QNResponseInfo *info = [Collector completeWithFileError:error identifier:identifier];
                 completionHandler(info, key, nil);
             });
             return;
@@ -389,8 +386,7 @@
         __block QNPHAssetResource *file = [[QNPHAssetResource alloc] init:assetResource error:&error];
         if (error) {
             QNAsyncRunInMain(^{
-                [Collector resignWithIdentifier:identifier result:invalid_file];
-                QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+                QNResponseInfo *info = [Collector completeWithFileError:error identifier:identifier];
                 completionHandler(info, key, nil);
             });
             return;

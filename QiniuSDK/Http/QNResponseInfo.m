@@ -66,9 +66,11 @@ const int kQNNetworkError = -1;
    NSURLErrorDownloadDecodingFailedToComplete = -3007
  */
 
-static QNResponseInfo *cancelledInfo = nil;
-
 static NSString *domain = @"qiniu.com";
+
+@interface QNResponseInfo ()
+
+@end
 
 @implementation QNResponseInfo
 
@@ -82,14 +84,6 @@ static NSString *domain = @"qiniu.com";
 
 + (instancetype)responseInfoWithInvalidToken:(NSString *)text {
     return [[QNResponseInfo alloc] initWithStatus:kQNInvalidToken errorDescription:text];
-}
-
-+ (instancetype)responseInfoWithNetError:(NSError *)error host:(NSString *)host duration:(double)duration {
-    int code = kQNNetworkError;
-    if (error != nil) {
-        code = (int)error.code;
-    }
-    return [[QNResponseInfo alloc] initWithStatus:code error:error host:host duration:duration];
 }
 
 + (instancetype)responseInfoWithFileError:(NSError *)error {
@@ -106,6 +100,14 @@ static NSString *domain = @"qiniu.com";
     return [[QNResponseInfo alloc] initWithStatus:kQNZeroDataSize errorDescription:desc];
 }
 
++ (instancetype)responseInfoWithHttpResponseInfo:(QNHttpResponseInfo *)httpResponseInfo duration:(NSTimeInterval)duration {
+    if (httpResponseInfo.hasHttpResponse) {
+        return [[QNResponseInfo alloc] initWithStatusCode:httpResponseInfo.statusCode reqId:httpResponseInfo.reqId xlog:httpResponseInfo.xlog xvia:httpResponseInfo.xvia host:httpResponseInfo.host error:httpResponseInfo.error duration:duration];
+    } else {
+        return [[QNResponseInfo alloc] initWithNetError:httpResponseInfo.error host:httpResponseInfo.host duration:duration];
+    }
+}
+
 - (instancetype)initWithCancelled {
     return [self initWithStatus:kQNRequestCancelled errorDescription:@"cancelled by user"];
 }
@@ -118,7 +120,7 @@ static NSString *domain = @"qiniu.com";
 - (instancetype)initWithStatus:(int)status
                          error:(NSError *)error
                           host:(NSString *)host
-                      duration:(double)duration {
+                      duration:(NSTimeInterval)duration {
     if (self = [super init]) {
         _statusCode = status;
         _error = error;
@@ -136,50 +138,39 @@ static NSString *domain = @"qiniu.com";
     return [self initWithStatus:status error:error];
 }
 
-- (instancetype)init:(int)status
-           withReqId:(NSString *)reqId
-            withXLog:(NSString *)xlog
-            withXVia:(NSString *)xvia
-            withHost:(NSString *)host
-              withIp:(NSString *)ip
-        withDuration:(double)duration
-            withBody:(NSData *)body {
+- (instancetype)initWithNetError:(NSError *)error
+                            host:(NSString *)host
+                        duration:(NSTimeInterval)duration {
+    int code = kQNNetworkError;
+    if (error != nil) {
+        code = (int)error.code;
+    }
+    return [[QNResponseInfo alloc] initWithStatus:code error:error host:host duration:duration];
+}
+
+- (instancetype)initWithStatusCode:(int)statusCode
+                             reqId:(NSString *)reqId
+                              xlog:(NSString *)xlog
+                              xvia:(NSString *)xvia
+                              host:(NSString *)host
+                             error:(NSError *)error
+                          duration:(NSTimeInterval)duration  {
     if (self = [super init]) {
-        _statusCode = status;
+        _statusCode = statusCode;
         _reqId = reqId;
         _xlog = xlog;
         _xvia = xvia;
         _host = host;
+        _error = error;
         _duration = duration;
-        _serverIp = ip;
         _id = [QNUserAgent sharedInstance].id;
         _timeStamp = [[NSDate date] timeIntervalSince1970];
-        if (status != 200) {
-            if (body == nil) {
-                _error = [[NSError alloc] initWithDomain:domain code:_statusCode userInfo:nil];
-            } else {
-                NSError *tmp;
-                NSDictionary *uInfo = [NSJSONSerialization JSONObjectWithData:body options:NSJSONReadingMutableLeaves error:&tmp];
-                if (tmp != nil) {
-                    // 出现错误时，如果信息是非UTF8编码会失败，返回nil
-                    NSString *str = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding];
-                    if (str == nil) {
-                        str = @"";
-                    }
-                    uInfo = @{ @"error" : str };
-                }
-                _error = [[NSError alloc] initWithDomain:domain code:_statusCode userInfo:uInfo];
-            }
-        } else if (body == nil || body.length == 0) {
-            NSDictionary *uInfo = @{ @"error" : @"no response json" };
-            _error = [[NSError alloc] initWithDomain:domain code:_statusCode userInfo:uInfo];
-        }
     }
     return self;
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<%@= id: %@, ver: %@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ ip: %@ duration: %f s time: %llu error: %@>", NSStringFromClass([self class]), _id, kQiniuVersion, _statusCode, _reqId, _xlog, _xvia, _host, _serverIp, _duration, _timeStamp, _error];
+    return [NSString stringWithFormat:@"<%@= id: %@, ver: %@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ duration: %f s time: %llu error: %@>", NSStringFromClass([self class]), _id, kQiniuVersion, _statusCode, _reqId, _xlog, _xvia, _host, _duration, _timeStamp, _error];
 }
 
 - (BOOL)isCancelled {
@@ -187,6 +178,7 @@ static NSString *domain = @"qiniu.com";
 }
 
 - (BOOL)isNotQiniu {
+    // reqId is nill means the server is not qiniu
     return (_statusCode >= 200 && _statusCode < 500) && _reqId == nil;
 }
 
@@ -195,16 +187,7 @@ static NSString *domain = @"qiniu.com";
 }
 
 - (BOOL)isConnectionBroken {
-    // reqId is nill means the server is not qiniu
     return _statusCode == kQNNetworkError || (_statusCode < -1000 && _statusCode != -1003);
-}
-
-- (BOOL)needSwitchServer {
-    return _statusCode == kQNNetworkError || (_statusCode < -1000 && _statusCode != -1003) || (_statusCode / 100 == 5 && _statusCode != 579);
-}
-
-- (BOOL)couldRetry {
-    return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == kQNNetworkError || _statusCode == 996 || _statusCode == 406 || (_statusCode == 200 && _error != nil) || _statusCode < -1000 || self.isNotQiniu;
 }
 
 @end

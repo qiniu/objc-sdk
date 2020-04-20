@@ -26,7 +26,7 @@ typedef NSString * (^QNUrlConvert)(NSString *url);
 @class QNConfigurationBuilder;
 @class QNZone;
 @class QNReportConfig;
-@class QNReportRequestItem;
+@class QNHttpResponseInfo;
 /**
  *    Builder block
  *
@@ -100,7 +100,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @end
 
-typedef void (^QNPrequeryReturn)(int code, QNReportRequestItem *item);
+typedef void (^QNPrequeryReturn)(int code, QNHttpResponseInfo *info);
 typedef NS_ENUM(NSUInteger, QNZoneInfoType) {
     QNZoneInfoTypeMain,
     QNZoneInfoTypeBackup,
@@ -125,7 +125,6 @@ typedef NS_ENUM(NSUInteger, QNZoneInfoType) {
  *    默认上传服务器地址列表
  */
 - (void)preQueryWithToken:(QNUpToken *)token
-                      key:(NSString *)key
                        on:(QNPrequeryReturn)ret;
 
 - (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token;

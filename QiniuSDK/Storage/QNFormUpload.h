@@ -6,12 +6,13 @@
 //  Copyright (c) 2015年 Qiniu. All rights reserved.
 //
 
-#import "QNSessionManager.h"
-#import "QNUpToken.h"
-#import "QNUploadManager.h"
+#import "QNBaseUpload.h"
 #import <Foundation/Foundation.h>
 
-@interface QNFormUpload : NSObject
+@class QNUpToken;
+@class QNSessionManager;
+
+@interface QNFormUpload : QNBaseUpload
 
 - (instancetype)initWithData:(NSData *)data
                      withKey:(NSString *)key

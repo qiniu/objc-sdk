@@ -7,31 +7,14 @@
 //
 
 #import "QNFormUpload.h"
-#import "QNConfiguration.h"
-#import "QNCrc32.h"
-#import "QNRecorderDelegate.h"
-#import "QNResponseInfo.h"
-#import "QNUploadManager.h"
-#import "QNUploadOption+Private.h"
-#import "QNUrlSafeBase64.h"
-#import "QNAsyncRun.h"
-#import "QNUploadInfoCollector.h"
 
 @interface QNFormUpload ()
 
 @property (nonatomic, strong) NSData *data;
-@property (nonatomic, strong) QNSessionManager *sessionManager;
 @property (nonatomic) int retryTimes;
-@property (nonatomic, strong) NSString *key;
-@property (nonatomic, strong) QNUpToken *token;
-@property (nonatomic, strong) QNUploadOption *option;
-@property (nonatomic, strong) QNUpCompletionHandler complete;
-@property (nonatomic, strong) QNConfiguration *config;
 @property (nonatomic, strong) NSString *fileName;
 @property (nonatomic) float previousPercent;
-@property (nonatomic, assign) QNZoneInfoType currentZoneType;
-@property (nonatomic, strong) NSString *access; //AK
-@property (nonatomic, copy) NSString *identifier;
+
 
 @end
 
@@ -47,19 +30,20 @@
             withSessionManager:(QNSessionManager *)sessionManager
            withConfiguration:(QNConfiguration *)config {
     if (self = [super init]) {
-        _data = data;
-        _key = key;
-        _token = token;
-        _option = option != nil ? option : [QNUploadOption defaultOptions];
-        _complete = block;
-        _sessionManager = sessionManager;
-        _config = config;
-        _fileName = fileName != nil ? fileName : @"?";
-        _previousPercent = 0;
-        _access = token.access;
-        _currentZoneType = QNZoneInfoTypeMain;
-        _identifier = identifier;
-        
+        self.data = data;
+        self.size = (UInt32)data.length;
+        self.key = key;
+        self.token = token;
+        self.option = option != nil ? option : [QNUploadOption defaultOptions];
+        self.complete = block;
+        self.sessionManager = sessionManager;
+        self.config = config;
+        self.fileName = fileName != nil ? fileName : @"?";
+        self.previousPercent = 0;
+        self.access = token.access;
+        self.currentZoneType = QNZoneInfoTypeMain;
+        self.identifier = identifier;
+        self.requestType = QNRequestType_form;
     }
     return self;
 }
@@ -67,20 +51,20 @@
 - (void)put {
     
     NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
-    if (_key) {
-        parameters[@"key"] = _key;
+    if (self.key) {
+        parameters[@"key"] = self.key;
     }
-    parameters[@"token"] = _token.token;
-    [parameters addEntriesFromDictionary:_option.params];
+    parameters[@"token"] = self.token.token;
+    [parameters addEntriesFromDictionary:self.option.params];
     parameters[@"crc32"] = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:_data]];
     
-    [self nextTask:0 needDelay:NO host:[_config.zone up:_token zoneInfoType:_currentZoneType isHttps:_config.useHttps frozenDomain:nil] param:parameters];
+    [self nextTask:0 needDelay:NO host:[self.config.zone up:self.token zoneInfoType:self.currentZoneType isHttps:self.config.useHttps frozenDomain:nil] param:parameters];
 }
 
 - (void)nextTask:(int)retried needDelay:(BOOL)needDelay host:(NSString *)host param:(NSDictionary *)param {
     
     if (needDelay) {
-        QNAsyncRunAfter(_config.retryInterval, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        QNAsyncRunAfter(self.config.retryInterval, dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             [self nextTask:retried host:host param:param];
         });
     } else {
@@ -102,33 +86,23 @@
         }
         self.option.progressHandler(self.key, percent);
     };
-    QNCompleteBlock complete = ^(QNResponseInfo *info, NSDictionary *resp, QNSessionStatistics *sessionStatistic) {
+    QNCompleteBlock complete = ^(QNHttpResponseInfo *httpResponseInfo, NSDictionary *respBody) {
         
-        [self reportRequestItemWithUpType:up_type_form info:info sessionStatistic:sessionStatistic fileOffset:0];
+        [self collectHttpResponseInfo:httpResponseInfo fileOffset:0];
         
-        if (info.isOK) {
+        if (httpResponseInfo.isOK) {
             self.option.progressHandler(self.key, 1.0);
         }
-        if (info.isOK || !info.couldRetry) {
-            QNZonesInfo *zonesInfo = [self.config.zone getZonesInfoWithToken:self.token];
-            NSString *targetRegionId = [zonesInfo getZoneInfoRegionNameWithType:QNZoneInfoTypeMain];
-            NSString *currentRegionId = [zonesInfo getZoneInfoRegionNameWithType:self.currentZoneType];
-            [Collector update:CK_targetRegionId value:targetRegionId identifier:self.identifier];
-            [Collector update:CK_currentRegionId value:currentRegionId identifier:self.identifier];
-            [Collector update:CK_fileSize value:@(self.data.length) identifier:self.identifier];
-            [Collector resignWithIdentifier:self.identifier result:upload_ok];
-            self.complete(info, self.key, resp);
+        if (httpResponseInfo.isOK || !httpResponseInfo.couldRetry) {
+            [self collectUploadQualityInfo];
+            QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
+            self.complete(info, self.key, respBody);
             return;
         }
         if (self.option.cancellationSignal()) {
-            QNZonesInfo *zonesInfo = [self.config.zone getZonesInfoWithToken:self.token];
-            NSString *targetRegionId = [zonesInfo getZoneInfoRegionNameWithType:QNZoneInfoTypeMain];
-            NSString *currentRegionId = [zonesInfo getZoneInfoRegionNameWithType:self.currentZoneType];
-            [Collector update:CK_targetRegionId value:targetRegionId identifier:self.identifier];
-            [Collector update:CK_currentRegionId value:currentRegionId identifier:self.identifier];
-            [Collector update:CK_fileSize value:@(self.data.length) identifier:self.identifier];
-            [Collector resignWithIdentifier:self.identifier result:user_canceled];
-            self.complete([QNResponseInfo cancel], self.key, nil);
+            [self collectUploadQualityInfo];
+            QNResponseInfo *info = [Collector userCancel:self.identifier];
+            self.complete(info, self.key, nil);
             return;
         }
 
@@ -145,63 +119,29 @@
                         self.currentZoneType = QNZoneInfoTypeBackup;
                         [self nextTask:0 needDelay:YES host:[self.config.zone up:self.token zoneInfoType:self.currentZoneType isHttps:self.config.useHttps frozenDomain:nil] param:param];
                     } else {
-                        QNZonesInfo *zonesInfo = [self.config.zone getZonesInfoWithToken:self.token];
-                        NSString *targetRegionId = [zonesInfo getZoneInfoRegionNameWithType:QNZoneInfoTypeMain];
-                        NSString *currentRegionId = [zonesInfo getZoneInfoRegionNameWithType:self.currentZoneType];
-                        [Collector update:CK_targetRegionId value:targetRegionId identifier:self.identifier];
-                        [Collector update:CK_currentRegionId value:currentRegionId identifier:self.identifier];
-                        [Collector update:CK_fileSize value:@(self.data.length) identifier:self.identifier];
-                        [Collector resignWithIdentifier:self.identifier result:sessionStatistic.errorType];
-                        self.complete(info, self.key, resp);
+                        [self collectUploadQualityInfo];
+                        QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
+                        self.complete(info, self.key, respBody);
                     }
                 }
             } else {
-                QNZonesInfo *zonesInfo = [self.config.zone getZonesInfoWithToken:self.token];
-                NSString *targetRegionId = [zonesInfo getZoneInfoRegionNameWithType:QNZoneInfoTypeMain];
-                NSString *currentRegionId = [zonesInfo getZoneInfoRegionNameWithType:self.currentZoneType];
-                [Collector update:CK_targetRegionId value:targetRegionId identifier:self.identifier];
-                [Collector update:CK_currentRegionId value:currentRegionId identifier:self.identifier];
-                [Collector update:CK_fileSize value:@(self.data.length) identifier:self.identifier];
-                [Collector resignWithIdentifier:self.identifier result:sessionStatistic.errorType];
-                self.complete(info, self.key, resp);
+                [self collectUploadQualityInfo];
+                QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
+                self.complete(info, self.key, respBody);
             }
         }
     };
-    [_sessionManager multipartPost:host
-                       withData:_data
+    [self.sessionManager multipartPost:host
+                              withData:self.data
                      withParams:param
-                   withFileName:_fileName
-                   withMimeType:_option.mimeType
-                    withIdentifier:_identifier
+                          withFileName:self.fileName
+                          withMimeType:self.option.mimeType
+                        withIdentifier:self.identifier
               withCompleteBlock:complete
               withProgressBlock:p
-                withCancelBlock:_option.cancellationSignal
-                     withAccess:_access];
+                       withCancelBlock:self.option.cancellationSignal
+                            withAccess:self.access];
 }
 
-- (void)reportRequestItemWithUpType:(NSString *)upType info:(QNResponseInfo *)info sessionStatistic:(QNSessionStatistics *)sessionStatistic fileOffset:(uint64_t)fileOffset {
-    QNZonesInfo *zonesInfo = [self.config.zone getZonesInfoWithToken:self.token];
-    NSString *targetRegionId = [zonesInfo getZoneInfoRegionNameWithType:QNZoneInfoTypeMain];
-    NSString *currentRegionId = [zonesInfo getZoneInfoRegionNameWithType:self.currentZoneType];
-    
-    QNReportRequestItem *item = [QNReportRequestItem buildWithUpType:upType
-                                                        TargetBucket:self.token.bucket
-                                                           targetKey:self.key
-                                                          fileOffset:fileOffset
-                                                      targetRegionId:targetRegionId
-                                                     currentRegionId:currentRegionId
-                                                   prefetchedIpCount:0
-                                                                 pid:sessionStatistic.pid
-                                                                 tid:sessionStatistic.tid
-                                                          statusCode:info.statusCode
-                                                               reqId:info.reqId
-                                                                host:info.host
-                                                            remoteIp:sessionStatistic.remoteIp
-                                                                port:sessionStatistic.port totalElapsedTime:sessionStatistic.totalElapsedTime dnsElapsedTime:sessionStatistic.dnsElapsedTime connectElapsedTime:sessionStatistic.connectElapsedTime tlsConnectElapsedTime:sessionStatistic.tlsConnectElapsedTime requestElapsedTime:sessionStatistic.requestElapsedTime waitElapsedTime:sessionStatistic.waitElapsedTime responseElapsedTime:sessionStatistic.responseElapsedTime bytesSent:sessionStatistic.bytesSent bytesTotal:sessionStatistic.bytesTotal errorType:sessionStatistic.errorType errorDescription:sessionStatistic.errorDescription networkType:sessionStatistic.networkType signalStrength:sessionStatistic.signalStrength];
-    [Collector append:CK_requestItem value:item identifier:self.identifier];
-    if ([upType isEqualToString:up_type_mkblk] || [upType isEqualToString:up_type_bput]) {
-        [Collector append:CK_blockBytesSent value:@(sessionStatistic.bytesSent) identifier:self.identifier];
-    }
-    [Collector append:CK_totalBytesSent value:@(sessionStatistic.bytesSent) identifier:self.identifier];
-}
+
 @end

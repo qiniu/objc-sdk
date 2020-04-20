@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "QNHttpResponseInfo.h"
 
 /**
  *    中途取消的状态码
@@ -74,14 +75,9 @@ extern const int kQNFileError;
 @property (nonatomic, copy, readonly) NSString *host;
 
 /**
- *    请求消耗的时间，单位 秒
+ *    请求消耗的时间，单位 毫秒
  */
-@property (nonatomic, readonly) double duration;
-
-/**
- *    服务器IP
- */
-@property (nonatomic, readonly) NSString *serverIp;
+@property (nonatomic, readonly) NSTimeInterval duration;
 
 /**
  *    客户端id
@@ -92,11 +88,6 @@ extern const int kQNFileError;
  *    时间戳
  */
 @property (readonly) UInt64 timeStamp;
-
-/**
- *    网络类型
- */
-//@property (nonatomic, readonly) NSString *networkType;
 
 /**
  *    是否取消
@@ -112,16 +103,6 @@ extern const int kQNFileError;
  *    是否网络错误
  */
 @property (nonatomic, readonly, getter=isConnectionBroken) BOOL broken;
-
-/**
- *    是否需要重试，内部使用
- */
-@property (nonatomic, readonly) BOOL couldRetry;
-
-/**
- *    是否需要换备用server，内部使用
- */
-@property (nonatomic, readonly) BOOL needSwitchServer;
 
 /**
  *    是否为 七牛响应
@@ -157,19 +138,6 @@ extern const int kQNFileError;
  *    工厂函数，内部使用
  *
  *    @param error 错误信息
- *    @param host 服务器域名
- *    @param duration 请求完成时间，单位秒
- *
- *    @return 网络错误实例
- */
-+ (instancetype)responseInfoWithNetError:(NSError *)error
-                                    host:(NSString *)host
-                                duration:(double)duration;
-
-/**
- *    工厂函数，内部使用
- *
- *    @param error 错误信息
  *
  *    @return 文件错误实例
  */
@@ -183,24 +151,13 @@ extern const int kQNFileError;
 + (instancetype)responseInfoOfZeroData:(NSString *)path;
 
 /**
- *    构造函数
+ *    工厂函数，内部使用
  *
- *    @param status 状态码
- *    @param reqId  七牛服务器请求id
- *    @param xlog   七牛服务器记录
- *    @param body   服务器返回内容
- *    @param host   服务器域名
- *    @param duration 请求完成时间，单位秒
+ *    @param httpResponseInfo   最后一次http请求的信息
+ *    @param duration   请求完成时间，单位秒
  *
  *    @return 实例
  */
-- (instancetype)init:(int)status
-           withReqId:(NSString *)reqId
-            withXLog:(NSString *)xlog
-            withXVia:(NSString *)xvia
-            withHost:(NSString *)host
-              withIp:(NSString *)ip
-        withDuration:(double)duration
-            withBody:(NSData *)body;
++ (instancetype)responseInfoWithHttpResponseInfo:(QNHttpResponseInfo *)httpResponseInfo duration:(double)duration;
 
 @end
