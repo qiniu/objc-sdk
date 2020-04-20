@@ -120,8 +120,6 @@
 		DFF525341A6235D100D02BA1 /* QNSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = DFF525301A6235D100D02BA1 /* QNSessionManager.m */; };
 		DFF525391A64079B00D02BA1 /* QNSessionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFF525381A64079B00D02BA1 /* QNSessionTest.m */; };
 		DFFE0E6019E6575600D7A0FC /* QNFileRecorderTest.m in Sources */ = {isa = PBXBuildFile; fileRef = DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */; };
-		FD4FEE441F298D58003A38B8 /* QNPipelineTest.m in Sources */ = {isa = PBXBuildFile; fileRef = FD4FEE431F298D58003A38B8 /* QNPipelineTest.m */; };
-		FD4FEE451F298D58003A38B8 /* QNPipelineTest.m in Sources */ = {isa = PBXBuildFile; fileRef = FD4FEE431F298D58003A38B8 /* QNPipelineTest.m */; };
 		FDEA88661DAC10D000D037E5 /* QNAutoZoneTest.m in Sources */ = {isa = PBXBuildFile; fileRef = FDEA88651DAC10D000D037E5 /* QNAutoZoneTest.m */; };
 		FDEA88671DAC10D000D037E5 /* QNAutoZoneTest.m in Sources */ = {isa = PBXBuildFile; fileRef = FDEA88651DAC10D000D037E5 /* QNAutoZoneTest.m */; };
 /* End PBXBuildFile section */
@@ -229,7 +227,6 @@
 		DFF525301A6235D100D02BA1 /* QNSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNSessionManager.m; sourceTree = "<group>"; };
 		DFF525381A64079B00D02BA1 /* QNSessionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNSessionTest.m; sourceTree = "<group>"; };
 		DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNFileRecorderTest.m; sourceTree = "<group>"; };
-		FD4FEE431F298D58003A38B8 /* QNPipelineTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNPipelineTest.m; sourceTree = "<group>"; };
 		FDEA88651DAC10D000D037E5 /* QNAutoZoneTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNAutoZoneTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -437,7 +434,6 @@
 				DFF525381A64079B00D02BA1 /* QNSessionTest.m */,
 				DF437CDE1B243A2C0099587B /* QNUpTokenTest.m */,
 				FDEA88651DAC10D000D037E5 /* QNAutoZoneTest.m */,
-				FD4FEE431F298D58003A38B8 /* QNPipelineTest.m */,
 			);
 			path = QiniuSDKTests;
 			sourceTree = SOURCE_ROOT;
@@ -749,7 +745,6 @@
 				DF3C504A19DD7D9F000F548F /* QNResumeUploadTest.m in Sources */,
 				DF293C9719DB865800799011 /* QNCrc32Test.m in Sources */,
 				CCF661062355C2C00018A41E /* QNConcurrentResumeUploadTest.m in Sources */,
-				FD4FEE441F298D58003A38B8 /* QNPipelineTest.m in Sources */,
 				DFA9B64519DFE43500A15FD1 /* QNTempFile.m in Sources */,
 				DFF525391A64079B00D02BA1 /* QNSessionTest.m in Sources */,
 				FDEA88661DAC10D000D037E5 /* QNAutoZoneTest.m in Sources */,
@@ -801,7 +796,6 @@
 				DF0A03291B3BAC6E00E3778C /* QNResumeUploadTest.m in Sources */,
 				DF0A032B1B3BAC6E00E3778C /* QNEtagTest.m in Sources */,
 				CCF661072355C4480018A41E /* QNConcurrentResumeUploadTest.m in Sources */,
-				FD4FEE451F298D58003A38B8 /* QNPipelineTest.m in Sources */,
 				DF0A032C1B3BAC6E00E3778C /* QNTempFile.m in Sources */,
 				DF0A032D1B3BAC6E00E3778C /* QNFileRecorderTest.m in Sources */,
 				FDEA88671DAC10D000D037E5 /* QNAutoZoneTest.m in Sources */,

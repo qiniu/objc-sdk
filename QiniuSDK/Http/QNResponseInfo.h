@@ -7,7 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "QNHttpResponseInfo.h"
+
+@class QNHttpResponseInfo;
 
 /**
  *    中途取消的状态码

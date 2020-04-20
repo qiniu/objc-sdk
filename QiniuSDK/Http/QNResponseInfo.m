@@ -7,6 +7,7 @@
 //
 
 #import "QNResponseInfo.h"
+#import "QNHttpResponseInfo.h"
 #import "QNUserAgent.h"
 #import "QNVersion.h"
 
