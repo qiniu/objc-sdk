@@ -71,9 +71,6 @@ NSString *const bad_request = @"bad_request";
                 const char *value = attr.value;
                 if (0 == strcmp(value, "@\"NSString\"")) {
                     NSString *key = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
-                    if ([key isEqualToString:@"log_type"]) {
-                        NSLog(@"lalala");
-                    }
                     NSString *ivarValue = [self valueForKey:key];
                     if (ivarValue) [requestItemDic setValue:ivarValue forKey:key];
                 } else {
@@ -103,9 +100,6 @@ NSString *const bad_request = @"bad_request";
                 const char *value = attr.value;
                 if (0 == strcmp(value, "@\"NSString\"")) {
                     NSString *key = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
-                    if ([key isEqualToString:@"log_type"]) {
-                        NSLog(@"lalala");
-                    }
                     NSString *ivarValue = [self valueForKey:key];
                     if (ivarValue) [requestItemDic setValue:ivarValue forKey:key];
                 } else {

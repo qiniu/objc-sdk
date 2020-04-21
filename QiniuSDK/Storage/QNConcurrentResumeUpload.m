@@ -385,6 +385,7 @@
 
 - (void)run {
     
+    self.requestType = QNRequestType_mkblk;
     for (int i = 0; i < _taskQueue.taskQueueCount; i++) {
         dispatch_group_enter(_uploadGroup);
         dispatch_group_async(_uploadGroup, _uploadQueue, ^{
@@ -393,6 +394,7 @@
     }
     dispatch_group_notify(_uploadGroup, _uploadQueue, ^{
         if (self.taskQueue.isAllCompleted) {
+            self.requestType = QNRequestType_mkfile;
             [self makeFile];
         } else {
             if (self.isResettingTaskQueue) {
@@ -400,7 +402,6 @@
                 [self removeRecord];
                 [self run];
             } else {
-                [self collectUploadQualityInfo];
                 self.complete(self.taskQueue.info, self.key, self.taskQueue.resp);
             }
        }
@@ -447,6 +448,7 @@
     }
     
     if (self.option.cancellationSignal()) {
+        [self collectUploadQualityInfo];
         QNResponseInfo *info = [Collector userCancel:self.identifier];
         [self invalidateTasksWithErrorInfo:info resp:nil];
         dispatch_group_leave(self.uploadGroup);
@@ -456,6 +458,7 @@
     NSError *error;
     NSData *data = [self.file read:task.index * kQNBlockSize size:task.size error:&error];
     if (error) {
+        [self collectUploadQualityInfo];
         QNResponseInfo *info = [Collector completeWithFileError:error identifier:self.identifier];
         [self invalidateTasksWithErrorInfo:info resp:nil];
         dispatch_group_leave(self.uploadGroup);
@@ -493,6 +496,7 @@
                     } else {
                         if (self.config.allowBackupHost) {
                             if (self.taskQueue.recordInfo.host) {
+                                [self collectUploadQualityInfo];
                                 QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
                                 [self invalidateTasksWithErrorInfo:info resp:respBody];
                                 self.resettingTaskQueue = YES;
@@ -503,6 +507,7 @@
                                 if (hasNextHost) {
                                     [self retryActionWithType:QNRequestType_mkblk needDelay:YES task:task host:self.taskQueue.upHost];
                                 } else {
+                                    [self collectUploadQualityInfo];
                                     QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
                                     [self invalidateTasksWithErrorInfo:info resp:respBody];
                                     BOOL hasBackupZone = [self.taskQueue switchZoneWithType:QNZoneInfoTypeBackup];
@@ -511,12 +516,14 @@
                                 }
                             }
                         } else {
+                            [self collectUploadQualityInfo];
                             QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
                             [self invalidateTasksWithErrorInfo:info resp:respBody];
                             dispatch_group_leave(self.uploadGroup);
                         }
                     }
                 } else {
+                    [self collectUploadQualityInfo];
                     QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
                     [self invalidateTasksWithErrorInfo:info resp:respBody];
                     dispatch_group_leave(self.uploadGroup);

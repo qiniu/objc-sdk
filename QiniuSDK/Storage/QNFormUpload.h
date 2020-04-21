@@ -9,9 +9,6 @@
 #import "QNBaseUpload.h"
 #import <Foundation/Foundation.h>
 
-@class QNUpToken;
-@class QNSessionManager;
-
 @interface QNFormUpload : QNBaseUpload
 
 - (instancetype)initWithData:(NSData *)data

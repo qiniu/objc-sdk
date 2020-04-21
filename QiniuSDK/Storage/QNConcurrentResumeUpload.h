@@ -10,10 +10,6 @@
 #import "QNBaseUpload.h"
 #import "QNFileDelegate.h"
 
-@class QNUpToken;
-@class QNUploadOption;
-@class QNConfiguration;
-
 @interface QNConcurrentResumeUpload : QNBaseUpload
 
 - (instancetype)initWithFile:(id<QNFileDelegate>)file

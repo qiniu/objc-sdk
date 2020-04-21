@@ -76,9 +76,9 @@ extern const int kQNFileError;
 @property (nonatomic, copy, readonly) NSString *host;
 
 /**
- *    请求消耗的时间，单位 毫秒
+ *    请求消耗的时间，单位 秒
  */
-@property (nonatomic, readonly) NSTimeInterval duration;
+@property (nonatomic, readonly) double duration;
 
 /**
  *    客户端id

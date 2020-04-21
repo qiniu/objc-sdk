@@ -68,7 +68,7 @@
     }
     NSNumber *n_size = @(self.size);
     NSNumber *n_offset = @(offset);
-    NSNumber *n_time = [NSNumber numberWithLongLong:_modifyTime];
+    NSNumber *n_time = [NSNumber numberWithLongLong:self.modifyTime];
     NSMutableDictionary *rec = [NSMutableDictionary dictionaryWithObjectsAndKeys:n_size, @"size", n_offset, @"offset", n_time, @"modify_time", host, @"host", self.contexts, @"contexts", nil];
 
     NSError *error;

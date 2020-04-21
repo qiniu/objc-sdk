@@ -82,6 +82,8 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
 //        sharedInstance.lock = [[NSLock alloc] init];
         sharedInstance.collectQueue = dispatch_queue_create("com.qiniu.collector", DISPATCH_QUEUE_SERIAL);
         sharedInstance.updateKeysList = @[
+            CK_bucket,
+            CK_key,
             CK_targetRegionId,
             CK_currentRegionId,
             CK_result,
@@ -170,10 +172,10 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
         }
         currentItem.uploadEndTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970] * 1000;
         
-        info = [QNResponseInfo responseInfoWithHttpResponseInfo:lastHttpResponseInfo duration:currentItem.uploadEndTime - currentItem.uploadStartTime];
+        info = [QNResponseInfo responseInfoWithHttpResponseInfo:lastHttpResponseInfo duration:(currentItem.uploadEndTime - currentItem.uploadStartTime) / 1000.0];
         dispatch_semaphore_signal(signal);
         
-        if (![QNReportConfig sharedInstance].isReportEnable) [self report:currentItem];
+        if ([QNReportConfig sharedInstance].isReportEnable) [self report:currentItem];
         [self.collectItemList removeObject:currentItem];
     });
     dispatch_semaphore_wait(signal, DISPATCH_TIME_FOREVER);
@@ -244,7 +246,7 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
 }
 
 - (void)report:(QNCollectItem *)currentItem {
-    uint64_t regionsCount = [currentItem.targetRegionId isEqualToString:currentItem.currentRegionId] ? 1 : 2;
+    uint64_t regionsCount = currentItem.targetRegionId || currentItem.currentRegionId || [currentItem.targetRegionId isEqualToString:currentItem.currentRegionId] ? 1 : 2;
     uint64_t totalElapsedTime = currentItem.uploadEndTime - currentItem.uploadStartTime;
 
     if (currentItem.blockApiVersion != 0) {

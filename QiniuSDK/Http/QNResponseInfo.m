@@ -101,7 +101,7 @@ static NSString *domain = @"qiniu.com";
     return [[QNResponseInfo alloc] initWithStatus:kQNZeroDataSize errorDescription:desc];
 }
 
-+ (instancetype)responseInfoWithHttpResponseInfo:(QNHttpResponseInfo *)httpResponseInfo duration:(NSTimeInterval)duration {
++ (instancetype)responseInfoWithHttpResponseInfo:(QNHttpResponseInfo *)httpResponseInfo duration:(double)duration {
     if (httpResponseInfo.hasHttpResponse) {
         return [[QNResponseInfo alloc] initWithStatusCode:httpResponseInfo.statusCode reqId:httpResponseInfo.reqId xlog:httpResponseInfo.xlog xvia:httpResponseInfo.xvia host:httpResponseInfo.host error:httpResponseInfo.error duration:duration];
     } else {
@@ -121,7 +121,7 @@ static NSString *domain = @"qiniu.com";
 - (instancetype)initWithStatus:(int)status
                          error:(NSError *)error
                           host:(NSString *)host
-                      duration:(NSTimeInterval)duration {
+                      duration:(double)duration {
     if (self = [super init]) {
         _statusCode = status;
         _error = error;
@@ -141,7 +141,7 @@ static NSString *domain = @"qiniu.com";
 
 - (instancetype)initWithNetError:(NSError *)error
                             host:(NSString *)host
-                        duration:(NSTimeInterval)duration {
+                        duration:(double)duration {
     int code = kQNNetworkError;
     if (error != nil) {
         code = (int)error.code;
@@ -155,7 +155,7 @@ static NSString *domain = @"qiniu.com";
                               xvia:(NSString *)xvia
                               host:(NSString *)host
                              error:(NSError *)error
-                          duration:(NSTimeInterval)duration  {
+                          duration:(double)duration  {
     if (self = [super init]) {
         _statusCode = statusCode;
         _reqId = reqId;
@@ -171,7 +171,7 @@ static NSString *domain = @"qiniu.com";
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<%@= id: %@, ver: %@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ duration: %f s time: %llu error: %@>", NSStringFromClass([self class]), _id, kQiniuVersion, _statusCode, _reqId, _xlog, _xvia, _host, _duration, _timeStamp, _error];
+    return [NSString stringWithFormat:@"<%@= id: %@, ver: %@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ duration: %.3f s time: %llu error: %@>", NSStringFromClass([self class]), _id, kQiniuVersion, _statusCode, _reqId, _xlog, _xvia, _host, _duration, _timeStamp, _error];
 }
 
 - (BOOL)isCancelled {
