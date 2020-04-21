@@ -175,7 +175,7 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
         info = [QNResponseInfo responseInfoWithHttpResponseInfo:lastHttpResponseInfo duration:(currentItem.uploadEndTime - currentItem.uploadStartTime) / 1000.0];
         dispatch_semaphore_signal(signal);
         
-        if ([QNReportConfig sharedInstance].isReportEnable) [self report:currentItem];
+        if ([QNReportConfig sharedInstance].isReportEnable) [self reportResult:currentItem];
         [self.collectItemList removeObject:currentItem];
     });
     dispatch_semaphore_wait(signal, DISPATCH_TIME_FOREVER);
@@ -185,67 +185,100 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
 
 - (QNResponseInfo *)completeWithInvalidArgument:(NSString *)text identifier:(NSString *)identifier {
     
+    __block QNResponseInfo *info;
+    dispatch_semaphore_t signal = dispatch_semaphore_create(0);
     dispatch_async(_collectQueue, ^{
         QNCollectItem *currentItem = [self getCurrentItemWithIdentifier:identifier];
         currentItem.result = invalid_args;
         currentItem.uploadEndTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970] * 1000;
         
-        if ([QNReportConfig sharedInstance].isReportEnable) [self report:currentItem];
+        info = [QNResponseInfo responseInfoWithInvalidArgument:text duration:(currentItem.uploadEndTime - currentItem.uploadStartTime) / 1000.0];
+        dispatch_semaphore_signal(signal);
+        
+        if ([QNReportConfig sharedInstance].isReportEnable) [self reportResult:currentItem];
         [self.collectItemList removeObject:currentItem];
     });
-    return [QNResponseInfo responseInfoWithInvalidArgument:text];
+    dispatch_semaphore_wait(signal, DISPATCH_TIME_FOREVER);
+    return info;
 }
 
 - (QNResponseInfo *)completeWithInvalidToken:(NSString *)text identifier:(NSString *)identifier {
     
+    __block QNResponseInfo *info;
+    dispatch_semaphore_t signal = dispatch_semaphore_create(0);
     dispatch_async(_collectQueue, ^{
         QNCollectItem *currentItem = [self getCurrentItemWithIdentifier:identifier];
         currentItem.result = invalid_args;
         currentItem.uploadEndTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970] * 1000;
         
-        if ([QNReportConfig sharedInstance].isReportEnable) [self report:currentItem];
+        info = [QNResponseInfo responseInfoWithInvalidToken:text duration:(currentItem.uploadEndTime - currentItem.uploadStartTime) / 1000.0];
+        dispatch_semaphore_signal(signal);
+        
+        if ([QNReportConfig sharedInstance].isReportEnable) [self reportResult:currentItem];
         [self.collectItemList removeObject:currentItem];
     });
-    return [QNResponseInfo responseInfoWithInvalidToken:text];
+    dispatch_semaphore_wait(signal, DISPATCH_TIME_FOREVER);
+    return info;
 }
 
 - (QNResponseInfo *)completeWithFileError:(NSError *)error identifier:(NSString *)identifier {
     
+    __block QNResponseInfo *info;
+    dispatch_semaphore_t signal = dispatch_semaphore_create(0);
     dispatch_async(_collectQueue, ^{
         QNCollectItem *currentItem = [self getCurrentItemWithIdentifier:identifier];
         currentItem.result = invalid_file;
         currentItem.uploadEndTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970] * 1000;
-        if ([QNReportConfig sharedInstance].isReportEnable) [self report:currentItem];
+        
+       info = [QNResponseInfo responseInfoWithFileError:error duration:(currentItem.uploadEndTime - currentItem.uploadStartTime) / 1000.0];
+        dispatch_semaphore_signal(signal);
+        
+        if ([QNReportConfig sharedInstance].isReportEnable) [self reportResult:currentItem];
         [self.collectItemList removeObject:currentItem];
     });
-    return [QNResponseInfo responseInfoWithFileError:error];
+    dispatch_semaphore_wait(signal, DISPATCH_TIME_FOREVER);
+    return info;
 }
 
 - (QNResponseInfo *)completeWithZeroData:(NSString *)path identifier:(NSString *)identifier {
     
+    __block QNResponseInfo *info;
+    dispatch_semaphore_t signal = dispatch_semaphore_create(0);
     dispatch_async(_collectQueue, ^{
         QNCollectItem *currentItem = [self getCurrentItemWithIdentifier:identifier];
         currentItem.result = zero_size_file;
         currentItem.uploadEndTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970] * 1000;
-        if ([QNReportConfig sharedInstance].isReportEnable) [self report:currentItem];
+        
+        info = [QNResponseInfo responseInfoOfZeroData:path duration:(currentItem.uploadEndTime - currentItem.uploadStartTime) / 1000.0];
+        dispatch_semaphore_signal(signal);
+        
+        if ([QNReportConfig sharedInstance].isReportEnable) [self reportResult:currentItem];
         [self.collectItemList removeObject:currentItem];
     });
-    return [QNResponseInfo responseInfoOfZeroData:path];
+    dispatch_semaphore_wait(signal, DISPATCH_TIME_FOREVER);
+    return info;
 }
 
 - (QNResponseInfo *)userCancel:(NSString *)identifier {
     
+    __block QNResponseInfo *info;
+    dispatch_semaphore_t signal = dispatch_semaphore_create(0);
     dispatch_async(_collectQueue, ^{
         QNCollectItem *currentItem = [self getCurrentItemWithIdentifier:identifier];
         currentItem.result = user_canceled;
         currentItem.uploadEndTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970] * 1000;
-        if ([QNReportConfig sharedInstance].isReportEnable) [self report:currentItem];
+        
+        info = [QNResponseInfo cancelWithDuration:(currentItem.uploadEndTime - currentItem.uploadStartTime) / 1000.0];
+        dispatch_semaphore_signal(signal);
+        
+        if ([QNReportConfig sharedInstance].isReportEnable) [self reportResult:currentItem];
         [self.collectItemList removeObject:currentItem];
     });
-    return [QNResponseInfo cancel];
+    dispatch_semaphore_wait(signal, DISPATCH_TIME_FOREVER);
+    return info;
 }
 
-- (void)report:(QNCollectItem *)currentItem {
+- (void)reportResult:(QNCollectItem *)currentItem {
     uint64_t regionsCount = currentItem.targetRegionId || currentItem.currentRegionId || [currentItem.targetRegionId isEqualToString:currentItem.currentRegionId] ? 1 : 2;
     uint64_t totalElapsedTime = currentItem.uploadEndTime - currentItem.uploadStartTime;
 

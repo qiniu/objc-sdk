@@ -75,30 +75,30 @@ static NSString *domain = @"qiniu.com";
 
 @implementation QNResponseInfo
 
-+ (instancetype)cancel {
-    return [[QNResponseInfo alloc] initWithCancelled];
++ (instancetype)cancelWithDuration:(double)duration {
+    return [[QNResponseInfo alloc] initWithStatus:kQNRequestCancelled errorDescription:@"cancelled by user" duration:duration];
 }
 
-+ (instancetype)responseInfoWithInvalidArgument:(NSString *)text {
-    return [[QNResponseInfo alloc] initWithStatus:kQNInvalidArgument errorDescription:text];
++ (instancetype)responseInfoWithInvalidArgument:(NSString *)text duration:(double)duration {
+    return [[QNResponseInfo alloc] initWithStatus:kQNInvalidArgument errorDescription:text duration:duration];
 }
 
-+ (instancetype)responseInfoWithInvalidToken:(NSString *)text {
-    return [[QNResponseInfo alloc] initWithStatus:kQNInvalidToken errorDescription:text];
++ (instancetype)responseInfoWithInvalidToken:(NSString *)text duration:(double)duration {
+    return [[QNResponseInfo alloc] initWithStatus:kQNInvalidToken errorDescription:text duration:duration];
 }
 
-+ (instancetype)responseInfoWithFileError:(NSError *)error {
-    return [[QNResponseInfo alloc] initWithStatus:kQNFileError error:error];
++ (instancetype)responseInfoWithFileError:(NSError *)error duration:(double)duration {
+    return [[QNResponseInfo alloc] initWithStatus:kQNFileError error:error host:nil duration:duration];
 }
 
-+ (instancetype)responseInfoOfZeroData:(NSString *)path {
++ (instancetype)responseInfoOfZeroData:(NSString *)path duration:(double)duration {
     NSString *desc;
     if (path == nil) {
         desc = @"data size is 0";
     } else {
         desc = [[NSString alloc] initWithFormat:@"file %@ size is 0", path];
     }
-    return [[QNResponseInfo alloc] initWithStatus:kQNZeroDataSize errorDescription:desc];
+    return [[QNResponseInfo alloc] initWithStatus:kQNZeroDataSize errorDescription:desc duration:duration];
 }
 
 + (instancetype)responseInfoWithHttpResponseInfo:(QNHttpResponseInfo *)httpResponseInfo duration:(double)duration {
@@ -109,13 +109,11 @@ static NSString *domain = @"qiniu.com";
     }
 }
 
-- (instancetype)initWithCancelled {
-    return [self initWithStatus:kQNRequestCancelled errorDescription:@"cancelled by user"];
-}
-
 - (instancetype)initWithStatus:(int)status
-                         error:(NSError *)error {
-    return [self initWithStatus:status error:error host:nil duration:0];
+                         errorDescription:(NSString *)text
+                      duration:(double)duration {
+    NSError *error = [[NSError alloc] initWithDomain:domain code:status userInfo:@{ @"error" : text }];
+    return [self initWithStatus:status error:error host:nil duration:duration];
 }
 
 - (instancetype)initWithStatus:(int)status
@@ -131,12 +129,6 @@ static NSString *domain = @"qiniu.com";
         _timeStamp = [[NSDate date] timeIntervalSince1970];
     }
     return self;
-}
-
-- (instancetype)initWithStatus:(int)status
-              errorDescription:(NSString *)text {
-    NSError *error = [[NSError alloc] initWithDomain:domain code:status userInfo:@{ @"error" : text }];
-    return [self initWithStatus:status error:error];
 }
 
 - (instancetype)initWithNetError:(NSError *)error

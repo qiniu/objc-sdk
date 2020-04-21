@@ -118,7 +118,7 @@ didCompleteWithError:(nullable NSError *)error {
     delegate.completeBlock = ^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error, NSURLSessionTaskMetrics *metrics, uint64_t bytesSent, uint64_t bytesTotal) {
         [self finishSession:session];
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-        QNHttpResponseInfo *info = [QNHttpResponseInfo buildResponseInfoHost:domain response:httpResponse body:data error:nil metrics:metrics bytesSent:bytesSent bytesTotal:bytesTotal];
+        QNHttpResponseInfo *info = [QNHttpResponseInfo buildResponseInfoHost:domain response:httpResponse body:data error:error metrics:metrics bytesSent:bytesSent bytesTotal:bytesTotal];
         completeBlock(info, [info getResponseBody]);
     };
     
@@ -185,6 +185,7 @@ withIdentifier:(NSString *)identifier
         [request setValuesForKeysWithDictionary:params];
     }
     [request setHTTPBody:data];
+    identifier = !identifier ? [[NSUUID UUID] UUIDString] : identifier;
     QNAsyncRun(^{
         [self sendRequest:request
            withIdentifier:identifier
@@ -212,7 +213,7 @@ withIdentifier:(NSString *)identifier
         delegate.completeBlock = ^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error, NSURLSessionTaskMetrics *metrics, uint64_t bytesSent, uint64_t bytesTotal) {
             [self finishSession:session];
             NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-            QNHttpResponseInfo *info = [QNHttpResponseInfo buildResponseInfoHost:domain response:httpResponse body:data error:nil metrics:metrics bytesSent:bytesSent bytesTotal:bytesTotal];
+            QNHttpResponseInfo *info = [QNHttpResponseInfo buildResponseInfoHost:domain response:httpResponse body:data error:error metrics:metrics bytesSent:bytesSent bytesTotal:bytesTotal];
             completeBlock(info, [info getResponseBody]);
         };
         [dataTask resume];

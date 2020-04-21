@@ -113,43 +113,51 @@ extern const int kQNFileError;
 /**
  *    工厂函数，内部使用
  *
+ *    @param duration   请求完成时间，单位秒
+ *    
  *    @return 取消的实例
  */
-+ (instancetype)cancel;
++ (instancetype)cancelWithDuration:(double)duration;
 
 /**
  *    工厂函数，内部使用
  *
  *    @param desc 错误参数描述
+ *    @param duration   请求完成时间，单位秒
  *
  *    @return 错误参数实例
  */
-+ (instancetype)responseInfoWithInvalidArgument:(NSString *)desc;
++ (instancetype)responseInfoWithInvalidArgument:(NSString *)desc duration:(double)duration;
 
 /**
  *    工厂函数，内部使用
  *
  *    @param desc 错误token描述
+ *    @param duration   请求完成时间，单位秒
  *
  *    @return 错误token实例
  */
-+ (instancetype)responseInfoWithInvalidToken:(NSString *)desc;
++ (instancetype)responseInfoWithInvalidToken:(NSString *)desc duration:(double)duration;
 
 /**
  *    工厂函数，内部使用
  *
  *    @param error 错误信息
+ *    @param duration   请求完成时间，单位秒
  *
  *    @return 文件错误实例
  */
-+ (instancetype)responseInfoWithFileError:(NSError *)error;
++ (instancetype)responseInfoWithFileError:(NSError *)error duration:(double)duration;
 
 /**
  *    工厂函数，内部使用
  *
+ *    @param path        文件路径
+ *    @param duration   请求完成时间，单位秒
+ *
  *    @return 文件错误实例
  */
-+ (instancetype)responseInfoOfZeroData:(NSString *)path;
++ (instancetype)responseInfoOfZeroData:(NSString *)path duration:(double)duration;
 
 /**
  *    工厂函数，内部使用

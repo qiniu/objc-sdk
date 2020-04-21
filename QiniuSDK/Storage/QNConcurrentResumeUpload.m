@@ -476,15 +476,14 @@
     };
     
     QNCompleteBlock completionHandler = ^(QNHttpResponseInfo *httpResponseInfo, NSDictionary *respBody) {
-        
-        [self collectHttpResponseInfo:httpResponseInfo fileOffset:task.index * task.size];
-        
+                
         dispatch_async(self.uploadQueue, ^{
-            
             if (self.taskQueue.isConcurrentTaskError || self.isResettingTaskQueue) {
                 dispatch_group_leave(self.uploadGroup);
                 return;
             }
+            
+            [self collectHttpResponseInfo:httpResponseInfo fileOffset:task.index * task.size];
             
             if (httpResponseInfo.error != nil) {
                 if (httpResponseInfo.couldRetry) {
@@ -496,9 +495,7 @@
                     } else {
                         if (self.config.allowBackupHost) {
                             if (self.taskQueue.recordInfo.host) {
-                                [self collectUploadQualityInfo];
-                                QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
-                                [self invalidateTasksWithErrorInfo:info resp:respBody];
+                                [self invalidateTasksWithErrorInfo:nil resp:nil];
                                 self.resettingTaskQueue = YES;
                                 [self.taskQueue switchZoneWithType:QNZoneInfoTypeMain];
                                 dispatch_group_leave(self.uploadGroup);
@@ -507,11 +504,16 @@
                                 if (hasNextHost) {
                                     [self retryActionWithType:QNRequestType_mkblk needDelay:YES task:task host:self.taskQueue.upHost];
                                 } else {
-                                    [self collectUploadQualityInfo];
-                                    QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
-                                    [self invalidateTasksWithErrorInfo:info resp:respBody];
                                     BOOL hasBackupZone = [self.taskQueue switchZoneWithType:QNZoneInfoTypeBackup];
-                                    self.resettingTaskQueue = hasBackupZone;
+                                    if (!hasBackupZone) {
+                                        [self collectUploadQualityInfo];
+                                        QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
+                                        [self invalidateTasksWithErrorInfo:info resp:respBody];
+                                        self.resettingTaskQueue = NO;
+                                    } else {
+                                        [self invalidateTasksWithErrorInfo:nil resp:nil];
+                                        self.resettingTaskQueue = YES;
+                                    }
                                     dispatch_group_leave(self.uploadGroup);
                                 }
                             }
@@ -529,12 +531,11 @@
                     dispatch_group_leave(self.uploadGroup);
                 }
             } else {
-                NSDictionary *resp = [httpResponseInfo getResponseBody];
-                if (resp == nil) {
+                if (respBody == nil) {
                     [self retryActionWithType:QNRequestType_mkblk needDelay:YES task:task host:self.taskQueue.upHost];
                 } else {
-                    NSString *ctx = resp[@"ctx"];
-                    NSNumber *crc = resp[@"crc32"];
+                    NSString *ctx = respBody[@"ctx"];
+                    NSNumber *crc = respBody[@"crc32"];
                     if (ctx == nil || crc == nil || [crc unsignedLongValue] != blockCrc) {
                         [self retryActionWithType:QNRequestType_mkblk needDelay:YES task:task host:self.taskQueue.upHost];
                     } else {

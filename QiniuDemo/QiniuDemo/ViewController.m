@@ -29,7 +29,7 @@
     self.token = @"bjtWBQXrcxgo7HWwlC_bgHg81j352_GhgBGZPeOW:Ru8TYH5KG7CIlzGdPLBT16TyZDI=:eyJzY29wZSI6InNodWFuZ2h1bzEiLCJkZWFkbGluZSI6MTU4NzUxOTU3M30K";
 //    self.filePath = [[NSBundle mainBundle] pathForResource:@"image" ofType:@"jpg"];
     NSString *cachePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"qiniu"];
-    int randomLength = 36 * 1024 * 1024;
+    int randomLength = 3 * 1024 * 1024;
     self.filePath = [[QNTempFile createTempfileWithSize:randomLength] path];
     _config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
 //        builder.zone = [QNFixedZone zone1];
@@ -40,7 +40,7 @@
         builder.reportConfig.uploadThreshold = 2 * 1024 * 1024;
         builder.reportConfig.maxRecordFileSize = 4 * 1024 * 1024;
         builder.reportConfig.interval = 10;
-        builder.useConcurrentResumeUpload = NO;
+        builder.useConcurrentResumeUpload = YES;
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:cachePath error:nil];
     }];
     _upManager = [[QNUploadManager alloc] initWithConfiguration:_config];

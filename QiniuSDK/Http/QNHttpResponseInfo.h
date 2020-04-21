@@ -26,50 +26,6 @@
 @property (nonatomic, copy, readonly) NSError *error;
 
 /**
- *    构造函数
- *
- *    @param host  请求域名
- *    @param response  httpReponse
- *    @param body   httpBody
- *    @param error   错误信息
- *    @param metrics   上传统计数据
- *    @param bytesSent 请求发送的字节数
- *    @param bytesTotal 请求预期发送的字节数
- *
- *    @return 实例
- */
-+ (QNHttpResponseInfo *)buildResponseInfoHost:(NSString *)host
-                                     response:(NSHTTPURLResponse *)response
-                                         body:(NSData *)body
-                                        error:(NSError *)error
-                                      metrics:(NSURLSessionTaskMetrics *)metrics
-                                    bytesSent:(uint64_t)bytesSent
-                                   bytesTotal:(uint64_t)bytesTotal;
-
-/**
-*    status == 200 时获取解析后的response body
-*/
-- (NSDictionary *)getResponseBody;
-
-@end
-
-@interface QNHttpResponseInfo (status)
-
-/**
- *    成功的请求
- */
-@property (nonatomic, readonly, getter=isOK) BOOL ok;
-
-/**
- *    是否需要重试
- */
-@property (nonatomic, readonly) BOOL couldRetry;
-
-@end
-
-@interface QNHttpResponseInfo (httpResponse)
-
-/**
  *    是否有httpResponse
  */
 @property (nonatomic, assign, readonly) BOOL hasHttpResponse;
@@ -89,9 +45,15 @@
  */
 @property (nonatomic, copy, readonly) NSString *xvia;
 
-@end
+/**
+ *    成功的请求
+ */
+@property (nonatomic, assign, readonly, getter=isOK) BOOL ok;
 
-@interface QNHttpResponseInfo (statistics)
+/**
+ *    是否需要重试
+ */
+@property (nonatomic, assign, readonly) BOOL couldRetry;
 
 /**
 *    服务端ip
@@ -102,6 +64,11 @@
 *    服务端端口号
 */
 @property (nonatomic, assign, readonly) uint16_t port;
+
+/**
+ *   当前时间戳
+ */
+@property (nonatomic, assign, readonly) uint64_t timeStamp;
 
 /**
 *    从发送请求到收到响应之间的单调时间差，单位为毫秒
@@ -149,11 +116,6 @@
 @property (nonatomic, assign, readonly) uint64_t bytesTotal;
 
 /**
-*    请求是否经过代理服务器
-*/
-@property (nonatomic, assign, readonly, getter=isProxyConnection) BOOL proxyConnection;
-
-/**
 *    错误类型 用于信息上报
 */
 @property (nonatomic, copy, readonly) NSString *errorType;
@@ -162,6 +124,11 @@
 *    错误描述 用于信息上报
 */
 @property (nonatomic, copy, readonly) NSString *errorDescription;
+
+/**
+*    请求是否经过代理服务器
+*/
+@property (nonatomic, assign, readonly, getter=isProxyConnection) BOOL proxyConnection;
 
 /**
 *    请求完成时回调的进程id
@@ -183,5 +150,30 @@
 */
 @property (nonatomic, assign, readonly) int64_t signalStrength;
 
-@end
+/**
+ *    构造函数
+ *
+ *    @param host  请求域名
+ *    @param response  httpReponse
+ *    @param body   httpBody
+ *    @param error   错误信息
+ *    @param metrics   上传统计数据
+ *    @param bytesSent 请求发送的字节数
+ *    @param bytesTotal 请求预期发送的字节数
+ *
+ *    @return 实例
+ */
++ (QNHttpResponseInfo *)buildResponseInfoHost:(NSString *)host
+                                     response:(NSHTTPURLResponse *)response
+                                         body:(NSData *)body
+                                        error:(NSError *)error
+                                      metrics:(NSURLSessionTaskMetrics *)metrics
+                                    bytesSent:(uint64_t)bytesSent
+                                   bytesTotal:(uint64_t)bytesTotal;
 
+/**
+*    status == 200 时获取解析后的response body
+*/
+- (NSDictionary *)getResponseBody;
+
+@end

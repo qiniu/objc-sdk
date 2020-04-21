@@ -9,34 +9,13 @@
 #import "QNHttpResponseInfo.h"
 #import "QNSystemTool.h"
 #import "QNUploadInfoReporter.h"
+#import "QNUserAgent.h"
+#import "QNVersion.h"
 
 @interface QNHttpResponseInfo ()
-@property (nonatomic, assign, readwrite) int statusCode;
-@property (nonatomic, strong, readwrite) NSDictionary *responseBody; // 仅 statusCode == 200 时有值
-@property (nonatomic, copy, readwrite) NSString *host;
-@property (nonatomic, copy, readwrite) NSError *error;
-@property (nonatomic, copy, readwrite) NSString *reqId;
-@property (nonatomic, copy, readwrite) NSString *xlog;
-@property (nonatomic, copy, readwrite) NSString *xvia;
-@property (nonatomic, copy, readwrite) NSString *remoteIp;
-@property (nonatomic, assign, readwrite) uint16_t port;
-@property (nonatomic, assign, readwrite) uint64_t totalElapsedTime;
-@property (nonatomic, assign, readwrite) uint64_t dnsElapsedTime;
-@property (nonatomic, assign, readwrite) uint64_t connectElapsedTime;
-@property (nonatomic, assign, readwrite) uint64_t tlsConnectElapsedTime;
-@property (nonatomic, assign, readwrite) uint64_t requestElapsedTime;
-@property (nonatomic, assign, readwrite) uint64_t waitElapsedTime;
-@property (nonatomic, assign, readwrite) uint64_t responseElapsedTime;
-@property (nonatomic, assign, readwrite) uint64_t bytesSent;
-@property (nonatomic, assign, readwrite) uint64_t bytesTotal;
-@property (nonatomic, copy, readwrite) NSString *errorType;
-@property (nonatomic, copy, readwrite) NSString *errorDescription;
-@property (nonatomic, assign, readwrite) int64_t pid;
-@property (nonatomic, assign, readwrite) int64_t tid;
-@property (nonatomic, copy, readwrite) NSString *networkType;
-@property (nonatomic, assign, readwrite) int64_t signalStrength;
-@property (nonatomic, assign, readwrite, getter=isProxyConnection) BOOL proxyConnection;
-@property (nonatomic, assign, readwrite) BOOL hasHttpResponse;
+
+@property (nonatomic, strong) NSDictionary *responseBody;
+
 @end
 
 @implementation QNHttpResponseInfo
@@ -71,6 +50,7 @@
         _tid = [QNSystemTool getCurrentThreadID];
         _networkType = [QNSystemTool getCurrentNetworkType];
         _signalStrength = [QNSystemTool getCurrentNetworkSignalStrength];
+        _timeStamp = [[NSDate date] timeIntervalSince1970];
         
         if (metrics) {
             if (metrics.transactionMetrics.count > 0) {
@@ -154,6 +134,10 @@
                 _errorType = proxy_error;
             } else {
                 if (error) {
+                    _error = error;
+                    _statusCode = error.code;
+                    _errorDescription = _error.localizedDescription;
+                    
                     if (error.code == -1) {
                         _errorType = network_error;
                     } else if (error.code == -1001) {
@@ -164,7 +148,7 @@
                         _errorType = cannot_connect_to_host;
                     } else if (error.code == -1005 || error.code == -1009 || error.code == -1011) {
                         _errorType = transmission_error;
-                    } else if (error.code > -2001 || error.code < -1199) {
+                    } else if (error.code > -2001 && error.code < -1199) {
                         _errorType = ssl_error;
                     } else if (error.code == -1007 || error.code == -1010) {
                         _errorType = malicious_response;
@@ -179,9 +163,7 @@
                     _errorType = unknown_error;
                 }
             }
-            _error = error;
         }
-        _errorDescription = _error ? _error.localizedDescription : nil;
     }
     return self;
 }
@@ -207,6 +189,10 @@
     if (!startDate || !endDate) return 0;
     NSTimeInterval interval = [endDate timeIntervalSinceDate:startDate];
     return interval * 1000;
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"<%@= id: %@, ver: %@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ duration: %.3f s time: %llu error: %@>", NSStringFromClass([self class]), [QNUserAgent sharedInstance].id, kQiniuVersion, _statusCode, _reqId, _xlog, _xvia, _host, _totalElapsedTime / 1000.0, _timeStamp, _error];
 }
 
 @end
