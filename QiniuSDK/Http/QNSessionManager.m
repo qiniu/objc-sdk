@@ -67,6 +67,7 @@ didCompleteWithError:(nullable NSError *)error {
 @property (nonatomic, strong) NSDictionary *proxyDict;
 @property (nonatomic, strong) NSOperationQueue *delegateQueue;
 @property (nonatomic, strong) NSMutableArray *sessionArray;
+@property (nonatomic, strong) NSLock *lock;
 @end
 
 @implementation QNSessionManager
@@ -79,6 +80,7 @@ didCompleteWithError:(nullable NSError *)error {
         _timeout = timeout;
         _converter = converter;
         _sessionArray = [NSMutableArray array];
+        _lock = [[NSLock alloc] init];
     }
     return self;
 }
@@ -221,6 +223,7 @@ withIdentifier:(NSString *)identifier
 }
 
 - (void)finishSession:(NSURLSession *)session {
+    [_lock lock];
     for (int i = 0; i < _sessionArray.count; i++) {
         NSDictionary *sessionInfo = _sessionArray[i];
         if (sessionInfo[@"session"] == session) {
@@ -229,18 +232,21 @@ withIdentifier:(NSString *)identifier
             break;
         }
     }
+    [_lock unlock];
 }
 
 - (void)invalidateSessionWithIdentifier:(NSString *)identifier {
-    
+    [_lock lock];
     for (int i = 0; i < _sessionArray.count; i++) {
         NSDictionary *sessionInfo = _sessionArray[i];
         if ([sessionInfo[@"identifier"] isEqualToString:identifier]) {
             NSURLSession *session = sessionInfo[@"session"];
             [session invalidateAndCancel];
             [_sessionArray removeObject:sessionInfo];
+            break;
         }
     }
+    [_lock unlock];
 }
 
 @end

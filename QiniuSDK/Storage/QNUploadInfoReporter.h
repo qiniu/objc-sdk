@@ -91,8 +91,7 @@ extern NSString *const bad_request;   // API 失败是由于客户端的参数�
                totalElapsedTime:(uint64_t)total_elapsed_time
                   requestsCount:(uint64_t)requests_count
                    regionsCount:(uint64_t)regions_count
-                      bytesSent:(uint64_t)bytes_sent
-                      cloudType:(NSString *)cloud_type;
+                      bytesSent:(uint64_t)bytes_sent;
 @end
 
 @interface QNReportConfig : NSObject

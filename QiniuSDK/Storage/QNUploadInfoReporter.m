@@ -343,8 +343,6 @@ NSString *const bad_request = @"bad_request";
 @property (nonatomic, assign) uint64_t regions_count;
 // 为了完成本次上传所发出的 HTTP 请求体尺寸总量(含 UC Query 和 HTTPDNS Query)
 @property (nonatomic, assign) uint64_t bytes_sent;
-// 公有云 "public", 私有云"private"
-@property (nonatomic, copy) NSString *cloud_type;
 
 @end
 
@@ -362,8 +360,7 @@ NSString *const bad_request = @"bad_request";
                totalElapsedTime:(uint64_t)total_elapsed_time
                   requestsCount:(uint64_t)requests_count
                    regionsCount:(uint64_t)regions_count
-                      bytesSent:(uint64_t)bytes_sent
-                      cloudType:(NSString *)cloud_type {
+                      bytesSent:(uint64_t)bytes_sent {
     
     QNReportQualityItem *item = [[QNReportQualityItem alloc] init];
     item.result = result;
@@ -371,7 +368,6 @@ NSString *const bad_request = @"bad_request";
     item.requests_count = requests_count;
     item.regions_count = regions_count;
     item.bytes_sent = bytes_sent;
-    item.cloud_type = cloud_type;
     
     return item;
 }

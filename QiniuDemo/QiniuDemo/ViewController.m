@@ -26,10 +26,10 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     self.title = @"七牛云上传";
-    self.token = @"bjtWBQXrcxgo7HWwlC_bgHg81j352_GhgBGZPeOW:Ru8TYH5KG7CIlzGdPLBT16TyZDI=:eyJzY29wZSI6InNodWFuZ2h1bzEiLCJkZWFkbGluZSI6MTU4NzUxOTU3M30K";
+    self.token = @"bjtWBQXrcxgo7HWwlC_bgHg81j352_GhgBGZPeOW:tB9CU0zSubWbJvtFsi9JBbH4B7g=:eyJzY29wZSI6InNodWFuZ2h1bzEiLCJkZWFkbGluZSI6MTU4NzYzMDYxNX0K";
 //    self.filePath = [[NSBundle mainBundle] pathForResource:@"image" ofType:@"jpg"];
     NSString *cachePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"qiniu"];
-    int randomLength = 3 * 1024 * 1024;
+    int randomLength = 12 * 1024 * 1024;
     self.filePath = [[QNTempFile createTempfileWithSize:randomLength] path];
     _config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
 //        builder.zone = [QNFixedZone zone1];

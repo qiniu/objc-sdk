@@ -135,10 +135,10 @@
             } else {
                 if (error) {
                     _error = error;
-                    _statusCode = error.code;
+                    _statusCode = (int)error.code;
                     _errorDescription = _error.localizedDescription;
                     
-                    if (error.code == -1) {
+                    if (error.code == -1 || error.code == -1009) {
                         _errorType = network_error;
                     } else if (error.code == -1001) {
                         _errorType = timeout;
@@ -146,7 +146,7 @@
                         _errorType = unknown_host;
                     } else if (error.code == -1004) {
                         _errorType = cannot_connect_to_host;
-                    } else if (error.code == -1005 || error.code == -1009 || error.code == -1011) {
+                    } else if (error.code == -1005 || error.code == -1011) {
                         _errorType = transmission_error;
                     } else if (error.code > -2001 && error.code < -1199) {
                         _errorType = ssl_error;

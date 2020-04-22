@@ -16,7 +16,6 @@ QNCollectKey *const CK_key = @"key";
 QNCollectKey *const CK_targetRegionId = @"targetRegionId";
 QNCollectKey *const CK_currentRegionId = @"currentRegionId";
 QNCollectKey *const CK_result = @"result";
-QNCollectKey *const CK_cloudType = @"cloudType";
 QNCollectKey *const CK_blockBytesSent = @"blockBytesSent";
 QNCollectKey *const CK_recoveredFrom = @"recoveredFrom";
 QNCollectKey *const CK_totalBytesSent = @"totalBytesSent";
@@ -34,7 +33,6 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
 @property (nonatomic, copy) NSString *targetRegionId;
 @property (nonatomic, copy) NSString *currentRegionId;
 @property (nonatomic, copy) NSString *result;
-@property (nonatomic, copy) NSString *cloudType;
 
 @property (nonatomic, assign) uint64_t uploadStartTime;
 @property (nonatomic, assign) uint64_t uploadEndTime;
@@ -67,7 +65,6 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
 @property (nonatomic, strong) NSArray<QNCollectKey *> *updateKeysList;
 @property (nonatomic, strong) NSArray <QNCollectKey *>*appendKeysList;
 @property (nonatomic, strong) NSMutableArray<QNCollectItem *> *collectItemList;
-//@property (nonatomic, strong) NSLock *lock;
 @property (nonatomic, strong) dispatch_queue_t collectQueue;
 @end
 
@@ -79,7 +76,6 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
     dispatch_once(&onceToken, ^{
         sharedInstance = [[self alloc] init];
         sharedInstance.collectItemList = [NSMutableArray array];
-//        sharedInstance.lock = [[NSLock alloc] init];
         sharedInstance.collectQueue = dispatch_queue_create("com.qiniu.collector", DISPATCH_QUEUE_SERIAL);
         sharedInstance.updateKeysList = @[
             CK_bucket,
@@ -87,7 +83,6 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
             CK_targetRegionId,
             CK_currentRegionId,
             CK_result,
-            CK_cloudType,
             CK_recoveredFrom,
             CK_fileSize,
             CK_blockApiVersion];
@@ -99,7 +94,7 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
 }
 
 - (void)registerWithIdentifier:(NSString *)identifier token:(NSString *)token {
-    if (!identifier || !token || ![QNReportConfig sharedInstance].isReportEnable) return;
+    if (!identifier || !token) return;
     dispatch_async(_collectQueue, ^{
         QNCollectItem *item = [[QNCollectItem alloc] initWithIdentifier:identifier token:token];
         item.uploadStartTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970] * 1000;
@@ -108,7 +103,7 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
 }
 
 - (void)update:(QNCollectKey *)key value:(id)value identifier:(NSString *)identifier {
-    if (!identifier || !key || ![self.updateKeysList containsObject:key] || ![QNReportConfig sharedInstance].isReportEnable) return;
+    if (!identifier || !key || ![self.updateKeysList containsObject:key]) return;
     dispatch_async(_collectQueue, ^{
         QNCollectItem *currentItem = [self getCurrentItemWithIdentifier:identifier];
         if (currentItem) {
@@ -118,7 +113,7 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
 }
 
 - (void)append:(QNCollectKey *)key value:(id)value identifier:(NSString *)identifier {
-    if (!identifier || !key || ![self.appendKeysList containsObject:key] || ![QNReportConfig sharedInstance].isReportEnable) return;
+    if (!identifier || !key || ![self.appendKeysList containsObject:key]) return;
     dispatch_async(_collectQueue, ^{
         QNCollectItem *currentItem = [self getCurrentItemWithIdentifier:identifier];
         if (currentItem) {
@@ -279,14 +274,14 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
 }
 
 - (void)reportResult:(QNCollectItem *)currentItem {
-    uint64_t regionsCount = currentItem.targetRegionId || currentItem.currentRegionId || [currentItem.targetRegionId isEqualToString:currentItem.currentRegionId] ? 1 : 2;
+    uint64_t regionsCount = !currentItem.targetRegionId || !currentItem.currentRegionId || [currentItem.targetRegionId isEqualToString:currentItem.currentRegionId] ? 1 : 2;
     uint64_t totalElapsedTime = currentItem.uploadEndTime - currentItem.uploadStartTime;
 
     if (currentItem.blockApiVersion != 0) {
         QNReportBlockItem *item = [QNReportBlockItem buildWithTargetRegionId:currentItem.targetRegionId currentRegionId:currentItem.currentRegionId totalElapsedTime:totalElapsedTime bytesSent:currentItem.blockBytesSent recoveredFrom:currentItem.recoveredFrom fileSize:currentItem.fileSize pid:0 tid:0 upApiVersion:currentItem.blockApiVersion];
         [Reporter report:[item toJson] token:currentItem.token];
     }
-    QNReportQualityItem *item = [QNReportQualityItem buildWithResult:currentItem.result totalElapsedTime:totalElapsedTime requestsCount:currentItem.httpRequestList.count regionsCount:regionsCount bytesSent:currentItem.totalBytesSent cloudType:currentItem.cloudType];
+    QNReportQualityItem *item = [QNReportQualityItem buildWithResult:currentItem.result totalElapsedTime:totalElapsedTime requestsCount:currentItem.httpRequestList.count regionsCount:regionsCount bytesSent:currentItem.totalBytesSent];
     [Reporter report:[item toJson] token:currentItem.token];
 }
 

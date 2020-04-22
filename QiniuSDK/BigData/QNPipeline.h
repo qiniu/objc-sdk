@@ -33,8 +33,6 @@
  *    上传完成后的回调函数
  *
  *    @param info 上下文信息，包括状态码，错误值
- *    @param key  上传时指定的key，原样返回
- *    @param resp 上传成功会返回文件信息，失败为nil; 可以通过此值是否为nil 判断上传结果
  */
 typedef void (^QNPipelineCompletionHandler)(QNHttpResponseInfo *info);
 

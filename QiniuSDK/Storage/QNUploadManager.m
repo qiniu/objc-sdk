@@ -155,7 +155,6 @@
     }
     
     [_config.zone preQueryWithToken:t on:^(int code, QNHttpResponseInfo *httpResponseInfo) {
-        [Collector update:CK_cloudType value:@"public" identifier:identifier];
         [Collector addRequestWithType:QNRequestType_ucQuery httpResponseInfo:httpResponseInfo fileOffset:0 targetRegionId:nil currentRegionId:nil identifier:identifier];
         if (code != 0) {
             QNAsyncRunInMain(^{
@@ -212,7 +211,6 @@
         }
 
         [_config.zone preQueryWithToken:t on:^(int code, QNHttpResponseInfo *httpResponseInfo) {
-            [Collector update:CK_cloudType value:@"public" identifier:identifier];
             [Collector addRequestWithType:QNRequestType_ucQuery httpResponseInfo:httpResponseInfo fileOffset:0 targetRegionId:nil currentRegionId:nil identifier:identifier];
             if (code != 0) {
                 QNAsyncRunInMain(^{
