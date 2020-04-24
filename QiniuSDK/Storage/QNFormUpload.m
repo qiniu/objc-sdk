@@ -15,7 +15,6 @@
 @property (nonatomic, strong) NSString *fileName;
 @property (nonatomic) float previousPercent;
 
-
 @end
 
 @implementation QNFormUpload
@@ -74,6 +73,13 @@
 
 - (void)nextTask:(int)retried host:(NSString *)host param:(NSDictionary *)param {
         
+    if (self.option.cancellationSignal()) {
+        [self collectUploadQualityInfo];
+        QNResponseInfo *info = [Collector userCancel:self.identifier];
+        self.complete(info, self.key, nil);
+        return;
+    }
+        
     QNInternalProgressBlock p = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
         float percent = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
         if (percent > 0.95) {
@@ -87,49 +93,43 @@
         self.option.progressHandler(self.key, percent);
     };
     QNCompleteBlock complete = ^(QNHttpResponseInfo *httpResponseInfo, NSDictionary *respBody) {
-        
         [self collectHttpResponseInfo:httpResponseInfo fileOffset:0];
         
         if (httpResponseInfo.isOK) {
             self.option.progressHandler(self.key, 1.0);
-        }
-        if (httpResponseInfo.isOK || !httpResponseInfo.couldRetry) {
             [self collectUploadQualityInfo];
             QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
             self.complete(info, self.key, respBody);
-            return;
-        }
-        if (self.option.cancellationSignal()) {
-            [self collectUploadQualityInfo];
-            QNResponseInfo *info = [Collector userCancel:self.identifier];
-            self.complete(info, self.key, nil);
-            return;
-        }
-
-        if (retried < self.config.retryMax) {
-            [self nextTask:retried + 1 needDelay:YES host:host param:param];
-        } else {
-            if (self.config.allowBackupHost) {
-                NSString *nextHost = [self.config.zone up:self.token zoneInfoType:self.currentZoneType isHttps:self.config.useHttps frozenDomain:host];
-                if (nextHost) {
-                    [self nextTask:0 needDelay:YES host:nextHost param:param];
-                } else {
-                    QNZonesInfo *zonesInfo = [self.config.zone getZonesInfoWithToken:self.token];
-                    if (self.currentZoneType == QNZoneInfoTypeMain && zonesInfo.hasBackupZone) {
-                        self.currentZoneType = QNZoneInfoTypeBackup;
-                        [self nextTask:0 needDelay:YES host:[self.config.zone up:self.token zoneInfoType:self.currentZoneType isHttps:self.config.useHttps frozenDomain:nil] param:param];
-                    } else {
-                        [self collectUploadQualityInfo];
-                        QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
-                        self.complete(info, self.key, respBody);
-                    }
-                }
+        } else if (httpResponseInfo.couldRetry) {
+            if (retried < self.config.retryMax) {
+                [self nextTask:retried + 1 needDelay:YES host:host param:param];
             } else {
-                [self collectUploadQualityInfo];
-                QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
-                self.complete(info, self.key, respBody);
+                if (self.config.allowBackupHost) {
+                    NSString *nextHost = [self.config.zone up:self.token zoneInfoType:self.currentZoneType isHttps:self.config.useHttps frozenDomain:host];
+                    if (nextHost) {
+                        [self nextTask:0 needDelay:YES host:nextHost param:param];
+                    } else {
+                        QNZonesInfo *zonesInfo = [self.config.zone getZonesInfoWithToken:self.token];
+                        if (self.currentZoneType == QNZoneInfoTypeMain && zonesInfo.hasBackupZone) {
+                            self.currentZoneType = QNZoneInfoTypeBackup;
+                            [self nextTask:0 needDelay:YES host:[self.config.zone up:self.token zoneInfoType:self.currentZoneType isHttps:self.config.useHttps frozenDomain:nil] param:param];
+                        } else {
+                            [self collectUploadQualityInfo];
+                            QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
+                            self.complete(info, self.key, respBody);
+                        }
+                    }
+                } else {
+                    [self collectUploadQualityInfo];
+                    QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
+                    self.complete(info, self.key, respBody);
+                }
             }
-        }
+        } else {
+            [self collectUploadQualityInfo];
+            QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
+            self.complete(info, self.key, respBody);
+        }        
     };
     [self.sessionManager multipartPost:host
                               withData:self.data
@@ -142,6 +142,5 @@
                        withCancelBlock:self.option.cancellationSignal
                             withAccess:self.access];
 }
-
 
 @end

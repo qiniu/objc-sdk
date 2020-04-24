@@ -26,10 +26,10 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     self.title = @"七牛云上传";
-    self.token = @"bjtWBQXrcxgo7HWwlC_bgHg81j352_GhgBGZPeOW:tB9CU0zSubWbJvtFsi9JBbH4B7g=:eyJzY29wZSI6InNodWFuZ2h1bzEiLCJkZWFkbGluZSI6MTU4NzYzMDYxNX0K";
+    self.token = @"bjtWBQXrcxgo7HWwlC_bgHg81j352_GhgBGZPeOW:vu5NCmKZJTyIeFb1BxSawE_b7OU=:eyJzY29wZSI6InNodWFuZ2h1bzEiLCJkZWFkbGluZSI6MTU4Nzc3OTE0N30K";
 //    self.filePath = [[NSBundle mainBundle] pathForResource:@"image" ofType:@"jpg"];
     NSString *cachePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] stringByAppendingPathComponent:@"qiniu"];
-    int randomLength = 12 * 1024 * 1024;
+    int randomLength = 36 * 1024 * 1024;
     self.filePath = [[QNTempFile createTempfileWithSize:randomLength] path];
     _config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
 //        builder.zone = [QNFixedZone zone1];
@@ -92,7 +92,7 @@
                                                      cancellationSignal:^BOOL{
         return self.isCancel;
     }];
-    [_upManager putFile:filePath key:@"lalala1" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+    [_upManager putFile:filePath key:@"lalala2" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         NSLog(@"info ===== %@", info);
         NSLog(@"resp ===== %@", resp);
     }

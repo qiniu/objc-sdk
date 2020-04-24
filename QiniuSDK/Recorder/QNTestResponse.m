@@ -40,20 +40,20 @@
         },
         @"up" : @{
                 @"acc" : @{
-                        @"main" : @[@"1.up.acc.main"],
-                        @"backup" : @[@"1.up.acc.backup1", @"1.up.acc.backup2"]
+                        @"main" : @[@"1-up-acc-main"],
+                        @"backup" : @[@"1-up.acc.backup1", @"1-up-acc-backup2"]
                 },
                 @"old_acc" : @{
-                        @"main" : @[@"1.up.old_acc.main"],
+                        @"main" : @[@"1-up-old_acc-main"],
                         @"info" : @"compatible to non-SNI device"
                 },
                 @"old_src" : @{
-                        @"main" : @[@"1.up.old_src_main"],
+                        @"main" : @[@"1-up-old_src-main"],
                         @"info" : @"compatible to non-SNI device"
                 },
                 @"src" : @{
-                        @"main" : @[@"1.up.src.main"],
-                        @"backup" : @[@"1.up.src.backup1", @"1.up.src.backup2"]
+                        @"main" : @[@"1-up-src-main"],
+                        @"backup" : @[@"1-up-src-backup1", @"1-up-src-backup2"]
                 }
         }
     };
@@ -86,20 +86,20 @@
         },
         @"up" : @{
                 @"acc" : @{
-                        @"main" : @[@"2.up.acc.main"],
-                        @"backup" : @[@"upload-z2.qiniup.com", @"2.up.acc.backup2"]
+                        @"main" : @[@"2-up-acc-main"],
+                        @"backup" : @[@"upload-z2.qiniup.com", @"2-up-acc-backup2"]
                 },
                 @"old_acc" : @{
-                        @"main" : @[@"2.up.old_acc.main"],
+                        @"main" : @[@"2-up-old_acc-main"],
                         @"info" : @"compatible to non-SNI device"
                 },
                 @"old_src" : @{
-                        @"main" : @[@"2.up.old_src.main"],
+                        @"main" : @[@"2-up-old_src-main"],
                         @"info" : @"compatible to non-SNI device"
                 },
                 @"src" : @{
-                        @"main" : @[@"2.up.src.main"],
-                        @"backup" : @[@"2.up.src.backup1", @"2.up.src.backup2"]
+                        @"main" : @[@"2-up-src-main"],
+                        @"backup" : @[@"2-up-src-backup1", @"2-up-src-backup2"]
                 }
         }
     };
