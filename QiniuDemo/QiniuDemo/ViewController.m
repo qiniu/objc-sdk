@@ -37,7 +37,9 @@
 //        builder.concurrentTaskCount = 3;
 //        builder.recorder = [QNFileRecorder fileRecorderWithFolder:[[self class] fileCachePath] encodeKey:YES error:nil];
         builder.reportConfig.reportEnable = YES;
-        builder.reportConfig.interval = 0;
+        builder.reportConfig.interval = 10;
+        builder.reportConfig.uploadThreshold = 100 * 1024;
+        builder.reportConfig.maxRecordFileSize = 4 * 1024 * 1024;
         builder.useConcurrentResumeUpload = YES;
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:cachePath error:nil];
     }];

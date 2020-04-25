@@ -11,11 +11,10 @@
 #import "QNUploadInfoReporter.h"
 #import "QNUserAgent.h"
 #import "QNVersion.h"
+#import "QNSessionManager.h"
 
 @interface QNHttpResponseInfo ()
-
 @property (nonatomic, strong) NSDictionary *responseBody;
-
 @end
 
 @implementation QNHttpResponseInfo
@@ -23,20 +22,15 @@
                                      response:(NSHTTPURLResponse *)response
                                          body:(NSData *)body
                                         error:(NSError *)error
-                                      metrics:(NSURLSessionTaskMetrics *)metrics
-                                    bytesSent:(uint64_t)bytesSent
-                                   bytesTotal:(uint64_t)bytesTotal {
-    
-    return [[[self class] alloc] initWithResponseInfoHost:host response:response body:body error:error metrics:metrics bytesSent:bytesSent bytesTotal:bytesTotal];
+                            sessionStatistics:(QNSessionStatistics *)sessionStatistics {
+    return [[[self class] alloc] initWithResponseInfoHost:host response:response body:body error:error sessionStatistics:sessionStatistics];
 }
 
 - (instancetype)initWithResponseInfoHost:(NSString *)host
                                 response:(NSHTTPURLResponse *)response
                                     body:(NSData *)body
                                    error:(NSError *)error
-                                 metrics:(NSURLSessionTaskMetrics *)metrics
-                               bytesSent:(uint64_t)bytesSent
-                              bytesTotal:(uint64_t)bytesTotal {
+                       sessionStatistics:(QNSessionStatistics *)sessionStatistics {
     
     self = [super init];
     if (self) {
@@ -44,44 +38,25 @@
         _proxyConnection = NO;
         _hasHttpResponse = NO;
         _host = host;
-        _bytesSent = bytesSent;
-        _bytesTotal = bytesTotal;
         _pid = [QNSystemTool getCurrentProcessID];
         _tid = [QNSystemTool getCurrentThreadID];
         _networkType = [QNSystemTool getCurrentNetworkType];
         _signalStrength = [QNSystemTool getCurrentNetworkSignalStrength];
         _timeStamp = [[NSDate date] timeIntervalSince1970];
         
-        if (metrics) {
-            if (metrics.transactionMetrics.count > 0) {
-                NSURLSessionTaskTransactionMetrics *transactionMetrics = metrics.transactionMetrics[0];
-                
-                // remote_ip & port
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
-                if (@available(iOS 13.0, *)) {
-                    _remoteIp = transactionMetrics.remoteAddress;
-                    _port = [transactionMetrics.remotePort unsignedShortValue];
-                } else {
-                    NSString *remoteIpAddressAndPort = [transactionMetrics valueForKey:@"__remoteAddressAndPort"];
-                    NSRange indexRange = [remoteIpAddressAndPort rangeOfString:@":"];
-                    _remoteIp = [remoteIpAddressAndPort substringToIndex:indexRange.location];
-                    _port = [[remoteIpAddressAndPort substringFromIndex:indexRange.location + 1] intValue];
-                }
-#endif
-                
-                // time
-                _totalElapsedTime = metrics.taskInterval.duration * 1000;
-                _dnsElapsedTime = [self getTimeintervalWithStartDate:transactionMetrics.domainLookupStartDate endDate:transactionMetrics.domainLookupEndDate];
-                _connectElapsedTime =
-                [self getTimeintervalWithStartDate:transactionMetrics.connectStartDate endDate:transactionMetrics.connectEndDate];
-                _tlsConnectElapsedTime = [self getTimeintervalWithStartDate:transactionMetrics.secureConnectionStartDate endDate:transactionMetrics.secureConnectionEndDate];
-                _requestElapsedTime = [self getTimeintervalWithStartDate:transactionMetrics.requestStartDate endDate:transactionMetrics.requestEndDate];
-                _waitElapsedTime = [self getTimeintervalWithStartDate:transactionMetrics.requestEndDate endDate:transactionMetrics.responseStartDate];
-                _responseElapsedTime = [self getTimeintervalWithStartDate:transactionMetrics.responseStartDate endDate:transactionMetrics.responseEndDate];
-                
-                // proxy
-                _proxyConnection = transactionMetrics.isProxyConnection;
-            }
+        if (sessionStatistics) {
+            _bytesSent = sessionStatistics.bytesSent;
+            _bytesTotal = sessionStatistics.bytesTotal;
+            _remoteIp = sessionStatistics.remoteIp;
+            _port = sessionStatistics.port;
+            _totalElapsedTime = sessionStatistics.totalElapsedTime;
+            _dnsElapsedTime = sessionStatistics.dnsElapsedTime;
+            _connectElapsedTime = sessionStatistics.connectElapsedTime;
+            _tlsConnectElapsedTime = sessionStatistics.tlsConnectElapsedTime;
+            _requestElapsedTime = sessionStatistics.requestElapsedTime;
+            _waitElapsedTime = sessionStatistics.waitElapsedTime;
+            _responseElapsedTime = sessionStatistics.responseElapsedTime;
+            _proxyConnection = sessionStatistics.isProxyConnection;
         }
         
         if (response) {

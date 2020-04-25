@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+@class QNSessionStatistics;
+
 @interface QNHttpResponseInfo : NSObject
 
 /**
@@ -157,9 +159,7 @@
  *    @param response  httpReponse
  *    @param body   httpBody
  *    @param error   错误信息
- *    @param metrics   上传统计数据
- *    @param bytesSent 请求发送的字节数
- *    @param bytesTotal 请求预期发送的字节数
+ *    @param sessionStatistics   上传统计数据
  *
  *    @return 实例
  */
@@ -167,9 +167,7 @@
                                      response:(NSHTTPURLResponse *)response
                                          body:(NSData *)body
                                         error:(NSError *)error
-                                      metrics:(NSURLSessionTaskMetrics *)metrics
-                                    bytesSent:(uint64_t)bytesSent
-                                   bytesTotal:(uint64_t)bytesTotal;
+                            sessionStatistics:(QNSessionStatistics *)sessionStatistics;
 
 /**
 *    status == 200 时获取解析后的response body

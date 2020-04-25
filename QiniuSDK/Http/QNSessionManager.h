@@ -6,7 +6,6 @@
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 
 @class QNHttpResponseInfo;
-@class QNSessionStatistics;
 
 typedef void (^QNInternalProgressBlock)(long long totalBytesWritten, long long totalBytesExpectedToWrite);
 typedef void (^QNCompleteBlock)(QNHttpResponseInfo *httpResponseInfo, NSDictionary *respBody);
@@ -14,24 +13,18 @@ typedef BOOL (^QNCancelBlock)(void);
 
 @interface QNSessionStatistics : NSObject
 
-@property (nonatomic, copy, readonly) NSString *remoteIp;
-@property (nonatomic, assign, readonly) uint16_t port;
-@property (nonatomic, assign, readonly) uint64_t totalElapsedTime;
-@property (nonatomic, assign, readonly) uint64_t dnsElapsedTime;
-@property (nonatomic, assign, readonly) uint64_t connectElapsedTime;
-@property (nonatomic, assign, readonly) uint64_t tlsConnectElapsedTime;
-@property (nonatomic, assign, readonly) uint64_t requestElapsedTime;
-@property (nonatomic, assign, readonly) uint64_t waitElapsedTime;
-@property (nonatomic, assign, readonly) uint64_t responseElapsedTime;
-@property (nonatomic, assign, readonly) uint64_t bytesSent;
-@property (nonatomic, assign, readonly) uint64_t bytesTotal;
-@property (nonatomic, assign, readonly) BOOL isProxyConnection;
-@property (nonatomic, copy, readonly) NSString *errorType;
-@property (nonatomic, copy, readonly) NSString *errorDescription;
-@property (nonatomic, assign, readonly) int64_t pid;
-@property (nonatomic, assign, readonly) int64_t tid;
-@property (nonatomic, copy, readonly) NSString *networkType;
-@property (nonatomic, assign, readonly) int64_t signalStrength;
+@property (nonatomic, copy) NSString *remoteIp;
+@property (nonatomic, assign) uint16_t port;
+@property (nonatomic, assign) uint64_t totalElapsedTime;
+@property (nonatomic, assign) uint64_t dnsElapsedTime;
+@property (nonatomic, assign) uint64_t connectElapsedTime;
+@property (nonatomic, assign) uint64_t tlsConnectElapsedTime;
+@property (nonatomic, assign) uint64_t requestElapsedTime;
+@property (nonatomic, assign) uint64_t waitElapsedTime;
+@property (nonatomic, assign) uint64_t responseElapsedTime;
+@property (nonatomic, assign) uint64_t bytesSent;
+@property (nonatomic, assign) uint64_t bytesTotal;
+@property (nonatomic, assign, getter=isProxyConnection) BOOL proxyConnection;
 
 @end
 
