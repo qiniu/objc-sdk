@@ -7,6 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+#import <UIKit/UIKit.h>
+#endif
 
 @class QNResponseInfo;
 
@@ -19,7 +22,7 @@ extern NSString *const invalid_args; // 调用参数出错
 /// Network Error Type
 extern NSString *const unknown_error;   // 未知错误
 extern NSString *const network_error; // 未知网络错误
-extern NSString *const timeout;   // 超时错误
+extern NSString *const network_timeout;   // 超时错误
 extern NSString *const unknown_host;    // DNS 解析错误
 extern NSString *const cannot_connect_to_host;  // 连接服务器器错误
 extern NSString *const transmission_error;  // 传输错误

@@ -12,7 +12,6 @@
 #import "QNSessionManager.h"
 #import "QNUpToken.h"
 #import "QNUploadInfoReporter.h"
-#import "QNTestResponse.h"
 
 const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 static NSString *const zoneNames[] = {@"z0", @"z1", @"z2", @"as0", @"na0", @"unknown"};

@@ -6,7 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
 @interface QNSystemTool : NSObject
 
@@ -21,4 +21,5 @@
 
 // 获取当前线程ID
 + (int64_t)getCurrentThreadID;
+
 @end

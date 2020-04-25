@@ -25,7 +25,7 @@ NSString *const invalid_args = @"invalid_args";
 // Network Error Type
 NSString *const unknown_error = @"unknown_error";
 NSString *const network_error = @"network_error";
-NSString *const timeout = @"timeout";
+NSString *const network_timeout = @"timeout";
 NSString *const unknown_host = @"unknown_host";
 NSString *const cannot_connect_to_host = @"cannot_connect_to_host";
 NSString *const transmission_error = @"transmission_error";
@@ -261,8 +261,14 @@ NSString *const bad_request = @"bad_request";
     item.network_type = network_type;
     item.signal_strength = signal_strength;
     
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
     item.os_name = [[UIDevice currentDevice] model];
     item.os_version = [[UIDevice currentDevice] systemVersion];
+#else
+    item.os_name = @"Mac OS X";
+    item.os_version = [[NSProcessInfo processInfo] operatingSystemVersionString];
+#endif
+    
     item.sdk_name = @"Object-C";
     item.sdk_version = kQiniuVersion;
 
@@ -534,8 +540,8 @@ static const NSString *reportTypeValueList[] = {@"form", @"mkblk", @"bput", @"mk
                 if (httpResponse.statusCode == 200) {
                     self.lastReportTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970];
                     NSDictionary *respHeader = httpResponse.allHeaderFields;
-                    if (!self.X_Log_Client_Id && [respHeader.allKeys containsObject:@"X-Log-Client-Id"]) {
-                        self.X_Log_Client_Id = respHeader[@"X-Log-Client-Id"];
+                    if (!self.X_Log_Client_Id && [respHeader.allKeys containsObject:@"x-log-client-id"]) {
+                        self.X_Log_Client_Id = respHeader[@"x-log-client-id"];
                     }
                     [self clean];
                 } else {

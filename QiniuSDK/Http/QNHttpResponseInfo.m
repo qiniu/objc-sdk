@@ -57,6 +57,7 @@
                 NSURLSessionTaskTransactionMetrics *transactionMetrics = metrics.transactionMetrics[0];
                 
                 // remote_ip & port
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
                 if (@available(iOS 13.0, *)) {
                     _remoteIp = transactionMetrics.remoteAddress;
                     _port = [transactionMetrics.remotePort unsignedShortValue];
@@ -66,6 +67,7 @@
                     _remoteIp = [remoteIpAddressAndPort substringToIndex:indexRange.location];
                     _port = [[remoteIpAddressAndPort substringFromIndex:indexRange.location + 1] intValue];
                 }
+#endif
                 
                 // time
                 _totalElapsedTime = metrics.taskInterval.duration * 1000;
@@ -141,7 +143,7 @@
                     if (error.code == -1 || error.code == -1009) {
                         _errorType = network_error;
                     } else if (error.code == -1001) {
-                        _errorType = timeout;
+                        _errorType = network_timeout;
                     } else if (error.code == -1003 || error.code == -1006) {
                         _errorType = unknown_host;
                     } else if (error.code == -1004) {
