@@ -93,7 +93,7 @@
         self.option.progressHandler(self.key, percent);
     };
     QNCompleteBlock complete = ^(QNHttpResponseInfo *httpResponseInfo, NSDictionary *respBody) {
-        [self collectHttpResponseInfo:httpResponseInfo fileOffset:0];
+        [self collectHttpResponseInfo:httpResponseInfo fileOffset:QN_IntNotSet];
         
         if (httpResponseInfo.isOK) {
             self.option.progressHandler(self.key, 1.0);

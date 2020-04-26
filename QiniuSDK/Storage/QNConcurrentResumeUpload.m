@@ -11,27 +11,25 @@
 @interface QNConcurrentRecorderInfo : NSObject
 
 @property (nonatomic, strong) NSNumber *totalSize;     // total size of the file
-@property (nonatomic, strong) NSNumber *offset;         // offset of next block
 @property (nonatomic, strong) NSNumber *modifyTime;  // modify time of the file
 @property (nonatomic, copy) NSString *host;          // upload host used last time
 @property (nonatomic, strong) NSArray<NSDictionary *> *contextsInfo;  // concurrent upload contexts info
 
-- (instancetype)init __attribute__((unavailable("use recorderInfoWithTotalSize:offset:totalSize:modifyTime:host:contextsInfo: instead.")));
+- (instancetype)init __attribute__((unavailable("use recorderInfoWithTotalSize:totalSize:modifyTime:host:contextsInfo: instead.")));
 
 @end
 
 @implementation QNConcurrentRecorderInfo
 
-+ (instancetype)recorderInfoWithTotalSize:(NSNumber *)totalSize offset:(NSNumber *)offset modifyTime:(NSNumber *)modifyTime host:(NSString *)host contextsInfo:(NSArray<NSDictionary *> *)contextsInfo {
-    return [[QNConcurrentRecorderInfo alloc] initWithTotalSize:totalSize offset:offset modifyTime:modifyTime host:host contextsInfo:contextsInfo];
++ (instancetype)recorderInfoWithTotalSize:(NSNumber *)totalSize modifyTime:(NSNumber *)modifyTime host:(NSString *)host contextsInfo:(NSArray<NSDictionary *> *)contextsInfo {
+    return [[QNConcurrentRecorderInfo alloc] initWithTotalSize:totalSize modifyTime:modifyTime host:host contextsInfo:contextsInfo];
 }
 
-- (instancetype)initWithTotalSize:(NSNumber *)totalSize offset:(NSNumber *)offset modifyTime:(NSNumber *)modifyTime host:(NSString *)host contextsInfo:(NSArray<NSDictionary *> *)contextsInfo {
+- (instancetype)initWithTotalSize:(NSNumber *)totalSize modifyTime:(NSNumber *)modifyTime host:(NSString *)host contextsInfo:(NSArray<NSDictionary *> *)contextsInfo {
     
     self = [super init];
     if (self) {
         _totalSize = totalSize ? totalSize : @0;
-        _offset = offset ? offset : @0;
         _modifyTime = modifyTime ? modifyTime : @0;
         _host = host ? host : @"";
         _contextsInfo = contextsInfo ? contextsInfo : @[];
@@ -43,7 +41,6 @@
     
     NSDictionary *recorderInfo = @{
         @"total_size": _totalSize,
-        @"off_set": _offset,
         @"modify_time": _modifyTime,
         @"host": _host,
         @"contexts_info": _contextsInfo
@@ -55,7 +52,7 @@
 + (QNConcurrentRecorderInfo *)buildRecorderInfoWithData:(NSData *)data error:(NSError **)error {
     
     NSDictionary *recorderInfo = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:error];
-    return [[self class] recorderInfoWithTotalSize:recorderInfo[@"total_size"] offset:recorderInfo[@"off_set"] modifyTime:recorderInfo[@"modify_time"] host:recorderInfo[@"host"] contextsInfo:recorderInfo[@"contexts_info"]];
+    return [[self class] recorderInfoWithTotalSize:recorderInfo[@"total_size"] modifyTime:recorderInfo[@"modify_time"] host:recorderInfo[@"host"] contextsInfo:recorderInfo[@"contexts_info"]];
 }
 
 @end
@@ -100,7 +97,6 @@
 @property (nonatomic, assign) UInt32 totalSize; // 文件总大小
 
 @property (nonatomic, strong) NSArray<NSDictionary *> *contextsInfo; // 续传context信息
-@property (nonatomic, assign) UInt32 offset;  // 断点续传偏移量
 
 @property (nonatomic, strong) NSMutableArray<QNConcurrentTask *> *taskQueueArray; // block 任务队列
 @property (nonatomic, assign) UInt32 taskQueueCount; // 实际并发任务数量
@@ -149,7 +145,6 @@
         _isConcurrentTaskError = NO;
         _nextTaskIndex = 0;
         _taskQueueCount = 0;
-        _offset = 0;
                 
         [self initTaskQueue];
     }
@@ -164,7 +159,6 @@
             int block_index = [info[@"block_index"] intValue];
             UInt32 block_size = [info[@"block_size"] unsignedIntValue];
             NSString *context = info[@"context"];
-            _offset += block_size;
             QNConcurrentTask *recoveryTask = [QNConcurrentTask concurrentTaskWithBlockIndex:block_index blockSize:block_size];
             recoveryTask.uploadedSize = block_size;
             recoveryTask.context = context;
@@ -215,7 +209,6 @@
     _info = nil;
     _nextTaskIndex = 0;
     _taskQueueCount = 0;
-    _offset = 0;
     _isConcurrentTaskError = NO;
     [_taskQueueArray removeAllObjects];
     
@@ -357,7 +350,6 @@
                           token:self.token];
         
         [Collector update:CK_blockApiVersion value:@1 identifier:self.identifier];
-        [Collector update:CK_recoveredFrom value:self.recordInfo.offset ? self.recordInfo.offset : @0  identifier:self.identifier];
     }
     return self;
 }
@@ -426,6 +418,11 @@
 }
 
 - (void)putBlockWithTask:(QNConcurrentTask *)task host:(NSString *)host {
+    
+    if (self.taskQueue.isConcurrentTaskError) {
+        dispatch_group_leave(self.uploadGroup);
+        return;
+    }
                 
     if (self.option.cancellationSignal()) {
         [self collectUploadQualityInfo];
@@ -439,7 +436,7 @@
     NSData *data = [self.file read:task.index * kQNBlockSize size:task.size error:&error];
     if (error) {
         [self collectUploadQualityInfo];
-        QNResponseInfo *info = [Collector completeWithFileError:error identifier:self.identifier];
+        QNResponseInfo *info = [Collector completeWithLocalIOError:error identifier:self.identifier];
         [self invalidateTasksWithErrorInfo:info resp:nil];
         dispatch_group_leave(self.uploadGroup);
         return;
@@ -468,8 +465,8 @@
             NSNumber *crc = respBody[@"crc32"];
             if (httpResponseInfo.isOK && ctx && crc && [crc unsignedLongValue] == blockCrc) {
                 self.option.progressHandler(self.key, self.taskQueue.totalPercent);
-                [self recordWithTask:task];
                 BOOL hasMore = [self.taskQueue completeTask:task withContext:ctx];
+                [self record];
                 if (hasMore) {
                     [self retryWithDelay:YES task:[self.taskQueue getNextTask] host:self.upHost];
                 } else {
@@ -608,7 +605,7 @@
     [self post:url withData:postData withCompleteBlock:completionHandler withProgressBlock:nil];
 }
 
-- (void)recordWithTask:(QNConcurrentTask *)task {
+- (void)record {
     
     NSString *key = self.recorderKey;
     if (self.recorder == nil || key == nil || [key isEqualToString:@""]) {
@@ -616,10 +613,8 @@
     }
     NSNumber *total_size = @(self.size);
     NSNumber *modify_time = [NSNumber numberWithLongLong:_modifyTime];
-    NSNumber *off_set = [NSNumber numberWithUnsignedInt:(task.index + 1) * task.size];
-
+    
     QNConcurrentRecorderInfo *recorderInfo = [QNConcurrentRecorderInfo recorderInfoWithTotalSize:total_size
-                                                                                          offset:off_set
                                                                                       modifyTime:modify_time
                                                                                             host:self.upHost
                                                                                     contextsInfo:[self.taskQueue getRecordInfo]];
@@ -662,7 +657,7 @@
         return nil;
     }
 
-    if (recordInfo.totalSize == nil || recordInfo.offset == nil || recordInfo.modifyTime == nil || recordInfo.contextsInfo == nil || recordInfo.contextsInfo.count == 0) {
+    if (recordInfo.totalSize == nil || recordInfo.modifyTime == nil || recordInfo.contextsInfo == nil || recordInfo.contextsInfo.count == 0) {
         return nil;
     }
     

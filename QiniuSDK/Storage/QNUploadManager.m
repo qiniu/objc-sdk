@@ -155,7 +155,7 @@
     }
     
     [_config.zone preQueryWithToken:t on:^(int code, QNHttpResponseInfo *httpResponseInfo) {
-        [Collector addRequestWithType:QNRequestType_ucQuery httpResponseInfo:httpResponseInfo fileOffset:0 targetRegionId:nil currentRegionId:nil identifier:identifier];
+        [Collector addRequestWithType:QNRequestType_ucQuery httpResponseInfo:httpResponseInfo fileOffset:QN_IntNotSet targetRegionId:nil currentRegionId:nil identifier:identifier];
         if (code != 0) {
             QNAsyncRunInMain(^{
                 QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:identifier];
@@ -211,7 +211,7 @@
         }
 
         [_config.zone preQueryWithToken:t on:^(int code, QNHttpResponseInfo *httpResponseInfo) {
-            [Collector addRequestWithType:QNRequestType_ucQuery httpResponseInfo:httpResponseInfo fileOffset:0 targetRegionId:nil currentRegionId:nil identifier:identifier];
+            [Collector addRequestWithType:QNRequestType_ucQuery httpResponseInfo:httpResponseInfo fileOffset:QN_IntNotSet targetRegionId:nil currentRegionId:nil identifier:identifier];
             if (code != 0) {
                 QNAsyncRunInMain(^{
                     QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:identifier];
@@ -231,7 +231,7 @@
                 NSData *data = [file readAllWithError:&error];
                 if (error) {
                     QNAsyncRunInMain(^{
-                        QNResponseInfo *info = [Collector completeWithFileError:error identifier:identifier];
+                        QNResponseInfo *info = [Collector completeWithLocalIOError:error identifier:identifier];
                         completionHandler(info, key, nil);
                     });
                     return;

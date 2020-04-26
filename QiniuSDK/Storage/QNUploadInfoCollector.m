@@ -22,6 +22,30 @@ QNCollectKey *const CK_totalBytesSent = @"totalBytesSent";
 QNCollectKey *const CK_fileSize = @"fileSize";
 QNCollectKey *const CK_blockApiVersion = @"blockApiVersion";
 
+int64_t QN_IntNotSet = -11111111;
+
+// Upload Result Type
+NSString *const upload_ok = @"ok";
+NSString *const zero_size_file = @"zero_size_file";
+NSString *const invalid_file = @"invalid_file";
+NSString *const invalid_args = @"invalid_args";
+NSString *const local_io_error = @"local_io_error";
+
+// Network Error Type
+NSString *const unknown_error = @"unknown_error";
+NSString *const network_error = @"network_error";
+NSString *const network_timeout = @"timeout";
+NSString *const unknown_host = @"unknown_host";
+NSString *const cannot_connect_to_host = @"cannot_connect_to_host";
+NSString *const transmission_error = @"transmission_error";
+NSString *const proxy_error = @"proxy_error";
+NSString *const ssl_error = @"ssl_error";
+NSString *const response_error = @"response_error";
+NSString *const parse_error = @"parse_error";
+NSString *const malicious_response = @"malicious_response";
+NSString *const user_canceled = @"user_canceled";
+NSString *const bad_request = @"bad_request";
+
 static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", @"put", @"init_parts", @"upload_part", @"complete_part", @"uc_query", @"httpdns_query"};
 
 @interface QNCollectItem : NSObject
@@ -34,14 +58,14 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
 @property (nonatomic, copy) NSString *currentRegionId;
 @property (nonatomic, copy) NSString *result;
 
-@property (nonatomic, assign) uint64_t uploadStartTime;
-@property (nonatomic, assign) uint64_t uploadEndTime;
-@property (nonatomic, assign) uint64_t totalBytesSent;
-@property (nonatomic, assign) uint64_t fileSize;
+@property (nonatomic, assign) int64_t uploadStartTime;
+@property (nonatomic, assign) int64_t uploadEndTime;
+@property (nonatomic, assign) int64_t totalBytesSent;
+@property (nonatomic, assign) int64_t fileSize;
 
-@property (nonatomic, assign) uint64_t recoveredFrom;
-@property (nonatomic, assign) uint64_t blockApiVersion;
-@property (nonatomic, assign) uint64_t blockBytesSent;
+@property (nonatomic, assign) int64_t recoveredFrom;
+@property (nonatomic, assign) int64_t blockApiVersion;
+@property (nonatomic, assign) int64_t blockBytesSent;
 
 @property (nonatomic, strong) NSMutableArray<QNHttpResponseInfo *> *httpRequestList;
 @end
@@ -54,6 +78,13 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
     if (self) {
         _identifier = identifier;
         _token = token;
+        _uploadStartTime = QN_IntNotSet;
+        _uploadEndTime = QN_IntNotSet;
+        _fileSize = QN_IntNotSet;
+        _recoveredFrom = QN_IntNotSet;
+        _blockApiVersion = QN_IntNotSet;
+        _totalBytesSent = 0;
+        _blockBytesSent = 0;
         _httpRequestList = [NSMutableArray array];
     }
     return self;
@@ -120,13 +151,13 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
             // append NSNumber value
             NSNumber *formalValue = [currentItem valueForKey:key];
             NSNumber *appendValue = (NSNumber *)value;
-            uint64_t newValue = formalValue.longValue + appendValue.longValue;
+            int64_t newValue = formalValue.longValue + appendValue.longValue;
             [currentItem setValue:@(newValue) forKey:key];
         }
     });
 }
 
-- (void)addRequestWithType:(QNRequestType)upType httpResponseInfo:(QNHttpResponseInfo *)httpResponseInfo fileOffset:(uint64_t)fileOffset targetRegionId:(NSString *)targetRegionId currentRegionId:(NSString *)currentRegionId identifier:(NSString *)identifier {
+- (void)addRequestWithType:(QNRequestType)upType httpResponseInfo:(QNHttpResponseInfo *)httpResponseInfo fileOffset:(int64_t)fileOffset targetRegionId:(NSString *)targetRegionId currentRegionId:(NSString *)currentRegionId identifier:(NSString *)identifier {
     
     if (!identifier || !httpResponseInfo) return;
     dispatch_async(_collectQueue, ^{
@@ -134,20 +165,33 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
         if (currentItem) {
             [currentItem.httpRequestList addObject:httpResponseInfo];
             if ([QNReportConfig sharedInstance].isReportEnable) {
+                
+                // 分块上传bytesSent字段有误差  这里分开处理
+                int64_t bytesSent;
+                if (upType == QNRequestType_mkblk || upType == QNRequestType_bput) {
+                    if (httpResponseInfo.hasHttpResponse) {
+                        bytesSent = httpResponseInfo.bytesTotal;
+                    } else {
+                        bytesSent = 0;
+                    }
+                } else {
+                    bytesSent = httpResponseInfo.bytesSent;
+                }
+                
                 QNReportRequestItem *item = [QNReportRequestItem buildWithUpType:requestTypes[upType]
                                                                     TargetBucket:currentItem.bucket
                                                                        targetKey:currentItem.key
                                                                       fileOffset:fileOffset
                                                                   targetRegionId:targetRegionId
                                                                  currentRegionId:currentRegionId
-                                                               prefetchedIpCount:0
+                                                               prefetchedIpCount:QN_IntNotSet
                                                                              pid:httpResponseInfo.pid
                                                                              tid:httpResponseInfo.tid
                                                                       statusCode:httpResponseInfo.statusCode
                                                                            reqId:httpResponseInfo.reqId
                                                                             host:httpResponseInfo.host
                                                                         remoteIp:httpResponseInfo.remoteIp
-                                                                            port:httpResponseInfo.port totalElapsedTime:httpResponseInfo.totalElapsedTime dnsElapsedTime:httpResponseInfo.dnsElapsedTime connectElapsedTime:httpResponseInfo.connectElapsedTime tlsConnectElapsedTime:httpResponseInfo.tlsConnectElapsedTime requestElapsedTime:httpResponseInfo.requestElapsedTime waitElapsedTime:httpResponseInfo.waitElapsedTime responseElapsedTime:httpResponseInfo.responseElapsedTime bytesSent:httpResponseInfo.bytesSent bytesTotal:httpResponseInfo.bytesTotal errorType:httpResponseInfo.errorType errorDescription:httpResponseInfo.errorDescription networkType:httpResponseInfo.networkType signalStrength:httpResponseInfo.signalStrength];
+                                                                            port:httpResponseInfo.port totalElapsedTime:httpResponseInfo.totalElapsedTime dnsElapsedTime:httpResponseInfo.dnsElapsedTime connectElapsedTime:httpResponseInfo.connectElapsedTime tlsConnectElapsedTime:httpResponseInfo.tlsConnectElapsedTime requestElapsedTime:httpResponseInfo.requestElapsedTime waitElapsedTime:httpResponseInfo.waitElapsedTime responseElapsedTime:httpResponseInfo.responseElapsedTime bytesSent:bytesSent bytesTotal:httpResponseInfo.bytesTotal errorType:httpResponseInfo.errorType errorDescription:httpResponseInfo.errorDescription networkType:httpResponseInfo.networkType signalStrength:httpResponseInfo.signalStrength];
                 [Reporter report:[item toJson] token:currentItem.token];
             }
         }
@@ -235,6 +279,25 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
     return info;
 }
 
+- (QNResponseInfo *)completeWithLocalIOError:(NSError *)error identifier:(NSString *)identifier {
+    
+    __block QNResponseInfo *info;
+    dispatch_semaphore_t signal = dispatch_semaphore_create(0);
+    dispatch_async(_collectQueue, ^{
+        QNCollectItem *currentItem = [self getCurrentItemWithIdentifier:identifier];
+        currentItem.result = local_io_error;
+        currentItem.uploadEndTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970] * 1000;
+        
+       info = [QNResponseInfo responseInfoWithFileError:error duration:(currentItem.uploadEndTime - currentItem.uploadStartTime) / 1000.0];
+        dispatch_semaphore_signal(signal);
+        
+        if ([QNReportConfig sharedInstance].isReportEnable) [self reportResult:currentItem];
+        [self.collectItemList removeObject:currentItem];
+    });
+    dispatch_semaphore_wait(signal, DISPATCH_TIME_FOREVER);
+    return info;
+}
+
 - (QNResponseInfo *)completeWithZeroData:(NSString *)path identifier:(NSString *)identifier {
     
     __block QNResponseInfo *info;
@@ -274,11 +337,11 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
 }
 
 - (void)reportResult:(QNCollectItem *)currentItem {
-    uint64_t regionsCount = !currentItem.targetRegionId || !currentItem.currentRegionId || [currentItem.targetRegionId isEqualToString:currentItem.currentRegionId] ? 1 : 2;
-    uint64_t totalElapsedTime = currentItem.uploadEndTime - currentItem.uploadStartTime;
+    int64_t regionsCount = !currentItem.targetRegionId || !currentItem.currentRegionId || [currentItem.targetRegionId isEqualToString:currentItem.currentRegionId] ? 1 : 2;
+    int64_t totalElapsedTime = currentItem.uploadEndTime - currentItem.uploadStartTime;
 
-    if (currentItem.blockApiVersion != 0) {
-        QNReportBlockItem *item = [QNReportBlockItem buildWithTargetRegionId:currentItem.targetRegionId currentRegionId:currentItem.currentRegionId totalElapsedTime:totalElapsedTime bytesSent:currentItem.blockBytesSent recoveredFrom:currentItem.recoveredFrom fileSize:currentItem.fileSize pid:0 tid:0 upApiVersion:currentItem.blockApiVersion];
+    if (currentItem.blockApiVersion != QN_IntNotSet) {
+        QNReportBlockItem *item = [QNReportBlockItem buildWithTargetRegionId:currentItem.targetRegionId currentRegionId:currentItem.currentRegionId totalElapsedTime:totalElapsedTime bytesSent:currentItem.blockBytesSent recoveredFrom:currentItem.recoveredFrom fileSize:currentItem.fileSize pid:QN_IntNotSet tid:QN_IntNotSet upApiVersion:currentItem.blockApiVersion];
         [Reporter report:[item toJson] token:currentItem.token];
     }
     QNReportQualityItem *item = [QNReportQualityItem buildWithResult:currentItem.result totalElapsedTime:totalElapsedTime requestsCount:currentItem.httpRequestList.count regionsCount:regionsCount bytesSent:currentItem.totalBytesSent];

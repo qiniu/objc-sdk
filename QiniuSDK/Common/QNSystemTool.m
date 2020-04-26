@@ -9,74 +9,7 @@
 #import "QNSystemTool.h"
 #include <pthread.h>
 
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
-#import <UIKit/UIKit.h>
-#endif
-
 @implementation QNSystemTool
-+ (NSString *)getCurrentNetworkType {
-    
-    __block NSString *networkTypeString = @"none";
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        @try {
-            UIApplication *app = [UIApplication sharedApplication];
-            if ([[app valueForKeyPath:@"_statusBar"] isKindOfClass:NSClassFromString(@"UIStatusBar_Modern")])
-                return;
-            
-            NSArray *subviews = [[[app valueForKeyPath:@"statusBar"] valueForKeyPath:@"foregroundView"] subviews];
-            for (id subview in subviews) {
-                if ([subview isKindOfClass:NSClassFromString(@"UIStatusBarDataNetworkItemView")]) {
-                    int networkType = [[subview valueForKeyPath:@"dataNetworkType"] intValue];
-                    switch (networkType) {
-                        case 0:
-                            networkTypeString = @"none";
-                        case 1:
-                            networkTypeString = @"2g";
-                        case 2:
-                            networkTypeString = @"3g";
-                        case 3:
-                            networkTypeString = @"4g";
-                        case 5:
-                            networkTypeString = @"wifi";
-                        default:
-                            break;
-                    }
-                }
-            }
-        } @catch (NSException *exception) {
-            NSLog(@"get current network type failed: %@", exception.reason);
-        }
-    });
-#endif
-    return networkTypeString;
-}
-
-+ (int64_t)getCurrentNetworkSignalStrength {
-    
-    __block int64_t networkSignalStrength = 0;
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
-    dispatch_sync(dispatch_get_main_queue(), ^{
-        UIApplication *app = [UIApplication sharedApplication];
-        // iPhone X
-        if ([[app valueForKeyPath:@"_statusBar"] isKindOfClass:NSClassFromString(@"UIStatusBar_Modern")])
-            return;
-        NSArray *subviews = [[[app valueForKey:@"statusBar"] valueForKey:@"foregroundView"] subviews];
-        UIView *dataNetworkItemView = nil;
-        
-        for (UIView * subview in subviews)
-        {
-            if([subview isKindOfClass:[NSClassFromString(@"UIStatusBarDataNetworkItemView") class]]) {
-                dataNetworkItemView = subview;
-                break;
-            }
-        }
-        networkSignalStrength = [[dataNetworkItemView valueForKey:@"_wifiStrengthBars"] intValue];
-    });
-#endif
-    return networkSignalStrength;
-}
-
 + (int64_t)getCurrentProcessID {
     return [[NSProcessInfo processInfo] processIdentifier];
 }

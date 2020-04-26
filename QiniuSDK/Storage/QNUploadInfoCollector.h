@@ -43,6 +43,30 @@ extern QNCollectKey *const CK_blockApiVersion;
 extern QNCollectKey *const CK_blockBytesSent;
 extern QNCollectKey *const CK_totalBytesSent;
 
+// Upload Result Type
+extern NSString *const upload_ok;   // 上传成功
+extern NSString *const zero_size_file;  // ⽂件⼤小错误
+extern NSString *const invalid_file;  // 文件内容错误
+extern NSString *const invalid_args; // 调用参数出错
+extern NSString *const local_io_error; // 本地 I/O 错误
+
+/// Network Error Type
+extern NSString *const unknown_error;   // 未知错误
+extern NSString *const network_error; // 未知网络错误
+extern NSString *const network_timeout;   // 超时错误
+extern NSString *const unknown_host;    // DNS 解析错误
+extern NSString *const cannot_connect_to_host;  // 连接服务器器错误
+extern NSString *const transmission_error;  // 传输错误
+extern NSString *const proxy_error;     // 使用了 HTTP Proxy 且 Proxy 出错
+extern NSString *const ssl_error;    // SSL 加密错误
+extern NSString *const response_error;  // 收到响应，但状态码非 200
+extern NSString *const parse_error;  // 解析响应错误
+extern NSString *const malicious_response;   // 用户劫持错误
+extern NSString *const user_canceled;   // 用户主动取消
+extern NSString *const bad_request;   // API 失败是由于客户端的参数错误导致，⽆法依靠重试来解决的(例如 4xx 错误， upload token 错误，⽬标 bucket 不存在，⽂件已经存在，区域不正确，额度不够 等)
+
+extern int64_t QN_IntNotSet;
+
 // 用于统计上传质量 和生成QNResponseInfo实例
 @interface QNUploadInfoCollector : NSObject
 
@@ -87,7 +111,7 @@ extern QNCollectKey *const CK_totalBytesSent;
 *   @param identifier              此次上传的唯一标识
 *
 */
-- (void)addRequestWithType:(QNRequestType)upType httpResponseInfo:(QNHttpResponseInfo *)httpResponseInfo fileOffset:(uint64_t)fileOffset targetRegionId:(NSString *)targetRegionId currentRegionId:(NSString *)currentRegionId identifier:(NSString *)identifier;
+- (void)addRequestWithType:(QNRequestType)upType httpResponseInfo:(QNHttpResponseInfo *)httpResponseInfo fileOffset:(int64_t)fileOffset targetRegionId:(NSString *)targetRegionId currentRegionId:(NSString *)currentRegionId identifier:(NSString *)identifier;
 
 /**
 *   根据http请求结果返回QNResponseInfo
@@ -128,6 +152,16 @@ extern QNCollectKey *const CK_totalBytesSent;
 *   @return QNResponseInfo     返回信息
 */
 - (QNResponseInfo *)completeWithFileError:(NSError *)error identifier:(NSString *)identifier;
+
+/**
+*   本地 I/O 出错导致上传结束并返回QNResponseInfo
+*
+*   @param error                    报错信息
+*   @param identifier               此次上传的唯一标识
+*
+*   @return QNResponseInfo     返回信息
+*/
+- (QNResponseInfo *)completeWithLocalIOError:(NSError *)error identifier:(NSString *)identifier;
 
 /**
 *   zero data问题导致上传结束并返回QNResponseInfo

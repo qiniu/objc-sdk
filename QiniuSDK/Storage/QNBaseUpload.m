@@ -25,10 +25,20 @@
     NSString *currentRegionId = [zonesInfo getZoneInfoRegionNameWithType:self.currentZoneType];
     
     [Collector addRequestWithType:self.requestType httpResponseInfo:httpResponseInfo fileOffset:fileOffset targetRegionId:targetRegionId currentRegionId:currentRegionId identifier:self.identifier];
+    
+    uint64_t bytesSent;
     if (self.requestType == QNRequestType_mkblk || self.requestType == QNRequestType_bput) {
-        [Collector append:CK_blockBytesSent value:@(httpResponseInfo.bytesSent) identifier:self.identifier];
+        if (httpResponseInfo.hasHttpResponse) {
+            bytesSent = httpResponseInfo.bytesTotal;
+        } else {
+            bytesSent = 0;
+        }
+        [Collector append:CK_blockBytesSent value:@(bytesSent) identifier:self.identifier];
+    } else {
+        bytesSent = httpResponseInfo.bytesSent;
     }
-    [Collector append:CK_totalBytesSent value:@(httpResponseInfo.bytesSent) identifier:self.identifier];
+    
+    [Collector append:CK_totalBytesSent value:@(bytesSent) identifier:self.identifier];
 }
 
 - (void)collectUploadQualityInfo {

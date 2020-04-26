@@ -311,7 +311,7 @@
     NSData *data = [self.file read:offset size:chunkSize error:&error];
     if (error) {
         [self collectUploadQualityInfo];
-        QNResponseInfo *info = [Collector completeWithFileError:error identifier:self.identifier];
+        QNResponseInfo *info = [Collector completeWithLocalIOError:error identifier:self.identifier];
         self.complete(info, self.key, nil);
         return;
     }
@@ -331,7 +331,7 @@
     NSData *data = [self.file read:offset size:size error:&error];
     if (error) {
         [self collectUploadQualityInfo];
-        QNResponseInfo *info = [Collector completeWithFileError:error identifier:self.identifier];
+        QNResponseInfo *info = [Collector completeWithLocalIOError:error identifier:self.identifier];
         self.complete(info, self.key, nil);
         return;
     }

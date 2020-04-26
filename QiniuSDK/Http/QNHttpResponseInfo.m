@@ -8,7 +8,7 @@
 
 #import "QNHttpResponseInfo.h"
 #import "QNSystemTool.h"
-#import "QNUploadInfoReporter.h"
+#import "QNUploadInfoCollector.h"
 #import "QNUserAgent.h"
 #import "QNVersion.h"
 #import "QNSessionManager.h"
@@ -35,29 +35,27 @@
     self = [super init];
     if (self) {
         
+        _statusCode = QN_IntNotSet;
+        _signalStrength = QN_IntNotSet;
         _proxyConnection = NO;
         _hasHttpResponse = NO;
         _host = host;
         _pid = [QNSystemTool getCurrentProcessID];
         _tid = [QNSystemTool getCurrentThreadID];
-        _networkType = [QNSystemTool getCurrentNetworkType];
-        _signalStrength = [QNSystemTool getCurrentNetworkSignalStrength];
         _timeStamp = [[NSDate date] timeIntervalSince1970];
         
-        if (sessionStatistics) {
-            _bytesSent = sessionStatistics.bytesSent;
-            _bytesTotal = sessionStatistics.bytesTotal;
-            _remoteIp = sessionStatistics.remoteIp;
-            _port = sessionStatistics.port;
-            _totalElapsedTime = sessionStatistics.totalElapsedTime;
-            _dnsElapsedTime = sessionStatistics.dnsElapsedTime;
-            _connectElapsedTime = sessionStatistics.connectElapsedTime;
-            _tlsConnectElapsedTime = sessionStatistics.tlsConnectElapsedTime;
-            _requestElapsedTime = sessionStatistics.requestElapsedTime;
-            _waitElapsedTime = sessionStatistics.waitElapsedTime;
-            _responseElapsedTime = sessionStatistics.responseElapsedTime;
-            _proxyConnection = sessionStatistics.isProxyConnection;
-        }
+        _bytesSent = sessionStatistics.bytesSent;
+        _bytesTotal = sessionStatistics.bytesTotal;
+        _remoteIp = sessionStatistics.remoteIp;
+        _port = sessionStatistics.port;
+        _totalElapsedTime = sessionStatistics.totalElapsedTime;
+        _dnsElapsedTime = sessionStatistics.dnsElapsedTime;
+        _connectElapsedTime = sessionStatistics.connectElapsedTime;
+        _tlsConnectElapsedTime = sessionStatistics.tlsConnectElapsedTime;
+        _requestElapsedTime = sessionStatistics.requestElapsedTime;
+        _waitElapsedTime = sessionStatistics.waitElapsedTime;
+        _responseElapsedTime = sessionStatistics.responseElapsedTime;
+        _proxyConnection = sessionStatistics.isProxyConnection;
         
         if (response) {
             _hasHttpResponse = YES;
@@ -161,7 +159,7 @@
     return self.isOK ? self.responseBody : nil;
 }
 
-- (uint64_t)getTimeintervalWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate {
+- (int64_t)getTimeintervalWithStartDate:(NSDate *)startDate endDate:(NSDate *)endDate {
     
     if (!startDate || !endDate) return 0;
     NSTimeInterval interval = [endDate timeIntervalSinceDate:startDate];
@@ -169,7 +167,7 @@
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<%@= id: %@, ver: %@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ duration: %.3f s time: %llu error: %@>", NSStringFromClass([self class]), [QNUserAgent sharedInstance].id, kQiniuVersion, _statusCode, _reqId, _xlog, _xvia, _host, _totalElapsedTime / 1000.0, _timeStamp, _error];
+    return [NSString stringWithFormat:@"<%@= id: %@, ver: %@, status: %lld, requestId: %@, xlog: %@, xvia: %@, host: %@ duration: %.3f s time: %llu error: %@>", NSStringFromClass([self class]), [QNUserAgent sharedInstance].id, kQiniuVersion, _statusCode, _reqId, _xlog, _xvia, _host, _totalElapsedTime / 1000.0, _timeStamp, _error];
 }
 
 @end

@@ -17,9 +17,6 @@
 		93D230321C86D7F700434F6D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 93D230301C86D7F700434F6D /* LaunchScreen.storyboard */; };
 		93D2303D1C86D7F700434F6D /* QiniuDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D2303C1C86D7F700434F6D /* QiniuDemoTests.m */; };
 		93D230481C86D7F800434F6D /* QiniuDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D230471C86D7F800434F6D /* QiniuDemoUITests.m */; };
-		CC676C7D242D946E006A7372 /* image.jpg in Resources */ = {isa = PBXBuildFile; fileRef = CC676C7C242D946E006A7372 /* image.jpg */; };
-		CCF6587B242B949F009BAD70 /* 2channel.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = CCF6587A242B949F009BAD70 /* 2channel.mp4 */; };
-		CCF6587E242B957B009BAD70 /* QNTempFile.m in Sources */ = {isa = PBXBuildFile; fileRef = CCF6587C242B957B009BAD70 /* QNTempFile.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,10 +57,6 @@
 		93D230471C86D7F800434F6D /* QiniuDemoUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QiniuDemoUITests.m; sourceTree = "<group>"; };
 		93D230491C86D7F800434F6D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9942BD34EF64A3AD88897A33 /* Pods-QiniuDemoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuDemoTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuDemoTests/Pods-QiniuDemoTests.debug.xcconfig"; sourceTree = "<group>"; };
-		CC676C7C242D946E006A7372 /* image.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = image.jpg; sourceTree = "<group>"; };
-		CCF6587A242B949F009BAD70 /* 2channel.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = 2channel.mp4; sourceTree = "<group>"; };
-		CCF6587C242B957B009BAD70 /* QNTempFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = QNTempFile.m; path = ../../QiniuSDKTests/QNTempFile.m; sourceTree = "<group>"; };
-		CCF6587D242B957B009BAD70 /* QNTempFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = QNTempFile.h; path = ../../QiniuSDKTests/QNTempFile.h; sourceTree = "<group>"; };
 		E7D8BA8B588B4620EDD9AECA /* Pods-QiniuDemoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuDemoTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuDemoTests/Pods-QiniuDemoTests.release.xcconfig"; sourceTree = "<group>"; };
 		F90FEC5E40BE695E8AA6A8A7 /* Pods-QiniuDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuDemo.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuDemo/Pods-QiniuDemo.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -140,10 +133,6 @@
 		93D230211C86D7F700434F6D /* QiniuDemo */ = {
 			isa = PBXGroup;
 			children = (
-				CC676C7C242D946E006A7372 /* image.jpg */,
-				CCF6587A242B949F009BAD70 /* 2channel.mp4 */,
-				CCF6587D242B957B009BAD70 /* QNTempFile.h */,
-				CCF6587C242B957B009BAD70 /* QNTempFile.m */,
 				93D230251C86D7F700434F6D /* AppDelegate.h */,
 				93D230261C86D7F700434F6D /* AppDelegate.m */,
 				93D230281C86D7F700434F6D /* ViewController.h */,
@@ -292,8 +281,6 @@
 				93D230321C86D7F700434F6D /* LaunchScreen.storyboard in Resources */,
 				93D2302F1C86D7F700434F6D /* Assets.xcassets in Resources */,
 				93D2302D1C86D7F700434F6D /* Main.storyboard in Resources */,
-				CCF6587B242B949F009BAD70 /* 2channel.mp4 in Resources */,
-				CC676C7D242D946E006A7372 /* image.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -357,7 +344,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CCF6587E242B957B009BAD70 /* QNTempFile.m in Sources */,
 				93D2302A1C86D7F700434F6D /* ViewController.m in Sources */,
 				93D230271C86D7F700434F6D /* AppDelegate.m in Sources */,
 				93D230241C86D7F700434F6D /* main.m in Sources */,

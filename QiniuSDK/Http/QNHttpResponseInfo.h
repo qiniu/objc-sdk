@@ -15,7 +15,7 @@
 /**
  *    状态码
  */
-@property (nonatomic, assign, readonly) int statusCode;
+@property (nonatomic, assign, readonly) int64_t statusCode;
 
 /**
  *    服务器域名
@@ -65,57 +65,57 @@
 /**
 *    服务端端口号
 */
-@property (nonatomic, assign, readonly) uint16_t port;
+@property (nonatomic, assign, readonly) int64_t port;
 
 /**
  *   当前时间戳
  */
-@property (nonatomic, assign, readonly) uint64_t timeStamp;
+@property (nonatomic, assign, readonly) int64_t timeStamp;
 
 /**
 *    从发送请求到收到响应之间的单调时间差，单位为毫秒
 */
-@property (nonatomic, assign, readonly) uint64_t totalElapsedTime;
+@property (nonatomic, assign, readonly) int64_t totalElapsedTime;
 
 /**
 *    一次请求中 DNS 查询的耗时，单位为毫秒
 */
-@property (nonatomic, assign, readonly) uint64_t dnsElapsedTime;
+@property (nonatomic, assign, readonly) int64_t dnsElapsedTime;
 
 /**
 *    ⼀次请求中建立网络连接的耗时，单位为毫秒
 */
-@property (nonatomic, assign, readonly) uint64_t connectElapsedTime;
+@property (nonatomic, assign, readonly) int64_t connectElapsedTime;
 
 /**
 *    ⼀次请求中建立安全⽹络连接的耗时，单位为毫秒
 */
-@property (nonatomic, assign, readonly) uint64_t tlsConnectElapsedTime;
+@property (nonatomic, assign, readonly) int64_t tlsConnectElapsedTime;
 
 /**
 *    ⼀次请求中发送请求的耗时，单位为毫秒
 */
-@property (nonatomic, assign, readonly) uint64_t requestElapsedTime;
+@property (nonatomic, assign, readonly) int64_t requestElapsedTime;
 
 /**
 *   ⼀次请求中从发送请求完毕到收到响应前的耗时，单位为毫秒
 */
-@property (nonatomic, assign, readonly) uint64_t waitElapsedTime;
+@property (nonatomic, assign, readonly) int64_t waitElapsedTime;
 
 /**
 *    ⼀次请求中读取响应的耗时，单位为毫秒
 */
-@property (nonatomic, assign, readonly) uint64_t responseElapsedTime;
+@property (nonatomic, assign, readonly) int64_t responseElapsedTime;
 
 /**
 *    本次成功发送请求的请求体大⼩，单位为字节
 */
-@property (nonatomic, assign, readonly) uint64_t bytesSent;
+@property (nonatomic, assign, readonly) int64_t bytesSent;
 
 /**
 *    预期发送请求的请求体大小，单位为字节
 */
-@property (nonatomic, assign, readonly) uint64_t bytesTotal;
+@property (nonatomic, assign, readonly) int64_t bytesTotal;
 
 /**
 *    错误类型 用于信息上报
@@ -143,12 +143,12 @@
 @property (nonatomic, assign, readonly) int64_t tid;
 
 /**
-*    请求结束时的网络类型
+*    请求结束时的网络类型（需要访问私有属性  statusBar层级结构不稳定  暂不做统计）
 */
 @property (nonatomic, copy, readonly) NSString *networkType;
 
 /**
-*    请求结束时的信号强度
+*    请求结束时的信号强度（需要访问私有属性  statusBar层级结构不稳定  暂不做统计）
 */
 @property (nonatomic, assign, readonly) int64_t signalStrength;
 

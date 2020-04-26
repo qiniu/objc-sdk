@@ -103,7 +103,7 @@ static NSString *domain = @"qiniu.com";
 
 + (instancetype)responseInfoWithHttpResponseInfo:(QNHttpResponseInfo *)httpResponseInfo duration:(double)duration {
     if (httpResponseInfo.hasHttpResponse) {
-        return [[QNResponseInfo alloc] initWithStatusCode:httpResponseInfo.statusCode reqId:httpResponseInfo.reqId xlog:httpResponseInfo.xlog xvia:httpResponseInfo.xvia host:httpResponseInfo.host error:httpResponseInfo.error duration:duration];
+        return [[QNResponseInfo alloc] initWithStatusCode:(int)httpResponseInfo.statusCode reqId:httpResponseInfo.reqId xlog:httpResponseInfo.xlog xvia:httpResponseInfo.xvia host:httpResponseInfo.host error:httpResponseInfo.error duration:duration];
     } else {
         return [[QNResponseInfo alloc] initWithNetError:httpResponseInfo.error host:httpResponseInfo.host duration:duration];
     }

@@ -7,6 +7,7 @@
 //
 
 #import "QNUploadInfoReporter.h"
+#import "QNUploadInfoCollector.h"
 #import "QNResponseInfo.h"
 #import "QNFile.h"
 #import "QNUpToken.h"
@@ -16,32 +17,11 @@
 #import "QNVersion.h"
 #import <objc/runtime.h>
 
-// Upload Result Type
-NSString *const upload_ok = @"ok";
-NSString *const zero_size_file = @"zero_size_file";
-NSString *const invalid_file = @"invalid_file";
-NSString *const invalid_args = @"invalid_args";
-
-// Network Error Type
-NSString *const unknown_error = @"unknown_error";
-NSString *const network_error = @"network_error";
-NSString *const network_timeout = @"timeout";
-NSString *const unknown_host = @"unknown_host";
-NSString *const cannot_connect_to_host = @"cannot_connect_to_host";
-NSString *const transmission_error = @"transmission_error";
-NSString *const proxy_error = @"proxy_error";
-NSString *const ssl_error = @"ssl_error";
-NSString *const response_error = @"response_error";
-NSString *const parse_error = @"parse_error";
-NSString *const malicious_response = @"malicious_response";
-NSString *const user_canceled = @"user_canceled";
-NSString *const bad_request = @"bad_request";
-
 @interface QNReportBaseItem ()
 // 打点类型 request、block、quality
 @property (nonatomic, copy) NSString *log_type;
 // 客户端时间戳
-@property (nonatomic, assign) uint64_t up_time;
+@property (nonatomic, assign) int64_t up_time;
 @end
 
 @implementation QNReportBaseItem
@@ -77,7 +57,7 @@ NSString *const bad_request = @"bad_request";
                     // 默认其他属性的基本类型是int
                     NSString *key = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
                     NSNumber *ivarValue = [self valueForKey:key];
-                    if (ivarValue) [requestItemDic setValue:ivarValue forKey:key];
+                    if (ivarValue && ![ivarValue isEqualToNumber:@(QN_IntNotSet)]) [requestItemDic setValue:ivarValue forKey:key];
                 }
             }
         }
@@ -131,7 +111,7 @@ NSString *const bad_request = @"bad_request";
 // 记录⽬标 Key 名称
 @property (nonatomic, copy) NSString *target_key;
 // 本次分片上传的偏移量，单位为字节
-@property (nonatomic, assign) uint64_t file_offset;
+@property (nonatomic, assign) int64_t file_offset;
 // ⽬标上传的区域 ID，可选值为 "z0"，"z1"，"z2"，"as0"，"na0" 等
 @property (nonatomic, copy) NSString *target_region_id;
 // 当前上传的区域 ID，可选值为 "z0"，"z1"，"z2"，"as0"，"na0" 等
@@ -154,7 +134,7 @@ NSString *const bad_request = @"bad_request";
 @property (nonatomic, copy) NSString *sdk_version;
 
 // 记录响应状态码
-@property (nonatomic, assign) int16_t status_code;
+@property (nonatomic, assign) int64_t status_code;
 // 记录响应中存储的 ReqId
 @property (nonatomic, copy) NSString *req_id;
 // 记录主机域名(不含解析，不含端⼝)
@@ -162,31 +142,30 @@ NSString *const bad_request = @"bad_request";
 // 记录成功建⽴连接的服务器 IP 地址
 @property (nonatomic, copy) NSString *remote_ip;
 // 记录主机端口号
-@property (nonatomic, assign) uint16_t port;
+@property (nonatomic, assign) int64_t port;
 // 记录从发送请求到收到响应之间的单调时间差，单位为毫秒
-@property (nonatomic, assign) uint64_t total_elapsed_time;
+@property (nonatomic, assign) int64_t total_elapsed_time;
 // 记录⼀次请求中 DNS 查询的耗时，单位为毫秒，如果当前请求不需要进⾏ DNS 查询，则填写 0
-@property (nonatomic, assign) uint64_t dns_elapsed_time;
+@property (nonatomic, assign) int64_t dns_elapsed_time;
 // 记录一次请求中建立⽹络连接的耗时，单位为毫秒，如果当前请求不不需要进行⽹络连接，则填写 0
-@property (nonatomic, assign) uint64_t connect_elapsed_time;
+@property (nonatomic, assign) int64_t connect_elapsed_time;
 // 记录一次请求中建立安全⽹络连接的耗时，单位为毫秒(该耗时被 connect_elapsed_time 包含，因此总是⼩小于或等于 connect_elapsed_time，如果当前请求不需要进行安全连接，则填写 0)
-@property (nonatomic, assign) uint64_t tls_connect_elapsed_time;
+@property (nonatomic, assign) int64_t tls_connect_elapsed_time;
 // 记录⼀次请求中发送请求的耗时，单位为毫秒
-@property (nonatomic, assign) uint64_t request_elapsed_time;
+@property (nonatomic, assign) int64_t request_elapsed_time;
 // 记录⼀次请求中从发送请求完毕到收到响应前的耗时，单位为毫秒
-@property (nonatomic, assign) uint64_t wait_elapsed_time;
+@property (nonatomic, assign) int64_t wait_elapsed_time;
 // 记录⼀次请求中读取响应的耗时，单位为毫秒
-@property (nonatomic, assign) uint64_t response_elapsed_time;
+@property (nonatomic, assign) int64_t response_elapsed_time;
 // 本次成功发送请求的请求体大小，单位为字节
-@property (nonatomic, assign) uint64_t bytes_sent;
+@property (nonatomic, assign) int64_t bytes_sent;
 // 预期发送请求的请求体大小，单位为字节
-@property (nonatomic, assign) uint64_t bytes_total;
+@property (nonatomic, assign) int64_t bytes_total;
 
 // 错误类型
 @property (nonatomic, copy) NSString *error_type;
 // 对于服务器器成功响应，且响应体中包含 error 字段的，则给出 error 字段的内容。否则对于其他错误，则可以⾃自定义错误描述 信息
 @property (nonatomic, copy) NSString *error_description;
-
 
 // 请求结束时的⽹网络类型，可选值有 "wifi", "2g", "3g", "4g" 等。如果当前⽹网络不不可⽤用，则给出 "none"
 @property (nonatomic, copy) NSString *network_type;
@@ -207,26 +186,26 @@ NSString *const bad_request = @"bad_request";
 + (instancetype)buildWithUpType:(NSString *)up_type
                    TargetBucket:(NSString *)target_bucket
                             targetKey:(NSString *)target_key
-                           fileOffset:(uint64_t)file_offset
+                           fileOffset:(int64_t)file_offset
                        targetRegionId:(NSString *)target_region_id
                       currentRegionId:(NSString *)current_region_id
                     prefetchedIpCount:(int64_t)prefetched_ip_count
                                   pid:(int64_t)pid
                                   tid:(int64_t)tid
-                           statusCode:(int16_t)status_code
+                           statusCode:(int64_t)status_code
                                 reqId:(NSString *)req_id
                                  host:(NSString *)host
                              remoteIp:(NSString *)remote_ip
-                                 port:(uint16_t)port
-                     totalElapsedTime:(uint64_t)total_elapsed_time
-                       dnsElapsedTime:(uint64_t)dns_elapsed_time
-                   connectElapsedTime:(uint64_t)connect_elapsed_time
-                tlsConnectElapsedTime:(uint64_t)tls_connect_elapsed_time
-                   requestElapsedTime:(uint64_t)request_elapsed_time
-                      waitElapsedTime:(uint64_t)wait_elapsed_time
-                  responseElapsedTime:(uint64_t)response_elapsed_time
-                            bytesSent:(uint64_t)bytes_sent
-                           bytesTotal:(uint64_t)bytes_total
+                                 port:(int64_t)port
+                     totalElapsedTime:(int64_t)total_elapsed_time
+                       dnsElapsedTime:(int64_t)dns_elapsed_time
+                   connectElapsedTime:(int64_t)connect_elapsed_time
+                tlsConnectElapsedTime:(int64_t)tls_connect_elapsed_time
+                   requestElapsedTime:(int64_t)request_elapsed_time
+                      waitElapsedTime:(int64_t)wait_elapsed_time
+                  responseElapsedTime:(int64_t)response_elapsed_time
+                            bytesSent:(int64_t)bytes_sent
+                           bytesTotal:(int64_t)bytes_total
                             errorType:(NSString *)error_type
                      errorDescription:(NSString *)error_description
                           networkType:(NSString *)network_type
@@ -285,19 +264,19 @@ NSString *const bad_request = @"bad_request";
 // 当前上传的区域 ID，可选值为 "z0"，"z1"，"z2"，"as0"，"na0"
 @property (nonatomic, copy) NSString *current_region_id;
 // 记录对于当前上传的区域，从发送第一个请求到收到最后一个响应 之间的单调时间差，单位为毫秒
-@property (nonatomic, assign) uint64_t total_elapsed_time;
+@property (nonatomic, assign) int64_t total_elapsed_time;
 // 成功上传⾄服务器的分块尺寸总和，单位为字节
-@property (nonatomic, assign) uint64_t bytes_sent;
+@property (nonatomic, assign) int64_t bytes_sent;
 // 上次失败时已上传的文件尺⼨(也就是上传恢复点)，单位为字节
-@property (nonatomic, assign) uint64_t recovered_from;
+@property (nonatomic, assign) int64_t recovered_from;
 // 要上传的文件总尺寸，单位为字节
-@property (nonatomic, assign) uint64_t file_size;
+@property (nonatomic, assign) int64_t file_size;
 // 当前进程 ID
 @property (nonatomic, assign) int64_t pid;
 // 当前线程 ID
 @property (nonatomic, assign) int64_t tid;
 // 分⽚上传 API 版本，可选值为 1 和 2
-@property (nonatomic, assign) uint8_t up_api_version;
+@property (nonatomic, assign) int64_t up_api_version;
 
 @end
 
@@ -313,13 +292,13 @@ NSString *const bad_request = @"bad_request";
 
 + (instancetype)buildWithTargetRegionId:(NSString *)target_region_id
                         currentRegionId:(NSString *)current_region_id
-                       totalElapsedTime:(uint64_t)total_elapsed_time
-                              bytesSent:(uint64_t)bytes_sent
-                          recoveredFrom:(uint64_t)recovered_from
-                               fileSize:(uint64_t)file_size
+                       totalElapsedTime:(int64_t)total_elapsed_time
+                              bytesSent:(int64_t)bytes_sent
+                          recoveredFrom:(int64_t)recovered_from
+                               fileSize:(int64_t)file_size
                                     pid:(int64_t)pid
                                     tid:(int64_t)tid
-                           upApiVersion:(uint8_t)up_api_version {
+                           upApiVersion:(int64_t)up_api_version {
     
     QNReportBlockItem *item = [[QNReportBlockItem alloc] init];
     item.target_region_id = target_region_id;
@@ -342,13 +321,13 @@ NSString *const bad_request = @"bad_request";
 // 记录上传结果
 @property (nonatomic, copy) NSString *result;
 // 记录对于当前上传的⽂文件，从发送第⼀个请求到收到最后⼀个响应之间的单调时间差，单位为毫秒
-@property (nonatomic, assign) uint64_t total_elapsed_time;
+@property (nonatomic, assign) int64_t total_elapsed_time;
 // 为了完成本次上传所发出的 HTTP 请求总数(含 UC Query 和 HTTPDNS Query)
-@property (nonatomic, assign) uint64_t requests_count;
+@property (nonatomic, assign) int64_t requests_count;
 // 为了完成本次上传所使用的区域数量
-@property (nonatomic, assign) uint64_t regions_count;
+@property (nonatomic, assign) int64_t regions_count;
 // 为了完成本次上传所发出的 HTTP 请求体尺寸总量(含 UC Query 和 HTTPDNS Query)
-@property (nonatomic, assign) uint64_t bytes_sent;
+@property (nonatomic, assign) int64_t bytes_sent;
 
 @end
 
@@ -363,10 +342,10 @@ NSString *const bad_request = @"bad_request";
 }
 
 + (instancetype)buildWithResult:(NSString *)result
-               totalElapsedTime:(uint64_t)total_elapsed_time
-                  requestsCount:(uint64_t)requests_count
-                   regionsCount:(uint64_t)regions_count
-                      bytesSent:(uint64_t)bytes_sent {
+               totalElapsedTime:(int64_t)total_elapsed_time
+                  requestsCount:(int64_t)requests_count
+                   regionsCount:(int64_t)regions_count
+                      bytesSent:(int64_t)bytes_sent {
     
     QNReportQualityItem *item = [[QNReportQualityItem alloc] init];
     item.result = result;

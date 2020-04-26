@@ -14,16 +14,16 @@ typedef BOOL (^QNCancelBlock)(void);
 @interface QNSessionStatistics : NSObject
 
 @property (nonatomic, copy) NSString *remoteIp;
-@property (nonatomic, assign) uint16_t port;
-@property (nonatomic, assign) uint64_t totalElapsedTime;
-@property (nonatomic, assign) uint64_t dnsElapsedTime;
-@property (nonatomic, assign) uint64_t connectElapsedTime;
-@property (nonatomic, assign) uint64_t tlsConnectElapsedTime;
-@property (nonatomic, assign) uint64_t requestElapsedTime;
-@property (nonatomic, assign) uint64_t waitElapsedTime;
-@property (nonatomic, assign) uint64_t responseElapsedTime;
-@property (nonatomic, assign) uint64_t bytesSent;
-@property (nonatomic, assign) uint64_t bytesTotal;
+@property (nonatomic, assign) int64_t port;
+@property (nonatomic, assign) int64_t totalElapsedTime;
+@property (nonatomic, assign) int64_t dnsElapsedTime;
+@property (nonatomic, assign) int64_t connectElapsedTime;
+@property (nonatomic, assign) int64_t tlsConnectElapsedTime;
+@property (nonatomic, assign) int64_t requestElapsedTime;
+@property (nonatomic, assign) int64_t waitElapsedTime;
+@property (nonatomic, assign) int64_t responseElapsedTime;
+@property (nonatomic, assign) int64_t bytesSent;
+@property (nonatomic, assign) int64_t bytesTotal;
 @property (nonatomic, assign, getter=isProxyConnection) BOOL proxyConnection;
 
 @end
