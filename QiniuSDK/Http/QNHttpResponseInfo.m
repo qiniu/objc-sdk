@@ -105,14 +105,14 @@
             }
         } else {
             _hasHttpResponse = NO;
-            if (self.isProxyConnection) {
-                _errorType = proxy_error;
-            } else {
-                if (error) {
-                    _error = error;
-                    _statusCode = (int)error.code;
-                    _errorDescription = _error.localizedDescription;
-                    
+            if (error) {
+                _error = error;
+                _statusCode = (int)error.code;
+                _errorDescription = _error.localizedDescription;
+                
+                if (self.isProxyConnection) {
+                    _errorType = proxy_error;
+                } else {
                     if (error.code == -1 || error.code == -1009) {
                         _errorType = network_error;
                     } else if (error.code == -1001) {
@@ -134,8 +134,6 @@
                     } else {
                         _errorType = unknown_error;
                     }
-                } else {
-                    _errorType = unknown_error;
                 }
             }
         }

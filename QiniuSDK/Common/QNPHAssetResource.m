@@ -7,7 +7,6 @@
 //
 
 #import "QNPHAssetResource.h"
-#import <AVFoundation/AVFoundation.h>
 #import <Photos/Photos.h>
 #import "QNResponseInfo.h"
 
