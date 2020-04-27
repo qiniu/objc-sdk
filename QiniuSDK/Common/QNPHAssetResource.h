@@ -11,7 +11,6 @@
 #import "QNFileDelegate.h"
 
 API_AVAILABLE_BEGIN(ios(9))
-API_UNAVAILABLE_BEGIN(macos, tvos)
 
 @class PHAssetResource;
 
@@ -31,4 +30,3 @@ API_UNAVAILABLE_BEGIN(macos, tvos)
 @end
 
 API_AVAILABLE_END
-API_UNAVAILABLE_END

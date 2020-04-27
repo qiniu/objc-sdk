@@ -12,7 +12,6 @@
 
 #import "QiniuSDK.h"
 
-#import "QNSystem.h"
 #import "QNTestConfig.h"
 
 @interface QNFormUploadTest : XCTestCase
@@ -196,42 +195,42 @@
     XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");
 }
 
-- (void)testProxy {
-    __block QNResponseInfo *testInfo = nil;
-    __block NSDictionary *testResp = nil;
-    __block NSString *key = nil;
-
-    NSDictionary *proxyDict = @{
-        @"HTTPEnable" : [NSNumber numberWithInt:1],
-        (NSString *)kCFStreamPropertyHTTPProxyHost : @"180.101.136.11",
-        (NSString *)kCFStreamPropertyHTTPProxyPort : @80,
-    };
-
-    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        builder.proxy = proxyDict;
-        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com", @"upnono.qiniu.com", nil];
-        builder.useHttps = NO;
-        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
-    }];
-
-    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
-
-    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-    [upManager putData:data key:nil token:g_token complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
-        key = k;
-        testInfo = info;
-        testResp = resp;
-    }
-                option:nil];
-
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    NSLog(@"%@", testResp);
-    XCTAssert(key == nil, @"Pass");
-    XCTAssert(testInfo.isOK, @"Pass");
-    XCTAssert(testInfo.reqId, @"Pass");
-    XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");
-}
+//- (void)testProxy {
+//    __block QNResponseInfo *testInfo = nil;
+//    __block NSDictionary *testResp = nil;
+//    __block NSString *key = nil;
+//
+//    NSDictionary *proxyDict = @{
+//        @"HTTPEnable" : [NSNumber numberWithInt:1],
+//        (NSString *)kCFStreamPropertyHTTPProxyHost : @"180.101.136.11",
+//        (NSString *)kCFStreamPropertyHTTPProxyPort : @80,
+//    };
+//
+//    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+//        builder.proxy = proxyDict;
+//        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com", @"upnono.qiniu.com", nil];
+//        builder.useHttps = NO;
+//        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+//    }];
+//
+//    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
+//
+//    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
+//    [upManager putData:data key:nil token:g_token complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
+//        key = k;
+//        testInfo = info;
+//        testResp = resp;
+//    }
+//                option:nil];
+//
+//    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+//    NSLog(@"%@", testInfo);
+//    NSLog(@"%@", testResp);
+//    XCTAssert(key == nil, @"Pass");
+//    XCTAssert(testInfo.isOK, @"Pass");
+//    XCTAssert(testInfo.reqId, @"Pass");
+//    XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");
+//}
 
 - (void)testUrlConvert {
     __block QNResponseInfo *testInfo = nil;

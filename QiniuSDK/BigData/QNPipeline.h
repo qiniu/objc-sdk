@@ -9,7 +9,7 @@
 #ifndef QNPipeline_h
 #define QNPipeline_h
 
-@class QNResponseInfo;
+@class QNHttpResponseInfo;
 
 @interface QNPipelineConfig : NSObject
 
@@ -31,8 +31,10 @@
 
 /**
  *    上传完成后的回调函数
+ *
+ *    @param info 上下文信息，包括状态码，错误值
  */
-typedef void (^QNPipelineCompletionHandler)(QNResponseInfo *info);
+typedef void (^QNPipelineCompletionHandler)(QNHttpResponseInfo *info);
 
 @interface QNPipeline : NSObject
 

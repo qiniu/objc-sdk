@@ -30,7 +30,7 @@
 
 @interface QNPipeline ()
 
-@property (nonatomic) id<QNHttpDelegate> httpManager;
+@property (nonatomic) QNSessionManager *httpManager;
 @property (nonatomic) QNPipelineConfig* config;
 
 + (NSDateFormatter*)dateFormatter;
@@ -132,12 +132,9 @@ static NSMutableString* formatPoints(NSArray<NSDictionary*>* events) {
          handler:(QNPipelineCompletionHandler)handler {
     NSDictionary* headers = @{ @"Authorization" : token,
                                @"Content-Type" : @"text/plain" };
-    [_httpManager post:[self url:repo] withData:[str dataUsingEncoding:NSUTF8StringEncoding] withParams:nil withHeaders:headers withTaskIdentifier:nil withCompleteBlock:^(QNResponseInfo* info, NSDictionary* resp) {
-        handler(info);
-    }
-        withProgressBlock:nil
-          withCancelBlock:nil
-               withAccess:nil];
+    [_httpManager post:[self url:repo] withData:[str dataUsingEncoding:NSUTF8StringEncoding] withParams:nil withHeaders:headers withIdentifier:nil withCompleteBlock:^(QNHttpResponseInfo *httpResponseInfo, NSDictionary *respBody) {
+        handler(httpResponseInfo);
+    } withProgressBlock:nil withCancelBlock:nil withAccess:nil];
 }
 
 + (NSDateFormatter*)dateFormatter {

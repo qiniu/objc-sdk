@@ -11,7 +11,6 @@
 #import "QNFileDelegate.h"
 
 API_AVAILABLE_BEGIN(ios(9.1))
-API_UNAVAILABLE_BEGIN(macos, tvos)
 
 @class PHAsset;
 @interface QNPHAssetFile : NSObject <QNFileDelegate>
@@ -28,4 +27,3 @@ API_UNAVAILABLE_BEGIN(macos, tvos)
 @end
 
 API_AVAILABLE_END
-API_UNAVAILABLE_END

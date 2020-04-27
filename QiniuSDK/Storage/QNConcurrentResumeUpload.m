@@ -7,14 +7,6 @@
 //
 
 #import "QNConcurrentResumeUpload.h"
-#import "QNUploadOption.h"
-#import "QNConfiguration.h"
-#import "QNUpToken.h"
-#import "QNResponseInfo.h"
-#import "QNUrlSafeBase64.h"
-#import "QNCrc32.h"
-#import "QNUploadInfoReporter.h"
-#import "QNAsyncRun.h"
 
 @interface QNConcurrentRecorderInfo : NSObject
 
@@ -103,11 +95,8 @@
 @property (nonatomic, strong) QNConfiguration *config;
 @property (nonatomic, strong) QNUpToken *token; // token
 @property (nonatomic, assign) UInt32 totalSize; // 文件总大小
-@property (nonatomic, strong) QNConcurrentRecorderInfo *recordInfo; // 续传信息
 
-@property (nonatomic, copy) NSString *upHost; // 并行队列当前使用的上传域名
-@property (nonatomic, assign) UInt32 retriedTimes; // 当前域名重试次数
-@property (nonatomic, assign) QNZoneInfoType currentZoneType;
+@property (nonatomic, strong) NSArray<NSDictionary *> *contextsInfo; // 续传context信息
 
 @property (nonatomic, strong) NSMutableArray<QNConcurrentTask *> *taskQueueArray; // block 任务队列
 @property (nonatomic, assign) UInt32 taskQueueCount; // 实际并发任务数量
@@ -128,20 +117,20 @@
 + (instancetype)taskQueueWithFile:(id<QNFileDelegate>)file
                            config:(QNConfiguration *)config
                         totalSize:(UInt32)totalSize
-                       recordInfo:(QNConcurrentRecorderInfo *)recordInfo
+                     contextsInfo:(NSArray<NSDictionary *> *)contextsInfo
                             token:(QNUpToken *)token {
     
     return [[QNConcurrentTaskQueue alloc] initWithFile:file
                                                 config:config
                                              totalSize:totalSize
-                                            recordInfo:recordInfo
+                                          contextsInfo:contextsInfo
                                                  token:token];
 }
 
 - (instancetype)initWithFile:(id<QNFileDelegate>)file
                       config:(QNConfiguration *)config
                    totalSize:(UInt32)totalSize
-                  recordInfo:(QNConcurrentRecorderInfo *)recordInfo
+                contextsInfo:(NSArray<NSDictionary *> *)contextsInfo
                        token:(QNUpToken *)token {
     
     self = [super init];
@@ -149,18 +138,14 @@
         _file = file;
         _config = config;
         _totalSize = totalSize;
-        _recordInfo = recordInfo;
+        _contextsInfo = contextsInfo;
         _token = token;
-        
-        _retriedTimes = 0;
-        _currentZoneType = QNZoneInfoTypeMain;
-        
+                
         _taskQueueArray = [NSMutableArray array];
         _isConcurrentTaskError = NO;
         _nextTaskIndex = 0;
         _taskQueueCount = 0;
                 
-        _upHost = [self getNextHostWithCurrentZoneType:_currentZoneType frozenDomain:nil];
         [self initTaskQueue];
     }
     return self;
@@ -169,8 +154,8 @@
 - (void)initTaskQueue {
     
     // add recover task
-    if (_recordInfo.contextsInfo.count > 0) {
-        for (NSDictionary *info in _recordInfo.contextsInfo) {
+    if (_contextsInfo.count > 0) {
+        for (NSDictionary *info in _contextsInfo) {
             int block_index = [info[@"block_index"] intValue];
             UInt32 block_size = [info[@"block_size"] unsignedIntValue];
             NSString *context = info[@"context"];
@@ -216,34 +201,18 @@
     return nextTask;
 }
 
-- (BOOL)switchNextHost {
+- (void)reset {
     
-    _retriedTimes = 0;
-    _upHost = [self getNextHostWithCurrentZoneType:_currentZoneType frozenDomain:_upHost];
-    return _upHost != nil;
-}
-
-- (BOOL)switchZoneWithType:(QNZoneInfoType)zoneType {
-    
-    QNZonesInfo *zonesInfo = [_config.zone getZonesInfoWithToken:_token];
-    if (zoneType == QNZoneInfoTypeBackup && (_currentZoneType == QNZoneInfoTypeBackup || !zonesInfo.hasBackupZone)) {
-        return NO;
-    }
-
     // reset
-    _recordInfo = nil;
+    _contextsInfo = nil;
     _resp = nil;
     _info = nil;
-    _retriedTimes = 0;
     _nextTaskIndex = 0;
     _taskQueueCount = 0;
     _isConcurrentTaskError = NO;
-    _currentZoneType = zoneType;
-    _upHost = [self getNextHostWithCurrentZoneType:zoneType frozenDomain:nil];
     [_taskQueueArray removeAllObjects];
     
     [self initTaskQueue];
-    return YES;
 }
 
 - (void)buildErrorWithInfo:(QNResponseInfo *)info resp:(NSDictionary *)resp {
@@ -261,19 +230,6 @@
     task.isTaskCompleted = YES;
     
     return _nextTaskIndex < _taskQueueArray.count;
-}
-
-- (NSString *)getNextHostWithCurrentZoneType:(QNZoneInfoType)currentZoneType frozenDomain:(NSString *)frozenDomain {
-    
-    // use recordInfo.host first, then get host in normal
-    NSString *nextUpHost = nil;
-    if (_recordInfo.host && ![_recordInfo.host isEqualToString:@""]) {
-        nextUpHost = _recordInfo.host;
-    } else {
-        nextUpHost = [self.config.zone up:self.token zoneInfoType:currentZoneType isHttps:self.config.useHttps frozenDomain:frozenDomain];
-    }
-    _upHost = nextUpHost ? nextUpHost : _upHost;
-    return nextUpHost;
 }
 
 - (NSArray *)getRecordInfo {
@@ -330,33 +286,22 @@
 
 @end
 
-typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
-    ConcurrentRequestType_mkblk,
-    ConcurrentRequestType_mkfile
-};
-
 @interface QNConcurrentResumeUpload ()
 
-@property (nonatomic, strong) id<QNHttpDelegate> httpManager;
 @property (nonatomic, strong) id<QNRecorderDelegate> recorder;
 @property (nonatomic, strong) id<QNFileDelegate> file;
-@property (nonatomic, strong) QNUploadOption *option;
-@property (nonatomic, strong) QNConfiguration *config;
-@property (nonatomic, strong) QNUpToken *token;
-@property (nonatomic, strong) QNUpCompletionHandler complete;
 @property (nonatomic, strong) QNConcurrentTaskQueue *taskQueue;
-@property (nonatomic, assign) QNZoneInfoType currentZoneType;
+@property (nonatomic, strong) QNConcurrentRecorderInfo *recordInfo; // 续传信息
 
-@property (nonatomic, copy) NSString *key;
 @property (nonatomic, copy) NSString *recorderKey;
-@property (nonatomic, copy) NSString *access; //AK
-@property (nonatomic, copy) NSString *taskIdentifier;
 @property (nonatomic, strong) NSDictionary *headers;
 
 @property (nonatomic, strong) dispatch_group_t uploadGroup;
 @property (nonatomic, strong) dispatch_queue_t uploadQueue;
 
-@property (nonatomic, assign) UInt32 size;
+@property (nonatomic, copy) NSString *upHost;
+@property (nonatomic, assign) UInt32 retriedTimes; // 当前域名重试次数
+
 @property (nonatomic, assign) int64_t modifyTime;
 @property (nonatomic, assign, getter=isResettingTaskQueue) BOOL resettingTaskQueue;
 
@@ -367,57 +312,71 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
 - (instancetype)initWithFile:(id<QNFileDelegate>)file
                      withKey:(NSString *)key
                    withToken:(QNUpToken *)token
+              withIdentifier:(NSString *)identifier
                 withRecorder:(id<QNRecorderDelegate>)recorder
              withRecorderKey:(NSString *)recorderKey
-             withHttpManager:(id<QNHttpDelegate>)http
+          withSessionManager:(QNSessionManager *)sessionManager
        withCompletionHandler:(QNUpCompletionHandler)block
                   withOption:(QNUploadOption *)option
            withConfiguration:(QNConfiguration *)config {
     
     if (self = [super init]) {
-        _file = file;
-        _size = (UInt32)[file size];
-        _key = key;
-        _recorder = recorder;
-        _recorderKey = recorderKey;
-        _modifyTime = [file modifyTime];
-        _option = option != nil ? option : [QNUploadOption defaultOptions];
-        _complete = block;
-        _headers = @{@"Authorization" : [NSString stringWithFormat:@"UpToken %@", token.token], @"Content-Type" : @"application/octet-stream"};
-        _config = config;
-        _token = token;
-        _access = token.access;
-        _httpManager = http;
-        _taskIdentifier = [[NSUUID UUID] UUIDString];
-        _resettingTaskQueue = NO;
-        _uploadGroup = dispatch_group_create();
-        _uploadQueue = dispatch_queue_create("com.qiniu.concurrentUpload", DISPATCH_QUEUE_SERIAL);
+        self.file = file;
+        self.size = (UInt32)[file size];
+        self.key = key;
+        self.recorder = recorder;
+        self.recorderKey = recorderKey;
+        self.modifyTime = [file modifyTime];
+        self.option = option != nil ? option : [QNUploadOption defaultOptions];
+        self.complete = block;
+        self.headers = @{@"Authorization" : [NSString stringWithFormat:@"UpToken %@", token.token], @"Content-Type" : @"application/octet-stream"};
+        self.config = config;
+        self.token = token;
+        self.access = token.access;
+        self.sessionManager = sessionManager;
+        self.identifier = identifier;
+        self.resettingTaskQueue = NO;
+        self.retriedTimes = 0;
+        self.currentZoneType = QNZoneInfoTypeMain;
+        self.uploadGroup = dispatch_group_create();
+        self.uploadQueue = dispatch_queue_create("com.qiniu.concurrentUpload", DISPATCH_QUEUE_SERIAL);
         
-        _taskQueue = [QNConcurrentTaskQueue
-                      taskQueueWithFile:file
-                      config:config
-                      totalSize:_size
-                      recordInfo:[self recoveryFromRecord]
-                      token:_token];
+        self.recordInfo = [self recoveryFromRecord];
+        self.taskQueue = [QNConcurrentTaskQueue
+                          taskQueueWithFile:file
+                          config:config
+                          totalSize:self.size
+                          contextsInfo:self.recordInfo.contextsInfo
+                          token:self.token];
+        
+        [Collector update:CK_blockApiVersion value:@1 identifier:self.identifier];
     }
     return self;
 }
 
 - (void)run {
     
+    self.requestType = QNRequestType_mkblk;
+    if (self.recordInfo.host && ![self.recordInfo.host isEqualToString:@""]) {
+        self.upHost = self.recordInfo.host;
+    } else {
+        self.upHost = [self.config.zone up:self.token zoneInfoType:self.currentZoneType isHttps:self.config.useHttps frozenDomain:nil];
+    }
     for (int i = 0; i < _taskQueue.taskQueueCount; i++) {
         dispatch_group_enter(_uploadGroup);
         dispatch_group_async(_uploadGroup, _uploadQueue, ^{
-            [self putBlockWithTask:[self.taskQueue getNextTask] host:self.taskQueue.upHost];
+            [self putBlockWithTask:[self.taskQueue getNextTask] host:self.upHost];
         });
     }
     dispatch_group_notify(_uploadGroup, _uploadQueue, ^{
         if (self.taskQueue.isAllCompleted) {
+            self.requestType = QNRequestType_mkfile;
             [self makeFile];
         } else {
             if (self.isResettingTaskQueue) {
                 self.resettingTaskQueue = NO;
                 [self removeRecord];
+                [self.taskQueue reset];
                 [self run];
             } else {
                 self.complete(self.taskQueue.info, self.key, self.taskQueue.resp);
@@ -426,41 +385,49 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
     });
 }
 
-- (void)retryActionWithType:(ConcurrentRequestType)requestType needDelay:(BOOL)needDelay task:(QNConcurrentTask *)task host:(NSString *)host {
+- (void)retryWithDelay:(BOOL)needDelay task:(QNConcurrentTask *)task host:(NSString *)host {
     if (needDelay) {
-        QNAsyncRunAfter(_config.retryInterval, _uploadQueue, ^{
-            switch (requestType) {
-                case ConcurrentRequestType_mkblk:
+        QNAsyncRunAfter(self.config.retryInterval, self.uploadQueue, ^{
+            switch (self.requestType) {
+                case QNRequestType_mkblk:
                     [self putBlockWithTask:task host:host];
                     break;
                     
-                case ConcurrentRequestType_mkfile:
+                case QNRequestType_mkfile:
                     [self makeFile];
+                    break;
+                    
+                default:
                     break;
             }
         });
     } else {
-        switch (requestType) {
-            case ConcurrentRequestType_mkblk:
+        switch (self.requestType) {
+            case QNRequestType_mkblk:
                 [self putBlockWithTask:task host:host];
                 break;
                 
-            case ConcurrentRequestType_mkfile:
+            case QNRequestType_mkfile:
                 [self makeFile];
+                break;
+                
+            default:
                 break;
         }
     }
 }
 
 - (void)putBlockWithTask:(QNConcurrentTask *)task host:(NSString *)host {
-        
+    
     if (self.taskQueue.isConcurrentTaskError) {
         dispatch_group_leave(self.uploadGroup);
         return;
     }
-    
+                
     if (self.option.cancellationSignal()) {
-        [self invalidateTasksWithErrorInfo:[QNResponseInfo cancel] resp:nil];
+        [self collectUploadQualityInfo];
+        QNResponseInfo *info = [Collector userCancel:self.identifier];
+        [self invalidateTasksWithErrorInfo:info resp:nil];
         dispatch_group_leave(self.uploadGroup);
         return;
     }
@@ -468,7 +435,9 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
     NSError *error;
     NSData *data = [self.file read:task.index * kQNBlockSize size:task.size error:&error];
     if (error) {
-        [self invalidateTasksWithErrorInfo:[QNResponseInfo responseInfoWithFileError:error] resp:nil];
+        [self collectUploadQualityInfo];
+        QNResponseInfo *info = [Collector completeWithLocalIOError:error identifier:self.identifier];
+        [self invalidateTasksWithErrorInfo:info resp:nil];
         dispatch_group_leave(self.uploadGroup);
         return;
     }
@@ -483,77 +452,74 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
         self.option.progressHandler(self.key, self.taskQueue.totalPercent);
     };
     
-    QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
-        [UploadInfoReporter recordWithRequestType:ReportType_mkblk
-                                     responseInfo:info
-                                        bytesSent:task.size
-                                         fileSize:self.size
-                                            token:self.token.token];
-        
+    QNCompleteBlock completionHandler = ^(QNHttpResponseInfo *httpResponseInfo, NSDictionary *respBody) {
         dispatch_async(self.uploadQueue, ^{
-            
-            if (self.taskQueue.isConcurrentTaskError || self.isResettingTaskQueue) {
+            if (self.taskQueue.isConcurrentTaskError) {
                 dispatch_group_leave(self.uploadGroup);
                 return;
             }
             
-            if (info.error != nil) {
-                if (info.couldRetry) {
-                    if (self.taskQueue.retriedTimes < self.config.retryMax) {
-                        if ([host isEqualToString:self.taskQueue.upHost]) {
-                            self.taskQueue.retriedTimes++;
-                        }
-                        [self retryActionWithType:ConcurrentRequestType_mkblk needDelay:YES task:task host:self.taskQueue.upHost];
-                    } else {
-                        if (self.config.allowBackupHost) {
-                            if (self.taskQueue.recordInfo.host) {
-                                [self invalidateTasksWithErrorInfo:info resp:resp];
-                                self.resettingTaskQueue = YES;
-                                [self.taskQueue switchZoneWithType:QNZoneInfoTypeMain];
-                                dispatch_group_leave(self.uploadGroup);
-                            } else {
-                                BOOL hasNextHost = [self.taskQueue switchNextHost];
-                                if (hasNextHost) {
-                                    [self retryActionWithType:ConcurrentRequestType_mkblk needDelay:YES task:task host:self.taskQueue.upHost];
-                                } else {
-                                    [self invalidateTasksWithErrorInfo:info resp:resp];
-                                    BOOL hasBackupZone = [self.taskQueue switchZoneWithType:QNZoneInfoTypeBackup];
-                                    self.resettingTaskQueue = hasBackupZone;
-                                    dispatch_group_leave(self.uploadGroup);
-                                }
-                            }
-                        } else {
-                            [self invalidateTasksWithErrorInfo:info resp:resp];
-                            dispatch_group_leave(self.uploadGroup);
-                        }
-                    }
+            [self collectHttpResponseInfo:httpResponseInfo fileOffset:task.index * task.size];
+            
+            NSString *ctx = respBody[@"ctx"];
+            NSNumber *crc = respBody[@"crc32"];
+            if (httpResponseInfo.isOK && ctx && crc && [crc unsignedLongValue] == blockCrc) {
+                self.option.progressHandler(self.key, self.taskQueue.totalPercent);
+                BOOL hasMore = [self.taskQueue completeTask:task withContext:ctx];
+                [self record];
+                if (hasMore) {
+                    [self retryWithDelay:YES task:[self.taskQueue getNextTask] host:self.upHost];
                 } else {
-                    [self invalidateTasksWithErrorInfo:info resp:resp];
                     dispatch_group_leave(self.uploadGroup);
                 }
-            } else {
-                if (resp == nil) {
-                    [self retryActionWithType:ConcurrentRequestType_mkblk needDelay:YES task:task host:self.taskQueue.upHost];
+            } else if (httpResponseInfo.couldRetry) {
+                if (self.retriedTimes < self.config.retryMax) {
+                    if ([host isEqualToString:self.upHost]) {
+                        self.retriedTimes++;
+                    }
+                    [self retryWithDelay:YES task:task host:self.upHost];
                 } else {
-                    NSString *ctx = resp[@"ctx"];
-                    NSNumber *crc = resp[@"crc32"];
-                    if (ctx == nil || crc == nil || [crc unsignedLongValue] != blockCrc) {
-                        [self retryActionWithType:ConcurrentRequestType_mkblk needDelay:YES task:task host:self.taskQueue.upHost];
-                    } else {
-                        self.option.progressHandler(self.key, self.taskQueue.totalPercent);
-                        [self record];
-                        BOOL hasMore = [self.taskQueue completeTask:task withContext:ctx];
-                        if (hasMore) {
-                            [self retryActionWithType:ConcurrentRequestType_mkblk needDelay:YES task:[self.taskQueue getNextTask] host:self.taskQueue.upHost];
-                        } else {
+                    self.retriedTimes = 0;
+                    if (self.config.allowBackupHost) {
+                        if (self.recordInfo.host) {
+                            self.currentZoneType = QNZoneInfoTypeMain;
+                            [self invalidateTasksWithErrorInfo:nil resp:nil];
+                            self.resettingTaskQueue = YES;
                             dispatch_group_leave(self.uploadGroup);
+                        } else {
+                            NSString *nextHost = [self.config.zone up:self.token zoneInfoType:self.currentZoneType isHttps:self.config.useHttps frozenDomain:host];
+                            if (nextHost) {
+                                self.upHost = nextHost;
+                                [self retryWithDelay:YES task:task host:self.upHost];
+                            } else {
+                                QNZonesInfo *zonesInfo = [self.config.zone getZonesInfoWithToken:self.token];
+                                if (self.currentZoneType == QNZoneInfoTypeMain && zonesInfo.hasBackupZone) {
+                                    self.currentZoneType = QNZoneInfoTypeBackup;
+                                    [self invalidateTasksWithErrorInfo:nil resp:nil];
+                                    self.resettingTaskQueue = YES;
+                                } else {
+                                    [self collectUploadQualityInfo];
+                                    QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
+                                    [self invalidateTasksWithErrorInfo:info resp:respBody];
+                                }
+                                dispatch_group_leave(self.uploadGroup);
+                            }
                         }
+                    } else {
+                        [self collectUploadQualityInfo];
+                        QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
+                        [self invalidateTasksWithErrorInfo:info resp:respBody];
+                        dispatch_group_leave(self.uploadGroup);
                     }
                 }
+            } else {
+                [self collectUploadQualityInfo];
+                QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
+                [self invalidateTasksWithErrorInfo:info resp:respBody];
+                dispatch_group_leave(self.uploadGroup);
             }
         });
     };
-    
     NSString *url = [[NSString alloc] initWithFormat:@"%@/mkblk/%u", host, (unsigned int)task.size];
     [self post:url withData:data withCompleteBlock:completionHandler withProgressBlock:progressBlock];
 }
@@ -562,7 +528,7 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
     
     NSString *mime = [[NSString alloc] initWithFormat:@"/mimeType/%@", [QNUrlSafeBase64 encodeString:self.option.mimeType]];
     
-    __block NSString *url = [[NSString alloc] initWithFormat:@"%@/mkfile/%u%@", self.taskQueue.upHost, (unsigned int)self.size, mime];
+    __block NSString *url = [[NSString alloc] initWithFormat:@"%@/mkfile/%u%@", self.upHost, (unsigned int)self.size, mime];
     
     if (self.key != nil) {
         NSString *keyStr = [[NSString alloc] initWithFormat:@"/key/%@", [QNUrlSafeBase64 encodeString:self.key]];
@@ -582,49 +548,57 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
     NSMutableData *postData = [NSMutableData data];
     [postData appendData:[bodyStr dataUsingEncoding:NSUTF8StringEncoding]];
     
-    QNCompleteBlock completionHandler = ^(QNResponseInfo *info, NSDictionary *resp) {
-        [UploadInfoReporter recordWithRequestType:ReportType_mkfile
-                                     responseInfo:info
-                                        bytesSent:self.size
-                                         fileSize:self.size
-                                            token:self.token.token];
-        
+    QNCompleteBlock completionHandler = ^(QNHttpResponseInfo *httpResponseInfo, NSDictionary *respBody) {
         dispatch_async(self.uploadQueue, ^{
-            if (info.isOK) {
+            [self collectHttpResponseInfo:httpResponseInfo fileOffset:self.size];
+            
+            if (httpResponseInfo.isOK) {
                 [self removeRecord];
                 self.option.progressHandler(self.key, 1.0);
-                self.complete(info, self.key, resp);
-            } else if (info.couldRetry) {
-                if (self.taskQueue.retriedTimes < self.config.retryMax) {
-                    self.taskQueue.retriedTimes++;
-                    [self retryActionWithType:ConcurrentRequestType_mkfile needDelay:YES task:nil host:nil];
+                [self collectUploadQualityInfo];
+                QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
+                self.complete(info, self.key, respBody);
+            } else if (httpResponseInfo.couldRetry) {
+                if (self.retriedTimes < self.config.retryMax) {
+                    self.retriedTimes++;
+                    [self retryWithDelay:YES task:nil host:nil];
                 } else {
+                    self.retriedTimes = 0;
                     if (self.config.allowBackupHost) {
-                        if (self.taskQueue.recordInfo.host) {
-                            self.resettingTaskQueue = YES;
-                            [self.taskQueue switchZoneWithType:QNZoneInfoTypeMain];
+                        if (self.recordInfo.host) {
+                            self.currentZoneType = QNZoneInfoTypeMain;
+                            [self.taskQueue reset];
                             [self removeRecord];
                             [self run];
                         } else {
-                            BOOL hasNextHost = [self.taskQueue switchNextHost];
-                            if (hasNextHost) {
-                                [self retryActionWithType:ConcurrentRequestType_mkfile needDelay:YES task:nil host:nil];
+                            NSString *nextHost = [self.config.zone up:self.token zoneInfoType:self.currentZoneType isHttps:self.config.useHttps frozenDomain:self.upHost];
+                            if (nextHost) {
+                                self.upHost = nextHost;
+                                [self retryWithDelay:YES task:nil host:nil];
                             } else {
-                                BOOL hasBackupZone = [self.taskQueue switchZoneWithType:QNZoneInfoTypeBackup];
-                                if (hasBackupZone) {
+                                QNZonesInfo *zonesInfo = [self.config.zone getZonesInfoWithToken:self.token];
+                                if (self.currentZoneType == QNZoneInfoTypeMain && zonesInfo.hasBackupZone) {
+                                    self.currentZoneType = QNZoneInfoTypeBackup;
+                                    [self.taskQueue reset];
                                     [self removeRecord];
                                     [self run];
                                 } else {
-                                    self.complete(info, self.key, resp);
+                                    [self collectUploadQualityInfo];
+                                    QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
+                                    self.complete(info, self.key, respBody);
                                 }
                             }
                         }
                     } else {
-                        self.complete(info, self.key, resp);
+                        [self collectUploadQualityInfo];
+                        QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
+                        self.complete(info, self.key, respBody);
                     }
                 }
             } else {
-                self.complete(info, self.key, resp);
+                [self collectUploadQualityInfo];
+                QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
+                self.complete(info, self.key, respBody);
             }
         });
     };
@@ -634,15 +608,15 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
 - (void)record {
     
     NSString *key = self.recorderKey;
-    if (_recorder == nil || key == nil || [key isEqualToString:@""]) {
+    if (self.recorder == nil || key == nil || [key isEqualToString:@""]) {
         return;
     }
     NSNumber *total_size = @(self.size);
     NSNumber *modify_time = [NSNumber numberWithLongLong:_modifyTime];
-
+    
     QNConcurrentRecorderInfo *recorderInfo = [QNConcurrentRecorderInfo recorderInfoWithTotalSize:total_size
                                                                                       modifyTime:modify_time
-                                                                                            host:self.taskQueue.upHost
+                                                                                            host:self.upHost
                                                                                     contextsInfo:[self.taskQueue getRecordInfo]];
     NSError *error;
     NSData *recorderInfoData = [recorderInfo buildRecorderInfoJsonData:&error];
@@ -650,26 +624,27 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
         NSLog(@"up record json error %@ %@", key, error);
         return;
     }
-    error = [_recorder set:key data:recorderInfoData];
+    error = [self.recorder set:key data:recorderInfoData];
     if (error != nil) {
         NSLog(@"up record set error %@ %@", key, error);
     }
 }
 
 - (void)removeRecord {
-    if (_recorder == nil) {
+    if (self.recorder == nil) {
         return;
     }
-    [_recorder del:self.recorderKey];
+    self.recordInfo = nil;
+    [self.recorder del:self.recorderKey];
 }
 
 - (QNConcurrentRecorderInfo *)recoveryFromRecord {
     NSString *key = self.recorderKey;
-    if (_recorder == nil || key == nil || [key isEqualToString:@""]) {
+    if (self.recorder == nil || key == nil || [key isEqualToString:@""]) {
         return nil;
     }
     
-    NSData *data = [_recorder get:key];
+    NSData *data = [self.recorder get:key];
     if (data == nil) {
         return nil;
     }
@@ -678,7 +653,7 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
     QNConcurrentRecorderInfo *recordInfo = [QNConcurrentRecorderInfo buildRecorderInfoWithData:data error:&error];
     if (error != nil) {
         NSLog(@"recovery error %@ %@", key, error);
-        [_recorder del:self.key];
+        [self.recorder del:self.key];
         return nil;
     }
 
@@ -692,11 +667,10 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
     }
     
     UInt32 t = [recordInfo.modifyTime unsignedIntValue];
-    if (t != _modifyTime) {
-        NSLog(@"modify time changed %u, %llu", (unsigned int)t, _modifyTime);
+    if (t != self.modifyTime) {
+        NSLog(@"modify time changed %u, %llu", (unsigned int)t, self.modifyTime);
         return nil;
     }
-    
     return recordInfo;
 }
 
@@ -704,13 +678,13 @@ typedef NS_ENUM(NSUInteger, ConcurrentRequestType) {
     withData:(NSData *)data
 withCompleteBlock:(QNCompleteBlock)completeBlock
 withProgressBlock:(QNInternalProgressBlock)progressBlock {
-    [_httpManager post:url withData:data withParams:nil withHeaders:_headers withTaskIdentifier:_taskIdentifier withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:_option.cancellationSignal withAccess:_access];
+    [self.sessionManager post:url withData:data withParams:nil withHeaders:self.headers withIdentifier:self.identifier withCompleteBlock:completeBlock withProgressBlock:progressBlock withCancelBlock:self.option.cancellationSignal withAccess:self.access];
 }
 
 - (void)invalidateTasksWithErrorInfo:(QNResponseInfo *)info resp:(NSDictionary *)resp {
-    if (_taskQueue.isConcurrentTaskError) return;
-    [_taskQueue buildErrorWithInfo:info resp:resp];
-    [_httpManager invalidateSessionWithIdentifier:_taskIdentifier];
+    if (self.taskQueue.isConcurrentTaskError) return;
+    [self.taskQueue buildErrorWithInfo:info resp:resp];
+    [self.sessionManager invalidateSessionWithIdentifier:self.identifier];
 }
 
 @end
