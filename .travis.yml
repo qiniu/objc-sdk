@@ -15,7 +15,7 @@ before_script:
   - export QINIU_TEST_ENV="travis"
 
 script:
-  - xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -configuration Release -destination 'platform=iOS Simulator,OS=11.0,name=iPhone SE' -enableCodeCoverage YES
+  - xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -configuration Release -destination 'platform=iOS Simulator,OS=12.4,name=iPhone Xs Max' -enableCodeCoverage YES
   - xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -configuration Release -destination 'platform=macOS,arch=x86_64'
 
 after_success:
