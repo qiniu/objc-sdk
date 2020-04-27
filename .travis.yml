@@ -1,5 +1,5 @@
 language: objective-c
-osx_image: xcode9
+osx_image: xcode11
 
 before_install:
   - rvm install 2.6.4
