@@ -7,7 +7,6 @@ before_install:
   - brew update
   - gem install cocoapods --pre
   - pod --version
-  - pod repo remove master
   - rm -rf ~/.cocoapods
   - pod setup
   - pod install --verbose --no-repo-update
