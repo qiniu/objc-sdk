@@ -1,9 +1,9 @@
 language: objective-c
-osx_image: xcode9
+osx_image: xcode11
 
 before_install:
-  - rvm install 2.3.1
-  - rvm use 2.3.1
+  - rvm install 2.6.4
+  - rvm use 2.6.4
   - brew update
   - gem install cocoapods --pre
   - pod --version
