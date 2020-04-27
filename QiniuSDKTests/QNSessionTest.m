@@ -85,24 +85,24 @@
     XCTAssert(testInfo.error != nil, @"Pass");
 }
 
-- (void)testProxy {
-    NSDictionary *proxyDict = @{
-        @"HTTPEnable" : [NSNumber numberWithInt:1],
-        (NSString *)kCFStreamPropertyHTTPProxyHost : @"180.101.136.11",
-        (NSString *)kCFStreamPropertyHTTPProxyPort : @80,
-    };
-
-    QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:proxyDict timeout:60 urlConverter:nil];
-    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-    __block QNHttpResponseInfo *testInfo = nil;
-    [httpManager post:@"http://up123.qiniu.com" withData:data withParams:nil withHeaders:nil withIdentifier:nil withCompleteBlock:^(QNHttpResponseInfo *httpResponseInfo, NSDictionary *respBody) {
-        testInfo = httpResponseInfo;
-    } withProgressBlock:nil withCancelBlock:nil withAccess:nil];
-
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.reqId, @"Pass");
-}
+//- (void)testProxy {
+//    NSDictionary *proxyDict = @{
+//        @"HTTPEnable" : [NSNumber numberWithInt:1],
+//        (NSString *)kCFStreamPropertyHTTPProxyHost : @"180.101.136.11",
+//        (NSString *)kCFStreamPropertyHTTPProxyPort : @80,
+//    };
+//
+//    QNSessionManager *httpManager = [[QNSessionManager alloc] initWithProxy:proxyDict timeout:60 urlConverter:nil];
+//    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
+//    __block QNHttpResponseInfo *testInfo = nil;
+//    [httpManager post:@"http://up123.qiniu.com" withData:data withParams:nil withHeaders:nil withIdentifier:nil withCompleteBlock:^(QNHttpResponseInfo *httpResponseInfo, NSDictionary *respBody) {
+//        testInfo = httpResponseInfo;
+//    } withProgressBlock:nil withCancelBlock:nil withAccess:nil];
+//
+//    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+//    NSLog(@"%@", testInfo);
+//    XCTAssert(testInfo.reqId, @"Pass");
+//}
 
 - (void)testUrlConvert {
     QNUrlConvert c = ^NSString *(NSString *url) {
