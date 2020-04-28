@@ -34,7 +34,7 @@
 - (void)testUp {
     __block QNResponseInfo *testInfo = nil;
     __block NSDictionary *testResp = nil;
-
+    
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
     [self.upManager putData:data key:@"你好" token:g_token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {

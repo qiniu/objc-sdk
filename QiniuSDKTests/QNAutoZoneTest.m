@@ -15,6 +15,7 @@
 #import "QNHttpResponseInfo.h"
 #import "QNSessionManager.h"
 
+#import "QNAutoZone.h"
 #import "QNConfiguration.h"
 
 #import "QNTestConfig.h"
@@ -41,12 +42,18 @@
     QNUpToken* tok = [QNUpToken parse:g_token];
     __block int x = 0;
     __block int c = 0;
-    [autoZone preQueryWithToken:tok on:^(int code, QNHttpResponseInfo *info) {
+    [autoZone preQuery:tok on:^(int code, QNHttpResponseInfo *info) {
         x = 1;
         c = code;
     }];
     AGWW_WAIT_WHILE(x == 0, 100.0);
     XCTAssertEqual(0, c, @"Pass");
+}
+
+- (void)testMutiHttp{
+    for (int i=0; i<5; i++) {
+        [self testHttp];
+    }
 }
 
 @end

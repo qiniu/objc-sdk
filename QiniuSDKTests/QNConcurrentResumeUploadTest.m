@@ -20,9 +20,11 @@
 
 - (void)setUp {
     // Put setup code here. This method is called before the invocation of each test method in the class.
+    kQNGloableConfiguration.isDnsOpen = YES;
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.useConcurrentResumeUpload = YES;
         builder.concurrentTaskCount = 3;
+//        builder.useHttps = NO;
     }];
     _upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 }

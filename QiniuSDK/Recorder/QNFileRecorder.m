@@ -81,6 +81,10 @@
     return error;
 }
 
+- (NSString *)getFileName{
+    return nil;
+}
+
 + (void)removeKey:(NSString *)key
         directory:(NSString *)dir
         encodeKey:(BOOL)encode {

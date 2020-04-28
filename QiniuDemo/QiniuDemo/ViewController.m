@@ -7,6 +7,7 @@
 //
 
 #import "ViewController.h"
+#import "QNTransactionManager.h"
 
 @interface ViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
@@ -42,7 +43,7 @@
 }
 
 - (void)uploadImageToQNFilePath:(NSString *)filePath {
-    self.token = @"你的token";
+    self.token = @"jH983zIUFIP1OVumiBVGeAfiLYJvwrF45S-t22eu:IN7H0Q5HC_4NrnPsrCgHdF-TIA8=:eyJzY29wZSI6InpvbmUwLXNwYWNlIiwiZGVhZGxpbmUiOjE1ODcwMTc4MzB9";
     QNUploadManager *upManager = [[QNUploadManager alloc] init];
     QNUploadOption *uploadOption = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
         NSLog(@"percent == %.2f", percent);
@@ -110,6 +111,31 @@
     //得到选择后沙盒中图片的完整路径
     filePath = [[NSString alloc] initWithFormat:@"%@%@", DocumentsPath, ImagePath];
     return filePath;
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
+    
+//    QNTransaction *t0 = [QNTransaction transaction:@"0" after:0 action:^{
+//        NSLog(@"== 0 == %@", [NSThread currentThread]);
+//    }];
+//    QNTransaction *t1 = [QNTransaction timeTransaction:@"1" after:0 interval:2 action:^{
+//        NSLog(@"== 1 == %@", [NSThread currentThread]);
+//        NSDate *date_from = [NSDate date];
+//        NSDate *date_current = [NSDate date];
+//
+//        while ([date_current timeIntervalSinceDate:date_from] < 3) {
+//            date_current = [NSDate date];
+//        }
+//    }];
+//    QNTransactionManager *manager = [QNTransactionManager manager];
+//
+//    [manager destroyResource];
+//    [manager addTransaction:t0];
+//    [manager addTransaction:t1];
+//
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(20 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        [manager destroyResource];
+//    });
 }
 
 - (void)didReceiveMemoryWarning {

@@ -44,6 +44,9 @@
 #import "QNConcurrentResumeUpload.h"
 #import "QNUploadInfoCollector.h"
 
+#import "QNDnsPrefetcher.h"
+#import "QNZone.h"
+
 @interface QNUploadManager ()
 @property (nonatomic) QNSessionManager *sessionManager;
 @property (nonatomic) QNConfiguration *config;
@@ -78,6 +81,8 @@
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
         _sessionManager = [[QNSessionManager alloc] initWithProxy:config.proxy timeout:config.timeoutInterval urlConverter:config.converter];
 #endif
+        
+        [[QNTransactionManager shared] addDnsLocalLoadTransaction];
     }
     return self;
 }
@@ -138,6 +143,9 @@
      identifier:(NSString *)identifier
        complete:(QNUpCompletionHandler)completionHandler
          option:(QNUploadOption *)option {
+
+    [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone
+                                                               token:token];
     if ([QNUploadManager checkAndNotifyError:key token:token input:data identifier:identifier complete:completionHandler]) {
         return;
     }
@@ -154,7 +162,7 @@
         [Collector update:CK_key value:key identifier:identifier];
     }
     
-    [_config.zone preQueryWithToken:t on:^(int code, QNHttpResponseInfo *httpResponseInfo) {
+    [_config.zone preQuery:t on:^(int code, QNHttpResponseInfo *httpResponseInfo) {
         [Collector addRequestWithType:QNRequestType_ucQuery httpResponseInfo:httpResponseInfo fileOffset:QN_IntNotSet targetRegionId:nil currentRegionId:nil identifier:identifier];
         if (code != 0) {
             QNAsyncRunInMain(^{
@@ -197,6 +205,10 @@
              identifier:(NSString *)identifier
                complete:(QNUpCompletionHandler)completionHandler
                  option:(QNUploadOption *)option {
+    
+    [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone
+                                                               token:token];
+    
     @autoreleasepool {
         QNUpToken *t = [QNUpToken parse:token];
         if (t == nil) {
@@ -210,7 +222,7 @@
             [Collector update:CK_key value:key identifier:identifier];
         }
 
-        [_config.zone preQueryWithToken:t on:^(int code, QNHttpResponseInfo *httpResponseInfo) {
+        [_config.zone preQuery:t on:^(int code, QNHttpResponseInfo *httpResponseInfo) {
             [Collector addRequestWithType:QNRequestType_ucQuery httpResponseInfo:httpResponseInfo fileOffset:QN_IntNotSet targetRegionId:nil currentRegionId:nil identifier:identifier];
             if (code != 0) {
                 QNAsyncRunInMain(^{
