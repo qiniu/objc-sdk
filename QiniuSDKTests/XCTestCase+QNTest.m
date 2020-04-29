@@ -26,7 +26,7 @@
     
     while ([self.waitDeadline timeIntervalSinceDate:[NSDate date]] > 0) {
         
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeInterval:0.1 sinceDate:[NSDate date]]];
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeInterval:0.01 sinceDate:[NSDate date]]];
     }
 }
 

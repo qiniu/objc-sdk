@@ -36,7 +36,7 @@
     inetAddress.hostValue = host;
     inetAddress.ipValue = CustomIPValue;
     if (!_isTestTtl) {
-        inetAddress.ttlValue = @(5);
+        inetAddress.ttlValue = @(1);
     }
     inetAddress.timestampValue = @([[NSDate date] timeIntervalSince1970]);
     return @[inetAddress];
@@ -57,6 +57,7 @@
 #define kCustomHost @"https://qiniu.com"
 - (void)setUp {
     
+    [kQNTransactionManager destroyResource];
     _config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.zone = [QNFixedZone createWithHost:@[kCustomHost]];
     }];
@@ -84,7 +85,7 @@
     NSString *host = @"upload.qiniup.com";
     [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:g_token];
     
-    QN_TEST_CASE_WAIT_TIME(5);
+    AGWW_WAIT_WHILE([kQNDnsPrefetcher getInetAddressByHost:kCustomHost] == nil, 60 * 5);
     
     NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetcher getInetAddressByHost:host];
     XCTAssert(addressList.count > 0, @"success");
@@ -96,13 +97,17 @@
     address.hostValue = kCustomHost;
     address.ipValue = CustomIPValue;
     [kQNDnsPrefetcher invalidInetAdress:address];
+    QN_TEST_CASE_WAIT_TIME(1);
     
     kQNGloableConfiguration.dns = [[CustomDns alloc] init];
-    [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:g_token];
     
+    [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:g_token];
+    QN_TEST_CASE_WAIT_TIME(2);
+    [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:g_token];
     QN_TEST_CASE_WAIT_TIME(2);
     
     NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetcher getInetAddressByHost:kCustomHost];
+    NSLog(@"addressList count: %ld", addressList.count);
     XCTAssert(addressList.count==1, @"success");
     XCTAssert([addressList.firstObject.ipValue isEqualToString:CustomIPValue], @"success");
 }
@@ -113,6 +118,7 @@
     address.hostValue = kCustomHost;
     address.ipValue = CustomIPValue;
     [kQNDnsPrefetcher invalidInetAdress:address];
+    QN_TEST_CASE_WAIT_TIME(1);
     
     CustomDns *dns = [[CustomDns alloc] init];
     dns.isTestTtl = YES;
@@ -120,7 +126,8 @@
     kQNGloableConfiguration.dnsCacheTime = 120;
     
     [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:g_token];
-    
+    QN_TEST_CASE_WAIT_TIME(2);
+    [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:g_token];
     QN_TEST_CASE_WAIT_TIME(2);
     
     NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetcher getInetAddressByHost:kCustomHost];
@@ -131,6 +138,8 @@
 }
 
 - (void)testMutiThreadPrefetch{
+    [kQNTransactionManager destroyResource];
+    QN_TEST_CASE_WAIT_TIME(2);
     
     int tryPrefetchNum = 100;
     __block int successPrefetchNum = 0;
@@ -154,6 +163,8 @@
     dispatch_group_notify(group, dispatch_get_main_queue(), ^{
         XCTAssert(successPrefetchNum == 1, @"success");
     });
+    
+    QN_TEST_CASE_WAIT_TIME(2);
 }
 
 @end

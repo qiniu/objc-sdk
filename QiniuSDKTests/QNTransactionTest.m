@@ -43,6 +43,8 @@
 
 - (void)testTransactionManagerAddAndRemove {
     
+    [kQNTransactionManager destroyResource];
+    
     QNTransaction *transaction01 = [QNTransaction transaction:@"1" after:0 action:^{
         NSLog(@"== 1 == %@", [NSThread currentThread]);
     }];
