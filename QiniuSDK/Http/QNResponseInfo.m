@@ -179,6 +179,10 @@ static NSString *domain = @"qiniu.com";
     return _statusCode == 200 && _error == nil && _reqId != nil;
 }
 
+- (BOOL)couldRetry {
+    return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == 996 || _statusCode == 406 || (_statusCode == 200 && _error != nil) || _statusCode < -1000 || self.isNotQiniu;
+}
+
 - (BOOL)isConnectionBroken {
     return _statusCode == kQNNetworkError || (_statusCode < -1000 && _statusCode != -1003);
 }

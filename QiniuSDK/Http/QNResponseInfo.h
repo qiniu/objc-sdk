@@ -106,6 +106,16 @@ extern const int kQNFileError;
 @property (nonatomic, readonly, getter=isConnectionBroken) BOOL broken;
 
 /**
+ *    是否TLS错误
+ */
+@property (nonatomic, readonly) BOOL isTlsError;
+
+/**
+ *    是否可以再次重试
+ */
+@property (nonatomic, readonly) BOOL couldRetry;
+
+/**
  *    是否为 七牛响应
  */
 @property (nonatomic, readonly, getter=isNotQiniu) BOOL notQiniu;
