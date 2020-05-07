@@ -10,6 +10,23 @@
 
 static NSString *const zoneNames[] = {@"z0", @"z1", @"z2", @"as0", @"na0", @"unknown"};
 
+@interface QNUploadServerGroup()
+@end
+@implementation QNUploadServerGroup
++ (QNUploadServerGroup *)buildInfoFromDictionary:(NSDictionary *)dictionary{
+    QNUploadServerGroup *group = [[QNUploadServerGroup alloc] init];
+    group.info = dictionary[@"info"];
+    if ([dictionary[@"main"] isKindOfClass:[NSArray class]]) {
+        group.main = dictionary[@"main"];
+    }
+    if ([dictionary[@"backup"] isKindOfClass:[NSArray class]]) {
+        group.backup = dictionary[@"backup"];
+    }
+    return group;
+}
+@end
+
+
 @interface QNZoneInfo()
 
 @property (nonatomic, assign) QNZoneInfoType type;
@@ -47,6 +64,7 @@ static NSString *const zoneNames[] = {@"z0", @"z1", @"z2", @"as0", @"na0", @"unk
     NSArray *urlDicList = [[NSArray alloc] initWithObjects:acc, src, old_acc, old_src, nil];
     NSMutableArray *domainList = [[NSMutableArray alloc] init];
     NSMutableDictionary *domainDic = [[NSMutableDictionary alloc] init];
+    
     //main
     for (int i = 0; i < urlDicList.count; i++) {
         if ([[urlDicList[i] allKeys] containsObject:@"main"]) {
@@ -90,7 +108,13 @@ static NSString *const zoneNames[] = {@"z0", @"z1", @"z2", @"as0", @"na0", @"unk
         zoneRegion = QNZoneRegion_unknown;
     }
     
-    return [[QNZoneInfo alloc] init:ttl upDomainsList:domainList upDomainsDic:domainDic zoneRegion:zoneRegion];
+    QNZoneInfo *zoneInfo = [[QNZoneInfo alloc] init:ttl upDomainsList:domainList upDomainsDic:domainDic zoneRegion:zoneRegion];
+    zoneInfo.acc = [QNUploadServerGroup buildInfoFromDictionary:acc];
+    zoneInfo.src = [QNUploadServerGroup buildInfoFromDictionary:src];
+    zoneInfo.old_acc = [QNUploadServerGroup buildInfoFromDictionary:old_acc];
+    zoneInfo.old_src = [QNUploadServerGroup buildInfoFromDictionary:old_src];
+    
+    return zoneInfo;
 }
 
 - (void)frozenDomain:(NSString *)domain {

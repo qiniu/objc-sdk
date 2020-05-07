@@ -19,6 +19,10 @@
 #import "QNUploadManager.h"
 #import "QNUploadOption.h"
 
+#import "QNZone.h"
+
+#import "QNUploadRegion.h"
+
 @interface QNBaseUpload : NSObject
 
 @property (nonatomic, copy) NSString *key;
@@ -38,5 +42,11 @@
 - (void)collectUploadQualityInfo;
 
 - (void)run;
+
+//MARK: --
+/// 切换区域
+- (BOOL)switchRegion;
+/// 获取当前区域
+- (id <QNUploadRegion>)getCurrentRegion;
 
 @end

@@ -183,16 +183,15 @@
                 completionHandler(info, key, resp);
             });
         };
-        QNFormUpload *up = [[QNFormUpload alloc]
-                     initWithData:data
-                          withKey:key
-                        withFileName:fileName
-                        withToken:t
-                            withIdentifier:(NSString *)identifier
-            withCompletionHandler:complete
-                       withOption:option
-                            withSessionManager:self.sessionManager
-                withConfiguration:self.config];
+        QNFormUpload *up = [[QNFormUpload alloc] initWithData:data
+                                                      withKey:key
+                                                 withFileName:fileName
+                                                    withToken:t
+                                               withIdentifier:(NSString *)identifier
+                                        withCompletionHandler:complete
+                                                   withOption:option
+                                           withSessionManager:self.sessionManager
+                                            withConfiguration:self.config];
         QNAsyncRun(^{
             [up put];
         });

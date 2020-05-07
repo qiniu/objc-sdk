@@ -65,7 +65,11 @@
                 complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete{
     
     id <QNUploadServer> server = [self getNextServer:lastResponseInfo];
-    if (server == nil) {
+    QNResponseInfo *errorResponseInfo = [self checkServer:server];
+    if (errorResponseInfo) {
+        if (complete) {
+            complete(errorResponseInfo, nil);
+        }
         return;
     }
     
@@ -98,7 +102,11 @@
               complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete{
     
     id <QNUploadServer> server = [self getNextServer:lastResponseInfo];
-    if (server == nil) {
+    QNResponseInfo *errorResponseInfo = [self checkServer:server];
+    if (errorResponseInfo) {
+        if (complete) {
+            complete(errorResponseInfo, nil);
+        }
         return;
     }
 
@@ -116,12 +124,12 @@
     
     NSMutableData *body = [NSMutableData data];
     NSString *boundary = @"werghnvt54wef654rjuhgb56trtg34tweuyrgf";
-    NSString *disposition = @"Content-Disposition: form-data"
-    for (NSString *paramsKey in params) {
+    NSString *disposition = @"Content-Disposition: form-data";
+    for (NSString *paramsKey in param) {
         NSString *pair = [NSString stringWithFormat:@"--%@\r\n%@; name=\"%@\"\r\n\r\n", boundary, disposition, paramsKey];
         [body appendData:[pair dataUsingEncoding:NSUTF8StringEncoding]];
 
-        id value = [params objectForKey:paramsKey];
+        id value = [param objectForKey:paramsKey];
         if ([value isKindOfClass:[NSString class]]) {
             [body appendData:[value dataUsingEncoding:NSUTF8StringEncoding]];
         } else if ([value isKindOfClass:[NSData class]]) {
@@ -136,7 +144,7 @@
     
     NSMutableDictionary *header = [NSMutableDictionary dictionary];
     header[@"Content-Type"] = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
-    header[@"Content-Length"] = [NSString stringWithFormat:@"%lu", (unsigned long)postData.length];
+    header[@"Content-Length"] = [NSString stringWithFormat:@"%lu", (unsigned long)body.length];
     
     [self.httpRequest post:server
                     action:nil
@@ -146,7 +154,7 @@
                   complete:^(QNResponseInfo * _Nonnull responseInfo, NSDictionary * _Nonnull response) {
         
         if (responseInfo.isOK == false && self.config.allowBackupHost) {
-            [self uploadFormData:responseInfo data:data progress:progress complete:complete];
+            [self uploadFormData:responseInfo data:data fileName:fileName progress:progress complete:complete];
         } else {
            if (complete) {
                 complete(responseInfo, response);
@@ -169,11 +177,15 @@
          complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete{
     
     id <QNUploadServer> server = [self getNextServer:lastResponseInfo];
-    if (server == nil) {
+    QNResponseInfo *errorResponseInfo = [self checkServer:server];
+    if (errorResponseInfo) {
+        if (complete) {
+            complete(errorResponseInfo, nil);
+        }
         return;
     }
     
-    NSDictionary *header = @{@"Authorization" : tokenUp,
+    NSDictionary *header = @{@"Authorization" : self.token.token ?: @"",
                              @"Content-Type" : @"application/octet-stream"};
     NSString *action = [NSString stringWithFormat:@"/mkblk/%u", (unsigned int)blockSize];
     
@@ -184,7 +196,11 @@
                   progress:progress
                   complete:^(QNResponseInfo * _Nonnull responseInfo, NSDictionary * _Nonnull response) {
         
-        if (responseInfo.isOK == false && self.config.allowBackupHost) {
+        NSString *ctx = response[@"ctx"];
+        NSString *crcServer = [NSString stringWithFormat:@"%@", response[@"crc32"]];
+        if (!ctx
+            || (responseInfo.isOK && self.uploadOption.checkCrc && ![firstChunk.crc isEqualToString:crcServer])
+            || (!responseInfo.isOK && self.config.allowBackupHost)) {
             [self makeBlock:responseInfo blockSize:blockSize firstChunk:firstChunk progress:progress complete:complete];
         } else {
            if (complete) {
@@ -198,7 +214,7 @@
               chunk:(QNUploadChunk *)chunk
            progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
            complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete{
-    [self uploadChunk:nil chunkContext:chunkContext chunk:chunk progress:progress complete:complete];
+    [self uploadChunk:nil blockContext:blockContext chunk:chunk progress:progress complete:complete];
 }
 - (void)uploadChunk:(QNResponseInfo *)lastResponseInfo
        blockContext:(NSString *)blockContext
@@ -207,23 +223,31 @@
            complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete{
     
     id <QNUploadServer> server = [self getNextServer:lastResponseInfo];
-    if (server == nil) {
+    QNResponseInfo *errorResponseInfo = [self checkServer:server];
+    if (errorResponseInfo) {
+        if (complete) {
+            complete(errorResponseInfo, nil);
+        }
         return;
     }
     
-    NSDictionary *header = @{@"Authorization" : tokenUp,
+    NSDictionary *header = @{@"Authorization" : self.token.token ?: @"",
                              @"Content-Type" : @"application/octet-stream"};
     NSString *action = [NSString stringWithFormat:@"/bput/%@/%u", blockContext,  (unsigned int)chunk.offset];
     
     [self.httpRequest post:server
                     action:action
                    headers:header
-                      body:firstChunk.info
+                      body:chunk.info
                   progress:progress
                   complete:^(QNResponseInfo * _Nonnull responseInfo, NSDictionary * _Nonnull response) {
         
-        if (responseInfo.isOK == false && self.config.allowBackupHost) {
-            [self makeBlock:responseInfo blockSize:blockSize firstChunk:firstChunk progress:progress complete:complete];
+        NSString *ctx = response[@"ctx"];
+        NSString *crcServer = [NSString stringWithFormat:@"%@", response[@"crc32"]];
+        if (!ctx
+            || (responseInfo.isOK && self.uploadOption.checkCrc && ![chunk.crc isEqualToString:crcServer])
+            || (!responseInfo.isOK && self.config.allowBackupHost)) {
+            [self uploadChunk:responseInfo blockContext:blockContext chunk:chunk progress:progress complete:complete];
         } else {
            if (complete) {
                 complete(responseInfo, response);
@@ -245,7 +269,11 @@
         complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete{
     
     id <QNUploadServer> server = [self getNextServer:lastResponseInfo];
-    if (server == nil) {
+    QNResponseInfo *errorResponseInfo = [self checkServer:server];
+    if (errorResponseInfo) {
+        if (complete) {
+            complete(errorResponseInfo, nil);
+        }
         return;
     }
     
@@ -256,26 +284,39 @@
         }
     }
     
-    NSDictionary *header = @{@"Authorization" : tokenUp,
+    NSDictionary *header = @{@"Authorization" : self.token.token ?: @"",
                              @"Content-Type" : @"application/octet-stream"};
     
-    NSString *mimeType = [[NSString alloc] initWithFormat:@"mimeType/%@", [QNUrlSafeBase64 encodeString:self.uploadOption.mimeType]];
-    NSString *fileName = [[NSString alloc] initWithFormat:@"fname/%@", [QNUrlSafeBase64 encodeString:fileName]];
-    NSString *action = [NSString stringWithFormat:@"/mkfile/%u/%@/%@", chunkContext,  (unsigned int)fileSize, mimeType, fileName];
-    
+    NSString *mimeType = [[NSString alloc] initWithFormat:@"/mimeType/%@", [QNUrlSafeBase64 encodeString:self.uploadOption.mimeType]];
+
+    __block NSString *action = [[NSString alloc] initWithFormat:@"/mkfile/%u%@", (unsigned int)fileSize, mimeType];
+
+    if (self.key != nil) {
+        NSString *keyStr = [[NSString alloc] initWithFormat:@"/key/%@", [QNUrlSafeBase64 encodeString:self.key]];
+        action = [NSString stringWithFormat:@"%@%@", action, keyStr];
+    }
+
+    [self.uploadOption.params enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *obj, BOOL *stop) {
+        action = [NSString stringWithFormat:@"%@/%@/%@", action, key, [QNUrlSafeBase64 encodeString:obj]];
+    }];
+
+    //添加路径
+    NSString *fname = [[NSString alloc] initWithFormat:@"/fname/%@", [QNUrlSafeBase64 encodeString:fileName]];
+    action = [NSString stringWithFormat:@"%@%@", action, fname];
+
     NSMutableData *body = [NSMutableData data];
-    NSString *bodyString = [self.contexts componentsJoinedByString:@","];
+    NSString *bodyString = [blockContextList componentsJoinedByString:@","];
     [body appendData:[bodyString dataUsingEncoding:NSUTF8StringEncoding]];
     
     [self.httpRequest post:server
                     action:action
                    headers:header
-                      body:firstChunk.info
-                  progress:progress
+                      body:body
+                  progress:nil
                   complete:^(QNResponseInfo * _Nonnull responseInfo, NSDictionary * _Nonnull response) {
         
         if (responseInfo.isOK == false && self.config.allowBackupHost) {
-            [self makeBlock:responseInfo blockSize:blockSize firstChunk:firstChunk progress:progress complete:complete];
+            [self makeFile:responseInfo fileSize:fileSize fileName:fileName blockList:blockList complete:complete];
         } else {
            if (complete) {
                 complete(responseInfo, response);
@@ -301,6 +342,14 @@
     } else {
         return [self.region getNextServer:self.isUserOldServer freezeServer:self.currentServer];
     }
+}
+
+- (QNResponseInfo *)checkServer:(id <QNUploadServer>)server{
+    QNResponseInfo *responseInfo = nil;
+    if (!server.host || server.host.length == 0) {
+        responseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"server" duration:0];
+    }
+    return responseInfo;
 }
 
 @end

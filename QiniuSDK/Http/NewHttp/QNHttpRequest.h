@@ -25,12 +25,12 @@ NS_ASSUME_NONNULL_BEGIN
                   requestState:(QNUploadRequstState *)requestState;
 
 
-- (void)get:(id <QNUploadServer>)server
+- (void)get:(id <QNUploadServer> _Nullable)server
      action:(NSString * _Nullable)action
     headers:(NSDictionary * _Nullable)headers
    complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete;
 
-- (void)post:(id <QNUploadServer>)server
+- (void)post:(id <QNUploadServer> _Nullable)server
       action:(NSString * _Nullable)action
      headers:(NSDictionary * _Nullable)headers
         body:(NSData * _Nullable)body

@@ -7,6 +7,7 @@
 //
 
 #import "QNUploadData.h"
+#import "QNCrc32.h"
 
 @interface QNUploadChunk()
 
@@ -17,12 +18,11 @@
 @end
 @implementation QNUploadChunk
 
-- (instancetype)initWithOffset:(UInt32)offset needCrc:(BOOL)needCrc info:(NSData *)info{
+- (instancetype)initWithOffset:(UInt32)offset info:(NSData *)info{
     if (self = [super init]) {
         _offset = offset;
         _info = info;
-        _crc = nil
-        _blockContext = nil;
+        _crc = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:info]];
     }
     return self;
 }
@@ -31,9 +31,8 @@
 
 @interface QNUploadBlock()
 
-@property(nonatomic, strong)NSArray <QNUploadChunk *> chunkList;
+@property(nonatomic, strong)NSArray <QNUploadChunk *> *chunkList;
 @property(nonatomic, assign)UInt32 blockSize;
-@property(nonatomic,   copy)NSString *context;
 
 @end
 @implementation QNUploadBlock : NSObject

@@ -79,7 +79,7 @@
               progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
               complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete{
     
-    NSString *serverHost = server.host;
+    NSString *serverHost = server.host ?: @"upload.qiniup.com";
     NSString *serverIP = server.ip;
     if (!serverHost && serverHost.length == 0) {
         return;
@@ -89,18 +89,20 @@
     NSString *scheme = self.config.useHttps ? @"https://" : @"http://";
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     if (server.ip && server.ip.copy > 0) {
-        NSString *urlString = [NSString stringWithFormat:@"%@%@%@", scheme, serverIP, action];
+        NSString *urlString = [NSString stringWithFormat:@"%@%@%@", scheme, serverIP, action ?: @""];
         request.URL = [NSURL URLWithString:urlString];
         request.qn_domain = serverHost;
         isSkipDns = YES;
     } else {
-        NSString *urlString = [NSString stringWithFormat:@"%@%@%@", scheme, serverHost, action];
+        NSString *urlString = [NSString stringWithFormat:@"%@%@%@", scheme, serverHost, action ?: @""];
         request.URL = [NSURL URLWithString:urlString];
+        request.qn_domain = serverHost;
         isSkipDns = NO;
     }
     request.HTTPMethod = method;
     [request setAllHTTPHeaderFields:headers];
-    
+    [request setTimeoutInterval:self.config.timeoutInterval];
+    request.HTTPBody = body;
     [self.singleRetry request:request isSkipDns:isSkipDns progress:progress complete:^(QNResponseInfo * responseInfo, NSDictionary * response) {
         if (complete) {
             complete(responseInfo, response);

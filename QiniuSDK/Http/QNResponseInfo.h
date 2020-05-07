@@ -179,4 +179,8 @@ extern const int kQNFileError;
  */
 + (instancetype)responseInfoWithHttpResponseInfo:(QNHttpResponseInfo *)httpResponseInfo duration:(double)duration;
 
+- (instancetype)initWithResponseInfoHost:(NSString *)host
+                                response:(NSHTTPURLResponse *)response
+                                    body:(NSData *)body
+                                   error:(NSError *)error;
 @end

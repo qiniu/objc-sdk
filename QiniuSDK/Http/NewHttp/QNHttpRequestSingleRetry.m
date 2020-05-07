@@ -10,8 +10,11 @@
 #import "QNConfiguration.h"
 #import "QNUploadOption.h"
 #import "QNResponseInfo.h"
-#import "QNRequestClientAble.h"
+#import "QNRequestClient.h"
 #import "QNUploadRequstState.h"
+
+#import "QNUploadSystemClient.h"
+#import "NSURLRequest+QNRequest.h"
 
 @interface QNHttpRequestSingleRetry()
 
@@ -20,8 +23,7 @@
 @property(nonatomic, strong)QNUploadOption *uploadOption;
 @property(nonatomic, strong)QNUploadRequstState *requestState;
 
-@property(nonatomic, strong)id <QNRequestClientAble> systemClient;
-@property(nonatomic, strong)id <QNRequestClientAble> libCurlClient;
+@property(nonatomic, strong)id <QNRequestClient> client;
 
 @end
 @implementation QNHttpRequestSingleRetry
@@ -52,28 +54,27 @@
            progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
            complete:(void (^)(QNResponseInfo * _Nullable, NSDictionary * _Nullable))complete{
     
-    id <QNRequestClientAble> client = nil;
     if (isSkipDns && kQNGloableConfiguration.isDnsOpen) {
-        client = self.libCurlClient;
+        self.client = [[QNUploadSystemClient alloc] init];
     } else {
-        client = self.systemClient;
+        self.client = [[QNUploadSystemClient alloc] init];
     }
     
-    __weak typeof(client) weakClient = client;
-    [client request:request progress:^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+    __weak typeof(self) weakSelf = self;
+    [self.client request:request connectionProxy:self.config.proxy progress:^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
         
         BOOL isCancel = self.requestState.isUserCancel;
         if (!isCancel && self.uploadOption.cancellationSignal) {
             isCancel = self.uploadOption.cancellationSignal();
         }
         if (isCancel) {
-            [weakClient cancel];
+            [weakSelf.client cancel];
             self.requestState.isUserCancel = YES;
         } else if (progress) {
             progress(totalBytesWritten, totalBytesExpectedToWrite);
         }
         
-    } complete:^(NSDictionary * _Nullable response, NSError * _Nullable error, id<QNRequestTransactionAble>  _Nonnull transaction) {
+    } complete:^(NSURLResponse *response, NSData * responseData, NSError * error) {
         
         QNResponseInfo *reponseInfo = nil;
         BOOL isCancel = self.requestState.isUserCancel;
@@ -82,7 +83,8 @@
         }
         if (isCancel) {
             if (complete) {
-                complete(reponseInfo, response);
+                reponseInfo = [QNResponseInfo cancelWithDuration:0];
+                complete(reponseInfo, nil);
             }
             return;
         }
@@ -92,7 +94,14 @@
             [self retryRquest:request isSkipDns:isSkipDns progress:progress complete:complete];
         } else {
             if (complete) {
-                complete(reponseInfo, response);
+                NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseData
+                                                                            options:NSJSONReadingMutableLeaves
+                                                                              error:nil];
+                reponseInfo = [[QNResponseInfo alloc] initWithResponseInfoHost:request.qn_domain
+                                                                      response:(NSHTTPURLResponse *)response
+                                                                          body:responseData
+                                                                         error:error];
+                complete(reponseInfo, responseDic);
             }
         }
     }];

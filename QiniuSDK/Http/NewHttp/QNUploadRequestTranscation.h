@@ -12,7 +12,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class QNUpToken, QNConfiguration, QNUploadOption, QNResponseInfo, QNUploadChunk, QNUploadBlock;
-
+// 单个对象只能执行一个事务，多个事务需要创建多个事务对象完成
 @interface QNUploadRequestTranscation : NSObject
 
 - (instancetype)initWithConfig:(QNConfiguration *)config

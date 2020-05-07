@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "QNRecorderDelegate.h"
 #import "QNDns.h"
-#import "QNZone.h"
+
 /**
  * 断点上传时的分块大小
  */

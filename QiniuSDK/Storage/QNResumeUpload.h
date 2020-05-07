@@ -7,7 +7,6 @@
 //
 
 #import "QNBaseUpload.h"
-#import <Foundation/Foundation.h>
 #import "QNFileDelegate.h"
 
 @interface QNResumeUpload : QNBaseUpload

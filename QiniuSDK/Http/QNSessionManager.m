@@ -151,6 +151,7 @@ didCompleteWithError:(nullable NSError *)error {
         _delegateQueue = [[NSOperationQueue alloc] init];
         _timeout = timeout;
         _converter = converter;
+        _proxyDict = proxyDict;
         _sessionArray = [NSMutableArray array];
 
         [QNURLProtocol registerProtocol];

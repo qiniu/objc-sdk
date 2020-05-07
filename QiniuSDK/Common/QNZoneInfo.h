@@ -23,12 +23,28 @@ typedef enum : NSUInteger {
     QNZoneRegion_unknown
 } QNZoneRegion;
 
+@interface QNUploadServerGroup : NSObject
+
+@property(nonatomic,  copy)NSString *info;
+@property(nonatomic, strong)NSArray <NSString *> *main;
+@property(nonatomic, strong)NSArray <NSString *> *backup;
+
++ (QNUploadServerGroup *)buildInfoFromDictionary:(NSDictionary *)dictionary;
+
+@end
+
 @interface QNZoneInfo : NSObject
 
 @property (nonatomic, assign, readonly) QNZoneInfoType type;
 @property (nonatomic, assign, readonly) long ttl;
+
 @property (nonatomic, strong, readonly) NSArray<NSString *> *upDomainsList;
 @property (nonatomic, strong, readonly) NSMutableDictionary *upDomainsDic;
+
+@property(nonatomic, strong)QNUploadServerGroup *acc;
+@property(nonatomic, strong)QNUploadServerGroup *src;
+@property(nonatomic, strong)QNUploadServerGroup *old_acc;
+@property(nonatomic, strong)QNUploadServerGroup *old_src;
 
 - (instancetype)init:(long)ttl
        upDomainsList:(NSMutableArray<NSString *> *)upDomainsList

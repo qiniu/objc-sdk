@@ -109,6 +109,53 @@ static NSString *domain = @"qiniu.com";
     }
 }
 
+- (instancetype)initWithResponseInfoHost:(NSString *)host
+                                response:(NSHTTPURLResponse *)response
+                                    body:(NSData *)body
+                                   error:(NSError *)error {
+    
+    self = [super init];
+    if (self) {
+        
+        _host = host;
+        _timeStamp = [[NSDate date] timeIntervalSince1970];
+        
+        if (response) {
+            int statusCode = (int)[response statusCode];
+            NSDictionary *headers = [response allHeaderFields];
+            _statusCode = statusCode;
+            _reqId = headers[@"X-Reqid"];
+            _xlog = headers[@"X-Log"];
+            _xvia = !headers[@"X-Via"] ? (!headers[@"X-Px"] ? headers[@"Fw-Via"] : headers[@"X-Px"]) : headers[@"X-Via"];
+
+            if (statusCode != 200) {
+                if (body == nil) {
+                    _error = [[NSError alloc] initWithDomain:host code:statusCode userInfo:nil];
+                } else {
+                    NSError *tmp;
+                    NSDictionary *uInfo = [NSJSONSerialization JSONObjectWithData:body options:NSJSONReadingMutableLeaves error:&tmp];
+                    if (tmp != nil) {
+                        // 出现错误时，如果信息是非UTF8编码会失败，返回nil
+                        NSString *str = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding] ?: @"";
+                        uInfo = @{ @"error" : str};
+                    }
+                    _error = [[NSError alloc] initWithDomain:host code:statusCode userInfo:uInfo];
+                }
+            } else if (body == nil || body.length == 0) {
+                NSDictionary *uInfo = @{ @"error" : @"no response json" };
+                _error = [[NSError alloc] initWithDomain:host code:statusCode userInfo:uInfo];
+            } else if (error) {
+                NSDictionary *uInfo = @{ @"error" : @"JSON serialization failed" };
+                _error = [[NSError alloc] initWithDomain:host code:statusCode userInfo:uInfo];
+            }
+        } else if (error) {
+            _error = error;
+            _statusCode = (int)error.code;
+        }
+    }
+    return self;
+}
+
 - (instancetype)initWithStatus:(int)status
                          errorDescription:(NSString *)text
                       duration:(double)duration {

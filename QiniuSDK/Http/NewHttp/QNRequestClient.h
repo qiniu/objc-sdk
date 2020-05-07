@@ -1,5 +1,5 @@
 //
-//  QNRequestClientAble.h
+//  QNRequestClient.h
 //  QiniuSDK
 //
 //  Created by yangsen on 2020/4/29.
@@ -10,16 +10,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol QNRequestTransactionAble <NSObject>
-
-@end
-
-
-@protocol QNRequestClientAble <NSObject>
+@protocol QNRequestClient <NSObject>
 
 - (void)request:(NSURLRequest *)request
+connectionProxy:(NSDictionary * _Nullable)connectionProxy
        progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-       complete:(void(^)(NSDictionary * _Nullable response, NSError * _Nullable error, id <QNRequestTransactionAble> transaction))complete;
+       complete:(void(^)(NSURLResponse * _Nullable response, NSData * _Nullable responseData, NSError * _Nullable error))complete;
 
 - (void)cancel;
 
