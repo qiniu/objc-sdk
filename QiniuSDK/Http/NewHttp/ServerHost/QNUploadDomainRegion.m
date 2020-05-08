@@ -47,10 +47,13 @@
 @property(atomic   , assign)BOOL isAllFreezed;
 @property(nonatomic, strong)NSDictionary <NSString *, QNUploadServerDomain *> *domainDictionary;
 @property(nonatomic, strong)NSDictionary <NSString *, QNUploadServerDomain *> *oldDomainDictionary;
+@property(nonatomic, strong, nullable)QNZoneInfo *zonesInfo;
 @end
 @implementation QNUploadDomainRegion
 
-- (void)setRegionData:(QNZoneInfo *)zoneInfo{
+- (void)setupRegionData:(QNZoneInfo *)zoneInfo{
+    _zonesInfo = zoneInfo;
+    
     self.isAllFreezed = NO;
     NSMutableArray *serverGroups = [NSMutableArray array];
     if (zoneInfo.acc) {

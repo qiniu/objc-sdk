@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class QNUploadRequstState, QNResponseInfo, QNConfiguration, QNUploadOption;
 
-@interface QNHttpRequest : NSObject
+@interface QNHttpRegionRequest : NSObject
 
 @property(nonatomic, strong, readonly)QNConfiguration *config;
 @property(nonatomic, strong, readonly)QNUploadOption *uploadOption;
@@ -22,20 +22,21 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
+                        region:(id <QNUploadRegion>)region
                   requestState:(QNUploadRequstState *)requestState;
 
 
-- (void)get:(id <QNUploadServer> _Nullable)server
-     action:(NSString * _Nullable)action
+- (void)get:(NSString * _Nullable)action
     headers:(NSDictionary * _Nullable)headers
-   complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete;
+shouldRetry:(BOOL(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))shouldRetry
+   complete:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))complete;
 
-- (void)post:(id <QNUploadServer> _Nullable)server
-      action:(NSString * _Nullable)action
+- (void)post:(NSString * _Nullable)action
      headers:(NSDictionary * _Nullable)headers
         body:(NSData * _Nullable)body
-    progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-    complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete;
+ shouldRetry:(BOOL(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))shouldRetry
+    progress:(void(^_Nullable)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
+    complete:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))complete;
 
 @end
 

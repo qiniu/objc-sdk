@@ -12,17 +12,4 @@
 
 @interface QNConcurrentResumeUpload : QNBaseUpload
 
-- (instancetype)initWithFile:(id<QNFileDelegate>)file
-                     withKey:(NSString *)key
-                   withToken:(QNUpToken *)token
-              withIdentifier:(NSString *)identifier
-                withRecorder:(id<QNRecorderDelegate>)recorder
-             withRecorderKey:(NSString *)recorderKey
-             withSessionManager:(QNSessionManager *)sessionManager
-       withCompletionHandler:(QNUpCompletionHandler)block
-                  withOption:(QNUploadOption *)option
-           withConfiguration:(QNConfiguration *)config;
-
-- (void)run;
-
 @end

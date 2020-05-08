@@ -6,13 +6,13 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
-#import "QNHttpRequest.h"
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class QNUploadRequstState, QNResponseInfo, QNConfiguration, QNUploadOption;
 
-@interface QNHttpRequestSingleRetry : NSObject
+@interface QNHttpSingleRequest : NSObject
 
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param complete 上传完成回调
 - (void)request:(NSURLRequest *)request
       isSkipDns:(BOOL)isSkipDns
+    shouldRetry:(BOOL(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))shouldRetry
        progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
        complete:(void(^)(QNResponseInfo * _Nullable httpResponseInfo, NSDictionary * _Nullable respBody))complete;
 

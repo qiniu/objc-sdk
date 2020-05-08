@@ -40,18 +40,19 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, strong, readonly) NSArray<NSString *> *upDomainsList;
 @property (nonatomic, strong, readonly) NSMutableDictionary *upDomainsDic;
+@property (nonatomic, strong, readonly) NSDictionary *detailInfo;
 
 @property(nonatomic, strong)QNUploadServerGroup *acc;
 @property(nonatomic, strong)QNUploadServerGroup *src;
 @property(nonatomic, strong)QNUploadServerGroup *old_acc;
 @property(nonatomic, strong)QNUploadServerGroup *old_src;
 
++ (QNZoneInfo *)zoneInfoFromDictionary:(NSDictionary *)detailInfo;
+
 - (instancetype)init:(long)ttl
        upDomainsList:(NSMutableArray<NSString *> *)upDomainsList
         upDomainsDic:(NSMutableDictionary *)upDomainsDic
           zoneRegion:(QNZoneRegion)zoneRegion;
-
-- (QNZoneInfo *)buildInfoFromJson:(NSDictionary *)resp;
 
 - (void)frozenDomain:(NSString *)domain;
 

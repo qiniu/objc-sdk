@@ -116,6 +116,16 @@ extern const int kQNFileError;
 @property (nonatomic, readonly) BOOL couldRetry;
 
 /**
+ *    单个host是否可以再次重试
+ */
+@property (nonatomic, readonly) BOOL couldHostRetry;
+
+/**
+ *    单个Region是否可以再次重试
+ */
+@property (nonatomic, readonly) BOOL couldRegionRetry;
+
+/**
  *    是否为 七牛响应
  */
 @property (nonatomic, readonly, getter=isNotQiniu) BOOL notQiniu;

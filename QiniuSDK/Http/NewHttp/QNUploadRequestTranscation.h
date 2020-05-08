@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class QNUpToken, QNConfiguration, QNUploadOption, QNResponseInfo, QNUploadChunk, QNUploadBlock;
+@class QNUpToken, QNConfiguration, QNUploadOption, QNResponseInfo;
 // 单个对象只能执行一个事务，多个事务需要创建多个事务对象完成
 @interface QNUploadRequestTranscation : NSObject
 
@@ -28,19 +28,20 @@ NS_ASSUME_NONNULL_BEGIN
               progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
               complete:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))complete;
 
-- (void)makeBlock:(UInt32)blockSize
-       firstChunk:(QNUploadChunk *)firstChunk
+- (void)makeBlock:(long long)blockSize
+   firstChunkData:(NSData *)firstChunkData
          progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
          complete:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))complete;
 
 - (void)uploadChunk:(NSString *)blockContext
-              chunk:(QNUploadChunk *)chunk
+          chunkData:(NSData *)chunkData
+        chunkOffest:(long long)chunkOffest
            progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
            complete:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))complete;
 
-- (void)makeFile:(UInt32)fileSize
+- (void)makeFile:(long long)fileSize
         fileName:(NSString *)fileName
-       blockList:(NSArray <QNUploadBlock *> *)blockList
+   blockContexts:(NSArray <NSString *> *)blockContexts
         complete:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))complete;
 
 @end

@@ -45,7 +45,9 @@
     __block QNResponseInfo *info = nil;
     __block BOOL flag = NO;
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
-        flag = YES;
+        if (percent > 0.5) {
+            flag = YES;
+        }
     }
         params:@{ @"x:七牛" : @"objc",
                   @"x:no" : @"",
@@ -100,9 +102,8 @@
     }];
 
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        NSArray *upList = [[NSArray alloc] initWithObjects:@"uptemp.qbox.me", nil];
         builder.useHttps = YES;
-        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+        builder.chunkSize = 1 * 1024 * 1024;
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
@@ -177,9 +178,9 @@
     [self template:5 * 1024];
 }
 
-//- (void)test500ks {
-//    [self templateHttps:500];
-//}
+- (void)test5Ms {
+    [self templateHttps:5 * 1024];
+}
 //
 //- (void)test600ks {
 //    [self templateHttps:600];

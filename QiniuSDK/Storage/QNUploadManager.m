@@ -37,6 +37,9 @@
 #import "QNFormUpload.h"
 #import "QNResponseInfo.h"
 #import "QNResumeUpload.h"
+
+#import "QNResumeUpload.h"
+
 #import "QNSessionManager.h"
 #import "QNUpToken.h"
 #import "QNUploadManager.h"
@@ -184,16 +187,15 @@
             });
         };
         QNFormUpload *up = [[QNFormUpload alloc] initWithData:data
-                                                      withKey:key
-                                                 withFileName:fileName
-                                                    withToken:t
-                                               withIdentifier:(NSString *)identifier
-                                        withCompletionHandler:complete
-                                                   withOption:option
-                                           withSessionManager:self.sessionManager
-                                            withConfiguration:self.config];
+                                                          key:key
+                                                     fileName:fileName
+                                                        token:t
+                                                   identifier:identifier
+                                                       option:option
+                                                configuration:self.config
+                                            completionHandler:complete];
         QNAsyncRun(^{
-            [up put];
+            [up run];
         });
     }];
 }
@@ -262,30 +264,28 @@
             if (self.config.useConcurrentResumeUpload) {
                 QNConcurrentResumeUpload *up = [[QNConcurrentResumeUpload alloc]
                                                 initWithFile:file
-                                                withKey:key
-                                                withToken:t
-                                                withIdentifier:identifier
-                                                withRecorder:self.config.recorder
-                                                withRecorderKey:recorderKey
-                                                withSessionManager:self.sessionManager
-                                                withCompletionHandler:completionHandler
-                                                withOption:option
-                                                withConfiguration:self.config];
+                                                key:key
+                                                token:t
+                                                identifier:identifier
+                                                option:option
+                                                configuration:self.config
+                                                recorder:self.config.recorder
+                                                recorderKey:key
+                                                completionHandler:complete];
                 QNAsyncRun(^{
                     [up run];
                 });
             } else {
                 QNResumeUpload *up = [[QNResumeUpload alloc]
                                       initWithFile:file
-                                      withKey:key
-                                      withToken:t
-                                      withIdentifier:identifier
-                                      withCompletionHandler:complete
-                                      withOption:option
-                                      withRecorder:self.config.recorder
-                                      withRecorderKey:recorderKey
-                                      withSessionManager:self.sessionManager
-                                      withConfiguration:self.config];
+                                      key:key
+                                      token:t
+                                      identifier:identifier
+                                      option:option
+                                      configuration:self.config
+                                      recorder:self.config.recorder
+                                      recorderKey:key
+                                      completionHandler:complete];
                 QNAsyncRun(^{
                     [up run];
                 });

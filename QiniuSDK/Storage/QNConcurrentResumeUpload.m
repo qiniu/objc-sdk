@@ -288,12 +288,9 @@
 
 @interface QNConcurrentResumeUpload ()
 
-@property (nonatomic, strong) id<QNRecorderDelegate> recorder;
-@property (nonatomic, strong) id<QNFileDelegate> file;
 @property (nonatomic, strong) QNConcurrentTaskQueue *taskQueue;
 @property (nonatomic, strong) QNConcurrentRecorderInfo *recordInfo; // 续传信息
 
-@property (nonatomic, copy) NSString *recorderKey;
 @property (nonatomic, strong) NSDictionary *headers;
 
 @property (nonatomic, strong) dispatch_group_t uploadGroup;
@@ -309,54 +306,28 @@
 
 @implementation QNConcurrentResumeUpload
 
-- (instancetype)initWithFile:(id<QNFileDelegate>)file
-                     withKey:(NSString *)key
-                   withToken:(QNUpToken *)token
-              withIdentifier:(NSString *)identifier
-                withRecorder:(id<QNRecorderDelegate>)recorder
-             withRecorderKey:(NSString *)recorderKey
-          withSessionManager:(QNSessionManager *)sessionManager
-       withCompletionHandler:(QNUpCompletionHandler)block
-                  withOption:(QNUploadOption *)option
-           withConfiguration:(QNConfiguration *)config {
+- (void)initData{
+    [super initData];
     
-    if (self = [super init]) {
-        self.file = file;
-        self.size = (UInt32)[file size];
-        self.key = key;
-        self.recorder = recorder;
-        self.recorderKey = recorderKey;
-        self.modifyTime = [file modifyTime];
-        self.option = option != nil ? option : [QNUploadOption defaultOptions];
-        self.complete = block;
-        self.headers = @{@"Authorization" : [NSString stringWithFormat:@"UpToken %@", token.token], @"Content-Type" : @"application/octet-stream"};
-        self.config = config;
-        self.token = token;
-        self.access = token.access;
-        self.sessionManager = sessionManager;
-        self.identifier = identifier;
-        self.resettingTaskQueue = NO;
-        self.retriedTimes = 0;
-        self.currentZoneType = QNZoneInfoTypeMain;
-        self.uploadGroup = dispatch_group_create();
-        self.uploadQueue = dispatch_queue_create("com.qiniu.concurrentUpload", DISPATCH_QUEUE_SERIAL);
+    self.resettingTaskQueue = NO;
+    self.retriedTimes = 0;
+    self.currentZoneType = QNZoneInfoTypeMain;
+    self.uploadGroup = dispatch_group_create();
+    self.uploadQueue = dispatch_queue_create("com.qiniu.concurrentUpload", DISPATCH_QUEUE_SERIAL);
+    
+    self.recordInfo = [self recoveryFromRecord];
+    self.taskQueue = [QNConcurrentTaskQueue
+                      taskQueueWithFile:self.file
+                      config:self.config
+                      totalSize:self.size
+                      contextsInfo:self.recordInfo.contextsInfo
+                      token:self.token];
         
-        self.recordInfo = [self recoveryFromRecord];
-        self.taskQueue = [QNConcurrentTaskQueue
-                          taskQueueWithFile:file
-                          config:config
-                          totalSize:self.size
-                          contextsInfo:self.recordInfo.contextsInfo
-                          token:self.token];
-        
-        [Collector update:CK_blockApiVersion value:@1 identifier:self.identifier];
-    }
-    return self;
+    [Collector update:CK_blockApiVersion value:@1 identifier:self.identifier];
 }
 
 - (void)run {
-    
-    self.requestType = QNRequestType_mkblk;
+
     if (self.recordInfo.host && ![self.recordInfo.host isEqualToString:@""]) {
         self.upHost = self.recordInfo.host;
     } else {
@@ -370,7 +341,6 @@
     }
     dispatch_group_notify(_uploadGroup, _uploadQueue, ^{
         if (self.taskQueue.isAllCompleted) {
-            self.requestType = QNRequestType_mkfile;
             [self makeFile];
         } else {
             if (self.isResettingTaskQueue) {
@@ -379,7 +349,7 @@
                 [self.taskQueue reset];
                 [self run];
             } else {
-                self.complete(self.taskQueue.info, self.key, self.taskQueue.resp);
+                self.completionHandler(self.taskQueue.info, self.key, self.taskQueue.resp);
             }
        }
     });
@@ -540,7 +510,7 @@
     }];
     
     //添加路径
-    NSString *fname = [[NSString alloc] initWithFormat:@"/fname/%@", [QNUrlSafeBase64 encodeString:[[_file path] lastPathComponent]]];
+    NSString *fname = [[NSString alloc] initWithFormat:@"/fname/%@", [QNUrlSafeBase64 encodeString:[[self.file path] lastPathComponent]]];
     url = [NSString stringWithFormat:@"%@%@", url, fname];
     
     NSArray *contextArray = [_taskQueue getContexts];
@@ -557,7 +527,7 @@
                 self.option.progressHandler(self.key, 1.0);
                 [self collectUploadQualityInfo];
                 QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
-                self.complete(info, self.key, respBody);
+                self.completionHandler(info, self.key, respBody);
             } else if (httpResponseInfo.couldRetry) {
                 if (self.retriedTimes < self.config.retryMax) {
                     self.retriedTimes++;
@@ -585,20 +555,20 @@
                                 } else {
                                     [self collectUploadQualityInfo];
                                     QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
-                                    self.complete(info, self.key, respBody);
+                                    self.completionHandler(info, self.key, respBody);
                                 }
                             }
                         }
                     } else {
                         [self collectUploadQualityInfo];
                         QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
-                        self.complete(info, self.key, respBody);
+                        self.completionHandler(info, self.key, respBody);
                     }
                 }
             } else {
                 [self collectUploadQualityInfo];
                 QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:self.identifier];
-                self.complete(info, self.key, respBody);
+                self.completionHandler(info, self.key, respBody);
             }
         });
     };

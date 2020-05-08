@@ -6,7 +6,8 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
-#import "QNHttpRequestSingleRetry.h"
+#import "QNAsyncRun.h"
+#import "QNHttpSingleRequest.h"
 #import "QNConfiguration.h"
 #import "QNUploadOption.h"
 #import "QNResponseInfo.h"
@@ -16,7 +17,7 @@
 #import "QNUploadSystemClient.h"
 #import "NSURLRequest+QNRequest.h"
 
-@interface QNHttpRequestSingleRetry()
+@interface QNHttpSingleRequest()
 
 @property(nonatomic, assign)int currentRetryTime;
 @property(nonatomic, strong)QNConfiguration *config;
@@ -26,7 +27,7 @@
 @property(nonatomic, strong)id <QNRequestClient> client;
 
 @end
-@implementation QNHttpRequestSingleRetry
+@implementation QNHttpSingleRequest
 
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
@@ -42,15 +43,17 @@
 
 - (void)request:(NSURLRequest *)request
       isSkipDns:(BOOL)isSkipDns
+    shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
        progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
        complete:(void (^)(QNResponseInfo * _Nullable, NSDictionary * _Nullable))complete{
     
     _currentRetryTime = 0;
-    [self retryRquest:request isSkipDns:isSkipDns progress:progress complete:complete];
+    [self retryRquest:request isSkipDns:isSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
 }
 
 - (void)retryRquest:(NSURLRequest *)request
           isSkipDns:(BOOL)isSkipDns
+        shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
            progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
            complete:(void (^)(QNResponseInfo * _Nullable, NSDictionary * _Nullable))complete{
     
@@ -60,48 +63,55 @@
         self.client = [[QNUploadSystemClient alloc] init];
     }
     
+    NSLog(@"== request host:%@ / %@", request.URL.host, request.qn_domain);
+    
     __weak typeof(self) weakSelf = self;
+    BOOL (^checkCancelHandler)(void) = ^{
+        BOOL isCancel = weakSelf.requestState.isUserCancel;
+        if (!isCancel && weakSelf.uploadOption.cancellationSignal) {
+            isCancel = weakSelf.uploadOption.cancellationSignal();
+        }
+        return isCancel;
+    };
+    
     [self.client request:request connectionProxy:self.config.proxy progress:^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
         
-        BOOL isCancel = self.requestState.isUserCancel;
-        if (!isCancel && self.uploadOption.cancellationSignal) {
-            isCancel = self.uploadOption.cancellationSignal();
-        }
-        if (isCancel) {
+        if (checkCancelHandler()) {
             [weakSelf.client cancel];
-            self.requestState.isUserCancel = YES;
+            weakSelf.requestState.isUserCancel = YES;
         } else if (progress) {
             progress(totalBytesWritten, totalBytesExpectedToWrite);
         }
         
     } complete:^(NSURLResponse *response, NSData * responseData, NSError * error) {
         
-        QNResponseInfo *reponseInfo = nil;
-        BOOL isCancel = self.requestState.isUserCancel;
-        if (!isCancel && self.uploadOption.cancellationSignal) {
-            isCancel = self.uploadOption.cancellationSignal();
-        }
-        if (isCancel) {
+        QNResponseInfo *responseInfo = nil;
+        if (checkCancelHandler()) {
             if (complete) {
-                reponseInfo = [QNResponseInfo cancelWithDuration:0];
-                complete(reponseInfo, nil);
+                responseInfo = [QNResponseInfo cancelWithDuration:0];
+                complete(responseInfo, nil);
             }
             return;
         }
         
-        if ([reponseInfo isOK] == false && [reponseInfo couldRetry] && self.currentRetryTime < self.config.retryMax) {
+        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseData
+                                                                    options:NSJSONReadingMutableLeaves
+                                                                      error:nil];
+        responseInfo = [[QNResponseInfo alloc] initWithResponseInfoHost:request.qn_domain
+                                                              response:(NSHTTPURLResponse *)response
+                                                                  body:responseData
+                                                                 error:error];
+        if (shouldRetry(responseInfo, responseDic)
+            && self.currentRetryTime < self.config.retryMax
+            && responseInfo.couldHostRetry) {
             self.currentRetryTime += 1;
-            [self retryRquest:request isSkipDns:isSkipDns progress:progress complete:complete];
+            QNAsyncRunAfter(self.config.retryInterval, kQNBackgroundQueue, ^{
+                [self retryRquest:request isSkipDns:isSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
+            });
         } else {
             if (complete) {
-                NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseData
-                                                                            options:NSJSONReadingMutableLeaves
-                                                                              error:nil];
-                reponseInfo = [[QNResponseInfo alloc] initWithResponseInfoHost:request.qn_domain
-                                                                      response:(NSHTTPURLResponse *)response
-                                                                          body:responseData
-                                                                         error:error];
-                complete(reponseInfo, responseDic);
+                
+                complete(responseInfo, responseDic);
             }
         }
     }];

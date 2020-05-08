@@ -22,7 +22,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol QNUploadRegion <NSObject>
 
-- (void)setRegionData:(QNZoneInfo * _Nullable)zonesInfo;
+@property(nonatomic, strong, nullable, readonly)QNZoneInfo *zonesInfo;
+
+- (void)setupRegionData:(QNZoneInfo * _Nullable)zonesInfo;
 
 - (id<QNUploadServer> _Nullable)getNextServer:(BOOL)isOldServer
                                  freezeServer:(id <QNUploadServer> _Nullable)freezeServer;

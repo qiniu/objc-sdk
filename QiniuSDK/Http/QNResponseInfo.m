@@ -223,11 +223,40 @@ static NSString *domain = @"qiniu.com";
 }
 
 - (BOOL)isOK {
-    return _statusCode == 200 && _error == nil && _reqId != nil;
+    return (_statusCode >= 200 && _statusCode < 300) && _error == nil && _reqId != nil;
 }
 
 - (BOOL)couldRetry {
-    return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == 996 || _statusCode == 406 || (_statusCode == 200 && _error != nil) || _statusCode < -1000 || self.isNotQiniu;
+    if (self.isCancelled
+        || (_statusCode > 300 && _statusCode < 400)
+        || (_statusCode > 400 && _statusCode < 500)
+        || _statusCode == 501 || _statusCode == 573
+        || _statusCode == 608 || _statusCode == 612 || _statusCode == 614 || _statusCode == 616
+        || _statusCode == 619 || _statusCode == 630 || _statusCode == 631 || _statusCode == 640
+        || _statusCode == 701
+        ||(_statusCode < 0 && _statusCode > -1000)) {
+        return NO;
+    } else {
+        return YES;
+    }
+//    return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == 996 || _statusCode == 406 || (_statusCode == 200 && _error != nil) || _statusCode < -1000 || self.isNotQiniu;
+}
+
+- (BOOL)couldHostRetry{
+    if ([self couldRegionRetry] == NO
+        || (_statusCode == 502 || _statusCode == 503 || _statusCode == 571)) {
+        return NO;
+    } else {
+        return YES;
+    }
+}
+
+- (BOOL)couldRegionRetry{
+    if (_statusCode == 400 || self.isCancelled) {
+        return NO;
+    } else {
+        return YES;
+    }
 }
 
 - (BOOL)isConnectionBroken {

@@ -35,6 +35,7 @@ static NSString *const zoneNames[] = {@"z0", @"z1", @"z2", @"as0", @"na0", @"unk
 @property (nonatomic, strong) NSDate *buildDate;
 @property (nonatomic, strong) NSMutableArray<NSString *> *upDomainsList;
 @property (nonatomic, strong) NSMutableDictionary *upDomainsDic;
+@property (nonatomic, strong) NSDictionary *detailInfo;
 
 @end
 @implementation QNZoneInfo
@@ -54,9 +55,13 @@ static NSString *const zoneNames[] = {@"z0", @"z1", @"z2", @"as0", @"na0", @"unk
     return self;
 }
 
-- (QNZoneInfo *)buildInfoFromJson:(NSDictionary *)resp {
-    long ttl = [[resp objectForKey:@"ttl"] longValue];
-    NSDictionary *up = [resp objectForKey:@"up"];
++ (QNZoneInfo *)zoneInfoFromDictionary:(NSDictionary *)detailInfo {
+    if (![detailInfo isKindOfClass:[NSDictionary class]]) {
+        return nil;
+    }
+    
+    long ttl = [[detailInfo objectForKey:@"ttl"] longValue];
+    NSDictionary *up = [detailInfo objectForKey:@"up"];
     NSDictionary *acc = [up objectForKey:@"acc"];
     NSDictionary *src = [up objectForKey:@"src"];
     NSDictionary *old_acc = [up objectForKey:@"old_acc"];
@@ -88,7 +93,7 @@ static NSString *const zoneNames[] = {@"z0", @"z1", @"z2", @"as0", @"na0", @"unk
     }
     
     // judge zone region via io
-    NSDictionary *io = [resp objectForKey:@"io"];
+    NSDictionary *io = [detailInfo objectForKey:@"io"];
     NSDictionary *io_src = [io objectForKey:@"src"];
     NSArray *io_main = [io_src objectForKey:@"main"];
     NSString *io_host = io_main.count > 0 ? io_main[0] : nil;
@@ -113,6 +118,8 @@ static NSString *const zoneNames[] = {@"z0", @"z1", @"z2", @"as0", @"na0", @"unk
     zoneInfo.src = [QNUploadServerGroup buildInfoFromDictionary:src];
     zoneInfo.old_acc = [QNUploadServerGroup buildInfoFromDictionary:old_acc];
     zoneInfo.old_src = [QNUploadServerGroup buildInfoFromDictionary:old_src];
+    
+    zoneInfo.detailInfo = detailInfo;
     
     return zoneInfo;
 }
@@ -151,7 +158,7 @@ static NSString *const zoneNames[] = {@"z0", @"z1", @"z2", @"as0", @"na0", @"unk
     NSMutableArray *zonesInfo = [NSMutableArray array];
     NSArray *hosts = resp[@"hosts"];
     for (NSInteger i = 0; i < hosts.count; i++) {
-        QNZoneInfo *zoneInfo = [[[QNZoneInfo alloc] init] buildInfoFromJson:hosts[i]];
+        QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:hosts[i]];
         zoneInfo.type = i == 0 ? QNZoneInfoTypeMain : QNZoneInfoTypeBackup;
         [zonesInfo addObject:zoneInfo];
     }
