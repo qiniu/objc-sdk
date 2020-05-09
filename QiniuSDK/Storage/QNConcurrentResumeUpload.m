@@ -43,7 +43,7 @@
     for (int i = 0; i < self.config.concurrentTaskCount; i++) {
         dispatch_group_enter(_uploadGroup);
         dispatch_group_async(_uploadGroup, _uploadQueue, ^{
-            [self uploadNextBlock:^{
+            [self uploadRestBlock:^{
                 dispatch_group_leave(self.uploadGroup);
             }];
         });
@@ -56,9 +56,13 @@
                 self.completionHandler(self.uploadBlockErrorResponseInfo, self.key, self.uploadBlockErrorResponse);
             }
         } else {
-            [self makeFile:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
-                if (responseInfo.isOK == NO && responseInfo.couldRetry && [self.config allowBackupHost]) {
-                    [self switchRegionAndUpload];
+            [self makeFileRequest:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+                if (responseInfo.isOK == NO) {
+                    if (responseInfo.couldRetry && [self.config allowBackupHost]) {
+                        [self switchRegionAndUpload];
+                    } else {
+                        self.completionHandler(responseInfo, self.key, response);
+                    }
                 } else {
                     self.option.progressHandler(self.key, 1.0);
                     [self removeUploadInfoRecord];
@@ -69,11 +73,11 @@
     });
 }
 
-- (void)uploadNextBlock:(dispatch_block_t)taskCompleteHandler{
+- (void)uploadRestBlock:(dispatch_block_t)completeHandler{
     if (!self.uploadFileInfo) {
         QNResponseInfo *respinseInfo = self.uploadBlockErrorResponseInfo ?: [QNResponseInfo responseInfoWithInvalidArgument:@"regions error" duration:0];
         self.completionHandler(respinseInfo, self.key, self.uploadBlockErrorResponse);
-        taskCompleteHandler();
+        completeHandler();
         return;
     }
     
@@ -81,7 +85,7 @@
     if (!currentRegion) {
         QNResponseInfo *respinseInfo = self.uploadBlockErrorResponseInfo ?: [QNResponseInfo responseInfoWithInvalidArgument:@"server error" duration:0];
         self.completionHandler(respinseInfo, self.key, self.uploadBlockErrorResponse);
-        taskCompleteHandler();
+        completeHandler();
         return;
     }
     
@@ -100,20 +104,19 @@
             percent = self.previousPercent;
         }
         self.option.progressHandler(self.key, percent);
-        NSLog(@"concurrent resume  progress:%lf  blockIndex:%lu  block progress:%lf", percent, block.index, block.progress);
     };
     
     if ([chunk isFirstData]) {
-        [self makeBlock:block firstChunk:chunk progress:progress taskCompleteHandler:taskCompleteHandler];
+        [self makeBlockRequest:block firstChunk:chunk progress:progress completeHandler:completeHandler];
     } else {
-        taskCompleteHandler();
+        completeHandler();
     }
 }
 
-- (void)makeBlock:(QNUploadBlock *)block
-       firstChunk:(QNUploadData *)chunk
-         progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-taskCompleteHandler:(dispatch_block_t)taskCompleteHandler{
+- (void)makeBlockRequest:(QNUploadBlock *)block
+              firstChunk:(QNUploadData *)chunk
+                progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
+         completeHandler:(dispatch_block_t)completeHandler{
     
     QNUploadRequestTranscation *transcation = [[QNUploadRequestTranscation alloc] initWithConfig:self.config
                                                                                     uploadOption:self.option
@@ -134,16 +137,16 @@ taskCompleteHandler:(dispatch_block_t)taskCompleteHandler{
             chunk.isUploading = NO;
             chunk.isCompleted = YES;
             [self recordUploadInfo];
-            [self uploadNextBlock:taskCompleteHandler];
+            [self uploadRestBlock:completeHandler];
         } else {
             self.uploadBlockErrorResponse = response;
             self.uploadBlockErrorResponseInfo = responseInfo;
-            taskCompleteHandler();
+            completeHandler();
         }
     }];
 }
 
-- (void)makeFile:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler {
+- (void)makeFileRequest:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler {
     
     QNUploadRequestTranscation *transcation = [[QNUploadRequestTranscation alloc] initWithConfig:self.config
                                                                                     uploadOption:self.option

@@ -15,8 +15,8 @@
 @property (nonatomic, assign) float previousPercent;
 @property(nonatomic, strong)QNUploadRequestTranscation *uploadTranscation;
 
-@property(nonatomic, strong)QNResponseInfo *errorResponseInfo;
-@property(nonatomic, strong)NSDictionary *errorResponse;
+@property(nonatomic, strong)QNResponseInfo *uploadChunkErrorResponseInfo;
+@property(nonatomic, strong)NSDictionary *uploadChunkErrorResponse;
 
 @end
 
@@ -24,38 +24,57 @@
 
 - (void)startToUpload{
     [super startToUpload];
-    [self nextStep];
+    
+    self.previousPercent = 0;
+
+    [self uploadRestChunk:^{
+        
+        if ([self.uploadFileInfo isAllUploaded] == NO || self.uploadChunkErrorResponseInfo) {
+            if (self.uploadChunkErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
+                [self switchRegionAndUpload];
+            } else {
+                self.completionHandler(self.uploadChunkErrorResponseInfo, self.key, self.uploadChunkErrorResponse);
+            }
+        } else {
+            [self makeFile:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+                if (responseInfo.isOK == NO) {
+                    if (responseInfo.couldRetry && [self.config allowBackupHost]) {
+                        [self switchRegionAndUpload];
+                    } else {
+                        self.completionHandler(responseInfo, self.key, response);
+                    }
+                } else {
+                    self.option.progressHandler(self.key, 1.0);
+                    [self removeUploadInfoRecord];
+                    self.completionHandler(responseInfo, self.key, response);
+                }
+            }];
+        }
+    }];
 }
 
-- (void)nextStep{
+- (void)uploadRestChunk:(dispatch_block_t)completeHandler{
     if (!self.uploadFileInfo) {
-        if (self.completionHandler) {
-            QNResponseInfo *respinseInfo = self.errorResponseInfo ?: [QNResponseInfo responseInfoWithInvalidArgument:@"regions error" duration:0];
-            self.completionHandler(respinseInfo, self.key, self.errorResponse);
-        }
+        QNResponseInfo *respinseInfo = self.uploadChunkErrorResponseInfo ?: [QNResponseInfo responseInfoWithInvalidArgument:@"regions error" duration:0];
+        self.completionHandler(respinseInfo, self.key, self.uploadChunkErrorResponse);
+        completeHandler();
         return;
     }
     
     id <QNUploadRegion> currentRegion = [self getCurrentRegion];
     if (!currentRegion) {
-        if (self.completionHandler) {
-            QNResponseInfo *respinseInfo = self.errorResponseInfo ?: [QNResponseInfo responseInfoWithInvalidArgument:@"server error" duration:0];
-            self.completionHandler(respinseInfo, self.key, self.errorResponse);
-        }
+        QNResponseInfo *respinseInfo = self.uploadChunkErrorResponseInfo ?: [QNResponseInfo responseInfoWithInvalidArgument:@"server error" duration:0];
+        self.completionHandler(respinseInfo, self.key, self.uploadChunkErrorResponse);
+        completeHandler();
         return;
     }
-    
-    self.uploadTranscation = [[QNUploadRequestTranscation alloc] initWithConfig:self.config
-                                                                   uploadOption:self.option
-                                                                         region:self.getCurrentRegion
-                                                                            key:self.key
-                                                                          token:self.token];
     
     QNUploadData *chunk = [self.uploadFileInfo nextUploadData];
     QNUploadBlock *block = chunk ? [self.uploadFileInfo blockWithIndex:chunk.blockIndex] : nil;
     
     void (^progress)(long long, long long) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
-        float percent = (float)(block.offset + chunk.offset + totalBytesWritten) / (float)self.uploadFileInfo.size;
+        chunk.progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
+        float percent = self.uploadFileInfo.progress;
         if (percent > 0.95) {
             percent = 0.95;
         }
@@ -65,86 +84,95 @@
             percent = self.previousPercent;
         }
         self.option.progressHandler(self.key, percent);
+        NSLog(@"resume  progress:%lf  blockIndex:%ld", percent, (long)block.index);
     };
     
-    if (!chunk && [self.uploadFileInfo isAllUploaded]){
-        [self makeFile:block firstChunk:chunk progress:progress];
-    } else if ([chunk isFirstData]) {
-        [self makeBlock:block firstChunk:chunk progress:progress];
-    } else if(chunk){
-        [self uploadChunk:block chunk:chunk progress:progress];
+    if (!chunk) {
+        completeHandler();
+    } else if (chunk.isFirstData) {
+        [self makeBlock:block firstChunk:chunk progress:progress completeHandler:completeHandler];
+    } else {
+        [self uploadChunk:block chunk:chunk progress:progress completeHandler:completeHandler];
     }
 }
 
 - (void)makeBlock:(QNUploadBlock *)block
        firstChunk:(QNUploadData *)chunk
-         progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress{
+         progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
+  completeHandler:(dispatch_block_t)completeHandler{
     
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
-    [self.uploadTranscation makeBlock:block.size
-                       firstChunkData:[self getDataWithChunk:chunk block:block]
-                             progress:progress
-                             complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+    
+    QNUploadRequestTranscation *transcation = [self createUploadRequestTranscation];
+    [transcation makeBlock:block.size
+            firstChunkData:[self getDataWithChunk:chunk block:block]
+                  progress:progress
+                  complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
         NSString *blockContext = response[@"ctx"];
         if (responseInfo.isOK && blockContext) {
             block.context = blockContext;
             chunk.isUploading = NO;
             chunk.isCompleted = YES;
             [self recordUploadInfo];
-            [self nextStep];
-        } else if (responseInfo.couldRetry && self.config.allowBackupHost) {
-            [self switchRegionAndUpload];
+            [self uploadRestChunk:completeHandler];
         } else {
-            self.completionHandler(responseInfo, self.key, response);
+            self.uploadChunkErrorResponse = response;
+            self.uploadChunkErrorResponseInfo = responseInfo;
+            completeHandler();
         }
     }];
 }
 
 - (void)uploadChunk:(QNUploadBlock *)block
               chunk:(QNUploadData *)chunk
-           progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress{
+           progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
+    completeHandler:(dispatch_block_t)completeHandler{
     
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
-    [self.uploadTranscation uploadChunk:block.context
-                              chunkData:[self getDataWithChunk:chunk block:block]
-                            chunkOffest:chunk.offset
-                               progress:progress
-                               complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+    
+    QNUploadRequestTranscation *transcation = [self createUploadRequestTranscation];
+    [transcation uploadChunk:block.context
+                   chunkData:[self getDataWithChunk:chunk block:block]
+                 chunkOffest:chunk.offset
+                    progress:progress
+                    complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
         NSString *blockContext = response[@"ctx"];
         if (responseInfo.isOK && blockContext) {
             block.context = blockContext;
             chunk.isUploading = NO;
             chunk.isCompleted = YES;
             [self recordUploadInfo];
-            [self nextStep];
-        } else if (responseInfo.couldRetry && self.config.allowBackupHost) {
-            [self switchRegionAndUpload];
+            [self uploadRestChunk:completeHandler];
         } else {
-            self.completionHandler(responseInfo, self.key, response);
+            self.uploadChunkErrorResponse = response;
+            self.uploadChunkErrorResponseInfo = responseInfo;
+            completeHandler();
         }
     }];
 }
 
-- (void)makeFile:(QNUploadBlock *)block
-      firstChunk:(QNUploadData *)chunk
-        progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress{
+- (void)makeFile:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler {
     
-    [self.uploadTranscation makeFile:self.uploadFileInfo.size
-                            fileName:self.fileName
-                       blockContexts:[self.uploadFileInfo allBlocksContexts]
-                            complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
-        if (responseInfo.isOK) {
-            self.option.progressHandler(self.key, 1.0);
-            [self removeUploadInfoRecord];
-            self.completionHandler(responseInfo, self.key, response);
-        } else if (responseInfo.couldRetry && self.config.allowBackupHost) {
-            [self switchRegionAndUpload];
-        } else {
-            self.completionHandler(responseInfo, self.key, response);
-        }
+    QNUploadRequestTranscation *transcation = [self createUploadRequestTranscation];
+    
+    [transcation makeFile:self.uploadFileInfo.size
+                 fileName:self.fileName
+            blockContexts:[self.uploadFileInfo allBlocksContexts]
+                 complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+        completeHandler(responseInfo, response);
     }];
+}
+
+- (QNUploadRequestTranscation *)createUploadRequestTranscation{
+    QNUploadRequestTranscation *transcation = [[QNUploadRequestTranscation alloc] initWithConfig:self.config
+                                                                                    uploadOption:self.option
+                                                                                          region:self.getCurrentRegion
+                                                                                             key:self.key
+                                                                                           token:self.token];
+    self.uploadTranscation = transcation;
+    return transcation;
 }
 
 - (NSData *)getDataWithChunk:(QNUploadData *)chunk block:(QNUploadBlock *)block{
