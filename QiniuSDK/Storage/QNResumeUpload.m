@@ -8,12 +8,12 @@
 
 #import "QNResumeUpload.h"
 #import "QNResponseInfo.h"
-#import "QNUploadRequestTranscation.h"
+#import "QNRequestTranscation.h"
 
 @interface QNResumeUpload ()
 
 @property (nonatomic, assign) float previousPercent;
-@property(nonatomic, strong)QNUploadRequestTranscation *uploadTranscation;
+@property(nonatomic, strong)QNRequestTranscation *uploadTranscation;
 
 @property(nonatomic, strong)QNResponseInfo *uploadChunkErrorResponseInfo;
 @property(nonatomic, strong)NSDictionary *uploadChunkErrorResponse;
@@ -104,7 +104,7 @@
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
     
-    QNUploadRequestTranscation *transcation = [self createUploadRequestTranscation];
+    QNRequestTranscation *transcation = [self createUploadRequestTranscation];
     [transcation makeBlock:block.size
             firstChunkData:[self getDataWithChunk:chunk block:block]
                   progress:progress
@@ -132,7 +132,7 @@
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
     
-    QNUploadRequestTranscation *transcation = [self createUploadRequestTranscation];
+    QNRequestTranscation *transcation = [self createUploadRequestTranscation];
     [transcation uploadChunk:block.context
                    chunkData:[self getDataWithChunk:chunk block:block]
                  chunkOffest:chunk.offset
@@ -155,7 +155,7 @@
 
 - (void)makeFile:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler {
     
-    QNUploadRequestTranscation *transcation = [self createUploadRequestTranscation];
+    QNRequestTranscation *transcation = [self createUploadRequestTranscation];
     
     [transcation makeFile:self.uploadFileInfo.size
                  fileName:self.fileName
@@ -165,8 +165,8 @@
     }];
 }
 
-- (QNUploadRequestTranscation *)createUploadRequestTranscation{
-    QNUploadRequestTranscation *transcation = [[QNUploadRequestTranscation alloc] initWithConfig:self.config
+- (QNRequestTranscation *)createUploadRequestTranscation{
+    QNRequestTranscation *transcation = [[QNRequestTranscation alloc] initWithConfig:self.config
                                                                                     uploadOption:self.option
                                                                                           region:self.getCurrentRegion
                                                                                              key:self.key

@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNUploadRequstState : NSObject
 
-@property(nonatomic, assign)BOOL isUserCancel;
+@property(atomic, assign)BOOL isUserCancel;
 
 @end
 

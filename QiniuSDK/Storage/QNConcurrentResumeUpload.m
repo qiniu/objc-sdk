@@ -9,7 +9,7 @@
 #import "QNConcurrentResumeUpload.h"
 #import "QNResponseInfo.h"
 #import "QNAsyncRun.h"
-#import "QNUploadRequestTranscation.h"
+#import "QNRequestTranscation.h"
 
 @interface QNConcurrentResumeUpload()
 
@@ -17,7 +17,7 @@
 @property(nonatomic, strong) dispatch_queue_t uploadQueue;
 
 @property(nonatomic, assign) float previousPercent;
-@property(nonatomic, strong)NSMutableArray <QNUploadRequestTranscation *> *uploadTranscations;
+@property(nonatomic, strong)NSMutableArray <QNRequestTranscation *> *uploadTranscations;
 
 @property(nonatomic, strong)QNResponseInfo *uploadBlockErrorResponseInfo;
 @property(nonatomic, strong)NSDictionary *uploadBlockErrorResponse;
@@ -118,12 +118,7 @@
                 progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
          completeHandler:(dispatch_block_t)completeHandler{
     
-    QNUploadRequestTranscation *transcation = [[QNUploadRequestTranscation alloc] initWithConfig:self.config
-                                                                                    uploadOption:self.option
-                                                                                          region:self.getCurrentRegion
-                                                                                             key:self.key
-                                                                                           token:self.token];
-    [self.uploadTranscations addObject:transcation];
+    QNRequestTranscation *transcation = [self createUploadRequestTranscation];
     
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
@@ -131,6 +126,7 @@
             firstChunkData:[self getDataWithChunk:chunk block:block]
                   progress:progress
                   complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+        
         NSString *blockContext = response[@"ctx"];
         if (responseInfo.isOK && blockContext) {
             block.context = blockContext;
@@ -143,24 +139,38 @@
             self.uploadBlockErrorResponseInfo = responseInfo;
             completeHandler();
         }
+        [self destoryUploadRequestTranscation:transcation];
     }];
 }
 
 - (void)makeFileRequest:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler {
     
-    QNUploadRequestTranscation *transcation = [[QNUploadRequestTranscation alloc] initWithConfig:self.config
-                                                                                    uploadOption:self.option
-                                                                                          region:self.getCurrentRegion
-                                                                                             key:self.key
-                                                                                           token:self.token];
-    [self.uploadTranscations addObject:transcation];
+    QNRequestTranscation *transcation = [self createUploadRequestTranscation];
     
     [transcation makeFile:self.uploadFileInfo.size
                  fileName:self.fileName
             blockContexts:[self.uploadFileInfo allBlocksContexts]
                  complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+        
         completeHandler(responseInfo, response);
+        [self destoryUploadRequestTranscation:transcation];
     }];
+}
+
+- (QNRequestTranscation *)createUploadRequestTranscation{
+    QNRequestTranscation *transcation = [[QNRequestTranscation alloc] initWithConfig:self.config
+                                                                                    uploadOption:self.option
+                                                                                          region:self.getCurrentRegion
+                                                                                             key:self.key
+                                                                                           token:self.token];
+    [self.uploadTranscations addObject:transcation];
+    return transcation;
+}
+
+- (void)destoryUploadRequestTranscation:(QNRequestTranscation *)transcation{
+    if (transcation) {
+        [self.uploadTranscations removeObject:transcation];
+    }
 }
 
 - (NSData *)getDataWithChunk:(QNUploadData *)chunk block:(QNUploadBlock *)block{

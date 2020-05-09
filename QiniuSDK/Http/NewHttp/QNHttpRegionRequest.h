@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "QNUploadRegion.h"
+#import "QNUploadFixedHostRegion.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

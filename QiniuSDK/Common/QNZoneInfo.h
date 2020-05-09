@@ -10,10 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef NS_ENUM(NSUInteger, QNZoneInfoType) {
-    QNZoneInfoTypeMain,
-    QNZoneInfoTypeBackup,
-};
 typedef enum : NSUInteger {
     QNZoneRegion_z0,
     QNZoneRegion_z1,
@@ -25,9 +21,10 @@ typedef enum : NSUInteger {
 
 @interface QNUploadServerGroup : NSObject
 
-@property(nonatomic,  copy)NSString *info;
-@property(nonatomic, strong)NSArray <NSString *> *main;
-@property(nonatomic, strong)NSArray <NSString *> *backup;
+@property(nonatomic,  copy, readonly)NSString *info;
+@property(nonatomic, strong, readonly)NSArray <NSString *> *main;
+@property(nonatomic, strong, readonly)NSArray <NSString *> *backup;
+@property(nonatomic, strong, readonly)NSArray <NSString *> *allHosts;
 
 + (QNUploadServerGroup *)buildInfoFromDictionary:(NSDictionary *)dictionary;
 
@@ -35,26 +32,18 @@ typedef enum : NSUInteger {
 
 @interface QNZoneInfo : NSObject
 
-@property (nonatomic, assign, readonly) QNZoneInfoType type;
 @property (nonatomic, assign, readonly) long ttl;
-
-@property (nonatomic, strong, readonly) NSArray<NSString *> *upDomainsList;
-@property (nonatomic, strong, readonly) NSMutableDictionary *upDomainsDic;
-@property (nonatomic, strong, readonly) NSDictionary *detailInfo;
-
 @property(nonatomic, strong)QNUploadServerGroup *acc;
 @property(nonatomic, strong)QNUploadServerGroup *src;
 @property(nonatomic, strong)QNUploadServerGroup *old_acc;
 @property(nonatomic, strong)QNUploadServerGroup *old_src;
 
+@property(nonatomic, strong, readonly)NSArray <NSString *> *allHosts;
+@property (nonatomic, strong, readonly) NSDictionary *detailInfo;
+
++ (QNZoneInfo *)zoneInfoWithMainHosts:(NSArray *)mainHosts
+                              ioHosts:(NSArray * _Nullable)ioHosts;
 + (QNZoneInfo *)zoneInfoFromDictionary:(NSDictionary *)detailInfo;
-
-- (instancetype)init:(long)ttl
-       upDomainsList:(NSMutableArray<NSString *> *)upDomainsList
-        upDomainsDic:(NSMutableDictionary *)upDomainsDic
-          zoneRegion:(QNZoneRegion)zoneRegion;
-
-- (void)frozenDomain:(NSString *)domain;
 
 - (BOOL)isValid;
 
@@ -64,15 +53,9 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, strong) NSArray<QNZoneInfo *> *zonesInfo;
 
-@property (nonatomic, assign, readonly) BOOL hasBackupZone;
-
-+ (instancetype)buildZonesInfoWithResp:(NSDictionary *)resp;
++ (instancetype)infoWithDictionary:(NSDictionary *)dictionary;
 
 - (instancetype)initWithZonesInfo:(NSArray<QNZoneInfo *> *)zonesInfo;
-
-- (QNZoneInfo *)getZoneInfoWithType:(QNZoneInfoType)type;
-
-- (NSString *)getZoneInfoRegionNameWithType:(QNZoneInfoType)type;
 
 @end
 

@@ -6,11 +6,11 @@
 //  Copyright © 2020 com.qiniu. All rights reserved.
 //
 
-#import "QNUploadRegion.h"
+#import "QNUploadRegionInfo.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface QNUploadServer : NSObject<QNUploadServer>
+@interface QNUploadServer : NSObject <QNUploadServer>
 
 + (instancetype)server:(NSString * _Nullable)serverId
                   host:(NSString * _Nullable)host

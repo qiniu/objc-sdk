@@ -19,14 +19,14 @@
 
 - (instancetype)initWithupDomainList:(NSArray<NSString *> *)upList {
     if (self = [super init]) {
-        self.zonesInfo = [self createZonesInfo:upList ioHost:nil];
+        self.zonesInfo = [self createZonesInfo:upList ioHosts:nil];
     }
     return self;
 }
 - (instancetype)initWithupDomainList:(NSArray<NSString *> *)upList
                               ioHost:(NSArray<NSString *> *)ioHost {
     if (self = [super init]) {
-        self.zonesInfo = [self createZonesInfo:upList ioHost:ioHost];
+        self.zonesInfo = [self createZonesInfo:upList ioHosts:ioHost];
     }
     return self;
 }
@@ -119,19 +119,13 @@
     return zonesInfo;
 }
 
-- (QNZonesInfo *)createZonesInfo:(NSArray <NSString *> *)upDomainList
-                          ioHost:(NSArray <NSString *> *)ioHost {
-    if (!upDomainList && upDomainList.count == 0) {
+- (QNZonesInfo *)createZonesInfo:(NSArray <NSString *> *)upDomains
+                         ioHosts:(NSArray <NSString *> *)ioHosts {
+    if (!upDomains && upDomains.count == 0) {
         return nil;
     }
-//    NSMutableDictionary *upDomainDic = [[NSMutableDictionary alloc] init];
-//    for (NSString *upDomain in upDomainList) {
-//        [upDomainDic setValue:[NSDate dateWithTimeIntervalSince1970:0] forKey:upDomain];
-//    }
-//    QNZoneInfo *zoneInfo = [[QNZoneInfo alloc] init:86400 upDomainsList:(NSMutableArray<NSString *> *)upDomainList upDomainsDic:upDomainDic zoneRegion:zoneRegion];
-    QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:@{@"ttl" : @(86400),
-                                                                @"up" : @{@"acc" : @{@"main" : upDomainList}},
-                                                                @"io" : @{@"src" : @{@"main" : ioHost ?: @[]}}}];
+
+    QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoWithMainHosts:upDomains ioHosts:ioHosts];
     QNZonesInfo *zonesInfo = [[QNZonesInfo alloc] initWithZonesInfo:@[zoneInfo]];
     return zonesInfo;
 }
@@ -145,15 +139,5 @@
     return self.zonesInfo;
 }
 
-- (NSString *)up:(QNUpToken *)token
-    zoneInfoType:(QNZoneInfoType)zoneInfoType
-         isHttps:(BOOL)isHttps
-    frozenDomain:(NSString *)frozenDomain {
-
-    if (self.zonesInfo == nil) {
-        return nil;
-    }
-    return [super upHost:[self.zonesInfo getZoneInfoWithType:QNZoneInfoTypeMain] isHttps:isHttps lastUpHost:frozenDomain];
-}
 
 @end

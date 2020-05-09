@@ -20,6 +20,11 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 
 @implementation QNConfiguration
 
++ (instancetype)defaultConfiguration{
+    QNConfigurationBuilder *builder = [[QNConfigurationBuilder alloc] init];
+    return [[QNConfiguration alloc] initWithBuilder:builder];
+}
+
 + (instancetype)build:(QNConfigurationBuilderBlock)block {
     QNConfigurationBuilder *builder = [[QNConfigurationBuilder alloc] init];
     block(builder);

@@ -542,7 +542,7 @@
     if (!currentZone || !token) {
         return nil;
     }
-    [currentZone preQuery:[QNUpToken parse:token] on:^(int code, QNHttpResponseInfo *httpResponseInfo) {
+    [currentZone preQuery:[QNUpToken parse:token] on:^(int code, QNResponseInfo *responseInfo) {
         dispatch_semaphore_signal(self.semaphore);
     }];
     dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
@@ -551,7 +551,7 @@
     NSMutableArray *autoHosts = [NSMutableArray array];
     NSArray *zoneInfoList = autoZonesInfo.zonesInfo;
     for (QNZoneInfo *info in zoneInfoList) {
-        for (NSString *host in info.upDomainsList) {
+        for (NSString *host in info.allHosts) {
             [autoHosts addObject:host];
         }
     }
@@ -564,7 +564,7 @@
     for (QNFixedZone *fixZone in fixedZones) {
         QNZonesInfo *zonesInfo = [fixZone getZonesInfoWithToken:nil];
         for (QNZoneInfo *zoneInfo in zonesInfo.zonesInfo) {
-            for (NSString *host in zoneInfo.upDomainsList) {
+            for (NSString *host in zoneInfo.allHosts) {
                 [localHosts addObject:host];
             }
         }

@@ -6,7 +6,7 @@
 //  Copyright © 2020 com.qiniu. All rights reserved.
 //
 
-#import "QNUploadRegion.h"
+#import "QNUploadRegionInfo.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

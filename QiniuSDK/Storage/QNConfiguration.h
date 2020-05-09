@@ -102,6 +102,8 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @property (nonatomic, readonly) QNUrlConvert converter;
 
++ (instancetype)defaultConfiguration;
+
 + (instancetype)build:(QNConfigurationBuilderBlock)block;
 
 @end

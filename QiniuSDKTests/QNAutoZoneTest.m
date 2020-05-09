@@ -42,7 +42,7 @@
     QNUpToken* tok = [QNUpToken parse:g_token];
     __block int x = 0;
     __block int c = 0;
-    [autoZone preQuery:tok on:^(int code, QNHttpResponseInfo *info) {
+    [autoZone preQuery:tok on:^(int code, QNResponseInfo *info) {
         x = 1;
         c = code;
     }];

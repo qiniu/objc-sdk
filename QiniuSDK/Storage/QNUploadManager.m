@@ -156,21 +156,16 @@
     QNUpToken *t = [QNUpToken parse:token];
     if (t == nil) {
         QNAsyncRunInMain(^{
-            QNResponseInfo *info = [Collector completeWithInvalidToken:@"invalid token" identifier:identifier];
+            QNResponseInfo *info = [QNResponseInfo responseInfoWithInvalidToken:@"invalid token" duration:0];
             completionHandler(info, key, nil);
         });
         return;
-    } else {
-        [Collector update:CK_bucket value:t.bucket identifier:identifier];
-        [Collector update:CK_key value:key identifier:identifier];
     }
     
-    [_config.zone preQuery:t on:^(int code, QNHttpResponseInfo *httpResponseInfo) {
-        [Collector addRequestWithType:QNRequestType_ucQuery httpResponseInfo:httpResponseInfo fileOffset:QN_IntNotSet targetRegionId:nil currentRegionId:nil identifier:identifier];
+    [_config.zone preQuery:t on:^(int code, QNResponseInfo *responseInfo) {
         if (code != 0) {
             QNAsyncRunInMain(^{
-                QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:identifier];
-                completionHandler(info, key, nil);
+                completionHandler(responseInfo, key, nil);
             });
             return;
         }
@@ -223,12 +218,10 @@
             [Collector update:CK_key value:key identifier:identifier];
         }
 
-        [_config.zone preQuery:t on:^(int code, QNHttpResponseInfo *httpResponseInfo) {
-            [Collector addRequestWithType:QNRequestType_ucQuery httpResponseInfo:httpResponseInfo fileOffset:QN_IntNotSet targetRegionId:nil currentRegionId:nil identifier:identifier];
+        [_config.zone preQuery:t on:^(int code, QNResponseInfo *responseInfo) {
             if (code != 0) {
                 QNAsyncRunInMain(^{
-                    QNResponseInfo *info = [Collector completeWithHttpResponseInfo:httpResponseInfo identifier:identifier];
-                    completionHandler(info, key, nil);
+                    completionHandler(responseInfo, key, nil);
                 });
                 return;
             }
@@ -244,7 +237,7 @@
                 NSData *data = [file readAllWithError:&error];
                 if (error) {
                     QNAsyncRunInMain(^{
-                        QNResponseInfo *info = [Collector completeWithLocalIOError:error identifier:identifier];
+                        QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error duration:0];
                         completionHandler(info, key, nil);
                     });
                     return;

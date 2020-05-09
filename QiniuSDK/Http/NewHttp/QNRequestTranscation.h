@@ -1,5 +1,5 @@
 //
-//  QNUploadRequestTranscation.h
+//  QNRequestTranscation.h
 //  QiniuSDK
 //
 //  Created by yangsen on 2020/4/30.
@@ -7,19 +7,30 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "QNUploadRegion.h"
+#import "QNUploadFixedHostRegion.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class QNUpToken, QNConfiguration, QNUploadOption, QNResponseInfo;
 // 单个对象只能执行一个事务，多个事务需要创建多个事务对象完成
-@interface QNUploadRequestTranscation : NSObject
+@interface QNRequestTranscation : NSObject
 
+//MARK:-- 构造方法
+- (instancetype)initWithHosts:(NSArray <NSString *> *)hosts
+                        token:(QNUpToken *)token;
+
+//MARK:-- upload事务构造方法 选择
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
                         region:(id <QNUploadRegion>)region
                            key:(NSString * _Nullable)key
                          token:(QNUpToken *)token;
+- (instancetype)initWithConfig:(QNConfiguration *)config
+                  uploadOption:(QNUploadOption *)uploadOption
+                         hosts:(NSArray <NSString *> *)hosts
+                           key:(NSString * _Nullable)key
+                         token:(QNUpToken *)token;
+
 
 - (void)quertUploadHosts:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))complete;
 

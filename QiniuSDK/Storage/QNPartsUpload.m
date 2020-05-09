@@ -50,7 +50,7 @@
     if (self.recorder == nil || key == nil || [key isEqualToString:@""]) {
         return;
     }
-    NSDictionary *zoneInfo = [[self getCurrentRegion] zonesInfo].detailInfo;
+    NSDictionary *zoneInfo = [[self getCurrentRegion] zoneInfo].detailInfo;
     NSDictionary *fileInfo = [self.uploadFileInfo toDictionary];
     if (zoneInfo && fileInfo) {
         NSDictionary *info = @{kQNRecordZoneInfoKey : zoneInfo,

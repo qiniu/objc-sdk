@@ -22,7 +22,7 @@
 
 #import "QNZone.h"
 #import "QNFileDelegate.h"
-#import "QNUploadRegion.h"
+#import "QNUploadFixedHostRegion.h"
 
 @interface QNBaseUpload : NSObject
 
@@ -37,16 +37,6 @@
 @property (nonatomic, strong, readonly) id <QNRecorderDelegate> recorder;
 @property (nonatomic,   copy, readonly) NSString *recorderKey;
 @property (nonatomic, strong, readonly) QNUpCompletionHandler completionHandler;
-
-@property (nonatomic, assign, readonly) QNRequestType requestType;
-
-
-
-@property (nonatomic, assign) UInt32 size;
-@property (nonatomic,   copy) NSString *access; //AK
-@property (nonatomic, strong) QNSessionManager *sessionManager;
-@property (nonatomic, assign) QNZoneInfoType currentZoneType;
-@property (nonatomic, strong) QNUpCompletionHandler completion;
 
 //MARK:-- 构造函数
 - (instancetype)initWithFile:(id<QNFileDelegate>)file

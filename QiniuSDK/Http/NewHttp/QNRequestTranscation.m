@@ -1,12 +1,12 @@
 //
-//  QNUploadRequestTranscation.m
+//  QNRequestTranscation.m
 //  QiniuSDK
 //
 //  Created by yangsen on 2020/4/30.
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
-#import "QNUploadRequestTranscation.h"
+#import "QNRequestTranscation.h"
 
 #import "QNCrc32.h"
 #import "QNUrlSafeBase64.h"
@@ -17,10 +17,10 @@
 
 #import "QNResponseInfo.h"
 
-#import "QNUploadData.h"
+#import "QNUploadFixedHostRegion.h"
 #import "QNHttpRegionRequest.h"
 
-@interface QNUploadRequestTranscation()
+@interface QNRequestTranscation()
 
 @property(nonatomic, strong)QNConfiguration *config;
 @property(nonatomic, strong)QNUploadOption *uploadOption;
@@ -31,7 +31,16 @@
 @property(nonatomic, strong)QNHttpRegionRequest *httpRequest;
 
 @end
-@implementation QNUploadRequestTranscation
+@implementation QNRequestTranscation
+
+- (instancetype)initWithHosts:(NSArray <NSString *> *)hosts
+                        token:(QNUpToken *)token{
+    return [self initWithConfig:[QNConfiguration defaultConfiguration]
+                   uploadOption:[QNUploadOption defaultOptions]
+                          hosts:hosts
+                            key:nil
+                          token:token];
+}
 
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
@@ -45,7 +54,29 @@
         _key = key;
         _token = token;
         _httpRequest = [[QNHttpRegionRequest alloc] initWithConfig:config
-                                                      uploadOption:uploadOption region:region
+                                                      uploadOption:uploadOption
+                                                            region:region
+                                                      requestState:_requestState];
+    }
+    return self;
+}
+
+- (instancetype)initWithConfig:(QNConfiguration *)config
+                  uploadOption:(QNUploadOption *)uploadOption
+                         hosts:(NSArray <NSString *> *)hosts
+                           key:(NSString * _Nullable)key
+                         token:(QNUpToken *)token{
+    if (self = [super init]) {
+        _config = config;
+        _uploadOption = uploadOption;
+        _requestState = [[QNUploadRequstState alloc] init];
+        _key = key;
+        _token = token;
+        
+        QNUploadFixedHostRegion *region = [QNUploadFixedHostRegion fixedHostRegionWithHosts:hosts];
+        _httpRequest = [[QNHttpRegionRequest alloc] initWithConfig:config
+                                                      uploadOption:uploadOption
+                                                            region:region
                                                       requestState:_requestState];
     }
     return self;
@@ -61,7 +92,8 @@
             return NO;
         }
     };
-    [self.httpRequest get:@""
+    NSString *action = [NSString stringWithFormat:@"/v3/query?ak=%@&bucket=%@", self.token.access, self.token.bucket];
+    [self.httpRequest get:action
                   headers:nil
               shouldRetry:shouldRetry
                  complete:^(QNResponseInfo *responseInfo, NSDictionary *response) {
