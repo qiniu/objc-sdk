@@ -22,8 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign, readonly)NSInteger blockIndex;
 // 是否已完成上传
 @property(atomic, assign)BOOL isCompleted;
-// 是否正在上传 不进行json序列化
+// 是否正在上传 【不进行离线缓存】
 @property(atomic, assign)BOOL isUploading;
+// 上传进度 【不进行离线缓存】
+@property(nonatomic, assign)float progress;
 
 //MARK:-- 构造
 + (instancetype)dataFromDictionary:(NSDictionary *)dictionary;
@@ -52,8 +54,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, readonly)NSArray <QNUploadData *> *uploadDatas;
 // block上传上下文信息
 @property(nonatomic,  copy)NSString *context;
-// 是否已完成上传
+// 是否已完成上传【不进行离线缓存】
 @property(nonatomic, assign, readonly)BOOL isCompleted;
+// 上传进度 【不进行离线缓存】
+@property(nonatomic, assign, readonly)float progress;
 
 //MARK:-- 构造
 + (instancetype)blockFromDictionary:(NSDictionary *)dictionary;
@@ -77,6 +81,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign, readonly)NSInteger modifyTime;
 // 需要上传的块
 @property(nonatomic, strong, readonly)NSArray <QNUploadBlock *> *uploadBlocks;
+// 上传进度 【不进行离线缓存】
+@property(nonatomic, assign, readonly)float progress;
 
 //MARK:-- 构造
 + (instancetype)infoFromDictionary:(NSDictionary *)dictionary;

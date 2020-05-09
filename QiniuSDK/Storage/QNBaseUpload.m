@@ -105,8 +105,10 @@
 }
 
 - (void)switchRegionAndUpload{
-    [self switchRegion];
-    [self startToUpload];
+    QNAsyncRun(^{
+        [self switchRegion];
+        [self startToUpload];
+    });
 }
 
 //MARK:-- qulite collect

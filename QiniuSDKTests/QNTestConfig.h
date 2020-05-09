@@ -7,6 +7,6 @@
 //
 
 // invalid
-static NSString *const g_token = @"jH983zIUFIP1OVumiBVGeAfiLYJvwrF45S-t22eu:khBh4-piNLfSljUYerePpkPCBDw=:eyJzY29wZSI6InpvbmUwLXNwYWNlIiwiZGVhZGxpbmUiOjE1ODg5MzU2NzR9";
+//static NSString *const g_token = @"jH983zIUFIP1OVumiBVGeAfiLYJvwrF45S-t22eu:khBh4-piNLfSljUYerePpkPCBDw=:eyJzY29wZSI6InpvbmUwLXNwYWNlIiwiZGVhZGxpbmUiOjE1ODg5MzU2NzR9";
 
-//static NSString *const g_token = @"jH983zIUFIP1OVumiBVGeAfiLYJvwrF45S-t22eu:VGfBrLryLd0McmAY7MY8pPH-gQM=:eyJzY29wZSI6InpvbmUwLXNwYWNlIiwiZGVhZGxpbmUiOjE1ODkwMDM0NjN9";
+static NSString *const g_token = @"jH983zIUFIP1OVumiBVGeAfiLYJvwrF45S-t22eu:VGfBrLryLd0McmAY7MY8pPH-gQM=:eyJzY29wZSI6InpvbmUwLXNwYWNlIiwiZGVhZGxpbmUiOjE1ODkwMDM0NjN9";

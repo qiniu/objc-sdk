@@ -13,6 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNPartsUpload : QNBaseUpload
 
+@property(nonatomic, assign, readonly, class)long long blockSize;
+// 定制chunk大小 在执行run之前赋值
+@property(nonatomic, strong)NSNumber *chunkSize;
 @property(nonatomic, strong, readonly)QNUploadFileInfo *uploadFileInfo;
 
 - (void)recordUploadInfo;

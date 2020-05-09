@@ -6,10 +6,8 @@
 //  Copyright © 2019 Qiniu. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
-#import "QNBaseUpload.h"
-#import "QNFileDelegate.h"
+#import "QNPartsUpload.h"
 
-@interface QNConcurrentResumeUpload : QNBaseUpload
+@interface QNConcurrentResumeUpload : QNPartsUpload
 
 @end

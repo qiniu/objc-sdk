@@ -111,7 +111,7 @@ extern const int kQNFileError;
 @property (nonatomic, readonly) BOOL isTlsError;
 
 /**
- *    是否可以再次重试
+ *    是否可以再次重试，当遇到权限等怎么重试都不可能成功的问题时，返回NO
  */
 @property (nonatomic, readonly) BOOL couldRetry;
 

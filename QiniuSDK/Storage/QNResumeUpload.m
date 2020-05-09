@@ -23,6 +23,7 @@
 @implementation QNResumeUpload
 
 - (void)startToUpload{
+    [super startToUpload];
     [self nextStep];
 }
 
@@ -54,7 +55,7 @@
     QNUploadBlock *block = chunk ? [self.uploadFileInfo blockWithIndex:chunk.blockIndex] : nil;
     
     void (^progress)(long long, long long) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
-        float percent = (float)(chunk.offset + totalBytesWritten) / (float)self.uploadFileInfo.size;
+        float percent = (float)(block.offset + chunk.offset + totalBytesWritten) / (float)self.uploadFileInfo.size;
         if (percent > 0.95) {
             percent = 0.95;
         }
@@ -87,10 +88,10 @@
                              complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
         NSString *blockContext = response[@"ctx"];
         if (responseInfo.isOK && blockContext) {
-            [self recordUploadInfo];
             block.context = blockContext;
             chunk.isUploading = NO;
             chunk.isCompleted = YES;
+            [self recordUploadInfo];
             [self nextStep];
         } else if (responseInfo.couldRetry && self.config.allowBackupHost) {
             [self switchRegionAndUpload];
@@ -113,10 +114,10 @@
                                complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
         NSString *blockContext = response[@"ctx"];
         if (responseInfo.isOK && blockContext) {
-            [self recordUploadInfo];
             block.context = blockContext;
             chunk.isUploading = NO;
             chunk.isCompleted = YES;
+            [self recordUploadInfo];
             [self nextStep];
         } else if (responseInfo.couldRetry && self.config.allowBackupHost) {
             [self switchRegionAndUpload];
@@ -135,8 +136,8 @@
                        blockContexts:[self.uploadFileInfo allBlocksContexts]
                             complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
         if (responseInfo.isOK) {
+            self.option.progressHandler(self.key, 1.0);
             [self removeUploadInfoRecord];
-            progress(self.uploadFileInfo.size, self.uploadFileInfo.size);
             self.completionHandler(responseInfo, self.key, response);
         } else if (responseInfo.couldRetry && self.config.allowBackupHost) {
             [self switchRegionAndUpload];

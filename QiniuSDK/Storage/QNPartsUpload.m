@@ -20,14 +20,18 @@
 @end
 @implementation QNPartsUpload
 
++ (long long)blockSize{
+    return 4 * 1024 * 1024;
+}
+
 - (void)prepareToUpload{
     [super prepareToUpload];
     [self recoveryUploadInfoFromRecord];
     
     if (self.uploadFileInfo == nil) {
         self.uploadFileInfo = [[QNUploadFileInfo alloc] initWithFileSize:[self.file size]
-                                                               blockSize:4 * 1024 * 1024
-                                                                dataSize:self.config.chunkSize
+                                                               blockSize:[QNPartsUpload blockSize]
+                                                                dataSize:self.chunkSize ? self.chunkSize.longLongValue : self.config.chunkSize
                                                               modifyTime:(NSInteger)[self.file modifyTime]];
     }
 }
@@ -83,7 +87,7 @@
         [self.recorder del:self.key];
         return;
     }
-    
+    NSLog(@"Reupload revovr info: %@", info);
     QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:info[kQNRecordZoneInfoKey]];
     QNUploadFileInfo *fileInfo = [QNUploadFileInfo infoFromDictionary:info[kQNRecordFileInfoKey]];
     if (zoneInfo && fileInfo) {

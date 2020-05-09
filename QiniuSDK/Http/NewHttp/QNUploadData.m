@@ -19,7 +19,7 @@
 @implementation QNUploadData
 
 + (instancetype)dataFromDictionary:(NSDictionary *)dictionary{
-    if ([dictionary isKindOfClass:[NSDictionary class]]) {
+    if (![dictionary isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
          
@@ -28,6 +28,10 @@
     data.size       = [dictionary[@"size"] longLongValue];
     data.index      = [dictionary[@"index"] integerValue];
     data.blockIndex = [dictionary[@"blockIndex"] integerValue];
+    data.isCompleted = [dictionary[@"isCompleted"] boolValue];
+    if (data.isCompleted) {
+        data.progress = 1;
+    }
     return data;
 }
 
@@ -59,10 +63,11 @@
 
 - (NSDictionary *)toDictionary{
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    dictionary[@"offset"]     = @(self.offset);
-    dictionary[@"size"]       = @(self.size);
-    dictionary[@"index"]      = @(self.index);
-    dictionary[@"blockIndex"] = @(self.blockIndex);
+    dictionary[@"offset"]      = @(self.offset);
+    dictionary[@"size"]        = @(self.size);
+    dictionary[@"index"]       = @(self.index);
+    dictionary[@"blockIndex"]  = @(self.blockIndex);
+    dictionary[@"isCompleted"] = @(self.isCompleted);
     return [dictionary copy];
 }
 
@@ -80,7 +85,7 @@
 @implementation QNUploadBlock
 
 + (instancetype)blockFromDictionary:(NSDictionary *)dictionary{
-    if ([dictionary isKindOfClass:[NSDictionary class]]) {
+    if (![dictionary isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
          
@@ -88,6 +93,7 @@
     block.offset = [dictionary[@"offset"] longLongValue];
     block.size = [dictionary[@"size"] longLongValue];
     block.index = [dictionary[@"index"] integerValue];
+    block.context = dictionary[@"context"];
     
     NSArray *uploadDataInfos = dictionary[@"uploadDatas"];
     if ([uploadDataInfos isKindOfClass:[NSArray class]]) {
@@ -127,6 +133,14 @@
         }
     }
     return isCompleted;
+}
+
+- (float)progress{
+    float progress = 0;
+    for (QNUploadData *data in self.uploadDatas) {
+        progress += data.progress * ((float)data.size / (float)self.size);
+    }
+    return progress;
 }
 
 - (void)createDatas:(long long)dataSize{
@@ -172,10 +186,13 @@
 - (NSDictionary *)toDictionary{
     
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    dictionary[@"offset"]   = @(self.offset);
+    dictionary[@"offset"] = @(self.offset);
     dictionary[@"size"]   = @(self.size);
-    dictionary[@"index"]   = @(self.index);
-    
+    dictionary[@"index"]  = @(self.index);
+    if (self.context) {
+        dictionary[@"context"] = self.context;
+    }
+
     if (self.uploadDatas) {
         
         NSMutableArray *uploadDataInfos = [NSMutableArray array];
@@ -206,7 +223,7 @@
 @implementation QNUploadFileInfo
 
 + (instancetype)infoFromDictionary:(NSDictionary *)dictionary{
-    if ([dictionary isKindOfClass:[NSDictionary class]]) {
+    if (![dictionary isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
     
@@ -214,11 +231,11 @@
     fileInfo.size = [dictionary[@"size"] longLongValue];
     fileInfo.modifyTime = [dictionary[@"modifyTime"] integerValue];
     
-    NSArray *uploadDataInfos = dictionary[@"uploadBlocks"];
-    if ([uploadDataInfos isKindOfClass:[NSArray class]]) {
+    NSArray *uploadBlocksInfos = dictionary[@"uploadBlocks"];
+    if ([uploadBlocksInfos isKindOfClass:[NSArray class]]) {
         
         NSMutableArray *uploadBlocks = [NSMutableArray array];
-        for (NSDictionary *uploadBlock in uploadBlocks) {
+        for (NSDictionary *uploadBlock in uploadBlocksInfos) {
             
             QNUploadBlock *block = [QNUploadBlock blockFromDictionary:uploadBlock];
             if (block) {
@@ -300,6 +317,14 @@
         }
     }
     return isAllUploaded;
+}
+
+- (float)progress{
+    float progress = 0;
+    for (QNUploadBlock *block in self.uploadBlocks) {
+        progress += block.progress * ((float)block.size / (float)self.size);
+    }
+    return progress;
 }
 
 - (NSArray <NSString *> *)allBlocksContexts{

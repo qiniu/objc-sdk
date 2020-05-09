@@ -514,7 +514,7 @@
 		31F553C8245968F8000B66AD /* NewHttp */ = {
 			isa = PBXGroup;
 			children = (
-				31F553EB245A7D24000B66AD /* ServerHost */,
+				31F553EB245A7D24000B66AD /* ServerRegion */,
 				31F553E2245A6986000B66AD /* QNUploadRequestTranscation.h */,
 				31F553E3245A6986000B66AD /* QNUploadRequestTranscation.m */,
 				31F553C924596C3D000B66AD /* QNHttpRegionRequest.h */,
@@ -532,7 +532,7 @@
 			path = NewHttp;
 			sourceTree = "<group>";
 		};
-		31F553EB245A7D24000B66AD /* ServerHost */ = {
+		31F553EB245A7D24000B66AD /* ServerRegion */ = {
 			isa = PBXGroup;
 			children = (
 				3149A1DA2462A57300A2A15B /* QNUploadServer.h */,
@@ -541,7 +541,7 @@
 				3149A1D92462A57300A2A15B /* QNUploadDomainRegion.m */,
 				31F553EC245A7D5A000B66AD /* QNUploadRegion.h */,
 			);
-			path = ServerHost;
+			path = ServerRegion;
 			sourceTree = "<group>";
 		};
 		A955AABD20BF51BFE5032419 /* Frameworks */ = {

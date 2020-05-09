@@ -147,8 +147,8 @@
         
         NSString *ctx = response[@"ctx"];
         NSString *crcServer = [NSString stringWithFormat:@"%@", response[@"crc32"]];
-        if ((responseInfo.isOK && (!ctx || (self.uploadOption.checkCrc && ![chunkCrc isEqualToString:crcServer])))
-            || responseInfo.isOK == false) {
+        if (responseInfo.isOK == false
+            || (responseInfo.isOK && (!ctx || (self.uploadOption.checkCrc && ![chunkCrc isEqualToString:crcServer])))) {
             return YES;
         } else {
             return NO;
@@ -183,8 +183,8 @@
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
         NSString *ctx = response[@"ctx"];
         NSString *crcServer = [NSString stringWithFormat:@"%@", response[@"crc32"]];
-        if ((responseInfo.isOK && (!ctx || (self.uploadOption.checkCrc && ![chunkCrc isEqualToString:crcServer])))
-            || responseInfo.isOK == false) {
+        if (responseInfo.isOK == false
+            || (responseInfo.isOK && (!ctx || (self.uploadOption.checkCrc && ![chunkCrc isEqualToString:crcServer])))) {
             return YES;
         } else {
             return NO;

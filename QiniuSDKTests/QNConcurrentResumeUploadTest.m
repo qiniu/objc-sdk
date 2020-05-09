@@ -100,6 +100,7 @@
         NSArray *upList = [[NSArray alloc] initWithObjects:@"uptemp.qbox.me", nil];
         builder.useHttps = YES;
         builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+        builder.useConcurrentResumeUpload = YES;
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
@@ -188,6 +189,69 @@
 
 - (void)test20M {
     [self template:20*1024 + 1];
+}
+
+- (void)testReupload{
+    
+    NSURL *tempFile = [QNTempFile createTempfileWithSize: 20 * 1024 * 1024];
+    NSString *keyUp = @"Reupload";
+    __block NSString *key = nil;
+    __block QNResponseInfo *info = nil;
+    __block BOOL flag = NO;
+    QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil
+                                               progressHandler:^(NSString *key, float percent) {
+        if (percent > 0.8) {
+            flag = YES;
+        }
+        NSLog(@"Reupload progress %f", percent);
+    }
+                                                        params:@{ @"x:七牛" : @"objc",
+                                                                  @"x:no" : @"",
+                                                                  @"invalid" : @"invalid" }
+                                                      checkCrc:NO
+                                            cancellationSignal:^BOOL() {
+        return flag;
+    }];
+    
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.useConcurrentResumeUpload = YES;
+        builder.useHttps = YES;
+        builder.chunkSize = 1 * 1024 * 1024;
+        builder.recorder = [QNFileRecorder fileRecorderWithFolder:tempFile.absoluteString error:nil];
+    }];
+    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
+
+    [upManager putFile:tempFile.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+        key = k;
+        info = i;
+    } option:opt];
+    
+    AGWW_WAIT_WHILE(key == nil, 60 * 30);
+    NSLog(@"Reupload ================");
+    key = nil;
+    
+    QNUploadOption *opt_re = [[QNUploadOption alloc] initWithProgressHandler:^(NSString *key, float percent) {
+        NSLog(@"Reupload progress %f", percent);
+    }];
+    QNConfiguration *config_re = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.useConcurrentResumeUpload = YES;
+        builder.useHttps = YES;
+        builder.chunkSize = 1 * 1024 * 1024;
+        builder.recorder = [QNFileRecorder fileRecorderWithFolder:tempFile.absoluteString error:nil];
+    }];
+    QNUploadManager *upManager_re = [[QNUploadManager alloc] initWithConfiguration:config_re];
+
+    [upManager_re putFile:tempFile.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+        key = k;
+        info = i;
+    } option:opt_re];
+    
+    AGWW_WAIT_WHILE(key == nil, 60 * 30);
+    NSLog(@"info %@", info);
+    XCTAssert(info.isOK, @"Pass");
+    XCTAssert([keyUp isEqualToString:key], @"Pass");
+
+    [QNTempFile removeTempfile:tempFile];
 }
 
 //- (void)testProxy {

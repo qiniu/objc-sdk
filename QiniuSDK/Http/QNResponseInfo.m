@@ -242,17 +242,20 @@ static NSString *domain = @"qiniu.com";
 //    return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == 996 || _statusCode == 406 || (_statusCode == 200 && _error != nil) || _statusCode < -1000 || self.isNotQiniu;
 }
 
-- (BOOL)couldHostRetry{
-    if ([self couldRegionRetry] == NO
-        || (_statusCode == 502 || _statusCode == 503 || _statusCode == 571)) {
+- (BOOL)couldRegionRetry{
+    if ([self couldRetry] == NO
+        || _statusCode == 400
+        || _statusCode == 502 || _statusCode == 503 || _statusCode == 504 || _statusCode == 579 || _statusCode == 599
+        || self.isCancelled) {
         return NO;
     } else {
         return YES;
     }
 }
 
-- (BOOL)couldRegionRetry{
-    if (_statusCode == 400 || self.isCancelled) {
+- (BOOL)couldHostRetry{
+    if ([self couldRegionRetry] == NO
+        || (_statusCode == 502 || _statusCode == 503 || _statusCode == 571)) {
         return NO;
     } else {
         return YES;
