@@ -44,9 +44,7 @@
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
         flag = YES;
     }
-        params:@{ @"x:七牛" : @"objc",
-                  @"x:no" : @"",
-                  @"invalid" : @"invalid" }
+        params:@{ @"x:lan" : @"objc" }
         checkCrc:YES
         cancellationSignal:^BOOL() {
             return flag;
@@ -199,11 +197,12 @@
 
 - (void)testReupload{
     
-    NSURL *tempFile = [QNTempFile createTempfileWithSize: 20 * 1024 * 1024];
-    NSString *keyUp = @"Reupload";
+    NSString *keyUp = @"concurrent_reupload_20M";
+    QNTempFile *tempFile = [QNTempFile createTempfileWithSize: 20 * 1024 * 1024 identifier:keyUp];
     __block NSString *key = nil;
     __block QNResponseInfo *info = nil;
     __block BOOL flag = NO;
+    __block BOOL isReupload = NO;
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil
                                                progressHandler:^(NSString *key, float percent) {
         if (percent > 0.8) {
@@ -211,23 +210,25 @@
         }
         NSLog(@"Reupload progress %f", percent);
     }
-                                                        params:@{ @"x:七牛" : @"objc",
-                                                                  @"x:no" : @"",
-                                                                  @"invalid" : @"invalid" }
+                                                        params:@{ @"x:lan" : @"objc" }
                                                       checkCrc:NO
                                             cancellationSignal:^BOOL() {
-        return flag;
+        if (isReupload) {
+            return NO;
+        } else {
+            return flag;
+        }
     }];
     
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.useConcurrentResumeUpload = YES;
         builder.useHttps = YES;
         builder.chunkSize = 1 * 1024 * 1024;
-        builder.recorder = [QNFileRecorder fileRecorderWithFolder:tempFile.absoluteString error:nil];
+        builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniu"] error:nil];
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
-    [upManager putFile:tempFile.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [upManager putFile:tempFile.fileUrl.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
     } option:opt];
@@ -235,29 +236,20 @@
     AGWW_WAIT_WHILE(key == nil, 60 * 30);
     NSLog(@"Reupload ================");
     key = nil;
+    isReupload = YES;
     
-    QNUploadOption *opt_re = [[QNUploadOption alloc] initWithProgressHandler:^(NSString *key, float percent) {
-        NSLog(@"Reupload progress %f", percent);
-    }];
-    QNConfiguration *config_re = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        builder.useConcurrentResumeUpload = YES;
-        builder.useHttps = YES;
-        builder.chunkSize = 1 * 1024 * 1024;
-        builder.recorder = [QNFileRecorder fileRecorderWithFolder:tempFile.absoluteString error:nil];
-    }];
-    QNUploadManager *upManager_re = [[QNUploadManager alloc] initWithConfiguration:config_re];
-
-    [upManager_re putFile:tempFile.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    QNUploadManager *upManager_re = [[QNUploadManager alloc] initWithConfiguration:config];
+    [upManager_re putFile:tempFile.fileUrl.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
-    } option:opt_re];
+    } option:opt];
     
     AGWW_WAIT_WHILE(key == nil, 60 * 30);
     NSLog(@"info %@", info);
     XCTAssert(info.isOK, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
 
-    [QNTempFile removeTempfile:tempFile];
+    [tempFile remove];
 }
 
 //- (void)testProxy {

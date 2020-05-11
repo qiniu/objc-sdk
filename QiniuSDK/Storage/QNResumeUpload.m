@@ -84,7 +84,7 @@
             percent = self.previousPercent;
         }
         self.option.progressHandler(self.key, percent);
-        NSLog(@"resume  progress:%lf  blockIndex:%ld", percent, (long)block.index);
+        NSLog(@"resume  progress:%lf  blockIndex:%ld chunkIndex:%ld", percent, (long)block.index, (long)chunk.index);
     };
     
     if (!chunk) {

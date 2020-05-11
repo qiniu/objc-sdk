@@ -10,7 +10,6 @@
 #import "QNHttpRegionRequest.h"
 #import "QNConfiguration.h"
 #import "QNUploadOption.h"
-
 #import "NSURLRequest+QNRequest.h"
 
 #import "QNResponseInfo.h"
@@ -112,7 +111,7 @@
     BOOL isSkipDns = NO;
     NSString *scheme = self.config.useHttps ? @"https://" : @"http://";
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    if (server.ip && server.ip.copy > 0) {
+    if (server.ip && server.ip.length > 0) {
         NSString *urlString = [NSString stringWithFormat:@"%@%@%@", scheme, serverIP, action ?: @""];
         request.URL = [NSURL URLWithString:urlString];
         request.qn_domain = serverHost;
