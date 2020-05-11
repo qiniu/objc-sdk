@@ -43,7 +43,7 @@
 }
 
 - (void)uploadImageToQNFilePath:(NSString *)filePath {
-    self.token = @"jH983zIUFIP1OVumiBVGeAfiLYJvwrF45S-t22eu:IN7H0Q5HC_4NrnPsrCgHdF-TIA8=:eyJzY29wZSI6InpvbmUwLXNwYWNlIiwiZGVhZGxpbmUiOjE1ODcwMTc4MzB9";
+    self.token = @"你的token";
     QNUploadManager *upManager = [[QNUploadManager alloc] init];
     QNUploadOption *uploadOption = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
         NSLog(@"percent == %.2f", percent);
