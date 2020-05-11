@@ -58,6 +58,10 @@
     }
 
     NSData *data = [QNUrlSafeBase64 decodeString:array[2]];
+    if (!data) {
+        return nil;
+    }
+    
     NSError *tmp = nil;
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&tmp];
     if (tmp != nil || dict[@"scope"] == nil || dict[@"deadline"] == nil) {
