@@ -45,6 +45,9 @@
 
 - (void)testError_400 {
     
+}
+
+- (void)testError_401{
     QNUploadErrorTestParam *param = [QNUploadErrorTestParam param];
     param.token = @"jH983zIUFIP1OVumiBVGeAfiLYJvwrF45S-t22eu:5Ee-ICYAd_SAZKO_DLfyJQVHsQ=:eyJzY29wZSI6InpvbmUwLXNwYWNlIiwiZGVhZGxpbmUiOjE1ODkyNjAxNzR9";
     
@@ -58,64 +61,21 @@
     AGWW_WAIT_WHILE(isComplete == NO, 60 * 30);
 }
 
-- (void)testError_401{
+- (void)testError_414{
+    NSMutableString *key = [NSMutableString string];
+    while (key.length < 800) {
+        [key appendString:@"ABCDEFGHIJKLMNOPQRST"];
+    }
+    QNUploadErrorTestParam *param = [QNUploadErrorTestParam param];
+    param.key = key;
+    __block BOOL isComplete = NO;
+    [self upload:param complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+        
+        XCTAssert(i.statusCode == 414, @"Pass");
+        isComplete = YES;
+    }];
     
-}
-
-- (void)testError_403{
-    
-}
-
-- (void)testError_404{
-    
-}
-
-- (void)testError_406{
-    
-}
-
-- (void)testError_413{
-    
-}
-
-- (void)testError_419{
-    
-}
-
-- (void)testError_478{
-    
-}
-
-- (void)testError_502{
-    
-}
-
-- (void)testError_503{
-    
-}
-
-- (void)testError_504{
-    
-}
-
-- (void)testError_573{
-    
-}
-
-- (void)testError_579{
-    
-}
-
-- (void)testError_599{
-    
-}
-
-- (void)testError_608{
-    
-}
-
-- (void)testError_612{
-    
+    AGWW_WAIT_WHILE(isComplete == NO, 60 * 30);
 }
 
 - (void)testError_614{
@@ -130,10 +90,6 @@
     }];
     
     AGWW_WAIT_WHILE(isComplete == NO, 60 * 30);
-}
-
-- (void)testError_630{
-    
 }
 
 - (void)testError_631{
@@ -151,13 +107,6 @@
     AGWW_WAIT_WHILE(isComplete == NO, 60 * 30);
 }
 
-- (void)testError_640{
-    
-}
-
-- (void)testError_701{
-    
-}
 
 - (void)upload:(QNUploadErrorTestParam *)param
       complete:(void(^)(QNResponseInfo *i, NSString *k, NSDictionary *resp))complete{
