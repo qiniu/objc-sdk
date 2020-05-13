@@ -1,5 +1,6 @@
 language: objective-c
 osx_image: xcode11
+sudo: true
 
 before_install:
   - rvm install 2.6.4
@@ -10,13 +11,16 @@ before_install:
   - rm -rf ~/.cocoapods
   - pod setup
   - pod install --verbose --no-repo-update
+  - gem install xcpretty
+
 
 before_script:
   - export QINIU_TEST_ENV="travis"
 
 script:
-  - xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -configuration Release -destination 'platform=iOS Simulator,OS=12.4,name=iPhone Xs Max' -enableCodeCoverage YES
-  - xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -configuration Release -destination 'platform=macOS,arch=x86_64'
+  - ifconfig
+  - xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -configuration Release -destination 'platform=iOS Simulator,OS=13.4.1,name=iPhone 11' -only-testing:QiniuSDK_iOSTests/QNFormUploadTest/testUp | xcpretty
+    #- xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -configuration Release -destination 'platform=macOS,arch=x86_64'
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
