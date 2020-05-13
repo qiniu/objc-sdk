@@ -169,7 +169,7 @@
 - (QNResponseInfo *)checkServer:(id <QNUploadServer>)server{
     QNResponseInfo *responseInfo = nil;
     if (!server.host || server.host.length == 0) {
-        responseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"server error" duration:0];
+        responseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
     }
     return responseInfo;
 }

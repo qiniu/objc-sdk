@@ -23,12 +23,15 @@
 #import "QNZone.h"
 #import "QNFileDelegate.h"
 #import "QNUploadFixedHostRegion.h"
+#import "QNUploadRequestMetrics.h"
 
+typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp);;
 @interface QNBaseUpload : NSObject
 
 @property (nonatomic,   copy, readonly) NSString *key;
 @property (nonatomic,   copy, readonly) NSString *fileName;
 @property (nonatomic, strong, readonly) NSData *data;
+@property (nonatomic, strong, readonly) QNUploadTaskMetrics *metrics;
 @property (nonatomic, strong, readonly) id <QNFileDelegate> file;
 @property (nonatomic, strong, readonly) QNUpToken *token;
 @property (nonatomic,   copy, readonly) NSString *identifier;
@@ -36,27 +39,25 @@
 @property (nonatomic, strong, readonly) QNConfiguration *config;
 @property (nonatomic, strong, readonly) id <QNRecorderDelegate> recorder;
 @property (nonatomic,   copy, readonly) NSString *recorderKey;
-@property (nonatomic, strong, readonly) QNUpCompletionHandler completionHandler;
+@property (nonatomic, strong, readonly) QNUpTaskCompletionHandler completionHandler;
 
 //MARK:-- 构造函数
 - (instancetype)initWithFile:(id<QNFileDelegate>)file
                          key:(NSString *)key
                        token:(QNUpToken *)token
-                  identifier:(NSString *)identifier
                       option:(QNUploadOption *)option
                configuration:(QNConfiguration *)config
                     recorder:(id<QNRecorderDelegate>)recorder
                  recorderKey:(NSString *)recorderKey
-           completionHandler:(QNUpCompletionHandler)completionHandler;
+           completionHandler:(QNUpTaskCompletionHandler)completionHandler;
 
 - (instancetype)initWithData:(NSData *)data
                          key:(NSString *)key
                     fileName:(NSString *)fileName
                        token:(QNUpToken *)token
-                  identifier:(NSString *)identifier
                       option:(QNUploadOption *)option
                configuration:(QNConfiguration *)config
-           completionHandler:(QNUpCompletionHandler)completionHandler;
+           completionHandler:(QNUpTaskCompletionHandler)completionHandler;
 
 - (void)initData;
 
@@ -68,6 +69,9 @@
 - (void)startToUpload;
 
 - (void)switchRegionAndUpload;
+
+- (void)complete:(QNResponseInfo *)info
+            resp:(NSDictionary *)resp;
 
 //MARK:-- 上传质量统计
 - (void)collectHttpResponseInfo:(QNHttpResponseInfo *)httpResponseInfo fileOffset:(uint64_t)fileOffset;

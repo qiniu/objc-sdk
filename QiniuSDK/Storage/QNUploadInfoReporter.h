@@ -76,6 +76,16 @@
                       bytesSent:(int64_t)bytes_sent;
 @end
 
+
+
+
+
+
+
+
+
+
+
 @interface QNReportConfig : NSObject
 
 - (id)init __attribute__((unavailable("Use sharedInstance: instead.")));
@@ -121,7 +131,7 @@
 
 
 #define Reporter [QNUploadInfoReporter sharedInstance]
-
+#define kQNReporter [QNUploadInfoReporter sharedInstance]
 @interface QNUploadInfoReporter : NSObject
 
 - (id)init __attribute__((unavailable("Use sharedInstance: instead.")));
@@ -142,3 +152,4 @@
 - (void)clean;
 
 @end
+

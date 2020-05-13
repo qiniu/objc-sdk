@@ -53,7 +53,7 @@
             if (self.uploadBlockErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
                 [self switchRegionAndUpload];
             } else {
-                self.completionHandler(self.uploadBlockErrorResponseInfo, self.key, self.uploadBlockErrorResponse);
+                [self complete:self.uploadBlockErrorResponseInfo resp:self.uploadBlockErrorResponse];
             }
         } else {
             [self makeFileRequest:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
@@ -61,12 +61,12 @@
                     if (responseInfo.couldRetry && [self.config allowBackupHost]) {
                         [self switchRegionAndUpload];
                     } else {
-                        self.completionHandler(responseInfo, self.key, response);
+                        [self complete:responseInfo resp:response];
                     }
                 } else {
                     self.option.progressHandler(self.key, 1.0);
                     [self removeUploadInfoRecord];
-                    self.completionHandler(responseInfo, self.key, response);
+                    [self complete:responseInfo resp:response];
                 }
             }];
         }
@@ -75,16 +75,16 @@
 
 - (void)uploadRestBlock:(dispatch_block_t)completeHandler{
     if (!self.uploadFileInfo) {
-        QNResponseInfo *respinseInfo = self.uploadBlockErrorResponseInfo ?: [QNResponseInfo responseInfoWithInvalidArgument:@"regions error" duration:0];
-        self.completionHandler(respinseInfo, self.key, self.uploadBlockErrorResponse);
+        QNResponseInfo *responseInfo = self.uploadBlockErrorResponseInfo ?: [QNResponseInfo responseInfoWithInvalidArgument:@"regions error"];
+        [self complete:responseInfo resp:self.uploadBlockErrorResponse];
         completeHandler();
         return;
     }
     
     id <QNUploadRegion> currentRegion = [self getCurrentRegion];
     if (!currentRegion) {
-        QNResponseInfo *respinseInfo = self.uploadBlockErrorResponseInfo ?: [QNResponseInfo responseInfoWithInvalidArgument:@"server error" duration:0];
-        self.completionHandler(respinseInfo, self.key, self.uploadBlockErrorResponse);
+        QNResponseInfo *responseInfo = self.uploadBlockErrorResponseInfo ?: [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
+        [self complete:responseInfo resp:self.uploadBlockErrorResponse];
         completeHandler();
         return;
     }

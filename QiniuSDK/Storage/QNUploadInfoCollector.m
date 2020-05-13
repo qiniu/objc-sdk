@@ -231,7 +231,7 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
         currentItem.result = invalid_args;
         currentItem.uploadEndTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970] * 1000;
         
-        info = [QNResponseInfo responseInfoWithInvalidArgument:text duration:(currentItem.uploadEndTime - currentItem.uploadStartTime) / 1000.0];
+        info = [QNResponseInfo responseInfoWithInvalidArgument:text];
         dispatch_semaphore_signal(signal);
         
         if ([QNReportConfig sharedInstance].isReportEnable) [self reportResult:currentItem];
@@ -250,7 +250,7 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
         currentItem.result = invalid_args;
         currentItem.uploadEndTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970] * 1000;
         
-        info = [QNResponseInfo responseInfoWithInvalidToken:text duration:(currentItem.uploadEndTime - currentItem.uploadStartTime) / 1000.0];
+        info = [QNResponseInfo responseInfoWithInvalidToken:text];
         dispatch_semaphore_signal(signal);
         
         if ([QNReportConfig sharedInstance].isReportEnable) [self reportResult:currentItem];
@@ -269,7 +269,7 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
         currentItem.result = invalid_file;
         currentItem.uploadEndTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970] * 1000;
         
-       info = [QNResponseInfo responseInfoWithFileError:error duration:(currentItem.uploadEndTime - currentItem.uploadStartTime) / 1000.0];
+       info = [QNResponseInfo responseInfoWithFileError:error];
         dispatch_semaphore_signal(signal);
         
         if ([QNReportConfig sharedInstance].isReportEnable) [self reportResult:currentItem];
@@ -288,7 +288,7 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
         currentItem.result = local_io_error;
         currentItem.uploadEndTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970] * 1000;
         
-       info = [QNResponseInfo responseInfoWithFileError:error duration:(currentItem.uploadEndTime - currentItem.uploadStartTime) / 1000.0];
+       info = [QNResponseInfo responseInfoWithFileError:error];
         dispatch_semaphore_signal(signal);
         
         if ([QNReportConfig sharedInstance].isReportEnable) [self reportResult:currentItem];
@@ -307,7 +307,7 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
         currentItem.result = zero_size_file;
         currentItem.uploadEndTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970] * 1000;
         
-        info = [QNResponseInfo responseInfoOfZeroData:path duration:(currentItem.uploadEndTime - currentItem.uploadStartTime) / 1000.0];
+        info = [QNResponseInfo responseInfoOfZeroData:path];
         dispatch_semaphore_signal(signal);
         
         if ([QNReportConfig sharedInstance].isReportEnable) [self reportResult:currentItem];
@@ -326,7 +326,7 @@ static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", 
         currentItem.result = user_canceled;
         currentItem.uploadEndTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970] * 1000;
         
-        info = [QNResponseInfo cancelWithDuration:(currentItem.uploadEndTime - currentItem.uploadStartTime) / 1000.0];
+        info = [QNResponseInfo cancelResponse];
         dispatch_semaphore_signal(signal);
         
         if ([QNReportConfig sharedInstance].isReportEnable) [self reportResult:currentItem];

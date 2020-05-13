@@ -38,8 +38,9 @@ typedef enum : NSUInteger {
 @property(nonatomic, strong)QNUploadServerGroup *old_acc;
 @property(nonatomic, strong)QNUploadServerGroup *old_src;
 
+@property(nonatomic,   copy, readonly)NSString *zoneRegionId;
 @property(nonatomic, strong, readonly)NSArray <NSString *> *allHosts;
-@property (nonatomic, strong, readonly) NSDictionary *detailInfo;
+@property(nonatomic, strong, readonly)NSDictionary *detailInfo;
 
 + (QNZoneInfo *)zoneInfoWithMainHosts:(NSArray *)mainHosts
                               ioHosts:(NSArray * _Nullable)ioHosts;

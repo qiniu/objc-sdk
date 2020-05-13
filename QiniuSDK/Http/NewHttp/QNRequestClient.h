@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "QNUploadRequestMetrics.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)request:(NSURLRequest *)request
 connectionProxy:(NSDictionary * _Nullable)connectionProxy
        progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-       complete:(void(^)(NSURLResponse * _Nullable response, NSData * _Nullable responseData, NSError * _Nullable error))complete;
+       complete:(void(^)(NSURLResponse * _Nullable response, QNUploadSingleRequestMetrics * _Nullable metrics, NSData * _Nullable responseData, NSError * _Nullable error))complete;
 
 - (void)cancel;
 

@@ -51,11 +51,11 @@
                                   complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
         if (responseInfo.isOK) {
             self.option.progressHandler(self.key, 1.0);
-            self.completionHandler(responseInfo, self.key, response);
+            [self complete:responseInfo resp:response];
         } else if (responseInfo.couldRetry && self.config.allowBackupHost) {
             [self switchRegionAndUpload];
         } else {
-            self.completionHandler(responseInfo, self.key, response);
+            [self complete:responseInfo resp:response];
         }
     }];
 }

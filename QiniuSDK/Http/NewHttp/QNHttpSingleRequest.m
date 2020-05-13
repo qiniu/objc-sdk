@@ -77,18 +77,19 @@
     [self.client request:request connectionProxy:self.config.proxy progress:^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
         
         if (checkCancelHandler()) {
-            [weakSelf.client cancel];
             weakSelf.requestState.isUserCancel = YES;
+            [weakSelf.client cancel];
         } else if (progress) {
             progress(totalBytesWritten, totalBytesExpectedToWrite);
         }
         
-    } complete:^(NSURLResponse *response, NSData * responseData, NSError * error) {
+    } complete:^(NSURLResponse *response, QNUploadSingleRequestMetrics *metrics, NSData * responseData, NSError * error) {
         
         QNResponseInfo *responseInfo = nil;
         if (checkCancelHandler()) {
             if (complete) {
-                responseInfo = [QNResponseInfo cancelWithDuration:0];
+                responseInfo = [QNResponseInfo cancelResponse];
+                responseInfo.requestMetrics = metrics;
                 complete(responseInfo, nil);
             }
             return;
@@ -101,6 +102,7 @@
                                                               response:(NSHTTPURLResponse *)response
                                                                   body:responseData
                                                                  error:error];
+        responseInfo.requestMetrics = metrics;
         if (shouldRetry(responseInfo, responseDic)
             && self.currentRetryTime < self.config.retryMax
             && responseInfo.couldHostRetry) {
@@ -110,7 +112,6 @@
             });
         } else {
             if (complete) {
-                
                 complete(responseInfo, responseDic);
             }
         }

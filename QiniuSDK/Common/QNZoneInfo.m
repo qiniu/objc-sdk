@@ -8,8 +8,6 @@
 
 #import "QNZoneInfo.h"
 
-static NSString *const zoneNames[] = {@"z0", @"z1", @"z2", @"as0", @"na0", @"unknown"};
-
 @interface QNUploadServerGroup()
 
 @property(nonatomic,   copy)NSString *info;
@@ -50,16 +48,6 @@ static NSString *const zoneNames[] = {@"z0", @"z1", @"z2", @"as0", @"na0", @"unk
 @end
 @implementation QNZoneInfo
 
-- (instancetype)init:(long)ttl
-        zoneRegion:(QNZoneRegion)zoneRegion {
-    if (self = [super init]) {
-        _ttl = ttl;
-        _buildDate = [NSDate date];
-        _zoneRegion = zoneRegion;
-    }
-    return self;
-}
-
 + (QNZoneInfo *)zoneInfoWithMainHosts:(NSArray *)mainHosts
                               ioHosts:(NSArray *)ioHosts{
     
@@ -72,6 +60,7 @@ static NSString *const zoneNames[] = {@"z0", @"z1", @"z2", @"as0", @"na0", @"unk
                                                                 @"io" : @{@"src" : @{@"main" : ioHosts ?: @[]}}}];
     return zoneInfo;
 }
+
 + (QNZoneInfo *)zoneInfoFromDictionary:(NSDictionary *)detailInfo {
     if (![detailInfo isKindOfClass:[NSDictionary class]]) {
         return nil;
@@ -121,6 +110,23 @@ static NSString *const zoneNames[] = {@"z0", @"z1", @"z2", @"as0", @"na0", @"unk
     zoneInfo.detailInfo = detailInfo;
     
     return zoneInfo;
+}
+
+- (instancetype)init:(long)ttl
+        zoneRegion:(QNZoneRegion)zoneRegion {
+    if (self = [super init]) {
+        _ttl = ttl;
+        _buildDate = [NSDate date];
+        _zoneRegion = zoneRegion;
+        
+        NSArray *zoneRegionIds = @[@"z0", @"z1", @"z2", @"as0", @"na0", @"unknown"];
+        if (zoneRegion < zoneRegionIds.count) {
+            _zoneRegionId = zoneRegionIds[zoneRegion];
+        } else {
+            _zoneRegionId = @"unknown";
+        }
+    }
+    return self;
 }
 
 - (BOOL)isValid{

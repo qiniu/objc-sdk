@@ -21,7 +21,7 @@
 @property (nonatomic, strong) QNConfiguration *config;
 @property (nonatomic, strong) id <QNRecorderDelegate> recorder;
 @property (nonatomic,   copy) NSString *recorderKey;
-@property (nonatomic, strong) QNUpCompletionHandler completionHandler;
+@property (nonatomic, strong) QNUpTaskCompletionHandler completionHandler;
 
 @property (nonatomic, assign) QNRequestType requestType;
 @property (nonatomic, assign)NSInteger currentRegionIndex;
@@ -38,19 +38,18 @@
                configuration:(QNConfiguration *)config
                     recorder:(id<QNRecorderDelegate>)recorder
                  recorderKey:(NSString *)recorderKey
-           completionHandler:(QNUpCompletionHandler)completionHandler{
-    return [self initWithFile:file data:nil fileName:[[file path] lastPathComponent] key:key token:token identifier:identifier option:option configuration:config recorder:recorder recorderKey:recorderKey completionHandler:completionHandler];
+           completionHandler:(QNUpTaskCompletionHandler)completionHandler{
+    return [self initWithFile:file data:nil fileName:[[file path] lastPathComponent] key:key token:token option:option configuration:config recorder:recorder recorderKey:recorderKey completionHandler:completionHandler];
 }
 
 - (instancetype)initWithData:(NSData *)data
                          key:(NSString *)key
                     fileName:(NSString *)fileName
                        token:(QNUpToken *)token
-                  identifier:(NSString *)identifier
                       option:(QNUploadOption *)option
                configuration:(QNConfiguration *)config
-           completionHandler:(QNUpCompletionHandler)completionHandler{
-    return [self initWithFile:nil data:data fileName:fileName key:key token:token identifier:identifier option:option configuration:config recorder:nil recorderKey:nil completionHandler:completionHandler];
+           completionHandler:(QNUpTaskCompletionHandler)completionHandler{
+    return [self initWithFile:nil data:data fileName:fileName key:key token:token option:option configuration:config recorder:nil recorderKey:nil completionHandler:completionHandler];
 }
 
 - (instancetype)initWithFile:(id<QNFileDelegate>)file
@@ -58,19 +57,17 @@
                     fileName:(NSString *)fileName
                          key:(NSString *)key
                        token:(QNUpToken *)token
-                  identifier:(NSString *)identifier
                       option:(QNUploadOption *)option
                configuration:(QNConfiguration *)config
                     recorder:(id<QNRecorderDelegate>)recorder
                  recorderKey:(NSString *)recorderKey
-           completionHandler:(QNUpCompletionHandler)completionHandler{
+           completionHandler:(QNUpTaskCompletionHandler)completionHandler{
     if (self = [super init]) {
         _file = file;
         _data = data;
         _fileName = fileName ?: @"?";
         _key = key;
         _token = token;
-        _identifier = identifier;
         _config = config;
         _option = option ?: [QNUploadOption defaultOptions];
         _recorder = recorder;
@@ -90,6 +87,7 @@
 
 - (void)initData{
     _currentRegionIndex = 0;
+    _metrics = [[QNUploadTaskMetrics alloc] init];
 }
 
 - (void)run {
@@ -109,6 +107,13 @@
         [self switchRegion];
         [self startToUpload];
     });
+}
+
+- (void)complete:(QNResponseInfo *)info
+            resp:(NSDictionary *)resp{
+    if (self.completionHandler) {
+        self.completionHandler(info, _key, _metrics, resp);
+    }
 }
 
 //MARK:-- qulite collect
