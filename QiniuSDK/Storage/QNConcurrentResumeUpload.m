@@ -122,10 +122,11 @@
     
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
-    [transcation makeBlock:block.size
+    [transcation makeBlock:block.offset
+                 blockSize:block.size
             firstChunkData:[self getDataWithChunk:chunk block:block]
                   progress:progress
-                  complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         
         NSString *blockContext = response[@"ctx"];
         if (responseInfo.isOK && blockContext) {
@@ -137,6 +138,7 @@
         } else {
             self.uploadBlockErrorResponse = response;
             self.uploadBlockErrorResponseInfo = responseInfo;
+            [self setCurrentRegionRequestMetrics:metrics];
             completeHandler();
         }
         [self destoryUploadRequestTranscation:transcation];
@@ -150,8 +152,9 @@
     [transcation makeFile:self.uploadFileInfo.size
                  fileName:self.fileName
             blockContexts:[self.uploadFileInfo allBlocksContexts]
-                 complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+                 complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         
+        [self setCurrentRegionRequestMetrics:metrics];
         completeHandler(responseInfo, response);
         [self destoryUploadRequestTranscation:transcation];
     }];
@@ -159,10 +162,11 @@
 
 - (QNRequestTranscation *)createUploadRequestTranscation{
     QNRequestTranscation *transcation = [[QNRequestTranscation alloc] initWithConfig:self.config
-                                                                                    uploadOption:self.option
-                                                                                          region:self.getCurrentRegion
-                                                                                             key:self.key
-                                                                                           token:self.token];
+                                                                        uploadOption:self.option
+                                                                        targetRegion:[self getTargetRegion]
+                                                                        currentegion:[self getCurrentRegion]
+                                                                                 key:self.key
+                                                                               token:self.token];
     [self.uploadTranscations addObject:transcation];
     return transcation;
 }

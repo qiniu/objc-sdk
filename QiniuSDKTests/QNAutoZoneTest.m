@@ -12,7 +12,7 @@
 
 #import <AGAsyncTestHelper.h>
 
-#import "QNHttpResponseInfo.h"
+#import "QNResponseInfo.h"
 #import "QNSessionManager.h"
 
 #import "QNAutoZone.h"

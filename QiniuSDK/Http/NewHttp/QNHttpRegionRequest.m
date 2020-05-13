@@ -12,8 +12,8 @@
 #import "QNUploadOption.h"
 #import "NSURLRequest+QNRequest.h"
 
+#import "QNUploadRequestMetrics.h"
 #import "QNResponseInfo.h"
-#import "QNHttpSingleRequest.h"
 
 @interface QNHttpRegionRequest()
 
@@ -21,6 +21,7 @@
 @property(nonatomic, strong)QNUploadOption *uploadOption;
 @property(nonatomic, strong)QNUploadRequstState *requestState;
 
+@property(nonatomic, strong)QNUploadRegionRequestMetrics *requestMetrics;
 @property(nonatomic, strong)QNHttpSingleRequest *singleRetry;
 
 // old server 不验证tls sni
@@ -33,7 +34,9 @@
 
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
+                         token:(QNUpToken *)token
                         region:(id <QNUploadRegion>)region
+                   requestInfo:(QNUploadRequestInfo *)requestInfo
                   requestState:(QNUploadRequstState *)requestState{
     if (self = [super init]) {
         _config = config;
@@ -41,8 +44,10 @@
         _region = region;
         _requestState = requestState;
         _singleRetry = [[QNHttpSingleRequest alloc] initWithConfig:config
-                                                           uploadOption:uploadOption
-                                                           requestState:requestState];
+                                                      uploadOption:uploadOption
+                                                             token:token
+                                                       requestInfo:requestInfo
+                                                      requestState:requestState];
     }
     return self;
 }
@@ -50,8 +55,9 @@
 - (void)get:(NSString *)action
     headers:(NSDictionary *)headers
    shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
-   complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete{
+   complete:(QNRegionRequestCompleteHandler)complete{
     
+    self.requestMetrics = [[QNUploadRegionRequestMetrics alloc] initWithRegion:self.region];
     [self performRequest:[self getNextServer:nil]
                   action:action
                  headers:headers
@@ -67,8 +73,9 @@
         body:(NSData *)body
  shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
     progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-    complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete{
+    complete:(QNRegionRequestCompleteHandler)complete{
     
+    self.requestMetrics = [[QNUploadRegionRequestMetrics alloc] initWithRegion:self.region];
     [self performRequest:[self getNextServer:nil]
                   action:action
                  headers:headers
@@ -87,11 +94,11 @@
                   body:(NSData *)body
            shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
               progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-              complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete{
+              complete:(QNRegionRequestCompleteHandler)complete{
     
     QNResponseInfo *errorResponseInfo = [self checkServer:server];
     if (errorResponseInfo) {
-        complete(errorResponseInfo, nil);
+        [self complete:errorResponseInfo response:nil complete:complete];;
         return;
     }
     
@@ -126,7 +133,14 @@
     [request setAllHTTPHeaderFields:headers];
     [request setTimeoutInterval:self.config.timeoutInterval];
     request.HTTPBody = body;
-    [self.singleRetry request:request isSkipDns:isSkipDns shouldRetry:shouldRetry progress:progress complete:^(QNResponseInfo * responseInfo, NSDictionary * response) {
+    [self.singleRetry request:request
+                    isSkipDns:isSkipDns
+                  shouldRetry:shouldRetry
+                     progress:progress
+                     complete:^(QNResponseInfo * _Nullable responseInfo, NSArray<QNUploadSingleRequestMetrics *> * _Nullable metrics, NSDictionary * _Nullable response) {
+        
+        [self.requestMetrics addMetricsList:metrics];
+        
         if (shouldRetry(responseInfo, response)
             && self.config.allowBackupHost
             && responseInfo.couldRegionRetry) {
@@ -144,14 +158,22 @@
                                 complete:complete];
                 });
             } else if (complete) {
-                complete(responseInfo, response);
+                [self complete:responseInfo response:response complete:complete];
             }
         } else if (complete) {
-            complete(responseInfo, response);
+            [self complete:responseInfo response:response complete:complete];
         }
     }];
 }
 
+- (void)complete:(QNResponseInfo *)responseInfo
+        response:(NSDictionary *)response
+        complete:(QNRegionRequestCompleteHandler)completionHandler {
+
+    if (completionHandler) {
+        completionHandler(responseInfo, self.requestMetrics, response);
+    }
+}
 
 //MARK: --
 - (id <QNUploadServer>)getNextServer:(QNResponseInfo *)responseInfo{

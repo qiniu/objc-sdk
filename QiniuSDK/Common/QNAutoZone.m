@@ -130,7 +130,8 @@
     }
 
     QNRequestTranscation *transcation = [self createUploadRequestTranscation:token];
-    [transcation quertUploadHosts:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+    [transcation quertUploadHosts:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+
         if (!responseInfo.error) {
         
             QNZonesInfo *zonesInfo = [QNZonesInfo infoWithDictionary:response];

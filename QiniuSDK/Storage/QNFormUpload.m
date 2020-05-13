@@ -24,10 +24,11 @@
 - (void)startToUpload {
     
     self.uploadTranscation = [[QNRequestTranscation alloc] initWithConfig:self.config
-                                                                   uploadOption:self.option
-                                                                         region:[self getCurrentRegion]
-                                                                            key:self.key
-                                                                          token:self.token];
+                                                             uploadOption:self.option
+                                                             targetRegion:[self getTargetRegion]
+                                                             currentegion:[self getCurrentRegion]
+                                                                      key:self.key
+                                                                    token:self.token];
 
     __weak typeof(self) weakSelf = self;
     void(^progressHandler)(long long totalBytesWritten, long long totalBytesExpectedToWrite) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
@@ -48,7 +49,10 @@
     [self.uploadTranscation uploadFormData:self.data
                                   fileName:self.fileName
                                   progress:progressHandler
-                                  complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+                                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        
+        [self setCurrentRegionRequestMetrics:metrics];
+        
         if (responseInfo.isOK) {
             self.option.progressHandler(self.key, 1.0);
             [self complete:responseInfo resp:response];

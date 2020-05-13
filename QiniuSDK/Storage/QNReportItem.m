@@ -74,6 +74,7 @@
         NSString *itemJsonString = [item toJson];
         if (itemJsonString && ![itemJsonString isEqualToString:@"{}"]) {
             [self report:itemJsonString token:token];
+            NSLog(@"== report log: %@", itemJsonString);
         }
     });
 }
@@ -124,23 +125,23 @@ NSString * const QNReportRequestKeyPrefetchedIpCount = @"prefetched_ip_count";
 
 //MARK:-- 分块上传统计⽇志
 NSString * const QNReportBlockKeyLogType = @"log_type";
-NSString * const QNReportBlockKeyTargetRegionIde = @"target_region_id";
-NSString * const QNReportBlockKeyCurrentRegionIde = @"current_region_id";
-NSString * const QNReportBlockKeyTotalElaspsedTimee = @"total_elaspsed_time";
-NSString * const QNReportBlockKeyBytesSente = @"bytes_sent";
-NSString * const QNReportBlockKeyRecoveredFrome = @"recovered_from";
-NSString * const QNReportBlockKeyFileSizee = @"file_size";
-NSString * const QNReportBlockKeyPide = @"pid";
-NSString * const QNReportBlockKeyTide = @"tid";
-NSString * const QNReportBlockKeyUpApiVersione = @"up_api_version";
-NSString * const QNReportBlockKeyClient_timee = @"client_time";
+NSString * const QNReportBlockKeyTargetRegionId = @"target_region_id";
+NSString * const QNReportBlockKeyCurrentRegionId = @"current_region_id";
+NSString * const QNReportBlockKeyTotalElaspsedTime = @"total_elaspsed_time";
+NSString * const QNReportBlockKeyBytesSent = @"bytes_sent";
+NSString * const QNReportBlockKeyRecoveredFrom = @"recovered_from";
+NSString * const QNReportBlockKeyFileSize = @"file_size";
+NSString * const QNReportBlockKeyPid = @"pid";
+NSString * const QNReportBlockKeyTid = @"tid";
+NSString * const QNReportBlockKeyUpApiVersion = @"up_api_version";
+NSString * const QNReportBlockKeyClientTime = @"client_time";
 
 
 //MARK:-- 上传质量统计
-NSString * const QNReportQualityKeyLogTypee = @"log_type";
-NSString * const QNReportQualityKeyResulte = @"result";
-NSString * const QNReportQualityKeyTotalElaspsedTimee = @"total_elaspsed_time";
-NSString * const QNReportQualityKeyRequestsCounte = @"requests_count";
-NSString * const QNReportQualityKeyRegionsCounte = @"regions_count";
-NSString * const QNReportQualityKeyBytesSente = @"regions_count";
-NSString * const QNReportQualityKeyCloudTypee = @"cloud_type";
+NSString * const QNReportQualityKeyLogType = @"log_type";
+NSString * const QNReportQualityKeyResult = @"result";
+NSString * const QNReportQualityKeyTotalElaspsedTime = @"total_elaspsed_time";
+NSString * const QNReportQualityKeyRequestsCount = @"requests_count";
+NSString * const QNReportQualityKeyRegionsCount = @"regions_count";
+NSString * const QNReportQualityKeyBytesSent = @"bytes_sent";
+NSString * const QNReportQualityKeyCloudType = @"cloud_type";

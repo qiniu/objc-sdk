@@ -7,7 +7,6 @@
 //
 
 #import "QNConfiguration.h"
-#import "QNHttpResponseInfo.h"
 #import "QNResponseInfo.h"
 #import "QNSessionManager.h"
 #import "QNUpToken.h"

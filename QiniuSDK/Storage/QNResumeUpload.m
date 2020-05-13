@@ -105,10 +105,11 @@
     chunk.isCompleted = NO;
     
     QNRequestTranscation *transcation = [self createUploadRequestTranscation];
-    [transcation makeBlock:block.size
+    [transcation makeBlock:block.offset
+                 blockSize:block.size
             firstChunkData:[self getDataWithChunk:chunk block:block]
                   progress:progress
-                  complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         NSString *blockContext = response[@"ctx"];
         if (responseInfo.isOK && blockContext) {
             block.context = blockContext;
@@ -119,6 +120,7 @@
         } else {
             self.uploadChunkErrorResponse = response;
             self.uploadChunkErrorResponseInfo = responseInfo;
+            [self setCurrentRegionRequestMetrics:metrics];
             completeHandler();
         }
     }];
@@ -134,10 +136,11 @@
     
     QNRequestTranscation *transcation = [self createUploadRequestTranscation];
     [transcation uploadChunk:block.context
+                 blockOffset:block.offset
                    chunkData:[self getDataWithChunk:chunk block:block]
                  chunkOffest:chunk.offset
                     progress:progress
-                    complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         NSString *blockContext = response[@"ctx"];
         if (responseInfo.isOK && blockContext) {
             block.context = blockContext;
@@ -148,6 +151,7 @@
         } else {
             self.uploadChunkErrorResponse = response;
             self.uploadChunkErrorResponseInfo = responseInfo;
+            [self setCurrentRegionRequestMetrics:metrics];
             completeHandler();
         }
     }];
@@ -160,17 +164,20 @@
     [transcation makeFile:self.uploadFileInfo.size
                  fileName:self.fileName
             blockContexts:[self.uploadFileInfo allBlocksContexts]
-                 complete:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+                 complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        
+        [self setCurrentRegionRequestMetrics:metrics];
         completeHandler(responseInfo, response);
     }];
 }
 
 - (QNRequestTranscation *)createUploadRequestTranscation{
     QNRequestTranscation *transcation = [[QNRequestTranscation alloc] initWithConfig:self.config
-                                                                                    uploadOption:self.option
-                                                                                          region:self.getCurrentRegion
-                                                                                             key:self.key
-                                                                                           token:self.token];
+                                                                        uploadOption:self.option
+                                                                        targetRegion:[self getTargetRegion]
+                                                                        currentegion:[self getCurrentRegion]
+                                                                                 key:self.key
+                                                                               token:self.token];
     self.uploadTranscation = transcation;
     return transcation;
 }

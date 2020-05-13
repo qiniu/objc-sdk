@@ -7,22 +7,45 @@
 //
 
 #import "QNAsyncRun.h"
+#import "QNVersion.h"
+#import "QNUtils.h"
 #import "QNHttpSingleRequest.h"
 #import "QNConfiguration.h"
 #import "QNUploadOption.h"
+#import "QNUpToken.h"
 #import "QNResponseInfo.h"
 #import "QNRequestClient.h"
-#import "QNUploadRequstState.h"
+
+#import "QNReportItem.h"
 
 #import "QNUploadSystemClient.h"
 #import "NSURLRequest+QNRequest.h"
+
+
+@implementation QNUploadRequstState
+- (instancetype)init{
+    if (self = [super init]) {
+        [self initData];
+    }
+    return self;
+}
+- (void)initData{
+    _isUserCancel = NO;
+}
+@end
+
+
 
 @interface QNHttpSingleRequest()
 
 @property(nonatomic, assign)int currentRetryTime;
 @property(nonatomic, strong)QNConfiguration *config;
 @property(nonatomic, strong)QNUploadOption *uploadOption;
+@property(nonatomic, strong)QNUpToken *token;
+@property(nonatomic, strong)QNUploadRequestInfo *requestInfo;
 @property(nonatomic, strong)QNUploadRequstState *requestState;
+
+@property(nonatomic, strong)NSMutableArray <QNUploadSingleRequestMetrics *> *requestMetricsList;
 
 @property(nonatomic, strong)id <QNRequestClient> client;
 
@@ -31,10 +54,14 @@
 
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
+                         token:(QNUpToken *)token
+                   requestInfo:(QNUploadRequestInfo *)requestInfo
                   requestState:(QNUploadRequstState *)requestState{
     if (self = [super init]) {
         _config = config;
         _uploadOption = uploadOption;
+        _token = token;
+        _requestInfo = requestInfo;
         _requestState = requestState;
         _currentRetryTime = 0;
     }
@@ -45,9 +72,10 @@
       isSkipDns:(BOOL)isSkipDns
     shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
        progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-       complete:(void (^)(QNResponseInfo * _Nullable, NSDictionary * _Nullable))complete{
+       complete:(QNSingleRequestCompleteHandler)complete{
     
     _currentRetryTime = 0;
+    _requestMetricsList = [NSMutableArray array];
     [self retryRquest:request isSkipDns:isSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
 }
 
@@ -55,7 +83,7 @@
           isSkipDns:(BOOL)isSkipDns
         shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
            progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-           complete:(void (^)(QNResponseInfo * _Nullable, NSDictionary * _Nullable))complete{
+           complete:(QNSingleRequestCompleteHandler)complete{
     
     if (isSkipDns && kQNGloableConfiguration.isDnsOpen) {
         self.client = [[QNUploadSystemClient alloc] init];
@@ -85,23 +113,29 @@
         
     } complete:^(NSURLResponse *response, QNUploadSingleRequestMetrics *metrics, NSData * responseData, NSError * error) {
         
+        if (metrics) {
+            [self.requestMetricsList addObject:metrics];
+        }
+        
         QNResponseInfo *responseInfo = nil;
         if (checkCancelHandler()) {
-            if (complete) {
-                responseInfo = [QNResponseInfo cancelResponse];
-                responseInfo.requestMetrics = metrics;
-                complete(responseInfo, nil);
-            }
+            responseInfo = [QNResponseInfo cancelResponse];
+            responseInfo.requestMetrics = metrics;
+            [self complete:responseInfo response:nil requestMetrics:metrics complete:complete];
             return;
         }
         
-        NSDictionary *responseDic = [NSJSONSerialization JSONObjectWithData:responseData
-                                                                    options:NSJSONReadingMutableLeaves
-                                                                      error:nil];
+        NSDictionary *responseDic = nil;
+        if (responseData) {
+            responseDic = [NSJSONSerialization JSONObjectWithData:responseData
+                                                          options:NSJSONReadingMutableLeaves
+                                                            error:nil];
+        }
+        
         responseInfo = [[QNResponseInfo alloc] initWithResponseInfoHost:request.qn_domain
-                                                              response:(NSHTTPURLResponse *)response
-                                                                  body:responseData
-                                                                 error:error];
+                                                               response:(NSHTTPURLResponse *)response
+                                                                   body:responseData
+                                                                  error:error];
         responseInfo.requestMetrics = metrics;
         if (shouldRetry(responseInfo, responseDic)
             && self.currentRetryTime < self.config.retryMax
@@ -111,12 +145,65 @@
                 [self retryRquest:request isSkipDns:isSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
             });
         } else {
-            if (complete) {
-                complete(responseInfo, responseDic);
-            }
+            [self complete:responseInfo response:responseDic requestMetrics:metrics complete:complete];
         }
     }];
     
+}
+
+- (void)complete:(QNResponseInfo *)responseInfo
+        response:(NSDictionary *)response
+  requestMetrics:(QNUploadSingleRequestMetrics *)requestMetrics
+        complete:(QNSingleRequestCompleteHandler)complete {
+    
+    [self reportRequest:responseInfo taskMetrics:requestMetrics];
+    if (complete) {
+        complete(responseInfo, [self.requestMetricsList copy], response);
+    }
+}
+
+//MARK:-- 统计quality日志
+- (void)reportRequest:(QNResponseInfo *)info
+          taskMetrics:(QNUploadSingleRequestMetrics *)taskMetrics {
+    
+    QNUploadSingleRequestMetrics *taskMetricsP = taskMetrics ?: [QNUploadSingleRequestMetrics emptyMetrics];
+    
+    QNReportItem *item = [QNReportItem item];
+    [item setReportValue:QNReportLogTypeRequest forKey:QNReportRequestKeyLogType];
+//    [item setReportValue:QNReportLogTypeRequest forKey:QNReportRequestKeyStatusCode];
+    [item setReportValue:info.reqId forKey:QNReportRequestKeyRequestId];
+    [item setReportValue:taskMetricsP.request.qn_domain forKey:QNReportRequestKeyHost];
+    [item setReportValue:taskMetricsP.remoteAddress forKey:QNReportRequestKeyRemoteIp];
+    [item setReportValue:taskMetricsP.localPort forKey:QNReportRequestKeyPort];
+    [item setReportValue:self.requestInfo.bucket forKey:QNReportRequestKeyTargetBucket];
+    [item setReportValue:self.requestInfo.key forKey:QNReportRequestKeyTargetKey];
+    [item setReportValue:taskMetricsP.totalElaspsedTime forKey:QNReportRequestKeyTotalElaspsedTime];
+    [item setReportValue:taskMetricsP.totalDnsTime forKey:QNReportRequestKeyDnsElapsedTime];
+    [item setReportValue:taskMetricsP.totalConnectTime forKey:QNReportRequestKeyConnectElapsedTime];
+    [item setReportValue:taskMetricsP.totalSecureConnectTime forKey:QNReportRequestKeyTLSConnectElapsedTime];
+    [item setReportValue:taskMetricsP.totalRequestTime forKey:QNReportRequestKeyRequestElapsedTime];
+    [item setReportValue:taskMetricsP.totalWaitTime forKey:QNReportRequestKeyWaitElapsedTime];
+    [item setReportValue:taskMetricsP.totalWaitTime forKey:QNReportRequestKeyResponseElapsedTime];
+    [item setReportValue:taskMetricsP.totalResponseTime forKey:QNReportRequestKeyResponseElapsedTime];
+    [item setReportValue:self.requestInfo.fileOffset forKey:QNReportRequestKeyFileOffset];
+    [item setReportValue:taskMetricsP.bytesSend forKey:QNReportRequestKeyBytesSent];
+    [item setReportValue:taskMetricsP.totalBytes forKey:QNReportRequestKeyBytesTotal];
+    [item setReportValue:@([QNUtils getCurrentProcessID]) forKey:QNReportRequestKeyPid];
+    [item setReportValue:@([QNUtils getCurrentThreadID]) forKey:QNReportRequestKeyTid];
+    [item setReportValue:self.requestInfo.targetRegionId forKey:QNReportRequestKeyTargetRegionId];
+    [item setReportValue:self.requestInfo.currentRegionId forKey:QNReportRequestKeyCurrentRegionId];
+    [item setReportValue:info.msg forKey:QNReportRequestKeyErrorType];
+    [item setReportValue:info.msgDetail forKey:QNReportRequestKeyErrorDescription];
+    [item setReportValue:self.requestInfo.requestType forKey:QNReportRequestKeyUpType]; 
+    [item setReportValue:[QNUtils systemName] forKey:QNReportRequestKeyOsName];
+    [item setReportValue:[QNUtils systemVersion] forKey:QNReportRequestKeyOsVersion];
+    [item setReportValue:[QNUtils sdkLanguage] forKey:QNReportRequestKeySDKName];
+    [item setReportValue:kQiniuVersion forKey:QNReportRequestKeySDKVersion];
+    [item setReportValue:@([QNUtils currentTimestamp]) forKey:QNReportRequestKeyClientTime];
+    [item setReportValue:[QNUtils getCurrentNetworkType] forKey:QNReportRequestKeyNetworkType];
+    [item setReportValue:[QNUtils getCurrentSignalStrength] forKey:QNReportRequestKeySignalStrength];
+
+    [kQNReporter reportItem:item token:self.token.token];
 }
 
 @end

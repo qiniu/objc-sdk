@@ -12,6 +12,30 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNUtils : NSObject
 
+/// SDK 名称
++ (NSString *)sdkVerion;
+
+/// SDK 开发语言
++ (NSString *)sdkLanguage;
+
+/// 获取当前进程ID
++ (int64_t)getCurrentProcessID;
+
+/// 获取当前线程ID
++ (int64_t)getCurrentThreadID;
+
+/// 系统名称
++ (NSString *)systemName;
+
+/// 系统版本
++ (NSString *)systemVersion;
+
+/// 信号格数
++ (NSNumber *)getCurrentSignalStrength;
+
+/// 网络类型
++ (NSString *)getCurrentNetworkType;
+
 /// 获取当前时间戳 单位：ms
 + (NSTimeInterval)currentTimestamp;
 

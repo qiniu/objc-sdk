@@ -23,17 +23,16 @@
 @property (nonatomic,   copy) NSString *recorderKey;
 @property (nonatomic, strong) QNUpTaskCompletionHandler completionHandler;
 
-@property (nonatomic, assign) QNRequestType requestType;
 @property (nonatomic, assign)NSInteger currentRegionIndex;
-@property (nonatomic, strong)NSArray <id <QNUploadRegion> > *regions;
+@property (nonatomic, strong)NSMutableArray <id <QNUploadRegion> > *regions;
 
 @end
 
 @implementation QNBaseUpload
+
 - (instancetype)initWithFile:(id<QNFileDelegate>)file
                          key:(NSString *)key
                        token:(QNUpToken *)token
-                  identifier:(NSString *)identifier
                       option:(QNUploadOption *)option
                configuration:(QNConfiguration *)config
                     recorder:(id<QNRecorderDelegate>)recorder
@@ -87,7 +86,6 @@
 
 - (void)initData{
     _currentRegionIndex = 0;
-    _metrics = [[QNUploadTaskMetrics alloc] init];
 }
 
 - (void)run {
@@ -103,6 +101,9 @@
 }
 
 - (void)switchRegionAndUpload{
+    if (self.currentRegionRequestMetrics) {
+        [self.metrics addMetrics:self.currentRegionRequestMetrics];
+    }
     QNAsyncRun(^{
         [self switchRegion];
         [self startToUpload];
@@ -111,18 +112,12 @@
 
 - (void)complete:(QNResponseInfo *)info
             resp:(NSDictionary *)resp{
+    if (self.currentRegionRequestMetrics) {
+        [self.metrics addMetrics:self.currentRegionRequestMetrics];
+    }
     if (self.completionHandler) {
         self.completionHandler(info, _key, _metrics, resp);
     }
-}
-
-//MARK:-- qulite collect
-- (void)collectHttpResponseInfo:(QNHttpResponseInfo *)httpResponseInfo fileOffset:(uint64_t)fileOffset {
-    
-}
-
-- (void)collectUploadQualityInfo {
-    
 }
 
 //MARK:-- region
@@ -134,7 +129,8 @@
         [region setupRegionData:zoneInfo];
         [defaultRegions addObject:region];
     }
-    self.regions = [defaultRegions copy];
+    self.regions = defaultRegions;
+    _metrics = [[QNUploadTaskMetrics alloc] initWithRegions:defaultRegions];
 }
 
 - (void)insertRegionAtFirstByZoneInfo:(QNZoneInfo *)zoneInfo{
@@ -144,7 +140,7 @@
 }
 
 - (void)insertRegionAtFirst:(id <QNUploadRegion>)region{
-    
+    [self.regions insertObject:region atIndex:0];
 }
 
 - (BOOL)switchRegion{
@@ -156,6 +152,9 @@
         }
     }
     return ret;
+}
+- (id <QNUploadRegion>)getTargetRegion{
+    return self.regions.firstObject;
 }
 - (id <QNUploadRegion>)getCurrentRegion{
     id <QNUploadRegion> region = nil;

@@ -12,12 +12,18 @@
 @end
 @implementation QNUploadSingleRequestMetrics
 
++ (instancetype)emptyMetrics{
+    QNUploadSingleRequestMetrics *metrics = [[QNUploadSingleRequestMetrics alloc] init];
+    return metrics;
+}
+
 - (instancetype)init{
     if (self = [super init]) {
         [self initData];
     }
     return self;
 }
+
 - (void)initData{
     _countOfRequestHeaderBytesSent = 0;
     _countOfRequestBodyBytesSent = 0;
@@ -25,6 +31,57 @@
     _countOfResponseBodyBytesReceived = 0;
 }
 
+- (NSNumber *)totalElaspsedTime{
+    return [self timeFromStartDate:self.startDate
+                         toEndDate:self.endDate];
+}
+
+- (NSNumber *)totalDnsTime{
+    return [self timeFromStartDate:self.domainLookupStartDate
+                         toEndDate:self.domainLookupEndDate];
+}
+
+- (NSNumber *)totalConnectTime{
+    return [self timeFromStartDate:self.connectStartDate
+                         toEndDate:self.connectEndDate];
+}
+
+- (NSNumber *)totalSecureConnectTime{
+    return [self timeFromStartDate:self.secureConnectionStartDate
+                         toEndDate:self.secureConnectionEndDate];
+}
+
+- (NSNumber *)totalRequestTime{
+    return [self timeFromStartDate:self.requestStartDate
+                         toEndDate:self.requestEndDate];
+}
+
+- (NSNumber *)totalWaitTime{
+    return [self timeFromStartDate:self.requestEndDate
+                         toEndDate:self.responseStartDate];
+}
+
+- (NSNumber *)totalResponseTime{
+    return [self timeFromStartDate:self.responseStartDate
+                         toEndDate:self.responseEndDate];
+}
+
+- (NSNumber *)totalBytes{
+    return @(self.countOfRequestHeaderBytesSent + self.countOfRequestBodyBytesSent);
+}
+
+- (NSNumber *)bytesSend{
+    return @(self.countOfResponseHeaderBytesReceived + self.countOfResponseBodyBytesReceived);
+}
+
+- (NSNumber *)timeFromStartDate:(NSDate *)startDate toEndDate:(NSDate *)endDate{
+    if (startDate && endDate) {
+        double time = [endDate timeIntervalSinceDate:startDate] * 1000;
+        return @(time);
+    } else {
+        return @(0);
+    }
+}
 @end
 
 
@@ -35,6 +92,12 @@
 
 @end
 @implementation QNUploadRegionRequestMetrics
+
++ (instancetype)emptyMetrics{
+    QNUploadRegionRequestMetrics *metrics = [[QNUploadRegionRequestMetrics alloc] init];
+    return metrics;
+}
+
 - (instancetype)initWithRegion:(id<QNUploadRegion>)region{
     if (self = [super init]) {
         _region = region;
@@ -42,22 +105,63 @@
     }
     return self;
 }
-- (void)addMetrics:(QNUploadSingleRequestMetrics *)metrics{
-    [_metricsListInter addObject:metrics];
+
+- (NSNumber *)totalElaspsedTime{
+    if (self.metricsList) {
+        double time = 0;
+        for (QNUploadSingleRequestMetrics *metrics in self.metricsList) {
+            time += metrics.totalElaspsedTime.doubleValue;
+        }
+        return @(time);
+    } else {
+        return @(0);
+    }
 }
+
+- (NSNumber *)requestCount{
+    if (self.metricsList) {
+        return @(self.metricsList.count);
+    } else {
+        return @(0);
+    }
+}
+
+- (NSNumber *)bytesSend{
+    if (self.metricsList) {
+        long long bytes = 0;
+        for (QNUploadSingleRequestMetrics *metrics in self.metricsList) {
+            bytes += metrics.bytesSend.longLongValue;
+        }
+        return @(bytes);
+    } else {
+        return @(0);
+    }
+}
+
+- (void)addMetricsList:(NSArray<QNUploadSingleRequestMetrics *> *)metricsList{
+    [_metricsListInter addObjectsFromArray:metricsList];
+}
+
 - (NSArray<QNUploadSingleRequestMetrics *> *)metricsList{
     return [_metricsListInter copy];
 }
+
 @end
 
 
 @interface QNUploadTaskMetrics()
 
 @property (nonatomic, strong) NSArray<id <QNUploadRegion>> *regions;
-@property (nonatomic,   copy) NSMutableArray<QNUploadSingleRequestMetrics *> *metricsListInter;
+@property (nonatomic,   copy) NSMutableArray<QNUploadRegionRequestMetrics *> *metricsListInter;
 
 @end
 @implementation QNUploadTaskMetrics
+
++ (instancetype)emptyMetrics{
+    QNUploadTaskMetrics *metrics = [[QNUploadTaskMetrics alloc] init];
+    return metrics;
+}
+
 - (instancetype)initWithRegions:(NSArray<id<QNUploadRegion>> *)regions{
     if (self = [super init]) {
         _regions = regions;
@@ -65,10 +169,59 @@
     }
     return self;
 }
-- (void)addMetrics:(QNUploadSingleRequestMetrics *)metrics{
-    [_metricsListInter addObject:metrics];
+
+- (NSNumber *)totalElaspsedTime{
+    if (self.metricsList) {
+        double time = 0;
+        for (QNUploadRegionRequestMetrics *metrics in self.metricsList) {
+            time += metrics.totalElaspsedTime.doubleValue;
+        }
+        return @(time);
+    } else {
+        return @(0);
+    }
+}
+
+- (NSNumber *)requestCount{
+    if (self.metricsList) {
+        NSInteger count = 0;
+        for (QNUploadRegionRequestMetrics *metrics in self.metricsList) {
+            count += metrics.requestCount.integerValue;
+        }
+        return @(count);
+    } else {
+        return @(0);
+    }
+}
+
+- (NSNumber *)bytesSend{
+    if (self.metricsList) {
+        long long bytes = 0;
+        for (QNUploadRegionRequestMetrics *metrics in self.metricsList) {
+            bytes += metrics.bytesSend.longLongValue;
+        }
+        return @(bytes);
+    } else {
+        return @(0);
+    }
+}
+
+- (NSNumber *)regionCount{
+    if (self.regions) {
+        return @(self.regions.count);
+    } else {
+        return @(0);
+    }
+}
+
+- (void)addMetrics:(QNUploadRegionRequestMetrics *)metrics{
+    @synchronized (self) {
+        [_metricsListInter addObject:metrics];
+    }
 }
 - (NSArray<QNUploadSingleRequestMetrics *> *)metricsList{
     return [_metricsListInter copy];
 }
+
+
 @end

@@ -9,6 +9,10 @@
 #import "QNSystemTool.h"
 #include <pthread.h>
 
+#if __IPHONE_OS_VERSION_MIN_REQUIRED
+#import <UIKit/UIKit.h>
+#endif
+
 @implementation QNSystemTool
 + (int64_t)getCurrentProcessID {
     return [[NSProcessInfo processInfo] processIdentifier];
@@ -21,4 +25,25 @@
     }
     return threadId;
 }
+
++ (NSString *)systemName{
+    NSString *name = nil;
+    #if __IPHONE_OS_VERSION_MIN_REQUIRED
+        name = [[UIDevice currentDevice] model];
+    #else
+        name = @"Mac OS X";
+    #endif
+    return name;
+}
+
++ (NSString *)systemVersion{
+    NSString *version = nil;
+    #if __IPHONE_OS_VERSION_MIN_REQUIRED
+        version = [[UIDevice currentDevice] systemVersion];
+    #else
+        version = [[NSProcessInfo processInfo] operatingSystemVersionString];
+    #endif
+    return version;
+}
+
 @end

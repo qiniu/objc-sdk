@@ -8,8 +8,6 @@
 
 #import "QNUploadRequestMetrics.h"
 
-@class QNHttpResponseInfo;
-
 /**
  *    中途取消的状态码
  */
@@ -41,18 +39,21 @@ extern const int kQNInvalidToken;
 extern const int kQNFileError;
 
 typedef NS_ENUM(int, QNResponseInfoErrorType){
-    QNResponseInfoErrorTypeUnknownError = -200, // 未知错误
-    QNResponseInfoErrorTypeProxyError, // 当前使⽤了 HTTP Proxy 且 Proxy 出错
-    QNResponseInfoErrorTypeInvalidToken, // token 无效
-
-    QNResponseInfoErrorTypeZeroSizeFile, // ⽂件⼤⼩错误
-    QNResponseInfoErrorTypeInvalidFile, // ⽂件内容错误
-    QNResponseInfoErrorTypeInvalidArgs, // 调⽤参数出错
+    QNResponseInfoErrorTypeNetworkError = -1, // 未知⽹络错误
+    QNResponseInfoErrorTypeUserCanceled = -2, // ⽤户主动取消
+    QNResponseInfoErrorTypeInvalidArgs = -3, // 调⽤参数出错
+    QNResponseInfoErrorTypeInvalidFile = -4, // ⽂件内容错误
+    QNResponseInfoErrorTypeInvalidToken = -5, // token 无效
+    QNResponseInfoErrorTypeZeroSizeFile = -6, // ⽂件⼤⼩错误
+    
+    QNResponseInfoErrorTypeProxyError = -200, // 当前使⽤了 HTTP Proxy 且 Proxy 出错
+    
     QNResponseInfoErrorTypeUnexpectedSyscallError, // ⾮预期的，⽆法解决的系统调⽤错误（例如内存分配错误，线程创建错误等因为资源不⾜⽽造成的错误）
     QNResponseInfoErrorTypeLocalIoError, // 本地 I/O 错误
     QNResponseInfoErrorTypeNetworkSlow, // ⽹速过低或没有⽹络造成上传失败的
     
-    QNResponseInfoErrorTypeNetworkError = -1009, // 未知⽹络错误
+    QNResponseInfoErrorTypeSystemCanceled = -999, // ⽤户主动取消
+    QNResponseInfoErrorTypeSystemNetworkError = -1009, // 未知⽹络错误
     QNResponseInfoErrorTypeTimeout = -1001, // 超时错误
     QNResponseInfoErrorTypeUnknownHost, // DNS 解析错误
     QNResponseInfoErrorTypeCannotConnectToHost = -1004, // 连接服务器错误
@@ -65,7 +66,8 @@ typedef NS_ENUM(int, QNResponseInfoErrorType){
     QNResponseInfoErrorTypeCannotParseResponse = -1017, // 解析响应错误
     QNResponseInfoErrorTypeTooManyRedirects = -1007, // ⽤户劫持错误
     QNResponseInfoErrorTypeRedirectToNonExistentLocation = -1010, // ⽤户劫持错误
-    QNResponseInfoErrorTypeUserCanceled = -999, // ⽤户主动取消
+    
+    QNResponseInfoErrorTypeUnknownError = -500, // 未知错误
 };
 
 /**
@@ -77,6 +79,11 @@ typedef NS_ENUM(int, QNResponseInfoErrorType){
  *    状态码
  */
 @property (readonly) int statusCode;
+
+/**
+ *    response 信息
+ */
+@property (nonatomic, copy, readonly) NSDictionary *responseDictionary;
 
 /**
  *    response message
@@ -124,7 +131,7 @@ typedef NS_ENUM(int, QNResponseInfoErrorType){
 @property (readonly) UInt64 timeStamp;
 
 /// 请求过程统计信息
-@property(nonatomic, strong)QNUploadSingleRequestMetrics *requestMetrics;
+@property(nonatomic, strong) QNUploadSingleRequestMetrics *requestMetrics;
 
 /**
  *    是否取消
@@ -209,16 +216,6 @@ typedef NS_ENUM(int, QNResponseInfoErrorType){
 + (instancetype)errorResponseInfo:(QNResponseInfoErrorType)errorType
                         errorDesc:(NSString *)errorDesc;
 
-/**
- *    工厂函数，内部使用
- *
- *    @param httpResponseInfo   最后一次http请求的信息
- *    @param duration   请求完成时间，单位秒
- *
- *    @return 实例
- */
-+ (instancetype)responseInfoWithHttpResponseInfo:(QNHttpResponseInfo *)httpResponseInfo
-                                        duration:(double)duration;
 
 - (instancetype)initWithResponseInfoHost:(NSString *)host
                                 response:(NSHTTPURLResponse *)response

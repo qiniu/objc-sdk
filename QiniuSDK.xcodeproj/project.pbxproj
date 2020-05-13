@@ -59,6 +59,9 @@
 		31A1841A246A8C77001D6EEE /* QNUploadRequestMetrics.h in Headers */ = {isa = PBXBuildFile; fileRef = 31A18418246A8C77001D6EEE /* QNUploadRequestMetrics.h */; };
 		31A1841B246A8C77001D6EEE /* QNUploadRequestMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = 31A18419246A8C77001D6EEE /* QNUploadRequestMetrics.m */; };
 		31A1841C246A8C77001D6EEE /* QNUploadRequestMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = 31A18419246A8C77001D6EEE /* QNUploadRequestMetrics.m */; };
+		31A1841F246BD980001D6EEE /* QNUploadRequestInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 31A1841D246BD980001D6EEE /* QNUploadRequestInfo.h */; };
+		31A18420246BD980001D6EEE /* QNUploadRequestInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 31A1841E246BD980001D6EEE /* QNUploadRequestInfo.m */; };
+		31A18421246BD988001D6EEE /* QNUploadRequestInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 31A1841E246BD980001D6EEE /* QNUploadRequestInfo.m */; };
 		31AE4DD02462D13100503FBB /* QNResumeUpload.h in Headers */ = {isa = PBXBuildFile; fileRef = 31AE4DCE2462D13100503FBB /* QNResumeUpload.h */; };
 		31AE4DD12462D13100503FBB /* QNResumeUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AE4DCF2462D13100503FBB /* QNResumeUpload.m */; };
 		31AE4DD22462D13100503FBB /* QNResumeUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = 31AE4DCF2462D13100503FBB /* QNResumeUpload.m */; };
@@ -134,9 +137,6 @@
 		31F553D124597182000B66AD /* QNHttpSingleRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F553CF24597182000B66AD /* QNHttpSingleRequest.m */; };
 		31F553D224597182000B66AD /* QNHttpSingleRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F553CF24597182000B66AD /* QNHttpSingleRequest.m */; };
 		31F553DA245985CD000B66AD /* QNRequestClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 31F553D8245985CD000B66AD /* QNRequestClient.h */; };
-		31F553DF24598D16000B66AD /* QNUploadRequstState.h in Headers */ = {isa = PBXBuildFile; fileRef = 31F553DD24598D16000B66AD /* QNUploadRequstState.h */; };
-		31F553E024598D16000B66AD /* QNUploadRequstState.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F553DE24598D16000B66AD /* QNUploadRequstState.m */; };
-		31F553E124598D16000B66AD /* QNUploadRequstState.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F553DE24598D16000B66AD /* QNUploadRequstState.m */; };
 		31F553E4245A6986000B66AD /* QNRequestTranscation.h in Headers */ = {isa = PBXBuildFile; fileRef = 31F553E2245A6986000B66AD /* QNRequestTranscation.h */; };
 		31F553E5245A6986000B66AD /* QNRequestTranscation.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F553E3245A6986000B66AD /* QNRequestTranscation.m */; };
 		31F553E9245A75B4000B66AD /* QNUploadData.h in Headers */ = {isa = PBXBuildFile; fileRef = 31F553E7245A75B4000B66AD /* QNUploadData.h */; };
@@ -145,12 +145,6 @@
 		7CF44E0E25F6BE604AE68F92 /* libPods-QiniuSDK_iOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 422A3A07B38819979BBFE724 /* libPods-QiniuSDK_iOSTests.a */; };
 		A31ADA71DBBF1F4D8A065061 /* libPods-QiniuSDK_Mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 73B66D8E78B0B3A0BEEA45A6 /* libPods-QiniuSDK_Mac.a */; };
 		BA8408541BE251010093B013 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA8408521BE250C80093B013 /* SystemConfiguration.framework */; };
-		CC0F85F82447343B008A1ABA /* QNUploadInfoCollector.h in Headers */ = {isa = PBXBuildFile; fileRef = CC0F85F62447343B008A1ABA /* QNUploadInfoCollector.h */; };
-		CC0F85F92447343B008A1ABA /* QNUploadInfoCollector.m in Sources */ = {isa = PBXBuildFile; fileRef = CC0F85F72447343B008A1ABA /* QNUploadInfoCollector.m */; };
-		CC0F85FA2447343C008A1ABA /* QNUploadInfoCollector.m in Sources */ = {isa = PBXBuildFile; fileRef = CC0F85F72447343B008A1ABA /* QNUploadInfoCollector.m */; };
-		CC251352244C026A003F4C65 /* QNHttpResponseInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = CC251350244C026A003F4C65 /* QNHttpResponseInfo.h */; };
-		CC251353244C026A003F4C65 /* QNHttpResponseInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CC251351244C026A003F4C65 /* QNHttpResponseInfo.m */; };
-		CC251354244C026A003F4C65 /* QNHttpResponseInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CC251351244C026A003F4C65 /* QNHttpResponseInfo.m */; };
 		CC25135C244C7EB3003F4C65 /* QNBaseUpload.h in Headers */ = {isa = PBXBuildFile; fileRef = CC25135A244C7EB3003F4C65 /* QNBaseUpload.h */; };
 		CC25135D244C7EB3003F4C65 /* QNBaseUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = CC25135B244C7EB3003F4C65 /* QNBaseUpload.m */; };
 		CC25135E244C7EB3003F4C65 /* QNBaseUpload.m in Sources */ = {isa = PBXBuildFile; fileRef = CC25135B244C7EB3003F4C65 /* QNBaseUpload.m */; };
@@ -269,6 +263,8 @@
 		31A18414246A7652001D6EEE /* QNReportItem.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNReportItem.m; sourceTree = "<group>"; };
 		31A18418246A8C77001D6EEE /* QNUploadRequestMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNUploadRequestMetrics.h; sourceTree = "<group>"; };
 		31A18419246A8C77001D6EEE /* QNUploadRequestMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNUploadRequestMetrics.m; sourceTree = "<group>"; };
+		31A1841D246BD980001D6EEE /* QNUploadRequestInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNUploadRequestInfo.h; sourceTree = "<group>"; };
+		31A1841E246BD980001D6EEE /* QNUploadRequestInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUploadRequestInfo.m; sourceTree = "<group>"; };
 		31AE4DCE2462D13100503FBB /* QNResumeUpload.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNResumeUpload.h; sourceTree = "<group>"; };
 		31AE4DCF2462D13100503FBB /* QNResumeUpload.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNResumeUpload.m; sourceTree = "<group>"; };
 		31AE4DD32463FC3200503FBB /* QNPartsUpload.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNPartsUpload.h; sourceTree = "<group>"; };
@@ -319,8 +315,6 @@
 		31F553CE24597182000B66AD /* QNHttpSingleRequest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNHttpSingleRequest.h; sourceTree = "<group>"; };
 		31F553CF24597182000B66AD /* QNHttpSingleRequest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNHttpSingleRequest.m; sourceTree = "<group>"; };
 		31F553D8245985CD000B66AD /* QNRequestClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNRequestClient.h; sourceTree = "<group>"; };
-		31F553DD24598D16000B66AD /* QNUploadRequstState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNUploadRequstState.h; sourceTree = "<group>"; };
-		31F553DE24598D16000B66AD /* QNUploadRequstState.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUploadRequstState.m; sourceTree = "<group>"; };
 		31F553E2245A6986000B66AD /* QNRequestTranscation.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNRequestTranscation.h; sourceTree = "<group>"; };
 		31F553E3245A6986000B66AD /* QNRequestTranscation.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNRequestTranscation.m; sourceTree = "<group>"; };
 		31F553E7245A75B4000B66AD /* QNUploadData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNUploadData.h; sourceTree = "<group>"; };
@@ -337,10 +331,6 @@
 		B62E937FF4E75CDD482C35E8 /* Pods-QiniuSDK_MacTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_MacTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_MacTests/Pods-QiniuSDK_MacTests.release.xcconfig"; sourceTree = "<group>"; };
 		BA8408521BE250C80093B013 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.0.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		C1D8890E270C769A9E798A8E /* libPods-QiniuSDK_iOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuSDK_iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CC0F85F62447343B008A1ABA /* QNUploadInfoCollector.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNUploadInfoCollector.h; sourceTree = "<group>"; };
-		CC0F85F72447343B008A1ABA /* QNUploadInfoCollector.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUploadInfoCollector.m; sourceTree = "<group>"; };
-		CC251350244C026A003F4C65 /* QNHttpResponseInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNHttpResponseInfo.h; sourceTree = "<group>"; };
-		CC251351244C026A003F4C65 /* QNHttpResponseInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNHttpResponseInfo.m; sourceTree = "<group>"; };
 		CC25135A244C7EB3003F4C65 /* QNBaseUpload.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNBaseUpload.h; sourceTree = "<group>"; };
 		CC25135B244C7EB3003F4C65 /* QNBaseUpload.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNBaseUpload.m; sourceTree = "<group>"; };
 		CC25136F244EE6F4003F4C65 /* QNPipeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNPipeline.h; sourceTree = "<group>"; };
@@ -549,8 +539,8 @@
 				31F553EC245A7D5A000B66AD /* QNUploadRegionInfo.h */,
 				31F553E7245A75B4000B66AD /* QNUploadData.h */,
 				31F553E8245A75B4000B66AD /* QNUploadData.m */,
-				31F553DD24598D16000B66AD /* QNUploadRequstState.h */,
-				31F553DE24598D16000B66AD /* QNUploadRequstState.m */,
+				31A1841D246BD980001D6EEE /* QNUploadRequestInfo.h */,
+				31A1841E246BD980001D6EEE /* QNUploadRequestInfo.m */,
 				31F553E2245A6986000B66AD /* QNRequestTranscation.h */,
 				31F553E3245A6986000B66AD /* QNRequestTranscation.m */,
 				31F553C924596C3D000B66AD /* QNHttpRegionRequest.h */,
@@ -609,8 +599,6 @@
 				DF293C9D19DBC2AE00799011 /* QNUserAgent.m */,
 				DF0D23CC19DCE6C400D6B68F /* QNResponseInfo.h */,
 				DF0D23CE19DCE6E500D6B68F /* QNResponseInfo.m */,
-				CC251350244C026A003F4C65 /* QNHttpResponseInfo.h */,
-				CC251351244C026A003F4C65 /* QNHttpResponseInfo.m */,
 				31A18418246A8C77001D6EEE /* QNUploadRequestMetrics.h */,
 				31A18419246A8C77001D6EEE /* QNUploadRequestMetrics.m */,
 				DFF5252F1A6235D100D02BA1 /* QNSessionManager.h */,
@@ -694,8 +682,6 @@
 				DF609A041A58E39D00AC7297 /* QNFormUpload.m */,
 				DF482FD61B0DA8A2000DAD98 /* QNConfiguration.h */,
 				DF482FD71B0DA8A2000DAD98 /* QNConfiguration.m */,
-				CC0F85F62447343B008A1ABA /* QNUploadInfoCollector.h */,
-				CC0F85F72447343B008A1ABA /* QNUploadInfoCollector.m */,
 				CC3F322122C0CCDF00F23681 /* QNUploadInfoReporter.h */,
 				CC3F322222C0CCDF00F23681 /* QNUploadInfoReporter.m */,
 				31A18413246A7652001D6EEE /* QNReportItem.h */,
@@ -767,10 +753,10 @@
 				3149A1DF2462A57400A2A15B /* QNUploadServer.h in Headers */,
 				31F5539D2456F2F3000B66AD /* QNFileDelegate.h in Headers */,
 				314944522446FED700386F16 /* NSObject+QNSwizzle.h in Headers */,
-				CC251352244C026A003F4C65 /* QNHttpResponseInfo.h in Headers */,
 				DF293C9E19DBC2AE00799011 /* QNUserAgent.h in Headers */,
 				314944572446FF4700386F16 /* QNCFHttpClient.h in Headers */,
 				31C2EEE3242DE86300713A33 /* QNUtils.h in Headers */,
+				31A1841F246BD980001D6EEE /* QNUploadRequestInfo.h in Headers */,
 				31BAA27C243DB83700B7E883 /* QNURLProtocol.h in Headers */,
 				31F553952456F2F3000B66AD /* QNEtag.h in Headers */,
 				DF437CD91B2429E10099587B /* QNUpToken.h in Headers */,
@@ -802,7 +788,6 @@
 				31F553D024597182000B66AD /* QNHttpSingleRequest.h in Headers */,
 				CC2513C42455C141003F4C65 /* QNTempFile.h in Headers */,
 				31AE4DDB24668A2900503FBB /* QNUploadFixedHostRegion.h in Headers */,
-				CC0F85F82447343B008A1ABA /* QNUploadInfoCollector.h in Headers */,
 				3149A1D324626B3100A2A15B /* QNUploadSystemClient.h in Headers */,
 				31F553C02457FFB0000B66AD /* QNPipeline.h in Headers */,
 				31F553E4245A6986000B66AD /* QNRequestTranscation.h in Headers */,
@@ -811,7 +796,6 @@
 				3149445F24470B9E00386F16 /* XCTestCase+QNTest.h in Headers */,
 				DFA9B65C19E0B58900A15FD1 /* QNRecorderDelegate.h in Headers */,
 				31F5539B2456F2F3000B66AD /* QNCrc32.h in Headers */,
-				31F553DF24598D16000B66AD /* QNUploadRequstState.h in Headers */,
 				DFF525311A6235D100D02BA1 /* QNSessionManager.h in Headers */,
 				DF2CDE6919DAC6A400CE01FB /* QNUploadManager.h in Headers */,
 				31F5539E2456F2F3000B66AD /* QNAsyncRun.h in Headers */,
@@ -1057,11 +1041,10 @@
 				DFA9B65919E0B53700A15FD1 /* QNFileRecorder.m in Sources */,
 				31C2EECD242CC52600713A33 /* QNDnsCacheKey.m in Sources */,
 				31A1841B246A8C77001D6EEE /* QNUploadRequestMetrics.m in Sources */,
-				CC251353244C026A003F4C65 /* QNHttpResponseInfo.m in Sources */,
-				CC0F85F92447343B008A1ABA /* QNUploadInfoCollector.m in Sources */,
 				31BAA279243DB83700B7E883 /* QNURLProtocol.m in Sources */,
 				31F553A32456F2F3000B66AD /* QNFile.m in Sources */,
 				31AE4DD62463FC3200503FBB /* QNPartsUpload.m in Sources */,
+				31A18420246BD980001D6EEE /* QNUploadRequestInfo.m in Sources */,
 				31F553982456F2F3000B66AD /* QN_GTM_Base64.m in Sources */,
 				31F553CC24596C3D000B66AD /* QNHttpRegionRequest.m in Sources */,
 				314944582446FF4700386F16 /* QNCFHttpClient.m in Sources */,
@@ -1077,7 +1060,6 @@
 				31494477244852BA00386F16 /* QNFixedZone.m in Sources */,
 				DFF525321A6235D100D02BA1 /* QNSessionManager.m in Sources */,
 				31F553A72456F2F3000B66AD /* QNPHAssetFile.m in Sources */,
-				31F553E024598D16000B66AD /* QNUploadRequstState.m in Sources */,
 				31F553EA245A75B4000B66AD /* QNUploadData.m in Sources */,
 				31F553D124597182000B66AD /* QNHttpSingleRequest.m in Sources */,
 				31F553A12456F2F3000B66AD /* QNPHAssetResource.m in Sources */,
@@ -1133,8 +1115,6 @@
 				DF609A081A58E39D00AC7297 /* QNFormUpload.m in Sources */,
 				31F553BD2457FF14000B66AD /* QNConfiguration.m in Sources */,
 				31C2EECF242CC52600713A33 /* QNDnsCacheKey.m in Sources */,
-				CC251354244C026A003F4C65 /* QNHttpResponseInfo.m in Sources */,
-				CC0F85FA2447343C008A1ABA /* QNUploadInfoCollector.m in Sources */,
 				31BAA280243DBE6200B7E883 /* QNURLProtocol.m in Sources */,
 				31AE4DD22462D13100503FBB /* QNResumeUpload.m in Sources */,
 				DF293CA019DBC2AE00799011 /* QNUserAgent.m in Sources */,
@@ -1147,6 +1127,7 @@
 				31F553B32457D2F3000B66AD /* QNEtag.m in Sources */,
 				CC676CC224357779006A7372 /* QNSystemTool.m in Sources */,
 				31AE4DD72464011200503FBB /* QNPartsUpload.m in Sources */,
+				31A18421246BD988001D6EEE /* QNUploadRequestInfo.m in Sources */,
 				31F553CD24596C3D000B66AD /* QNHttpRegionRequest.m in Sources */,
 				31F553B72457D2FF000B66AD /* QNSystem.m in Sources */,
 				CC2513B8245423C3003F4C65 /* QNConcurrentResumeUpload.m in Sources */,
@@ -1161,7 +1142,6 @@
 				DFF525341A6235D100D02BA1 /* QNSessionManager.m in Sources */,
 				31F553B02457D2E9000B66AD /* QN_GTM_Base64.m in Sources */,
 				31F553B52457D2F9000B66AD /* QNPHAssetFile.m in Sources */,
-				31F553E124598D16000B66AD /* QNUploadRequstState.m in Sources */,
 				3149A1D5246293CB00A2A15B /* QNRequestTranscation.m in Sources */,
 				31F553D224597182000B66AD /* QNHttpSingleRequest.m in Sources */,
 				31F553B82457D302000B66AD /* QNUrlSafeBase64.m in Sources */,

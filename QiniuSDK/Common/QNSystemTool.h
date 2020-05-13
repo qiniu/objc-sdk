@@ -16,4 +16,10 @@
 // 获取当前线程ID
 + (int64_t)getCurrentThreadID;
 
+// 系统名称
++ (NSString *)systemName;
+
+// 系统版本
++ (NSString *)systemVersion;
+
 @end

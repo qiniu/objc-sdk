@@ -8,11 +8,14 @@
 
 #import <Foundation/Foundation.h>
 #import "QNUploadFixedHostRegion.h"
+#import "QNHttpSingleRequest.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 
-@class QNUploadRequstState, QNResponseInfo, QNConfiguration, QNUploadOption;
+@class QNUploadRequstState, QNResponseInfo, QNConfiguration, QNUploadOption, QNUpToken, QNUploadRegionRequestMetrics;
+
+typedef void(^QNRegionRequestCompleteHandler)(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response);
 
 @interface QNHttpRegionRequest : NSObject
 
@@ -22,21 +25,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
+                         token:(QNUpToken *)token
                         region:(id <QNUploadRegion>)region
+                   requestInfo:(QNUploadRequestInfo *)requestInfo
                   requestState:(QNUploadRequstState *)requestState;
 
 
 - (void)get:(NSString * _Nullable)action
     headers:(NSDictionary * _Nullable)headers
 shouldRetry:(BOOL(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))shouldRetry
-   complete:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))complete;
+   complete:(QNRegionRequestCompleteHandler)complete;
 
 - (void)post:(NSString * _Nullable)action
      headers:(NSDictionary * _Nullable)headers
         body:(NSData * _Nullable)body
  shouldRetry:(BOOL(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))shouldRetry
     progress:(void(^_Nullable)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-    complete:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))complete;
+    complete:(QNRegionRequestCompleteHandler)complete;
 
 @end
 

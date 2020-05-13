@@ -7,15 +7,27 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "QNUploadRequestInfo.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class QNUploadRequstState, QNResponseInfo, QNConfiguration, QNUploadOption;
+@class QNUploadRequstState, QNResponseInfo, QNConfiguration, QNUploadOption, QNUpToken, QNUploadSingleRequestMetrics;
+
+typedef void(^QNSingleRequestCompleteHandler)(QNResponseInfo * _Nullable responseInfo, NSArray <QNUploadSingleRequestMetrics *> * _Nullable metrics, NSDictionary * _Nullable response);
+
+@interface QNUploadRequstState : NSObject
+
+@property(atomic, assign)BOOL isUserCancel;
+
+@end
+
 
 @interface QNHttpSingleRequest : NSObject
 
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
+                         token:(QNUpToken *)token
+                   requestInfo:(QNUploadRequestInfo *)requestInfo
                   requestState:(QNUploadRequstState *)requestState;
 
 
@@ -28,7 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
       isSkipDns:(BOOL)isSkipDns
     shouldRetry:(BOOL(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))shouldRetry
        progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-       complete:(void(^)(QNResponseInfo * _Nullable httpResponseInfo, NSDictionary * _Nullable respBody))complete;
+       complete:(QNSingleRequestCompleteHandler)complete;
 
 @end
 

@@ -7,7 +7,6 @@
 //
 
 #import "QNResponseInfo.h"
-#import "QNHttpResponseInfo.h"
 #import "QNUserAgent.h"
 #import "QNVersion.h"
 
@@ -81,6 +80,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
     response.statusCode = errorType;
     response.msg = [response errorMsgWithErrorCode:errorType];
     response.msgDetail = errorDesc;
+    response.requestMetrics = [QNUploadSingleRequestMetrics emptyMetrics];
     if (error) {
        response.error = error;
     } else {
@@ -93,17 +93,6 @@ static NSString *kQNErrorDomain = @"qiniu.com";
     return response;
 }
 
-+ (instancetype)responseInfoWithHttpResponseInfo:(QNHttpResponseInfo *)httpResponseInfo
-                                        duration:(double)duration {
-    if (httpResponseInfo.hasHttpResponse) {
-//        return [[QNResponseInfo alloc] initWithStatusCode:(int)httpResponseInfo.statusCode reqId:httpResponseInfo.reqId xlog:httpResponseInfo.xlog xvia:httpResponseInfo.xvia host:httpResponseInfo.host error:httpResponseInfo.error];
-        return nil;
-    } else {
-        return nil;
-//        return [[QNResponseInfo alloc] initWithNetError:httpResponseInfo.error host:httpResponseInfo.host];
-    }
-}
-
 - (instancetype)initWithResponseInfoHost:(NSString *)host
                                 response:(NSHTTPURLResponse *)response
                                     body:(NSData *)body
@@ -114,8 +103,10 @@ static NSString *kQNErrorDomain = @"qiniu.com";
         
         _host = host;
         _timeStamp = [[NSDate date] timeIntervalSince1970];
+        _requestMetrics = [QNUploadSingleRequestMetrics emptyMetrics];
         
         if (response) {
+            
             int statusCode = (int)[response statusCode];
             NSDictionary *headers = [response allHeaderFields];
             _statusCode = statusCode;
@@ -123,59 +114,51 @@ static NSString *kQNErrorDomain = @"qiniu.com";
             _xlog = headers[@"X-Log"];
             _xvia = !headers[@"X-Via"] ? (!headers[@"X-Px"] ? headers[@"Fw-Via"] : headers[@"X-Px"]) : headers[@"X-Via"];
 
-            NSMutableDictionary *userInfo = [@{@"errorHost" : host ?: @""} mutableCopy];
-            if (statusCode != 200) {
-                if (body == nil) {
-                    _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:[userInfo copy]];
+            NSMutableDictionary *errorUserInfo = [@{@"errorHost" : host ?: @""} mutableCopy];
+            if (error) {
+                if (!body) {
+                    _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
+                    _responseDictionary = nil;
                 } else {
-                    NSError *tmp;
-                    NSDictionary *responseInfo = [NSJSONSerialization JSONObjectWithData:body options:NSJSONReadingMutableLeaves error:&tmp];
-                    if (tmp != nil) {
-                        // 出现错误时，如果信息是非UTF8编码会失败，返回nil
-                        NSString *str = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding] ?: @"";
-                        responseInfo = @{ @"error" : str};
-                    }
-                    if (responseInfo && [responseInfo isKindOfClass:[NSDictionary class]]) {
-                        [userInfo setValuesForKeysWithDictionary:responseInfo];
-                    }
-                    _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:[userInfo copy]];
+                    NSString *str = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding] ?: @"";
+                    [errorUserInfo setDictionary:@{@"error" : str}];
+                    _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
+                    _responseDictionary = nil;
                 }
-            } else if (body == nil || body.length == 0) {
-                [userInfo setValue:@"no response json" forKey:@"error"];
-                _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:userInfo];
-            } else if (error) {
-                [userInfo setValue:@"JSON serialization failed" forKey:@"error"];
-                _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:userInfo];
+            } else {
+                if (!body) {
+                    [errorUserInfo setDictionary:@{@"error":@"no response data"}];
+                    _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
+                    _responseDictionary = nil;
+                } else {
+                    NSError *tmp = nil;
+                    NSDictionary *responseInfo = nil;
+                    responseInfo = [NSJSONSerialization JSONObjectWithData:body options:NSJSONReadingMutableLeaves error:&tmp];
+                    if (tmp){
+                        NSString *str = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding] ?: @"";
+                        [errorUserInfo setDictionary:@{@"error" : str}];
+                        _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
+                        _responseDictionary = nil;
+                    } else if (responseInfo && statusCode > 199 && statusCode < 300) {
+                        _error = nil;
+                        _responseDictionary = responseInfo;
+                    } else {
+                        [errorUserInfo setDictionary:@{@"error" : responseInfo ?: @""}];
+                        _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
+                        _responseDictionary = responseInfo;
+                    }
+                }
             }
         } else if (error) {
             _error = error;
             _statusCode = (int)error.code;
+            _responseDictionary = nil;
         }
         
         _msg = [self msgWithStatusCode:_statusCode];
     }
     return self;
 }
-
-- (instancetype)initWithStatusCode:(int)statusCode
-                             reqId:(NSString *)reqId
-                              xlog:(NSString *)xlog
-                              xvia:(NSString *)xvia
-                              host:(NSString *)host
-                             error:(NSError *)error {
-    if (self = [super init]) {
-        _statusCode = statusCode;
-        _reqId = reqId;
-        _xlog = xlog;
-        _xvia = xvia;
-        _host = host;
-        _error = error;
-        _id = [QNUserAgent sharedInstance].id;
-        _timeStamp = [[NSDate date] timeIntervalSince1970];
-    }
-    return self;
-}
-
 
 - (BOOL)isCancelled {
     return _statusCode == kQNRequestCancelled || _statusCode == -999;
@@ -234,7 +217,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 - (NSString *)msgWithStatusCode:(int)statusCode{
     NSString *msg = nil;
     if (statusCode > 199 && statusCode < 300) {
-        msg = @"";
+        msg = @"ok";
     } else {
         msg = [self errorMsgWithErrorCode:statusCode];
     }
@@ -248,6 +231,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
             msg = @"unknown_error";
             break;
         case QNResponseInfoErrorTypeNetworkError:
+        case QNResponseInfoErrorTypeSystemNetworkError:
             msg = @"network_error";
             break;
         case QNResponseInfoErrorTypeTimeout:
@@ -280,6 +264,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
             msg = @"malicious_response";
             break;
         case QNResponseInfoErrorTypeUserCanceled:
+        case QNResponseInfoErrorTypeSystemCanceled:
             msg = @"user_canceled";
             break;
         case QNResponseInfoErrorTypeZeroSizeFile:

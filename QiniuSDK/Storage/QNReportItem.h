@@ -82,7 +82,7 @@ extern NSString *const QNReportBlockKeyFileSize;
 extern NSString *const QNReportBlockKeyPid;
 extern NSString *const QNReportBlockKeyTid;
 extern NSString *const QNReportBlockKeyUpApiVersion;
-extern NSString *const QNReportBlockKeyClient_time;
+extern NSString *const QNReportBlockKeyClientTime;
 
 
 //MARK:-- 上传质量统计

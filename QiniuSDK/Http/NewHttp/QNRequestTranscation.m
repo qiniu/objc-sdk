@@ -13,7 +13,7 @@
 #import "QNUpToken.h"
 #import "QNConfiguration.h"
 #import "QNUploadOption.h"
-#import "QNUploadRequstState.h"
+#import "QNZoneInfo.h"
 
 #import "QNResponseInfo.h"
 
@@ -24,6 +24,7 @@
 
 @property(nonatomic, strong)QNConfiguration *config;
 @property(nonatomic, strong)QNUploadOption *uploadOption;
+@property(nonatomic, strong)QNUploadRequestInfo *requestInfo;
 @property(nonatomic, strong)QNUploadRequstState *requestState;
 @property(nonatomic,   copy)NSString *key;
 @property(nonatomic, strong)QNUpToken *token;
@@ -44,7 +45,23 @@
 
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
-                        region:(id <QNUploadRegion>)region
+                         hosts:(NSArray <NSString *> *)hosts
+                           key:(NSString * _Nullable)key
+                         token:(QNUpToken *)token{
+    
+    QNUploadFixedHostRegion *region = [QNUploadFixedHostRegion fixedHostRegionWithHosts:hosts];
+    return [self initWithConfig:config
+                   uploadOption:uploadOption
+                   targetRegion:region
+                   currentegion:region
+                            key:key
+                          token:token];
+}
+
+- (instancetype)initWithConfig:(QNConfiguration *)config
+                  uploadOption:(QNUploadOption *)uploadOption
+                  targetRegion:(id <QNUploadRegion>)targetRegion
+                  currentegion:(id <QNUploadRegion>)currentegion
                            key:(NSString *)key
                          token:(QNUpToken *)token{
     if (self = [super init]) {
@@ -53,38 +70,26 @@
         _requestState = [[QNUploadRequstState alloc] init];
         _key = key;
         _token = token;
+        _requestInfo = [[QNUploadRequestInfo alloc] init];
+        _requestInfo.targetRegionId = targetRegion.zoneInfo.zoneRegionId;
+        _requestInfo.currentRegionId = currentegion.zoneInfo.zoneRegionId;
+        _requestInfo.bucket = token.bucket;
+        _requestInfo.key = key;
         _httpRequest = [[QNHttpRegionRequest alloc] initWithConfig:config
                                                       uploadOption:uploadOption
-                                                            region:region
-                                                      requestState:_requestState];
-    }
-    return self;
-}
-
-- (instancetype)initWithConfig:(QNConfiguration *)config
-                  uploadOption:(QNUploadOption *)uploadOption
-                         hosts:(NSArray <NSString *> *)hosts
-                           key:(NSString * _Nullable)key
-                         token:(QNUpToken *)token{
-    if (self = [super init]) {
-        _config = config;
-        _uploadOption = uploadOption;
-        _requestState = [[QNUploadRequstState alloc] init];
-        _key = key;
-        _token = token;
-        
-        QNUploadFixedHostRegion *region = [QNUploadFixedHostRegion fixedHostRegionWithHosts:hosts];
-        _httpRequest = [[QNHttpRegionRequest alloc] initWithConfig:config
-                                                      uploadOption:uploadOption
-                                                            region:region
+                                                             token:token
+                                                            region:currentegion
+                                                       requestInfo:_requestInfo
                                                       requestState:_requestState];
     }
     return self;
 }
 
 //MARK: -- uc query
-- (void)quertUploadHosts:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete{
-
+- (void)quertUploadHosts:(QNRequestTranscationCompleteHandler)complete{
+    
+    self.requestInfo.requestType = QNUploadRequestTypeUCQuery;
+    
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
         if (responseInfo.isOK == false) {
             return YES;
@@ -96,9 +101,9 @@
     [self.httpRequest get:action
                   headers:nil
               shouldRetry:shouldRetry
-                 complete:^(QNResponseInfo *responseInfo, NSDictionary *response) {
-       
-        complete(responseInfo, response);
+                 complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+
+        complete(responseInfo, metrics, response);
     }];
 }
 
@@ -106,8 +111,10 @@
 - (void)uploadFormData:(NSData *)data
               fileName:(NSString *)fileName
               progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-              complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete{
+              complete:(QNRequestTranscationCompleteHandler)complete{
 
+    self.requestInfo.requestType = QNUploadRequestTypeForm;
+    
     NSMutableDictionary *param = [NSMutableDictionary dictionary];
     if (self.uploadOption.params) {
         [param addEntriesFromDictionary:self.uploadOption.params];
@@ -157,16 +164,20 @@
                       body:body
                shouldRetry:shouldRetry
                   progress:progress
-                  complete:^(QNResponseInfo * _Nonnull responseInfo, NSDictionary * _Nonnull response) {
-        complete(responseInfo, response);
+                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        complete(responseInfo, metrics, response);
     }];
 }
 
 //MARK: -- 分块上传
-- (void)makeBlock:(long long)blockSize
+- (void)makeBlock:(long long)blockOffset
+        blockSize:(long long)blockSize
    firstChunkData:(NSData *)firstChunkData
          progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-         complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete{
+         complete:(QNRequestTranscationCompleteHandler)complete{
+    
+    self.requestInfo.requestType = QNUploadRequestTypeForm;
+    self.requestInfo.fileOffset = @(blockOffset);
     
     NSString *token = [NSString stringWithFormat:@"UpToken %@", self.token.token];
     NSDictionary *header = @{@"Authorization" : token,
@@ -192,17 +203,21 @@
                       body:firstChunkData
                shouldRetry:shouldRetry
                   progress:progress
-                  complete:^(QNResponseInfo * _Nonnull responseInfo, NSDictionary * _Nonnull response) {
+                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
 
-        complete(responseInfo, response);
+        complete(responseInfo, metrics, response);
     }];
 }
 
 - (void)uploadChunk:(NSString *)blockContext
+        blockOffset:(long long)blockOffset
           chunkData:(NSData *)chunkData
         chunkOffest:(long long)chunkOffest
            progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-           complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete{
+           complete:(QNRequestTranscationCompleteHandler)complete{
+    
+    self.requestInfo.requestType = QNUploadRequestTypeForm;
+    self.requestInfo.fileOffset = @(blockOffset + chunkOffest);
     
     NSString *token = [NSString stringWithFormat:@"UpToken %@", self.token.token];
     NSDictionary *header = @{@"Authorization" : token,
@@ -228,16 +243,16 @@
                       body:chunkData
                shouldRetry:shouldRetry
                   progress:progress
-                  complete:^(QNResponseInfo * _Nonnull responseInfo, NSDictionary * _Nonnull response) {
+                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
 
-        complete(responseInfo, response);
+        complete(responseInfo, metrics, response);
     }];
 }
 
 - (void)makeFile:(long long)fileSize
         fileName:(NSString *)fileName
    blockContexts:(NSArray <NSString *> *)blockContexts
-        complete:(void(^)(QNResponseInfo *responseInfo, NSDictionary *response))complete{
+        complete:(QNRequestTranscationCompleteHandler)complete{
     
     NSString *token = [NSString stringWithFormat:@"UpToken %@", self.token.token];
     NSDictionary *header = @{@"Authorization" : token,
@@ -277,9 +292,9 @@
                       body:body
                shouldRetry:shouldRetry
                   progress:nil
-                  complete:^(QNResponseInfo * responseInfo, NSDictionary * response) {
-        
-        complete(responseInfo, response);
+                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+
+        complete(responseInfo, metrics, response);
     }];
 }
 

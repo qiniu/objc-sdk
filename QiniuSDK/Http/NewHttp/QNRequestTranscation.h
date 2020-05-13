@@ -11,7 +11,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class QNUpToken, QNConfiguration, QNUploadOption, QNResponseInfo;
+@class QNUpToken, QNConfiguration, QNUploadOption, QNResponseInfo, QNUploadRegionRequestMetrics;
+
+typedef void(^QNRequestTranscationCompleteHandler)(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response);
+
 // 单个对象只能执行一个事务，多个事务需要创建多个事务对象完成
 @interface QNRequestTranscation : NSObject
 
@@ -22,7 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 //MARK:-- upload事务构造方法 选择
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
-                        region:(id <QNUploadRegion>)region
+                  targetRegion:(id <QNUploadRegion>)targetRegion
+                  currentegion:(id <QNUploadRegion>)currentegion
                            key:(NSString * _Nullable)key
                          token:(QNUpToken *)token;
 - (instancetype)initWithConfig:(QNConfiguration *)config
@@ -31,29 +35,30 @@ NS_ASSUME_NONNULL_BEGIN
                            key:(NSString * _Nullable)key
                          token:(QNUpToken *)token;
 
-
-- (void)quertUploadHosts:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))complete;
+- (void)quertUploadHosts:(QNRequestTranscationCompleteHandler)complete;
 
 - (void)uploadFormData:(NSData *)data
               fileName:(NSString *)fileName
               progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-              complete:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))complete;
+              complete:(QNRequestTranscationCompleteHandler)complete;
 
-- (void)makeBlock:(long long)blockSize
+- (void)makeBlock:(long long)blockOffset
+        blockSize:(long long)blockSize
    firstChunkData:(NSData *)firstChunkData
          progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-         complete:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))complete;
+         complete:(QNRequestTranscationCompleteHandler)complete;
 
 - (void)uploadChunk:(NSString *)blockContext
+        blockOffset:(long long)blockOffset
           chunkData:(NSData *)chunkData
         chunkOffest:(long long)chunkOffest
            progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-           complete:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))complete;
+           complete:(QNRequestTranscationCompleteHandler)complete;
 
 - (void)makeFile:(long long)fileSize
         fileName:(NSString *)fileName
    blockContexts:(NSArray <NSString *> *)blockContexts
-        complete:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))complete;
+        complete:(QNRequestTranscationCompleteHandler)complete;
 
 @end
 

@@ -9,17 +9,17 @@
 #import "QNUploadSystemClient.h"
 #import "QNUserAgent.h"
 #import "QNSystemTool.h"
-#import "QNUploadInfoCollector.h"
 
 #import "NSURLRequest+QNRequest.h"
 #import "QNURLProtocol.h"
 
 @interface QNUploadSystemClient()<NSURLSessionDelegate>
 
+@property(nonatomic, strong)QNUploadSingleRequestMetrics *requestMetrics;
 @property(nonatomic, strong)NSURLSessionDataTask *uploadTask;
 @property(nonatomic, strong)NSMutableData *responseData;
 @property(nonatomic,  copy)void(^progress)(long long totalBytesWritten, long long totalBytesExpectedToWrite);
-@property(nonatomic,  copy)void(^complete)(NSURLResponse * _Nullable, NSData * _Nullable, NSError * _Nullable);
+@property(nonatomic,  copy)QNRequestClientCompleteHandler complete;
 
 @end
 @implementation QNUploadSystemClient
@@ -27,7 +27,11 @@
 - (void)request:(NSURLRequest *)request
 connectionProxy:(NSDictionary *)connectionProxy
        progress:(void (^)(long long, long long))progress
-       complete:(void (^)(NSURLResponse * _Nullable, NSData * _Nullable, NSError * _Nullable))complete{
+       complete:(QNRequestClientCompleteHandler)complete {
+    
+    self.requestMetrics = [QNUploadSingleRequestMetrics emptyMetrics];
+    self.requestMetrics.startDate = [NSDate date];
+    self.requestMetrics.countOfRequestBodyBytesSent = request.qn_getHttpBody.length;
     
     self.responseData = [NSMutableData data];
     self.progress = progress;
@@ -60,11 +64,36 @@ connectionProxy:(NSDictionary *)connectionProxy
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(nullable NSError *)error {
-    self.complete(task.response, self.responseData, error);
+    self.requestMetrics.endDate = [NSDate date];
+    self.requestMetrics.request = task.currentRequest;
+    self.requestMetrics.response = task.response;
+    self.requestMetrics.countOfResponseBodyBytesReceived = task.response.expectedContentLength;
+    
+    self.complete(task.response, self.requestMetrics,self.responseData, error);
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didFinishCollectingMetrics:(NSURLSessionTaskMetrics *)metrics  API_AVAILABLE(ios(10.0)) {
+    NSURLSessionTaskTransactionMetrics *transactionMetrics = metrics.transactionMetrics.lastObject;
     
+    self.requestMetrics.domainLookupStartDate = transactionMetrics.domainLookupStartDate;
+    self.requestMetrics.domainLookupEndDate = transactionMetrics.domainLookupEndDate;
+    self.requestMetrics.connectStartDate = transactionMetrics.connectStartDate;
+    self.requestMetrics.secureConnectionStartDate = transactionMetrics.secureConnectionStartDate;
+    self.requestMetrics.secureConnectionEndDate = transactionMetrics.secureConnectionEndDate;
+    self.requestMetrics.connectEndDate = transactionMetrics.connectEndDate;
+    
+    self.requestMetrics.requestStartDate = transactionMetrics.requestStartDate;
+    self.requestMetrics.requestEndDate = transactionMetrics.requestEndDate;
+    self.requestMetrics.responseStartDate = transactionMetrics.responseStartDate;
+    self.requestMetrics.responseEndDate = transactionMetrics.responseEndDate;
+    
+//    self.requestMetrics.countOfRequestHeaderBytesSent = transactionMetrics.countOfRequestHeaderBytesSent;
+//    self.requestMetrics.countOfResponseHeaderBytesReceived = transactionMetrics.countOfResponseHeaderBytesReceived;
+//
+//    self.requestMetrics.localAddress = transactionMetrics.localAddress;
+//    self.requestMetrics.localPort = transactionMetrics.localPort;
+//    self.requestMetrics.remoteAddress = transactionMetrics.remoteAddress;
+//    self.requestMetrics.remotePort = transactionMetrics.remotePort;
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
