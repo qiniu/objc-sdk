@@ -149,14 +149,11 @@
     }
 
     id <QNInetAddressDelegate> address = [kQNDnsPrefetcher getInetAddressByHost:request.URL.host].firstObject;
-    NSLog(@"== domain-IP:%@", address.ipValue);
     
     if ([request qnHttps_shouldInit]
         && address.ipValue && address.ipValue.length > 0) {
-        NSLog(@"== url-Init:%@", request.URL.absoluteString);
         return YES;
     } else {
-        NSLog(@"== url-NoInit:%@", request.URL.absoluteString);
         return NO;
     }
 }

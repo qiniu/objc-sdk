@@ -625,8 +625,7 @@
     if ([kQNDnsPrefetcher isDnsOpen] == NO) {
         return;
     }
-    
-    NSLog(@"== addDnsLocalLoadTransaction");
+
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         
@@ -655,7 +654,6 @@
         QNTransactionManager *transactionManager = [QNTransactionManager shared];
         
         if (![transactionManager existTranscationsForName:token]) {
-            NSLog(@"== addDnsCheckAndPrefetchTransaction success");
             QNTransaction *transcation = [QNTransaction transaction:token after:0 action:^{
                
                 [kQNDnsPrefetcher checkAndPrefetchDnsIfNeed:currentZone token:token];
@@ -663,8 +661,6 @@
             [transactionManager addTransaction:transcation];
             
             ret = YES;
-        } else {
-            NSLog(@"== addDnsCheckAndPrefetchTransaction fail");
         }
     }
     return ret;
@@ -676,7 +672,6 @@
         return;
     }
     
-    NSLog(@"== setDnsCheckWhetherCachedValidTransactionAction");
     @synchronized (kQNDnsPrefetcher) {
         
         QNTransactionManager *transactionManager = [QNTransactionManager shared];
