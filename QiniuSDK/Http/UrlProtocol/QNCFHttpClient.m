@@ -70,8 +70,6 @@
 //MARK: -- rquest -> stream
 - (NSInputStream *)createInputStream:(NSURLRequest *)urlRequest{
     
-    NSLog(@"== create input stream");
-    
     CFStringRef urlString = (__bridge CFStringRef) [urlRequest.URL absoluteString];
     CFURLRef url = CFURLCreateWithString(kCFAllocatorDefault,
                                          urlString,
@@ -268,7 +266,6 @@
             case NSStreamEventHasBytesAvailable:{
                 
                 if (![self isInputStreamHttpResponseHeaderComplete]) {
-                    NSLog(@"===== Https: header not complete =====");
                     break;
                 }
                 
@@ -278,29 +275,22 @@
                 
                 if (self.isReadResponseHeader == NO) {
                     self.isReadResponseHeader = YES;
-                    NSLog(@"===== Https: Header =====");
                     [self inputStreamGetAndNotifyHttpResponse];
                 }
                 
-                NSLog(@"===== Https: Data =====");
                 [self inputStreamGetAndNotifyHttpData];
             }
                 break;
-            case NSStreamEventHasSpaceAvailable:{
-                NSLog(@"===== Https: has space available =====");
-            }
+            case NSStreamEventHasSpaceAvailable:
                 break;
             case NSStreamEventErrorOccurred:{
                 [self endProgress: YES];
                 [self closeInputStream];
                 [self delegate_onError:[self.inputStream streamError]];
-                NSLog(@"===== Https: Error =====");
             }
                 break;
             case NSStreamEventEndEncountered:{
-                NSLog(@"===== Https: Complete =====");
                 if ([self shouldInputStreamRedirect]) {
-                    NSLog(@"===== Https: Redirect =====");
                     [self inputStreamRedirect];
                 } else {
                     [self endProgress: NO];
