@@ -18,9 +18,7 @@ before_script:
   - export QINIU_TEST_ENV="travis"
 
 script:
-  - ifconfig
-  - xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -configuration Release -destination 'platform=iOS Simulator,OS=13.4.1,name=iPhone 11' -only-testing:QiniuSDK_iOSTests/QNFormUploadTest/testUp | xcpretty
-    #- xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -configuration Release -destination 'platform=macOS,arch=x86_64'
+  - bash hack/network_loss.sh 0.5
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
