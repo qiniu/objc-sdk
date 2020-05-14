@@ -91,7 +91,7 @@
     XCTAssert(addressList.count > 0, @"success");
 }
 
-- (void)testCustomDns {
+- (void)NotestCustomDns {
 
     InetAddress *address = [[InetAddress alloc] init];
     address.hostValue = kCustomHost;
@@ -112,7 +112,7 @@
     XCTAssert([addressList.firstObject.ipValue isEqualToString:CustomIPValue], @"success");
 }
 
-- (void)testDefaultTTL {
+- (void)NotestDefaultTTL {
 
     InetAddress *address = [[InetAddress alloc] init];
     address.hostValue = kCustomHost;
