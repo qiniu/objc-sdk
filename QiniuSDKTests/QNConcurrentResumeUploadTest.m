@@ -24,6 +24,7 @@
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.useConcurrentResumeUpload = YES;
         builder.concurrentTaskCount = 3;
+        builder.timeoutInterval = 5;
 //        builder.useHttps = NO;
     }];
     _upManager = [[QNUploadManager alloc] initWithConfiguration:config];

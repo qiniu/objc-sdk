@@ -30,16 +30,25 @@
     [self uploadRestChunk:^{
         
         if ([self.uploadFileInfo isAllUploaded] == NO || self.uploadChunkErrorResponseInfo) {
+            
             if (self.uploadChunkErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
-                [self switchRegionAndUpload];
+                BOOL isSwitched = [self switchRegionAndUpload];
+                if (isSwitched == NO) {
+                    [self complete:self.uploadChunkErrorResponseInfo resp:self.uploadChunkErrorResponse];
+                }
             } else {
                 [self complete:self.uploadChunkErrorResponseInfo resp:self.uploadChunkErrorResponse];
             }
+            
         } else {
+            
             [self makeFile:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
                 if (responseInfo.isOK == NO) {
                     if (responseInfo.couldRetry && [self.config allowBackupHost]) {
-                        [self switchRegionAndUpload];
+                        BOOL isSwitched = [self switchRegionAndUpload];
+                        if (isSwitched == NO) {
+                            [self complete:responseInfo resp:response];
+                        }
                     } else {
                         [self complete:responseInfo resp:response];
                     }

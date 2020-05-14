@@ -68,7 +68,7 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
 
 - (void)startToUpload;
 
-- (void)switchRegionAndUpload;
+- (BOOL)switchRegionAndUpload;
 
 - (void)complete:(QNResponseInfo *)info
             resp:(NSDictionary *)resp;

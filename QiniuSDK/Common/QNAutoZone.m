@@ -79,7 +79,6 @@
 
 @interface QNAutoZone()
 
-@property(nonatomic,  copy)NSString *server;
 @property(nonatomic, strong)NSMutableDictionary *cache;
 @property(nonatomic, strong)NSLock *lock;
 @property(nonatomic, strong)NSMutableArray <QNRequestTranscation *> *transcations;
@@ -89,7 +88,6 @@
 
 - (instancetype)init{
     if (self = [super init]) {
-        _server = @"https://uc.qbox.me";
         _cache = [NSMutableDictionary new];
         _lock = [NSLock new];
         _transcations = [NSMutableArray array];
@@ -108,7 +106,7 @@
 - (void)preQuery:(QNUpToken *)token
               on:(QNPrequeryReturn)ret {
     
-    if (token == nil) {
+    if (token == nil || token.index == nil) {
         ret(-1, nil);
         return;
     }

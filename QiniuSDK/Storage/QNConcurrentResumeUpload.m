@@ -50,16 +50,25 @@
     }
     dispatch_group_notify(_uploadGroup, _uploadQueue, ^{
         if ([self.uploadFileInfo isAllUploaded] == NO || self.uploadBlockErrorResponseInfo) {
+            
             if (self.uploadBlockErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
-                [self switchRegionAndUpload];
+                BOOL isSwitched = [self switchRegionAndUpload];
+                if (isSwitched == NO) {
+                    [self complete:self.uploadBlockErrorResponseInfo resp:self.uploadBlockErrorResponse];
+                }
             } else {
                 [self complete:self.uploadBlockErrorResponseInfo resp:self.uploadBlockErrorResponse];
             }
+            
         } else {
+            
             [self makeFileRequest:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
                 if (responseInfo.isOK == NO) {
                     if (responseInfo.couldRetry && [self.config allowBackupHost]) {
-                        [self switchRegionAndUpload];
+                        BOOL isSwitched = [self switchRegionAndUpload];
+                        if (isSwitched == NO) {
+                            [self complete:responseInfo resp:response];
+                        }
                     } else {
                         [self complete:responseInfo resp:response];
                     }

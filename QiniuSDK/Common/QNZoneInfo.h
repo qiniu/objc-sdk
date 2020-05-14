@@ -26,6 +26,7 @@ typedef enum : NSUInteger {
 @property(nonatomic, strong, readonly)NSArray <NSString *> *backup;
 @property(nonatomic, strong, readonly)NSArray <NSString *> *allHosts;
 
+//内部使用
 + (QNUploadServerGroup *)buildInfoFromDictionary:(NSDictionary *)dictionary;
 
 @end
@@ -42,8 +43,10 @@ typedef enum : NSUInteger {
 @property(nonatomic, strong, readonly)NSArray <NSString *> *allHosts;
 @property(nonatomic, strong, readonly)NSDictionary *detailInfo;
 
-+ (QNZoneInfo *)zoneInfoWithMainHosts:(NSArray *)mainHosts
-                              ioHosts:(NSArray * _Nullable)ioHosts;
++ (QNZoneInfo *)zoneInfoWithMainHosts:(NSArray <NSString *> *)mainHosts
+                              ioHosts:(NSArray <NSString *> * _Nullable)ioHosts;
+
+//内部使用
 + (QNZoneInfo *)zoneInfoFromDictionary:(NSDictionary *)detailInfo;
 
 - (BOOL)isValid;
@@ -54,6 +57,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, strong) NSArray<QNZoneInfo *> *zonesInfo;
 
+//内部使用
 + (instancetype)infoWithDictionary:(NSDictionary *)dictionary;
 
 - (instancetype)initWithZonesInfo:(NSArray<QNZoneInfo *> *)zonesInfo;

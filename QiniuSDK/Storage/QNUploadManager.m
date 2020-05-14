@@ -112,15 +112,13 @@
         desc = @"no token";
     }
     if (desc != nil) {
-        QNAsyncRunInMain(^{
-            QNResponseInfo *info = [QNResponseInfo responseInfoWithInvalidArgument:desc];
-            [QNUploadManager complete:token
-                                  key:key
-                         responseInfo:info
-                             response:nil
-                          taskMetrics:nil
-                             complete:completionHandler];
-        });
+        QNResponseInfo *info = [QNResponseInfo responseInfoWithInvalidArgument:desc];
+        [QNUploadManager complete:token
+                              key:key
+                     responseInfo:info
+                         response:nil
+                      taskMetrics:nil
+                         complete:completionHandler];
         return YES;
     }
     return NO;
@@ -150,51 +148,43 @@
 
     QNUpToken *t = [QNUpToken parse:token];
     if (t == nil) {
-        QNAsyncRunInMain(^{
-            QNResponseInfo *info = [QNResponseInfo responseInfoWithInvalidToken:@"invalid token"];
+        QNResponseInfo *info = [QNResponseInfo responseInfoWithInvalidToken:@"invalid token"];
+        [QNUploadManager complete:token
+                              key:key
+                     responseInfo:info
+                         response:nil
+                      taskMetrics:nil
+                         complete:completionHandler];
+        return;
+    }
+    
+    [_config.zone preQuery:t on:^(int code, QNResponseInfo *responseInfo) {
+        if (code != 0) {
+            [QNUploadManager complete:token
+                                  key:key
+                         responseInfo:responseInfo
+                             response:nil
+                          taskMetrics:nil
+                             complete:completionHandler];
+            return;
+        }
+        if ([data length] == 0) {
+            QNResponseInfo *info = [QNResponseInfo responseInfoOfZeroData:@"put data was nil"];
             [QNUploadManager complete:token
                                   key:key
                          responseInfo:info
                              response:nil
                           taskMetrics:nil
                              complete:completionHandler];
-        });
-        return;
-    }
-    
-    [_config.zone preQuery:t on:^(int code, QNResponseInfo *responseInfo) {
-        if (code != 0) {
-            QNAsyncRunInMain(^{
-                [QNUploadManager complete:token
-                                      key:key
-                             responseInfo:responseInfo
-                                 response:nil
-                              taskMetrics:nil
-                                 complete:completionHandler];
-            });
-            return;
-        }
-        if ([data length] == 0) {
-            QNAsyncRunInMain(^{
-                QNResponseInfo *info = [QNResponseInfo responseInfoOfZeroData:@"put data was nil"];
-                [QNUploadManager complete:token
-                                      key:key
-                             responseInfo:info
-                                 response:nil
-                              taskMetrics:nil
-                                 complete:completionHandler];
-            });
             return;
         }
         QNUpTaskCompletionHandler complete = ^(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp) {
-            QNAsyncRunInMain(^{
-                [QNUploadManager complete:token
-                                      key:key
-                             responseInfo:info
-                                 response:resp
-                              taskMetrics:metrics
-                                 complete:completionHandler];
-            });
+            [QNUploadManager complete:token
+                                  key:key
+                         responseInfo:info
+                             response:resp
+                          taskMetrics:metrics
+                             complete:completionHandler];
         };
         QNFormUpload *up = [[QNFormUpload alloc] initWithData:data
                                                           key:key
@@ -222,42 +212,36 @@
     @autoreleasepool {
         QNUpToken *t = [QNUpToken parse:token];
         if (t == nil) {
-            QNAsyncRunInMain(^{
-                QNResponseInfo *info = [QNResponseInfo responseInfoWithInvalidToken:@"put file invalid token"];
-                [QNUploadManager complete:token
-                                      key:key
-                             responseInfo:info
-                                 response:nil
-                              taskMetrics:nil
-                                 complete:completionHandler];
-            });
+            QNResponseInfo *info = [QNResponseInfo responseInfoWithInvalidToken:@"put file invalid token"];
+            [QNUploadManager complete:token
+                                  key:key
+                         responseInfo:info
+                             response:nil
+                          taskMetrics:nil
+                             complete:completionHandler];
             return;
         }
 
         [_config.zone preQuery:t on:^(int code, QNResponseInfo *responseInfo) {
             
             if (code != 0) {
-                QNAsyncRunInMain(^{
-                    [QNUploadManager complete:token
-                                          key:key
-                                 responseInfo:responseInfo
-                                     response:nil
-                                  taskMetrics:nil
-                                     complete:completionHandler];
-                });
+                [QNUploadManager complete:token
+                                      key:key
+                             responseInfo:responseInfo
+                                 response:nil
+                              taskMetrics:nil
+                                 complete:completionHandler];
                 return;
             }
             
             QNUpTaskCompletionHandler complete = ^(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp) {
                 [file close];
-                QNAsyncRunInMain(^{
-                    [QNUploadManager complete:token
-                                          key:key
-                                 responseInfo:info
-                                     response:resp
-                                  taskMetrics:metrics
-                                     complete:completionHandler];
-                });
+                [QNUploadManager complete:token
+                                      key:key
+                             responseInfo:info
+                                 response:resp
+                              taskMetrics:metrics
+                                 complete:completionHandler];
             };
 
             if ([file size] <= self.config.putThreshold) {
@@ -265,15 +249,13 @@
                 NSData *data = [file readAllWithError:&error];
                 
                 if (error) {
-                    QNAsyncRunInMain(^{
-                        QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
-                        [QNUploadManager complete:token
-                                              key:key
-                                     responseInfo:info
-                                         response:nil
-                                      taskMetrics:nil
-                                         complete:completionHandler];
-                    });
+                    QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+                    [QNUploadManager complete:token
+                                          key:key
+                                 responseInfo:info
+                                     response:nil
+                                  taskMetrics:nil
+                                     complete:completionHandler];
                     return;
                 }
                 
@@ -340,15 +322,13 @@
         NSError *error = nil;
         __block QNFile *file = [[QNFile alloc] init:filePath error:&error];
         if (error) {
-            QNAsyncRunInMain(^{
-                QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
-                [QNUploadManager complete:token
-                                      key:key
-                             responseInfo:info
-                                 response:nil
-                              taskMetrics:nil
-                                 complete:completionHandler];
-            });
+            QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+            [QNUploadManager complete:token
+                                  key:key
+                         responseInfo:info
+                             response:nil
+                          taskMetrics:nil
+                             complete:completionHandler];
             return;
         }
         [self putFileInternal:file key:key token:token identifier:identifier complete:completionHandler option:option];
@@ -371,15 +351,13 @@
         NSError *error = nil;
         __block QNALAssetFile *file = [[QNALAssetFile alloc] init:asset error:&error];
         if (error) {
-            QNAsyncRunInMain(^{
-                QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
-                [QNUploadManager complete:token
-                                      key:key
-                             responseInfo:info
-                                 response:nil
-                              taskMetrics:nil
-                                 complete:completionHandler];
-            });
+            QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+            [QNUploadManager complete:token
+                                  key:key
+                         responseInfo:info
+                             response:nil
+                          taskMetrics:nil
+                             complete:completionHandler];
             return;
         }
         [self putFileInternal:file key:key token:token identifier:nil complete:completionHandler option:option];
@@ -403,15 +381,13 @@
         NSError *error = nil;
         __block QNPHAssetFile *file = [[QNPHAssetFile alloc] init:asset error:&error];
         if (error) {
-            QNAsyncRunInMain(^{
-                QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
-                [QNUploadManager complete:token
-                                      key:key
-                             responseInfo:info
-                                 response:nil
-                              taskMetrics:nil
-                                 complete:completionHandler];
-            });
+            QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+            [QNUploadManager complete:token
+                                  key:key
+                         responseInfo:info
+                             response:nil
+                          taskMetrics:nil
+                             complete:completionHandler];
             return;
         }
         [self putFileInternal:file key:key token:token identifier:nil complete:completionHandler option:option];
@@ -433,15 +409,13 @@
         NSError *error = nil;
         __block QNPHAssetResource *file = [[QNPHAssetResource alloc] init:assetResource error:&error];
         if (error) {
-            QNAsyncRunInMain(^{
-                QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
-                [QNUploadManager complete:token
-                                      key:key
-                             responseInfo:info
-                                 response:nil
-                              taskMetrics:nil
-                                 complete:completionHandler];
-            });
+            QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+            [QNUploadManager complete:token
+                                  key:key
+                         responseInfo:info
+                             response:nil
+                          taskMetrics:nil
+                             complete:completionHandler];
             return;
         }
         [self putFileInternal:file key:key token:token identifier:nil complete:completionHandler option:option];
@@ -458,9 +432,11 @@
 
     [QNUploadManager reportQuality:responseInfo taskMetrics:taskMetrics token:token];
     
-    if (completionHandler) {
-        completionHandler(responseInfo, key, response);
-    }
+    QNAsyncRunInMain(^{
+        if (completionHandler) {
+            completionHandler(responseInfo, key, response);
+        }
+    });
 }
 
 

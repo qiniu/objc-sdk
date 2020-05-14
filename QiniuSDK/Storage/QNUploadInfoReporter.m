@@ -95,7 +95,9 @@
 
 - (BOOL)checkReportAvailable {
     
-    if (!_config.isReportEnable) return NO;
+    if (!_config.isReportEnable) {
+        return NO;
+    }
     if (!(_config.maxRecordFileSize > _config.uploadThreshold)) {
         QNAsyncRunInMain(^{
             NSLog(@"maxRecordFileSize must be larger than uploadThreshold");
@@ -107,8 +109,9 @@
 
 - (void)report:(NSString *)jsonString token:(NSString *)token {
     
-    if (![self checkReportAvailable] || !jsonString) return;
-    
+    if (![self checkReportAvailable] || !jsonString) {
+        return;
+    }
     // 串行队列处理文件读写
     dispatch_async(_recordQueue, ^{
         [self innerReport:jsonString token:token];

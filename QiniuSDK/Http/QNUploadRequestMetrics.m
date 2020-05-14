@@ -68,13 +68,15 @@
 }
 
 - (NSNumber *)totalBytes{
+    NSInteger headerLength = [NSString stringWithFormat:@"%@", self.request.allHTTPHeaderFields].length;
     NSInteger bodyLength = [self.request.qn_getHttpBody length];
-    return @(bodyLength);
+    return @(headerLength + bodyLength);
 }
 
 - (NSNumber *)bytesSend{
     int64_t totalBytes = [self totalBytes].integerValue;
-    int64_t bytes = MIN(totalBytes, self.countOfRequestBodyBytesSent);
+    int64_t senderBytes = self.countOfRequestBodyBytesSent + self.countOfRequestHeaderBytesSent;
+    int64_t bytes = MIN(totalBytes, senderBytes);
     return @(bytes);
 }
 
@@ -83,7 +85,7 @@
         double time = [endDate timeIntervalSinceDate:startDate] * 1000;
         return @(time);
     } else {
-        return @(0);
+        return nil;
     }
 }
 @end
@@ -116,9 +118,9 @@
         for (QNUploadSingleRequestMetrics *metrics in self.metricsList) {
             time += metrics.totalElaspsedTime.doubleValue;
         }
-        return @(time);
+        return time > 0 ? @(time) : nil;
     } else {
-        return @(0);
+        return nil;
     }
 }
 
@@ -180,9 +182,9 @@
         for (QNUploadRegionRequestMetrics *metrics in self.metricsList) {
             time += metrics.totalElaspsedTime.doubleValue;
         }
-        return @(time);
+        return time > 0 ? @(time) : nil;
     } else {
-        return @(0);
+        return nil;
     }
 }
 

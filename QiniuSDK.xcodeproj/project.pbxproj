@@ -555,10 +555,10 @@
 			children = (
 				3149A1DA2462A57300A2A15B /* QNUploadServer.h */,
 				3149A1DB2462A57300A2A15B /* QNUploadServer.m */,
-				31AE4DD924668A2900503FBB /* QNUploadFixedHostRegion.h */,
-				31AE4DDA24668A2900503FBB /* QNUploadFixedHostRegion.m */,
 				3149A1D82462A57300A2A15B /* QNUploadDomainRegion.h */,
 				3149A1D92462A57300A2A15B /* QNUploadDomainRegion.m */,
+				31AE4DD924668A2900503FBB /* QNUploadFixedHostRegion.h */,
+				31AE4DDA24668A2900503FBB /* QNUploadFixedHostRegion.m */,
 			);
 			path = ServerRegion;
 			sourceTree = "<group>";

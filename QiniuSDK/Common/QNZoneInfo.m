@@ -51,8 +51,12 @@
 + (QNZoneInfo *)zoneInfoWithMainHosts:(NSArray *)mainHosts
                               ioHosts:(NSArray *)ioHosts{
     
-    if (!mainHosts || mainHosts.count == 0) {
+    if (!mainHosts || ![mainHosts isKindOfClass:[NSArray class]] || mainHosts.count == 0) {
         return nil;
+    }
+    
+    if (mainHosts && ![mainHosts isKindOfClass:[NSArray class]]) {
+        mainHosts = nil;
     }
     
     QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:@{@"ttl" : @(86400*1000),
@@ -120,7 +124,7 @@
         _zoneRegion = zoneRegion;
         
         NSArray *zoneRegionIds = @[@"z0", @"z1", @"z2", @"as0", @"na0", @"unknown"];
-        if (zoneRegion < zoneRegionIds.count) {
+        if (zoneRegion >= 0 && zoneRegion < zoneRegionIds.count) {
             _zoneRegionId = zoneRegionIds[zoneRegion];
         } else {
             _zoneRegionId = @"unknown";
@@ -154,12 +158,14 @@
 
 + (instancetype)infoWithDictionary:(NSDictionary *)dictionary {
     
-    NSMutableArray *zonesInfo = [NSMutableArray array];
     NSArray *hosts = dictionary[@"hosts"];
-    for (NSInteger i = 0; i < hosts.count; i++) {
-        QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:hosts[i]];
-        if (zoneInfo) {
-            [zonesInfo addObject:zoneInfo];
+    NSMutableArray *zonesInfo = [NSMutableArray array];
+    if ([hosts isKindOfClass:[NSArray class]]) {
+        for (NSInteger i = 0; i < hosts.count; i++) {
+            QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:hosts[i]];
+            if (zoneInfo) {
+                [zonesInfo addObject:zoneInfo];
+            }
         }
     }
     return [[[self class] alloc] initWithZonesInfo:zonesInfo];

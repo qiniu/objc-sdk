@@ -34,17 +34,21 @@
     if (self.uploadFileInfo == nil) {
         self.uploadFileInfo = [[QNUploadFileInfo alloc] initWithFileSize:[self.file size]
                                                                blockSize:[QNPartsUpload blockSize]
-                                                                dataSize:self.chunkSize ? self.chunkSize.longLongValue : self.config.chunkSize
+                                                                dataSize:[self getUploadChunkSize]
                                                               modifyTime:(NSInteger)[self.file modifyTime]];
     }
 }
 
 
-- (void)switchRegionAndUpload{
+- (BOOL)switchRegionAndUpload{
     [self reportBlock];
     [self.uploadFileInfo clearUploadState];
-    [self removeUploadInfoRecord];
-    [super switchRegionAndUpload];
+    
+    BOOL isSwitched = [super switchRegionAndUpload];
+    if (isSwitched) {
+        [self removeUploadInfoRecord];
+    }
+    return isSwitched;
 }
 
 - (void)complete:(QNResponseInfo *)info resp:(NSDictionary *)resp{
@@ -98,7 +102,7 @@
     QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:info[kQNRecordZoneInfoKey]];
     QNUploadFileInfo *fileInfo = [QNUploadFileInfo infoFromDictionary:info[kQNRecordFileInfoKey]];
     self.recoveredFrom = @(fileInfo.progress * fileInfo.size);
-    if (zoneInfo && fileInfo) {
+    if (zoneInfo && fileInfo && fileInfo.uploadBlocks.firstObject.size != [self getUploadChunkSize]) {
         [self insertRegionAtFirstByZoneInfo:zoneInfo];
         self.uploadFileInfo = fileInfo;
     } else {
@@ -106,6 +110,13 @@
     }
 }
 
+- (long long)getUploadChunkSize{
+    if (self.chunkSize) {
+        return self.chunkSize.longLongValue;
+    } else {
+        return self.config.chunkSize;
+    }
+}
 
 //MARK:-- 统计block日志
 - (void)reportBlock{

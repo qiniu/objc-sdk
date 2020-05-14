@@ -45,7 +45,7 @@
             weakSelf.option.progressHandler(weakSelf.key, percent);
         }
     };
-
+ 
     [self.uploadTranscation uploadFormData:self.data
                                   fileName:self.fileName
                                   progress:progressHandler
@@ -57,7 +57,10 @@
             self.option.progressHandler(self.key, 1.0);
             [self complete:responseInfo resp:response];
         } else if (responseInfo.couldRetry && self.config.allowBackupHost) {
-            [self switchRegionAndUpload];
+            BOOL isSwitched = [self switchRegionAndUpload];
+            if (isSwitched == NO) {
+                [self complete:responseInfo resp:response];
+            }
         } else {
             [self complete:responseInfo resp:response];
         }

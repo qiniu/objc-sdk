@@ -100,14 +100,16 @@
 - (void)startToUpload{
 }
 
-- (void)switchRegionAndUpload{
+- (BOOL)switchRegionAndUpload{
     if (self.currentRegionRequestMetrics) {
         [self.metrics addMetrics:self.currentRegionRequestMetrics];
+        self.currentRegionRequestMetrics = nil;
     }
-    QNAsyncRun(^{
-        [self switchRegion];
+    BOOL isSwitched = [self switchRegion];
+    if (isSwitched) {
         [self startToUpload];
-    });
+    }
+    return isSwitched;
 }
 
 - (void)complete:(QNResponseInfo *)info
