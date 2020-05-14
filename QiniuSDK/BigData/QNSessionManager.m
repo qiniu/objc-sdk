@@ -10,7 +10,6 @@
 #import "QNConfiguration.h"
 #import "QNSessionManager.h"
 #import "QNUserAgent.h"
-#import "QNSystemTool.h"
 
 #import "QNResponseInfo.h"
 #import "NSURLRequest+QNRequest.h"

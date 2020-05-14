@@ -7,6 +7,7 @@
 //
 
 #import "QNUploadRequestMetrics.h"
+#import "NSURLRequest+QNRequest.h"
 
 @interface QNUploadSingleRequestMetrics()
 @end
@@ -67,11 +68,14 @@
 }
 
 - (NSNumber *)totalBytes{
-    return @(self.countOfRequestHeaderBytesSent + self.countOfRequestBodyBytesSent);
+    NSInteger bodyLength = [self.request.qn_getHttpBody length];
+    return @(bodyLength);
 }
 
 - (NSNumber *)bytesSend{
-    return @(self.countOfResponseHeaderBytesReceived + self.countOfResponseBodyBytesReceived);
+    int64_t totalBytes = [self totalBytes].integerValue;
+    int64_t bytes = MIN(totalBytes, self.countOfRequestBodyBytesSent);
+    return @(bytes);
 }
 
 - (NSNumber *)timeFromStartDate:(NSDate *)startDate toEndDate:(NSDate *)endDate{

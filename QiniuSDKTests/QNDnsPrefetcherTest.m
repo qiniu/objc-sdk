@@ -54,7 +54,7 @@
 
 @implementation QNDnsPrefetcherTest
 
-#define kCustomHost @"https://qiniu.com"
+#define kCustomHost @"upload.qiniup.com"
 - (void)setUp {
     
     [kQNTransactionManager destroyResource];
@@ -71,23 +71,21 @@
 
 - (void)testLocalLoad {
     
-    NSString *host = @"upload.qiniup.com";
     [kQNTransactionManager addDnsLocalLoadTransaction];
     
     QN_TEST_CASE_WAIT_TIME(5);
 
-    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetcher getInetAddressByHost:host];
+    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetcher getInetAddressByHost:kCustomHost];
     XCTAssert(addressList.count > 0, @"success");
 }
 
 - (void)testPreFetch {
     
-    NSString *host = @"upload.qiniup.com";
     [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:g_token];
     
     AGWW_WAIT_WHILE([kQNDnsPrefetcher getInetAddressByHost:kCustomHost] == nil, 60 * 5);
     
-    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetcher getInetAddressByHost:host];
+    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetcher getInetAddressByHost:kCustomHost];
     XCTAssert(addressList.count > 0, @"success");
 }
 

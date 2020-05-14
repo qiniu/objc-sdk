@@ -12,7 +12,6 @@
 #import "QNUpToken.h"
 #import "QNUserAgent.h"
 #import "QNAsyncRun.h"
-#import "QNSystemTool.h"
 #import "QNVersion.h"
 
 @implementation QNReportConfig

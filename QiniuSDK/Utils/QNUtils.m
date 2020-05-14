@@ -63,7 +63,13 @@
 
 /// 网络类型
 + (NSString *)getCurrentNetworkType{
-    return @"4G";
+    NSString *type = nil;
+    #if __IPHONE_OS_VERSION_MIN_REQUIRED
+        type = [[UIDevice currentDevice] model];
+    #else
+        type = @"Mac OS X";
+    #endif
+    return type;
 }
 
 + (NSTimeInterval)currentTimestamp{

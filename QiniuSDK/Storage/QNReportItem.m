@@ -81,6 +81,90 @@
 
 @end
 
+@implementation QNResponseInfo(Report)
+
+- (NSNumber *)requestReportStatusCode{
+    if (self.statusCode > -10 && self.statusCode < 0) {
+        return @(self.statusCode);
+    } else {
+        return nil;
+    }
+}
+
+- (NSString *)requestReportErrorType{
+    NSString *errorType = nil;
+    if (self.statusCode > 199 && self.statusCode < 300) {
+        
+    } else if (self.statusCode > 299){
+        errorType = @"response_error";
+    } else if (self.statusCode == QNResponseInfoErrorTypeInvalidFile
+            || self.statusCode == -1009){
+        errorType = @"network_error";
+    } else if (self.statusCode == -1001){
+        errorType = @"timeout";
+    } else if (self.statusCode == -1004){
+        errorType = @"cannot_connect_to_host";
+    } else if (self.statusCode == -1005 || self.statusCode == -1011){
+        errorType = @"transmission_error";
+    } else if (self.statusCode == -2001 ||self.statusCode == -9807){
+        errorType = @"ssl_error";
+    } else if (self.statusCode == -1015 || self.statusCode == -1016 || self.statusCode == -1017){
+        errorType = @"parse_error";
+    } else if (self.statusCode == -1007 || self.statusCode == -1010){
+        errorType = @"malicious_response";
+    } else if (self.statusCode == QNResponseInfoErrorTypeUserCanceled
+            || self.statusCode == -999){
+        errorType = @"user_canceled";
+    } else {
+        errorType = @"unknown_error";
+    }
+    return errorType;
+}
+
+- (NSString *)qualityResult{
+    NSString *result = nil;
+    if (self.statusCode > 199 && self.statusCode < 300) {
+        result = @"ok";
+    } else if (self.statusCode > 399 && self.statusCode < 500) {
+        result = @"bad_request";
+    } else if (self.statusCode == QNResponseInfoErrorTypeZeroSizeFile){
+        result = @"zero_size_file";
+    } else if (self.statusCode == QNResponseInfoErrorTypeInvalidFile){
+        result = @"invalid_file";
+    } else if (self.statusCode == QNResponseInfoErrorTypeInvalidToken
+            || self.statusCode == QNResponseInfoErrorTypeInvalidArgs){
+        result = @"invalid_args";
+    } else if (self.statusCode == QNResponseInfoErrorTypeUserCanceled
+            || self.statusCode == -999){
+        result = @"user_canceled";
+    } else if (self.statusCode == QNResponseInfoErrorTypeInvalidFile){
+        result = @"invalid_file";
+    } else if (self.statusCode == QNResponseInfoErrorTypeNetworkError){
+        result = @"zero_size_file";
+    } else if (self.statusCode == QNResponseInfoErrorTypeInvalidFile
+            || self.statusCode == -1009){
+        result = @"network_error";
+    } else if (self.statusCode == -1001){
+        result = @"timeout";
+    } else if (self.statusCode == -1004){
+        result = @"cannot_connect_to_host";
+    } else if (self.statusCode == -1005 || self.statusCode == -1011){
+        result = @"transmission_error";
+    } else if (self.statusCode == -2001 ||self.statusCode == -9807){
+        result = @"ssl_error";
+    } else if (self.statusCode == -1015 || self.statusCode == -1016 || self.statusCode == -1017){
+        result = @"parse_error";
+    } else if (self.statusCode == -1007 || self.statusCode == -1010){
+        result = @"malicious_response";
+    } else {
+        result = @"unknown_error";
+    }
+    return result;
+}
+
+@end
+
+
 //MARK:-- 日志类型
 NSString * const QNReportLogTypeRequest = @"request";
 NSString * const QNReportLogTypeBlock = @"block";

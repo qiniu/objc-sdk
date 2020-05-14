@@ -8,7 +8,6 @@
 
 #import "QNUploadSystemClient.h"
 #import "QNUserAgent.h"
-#import "QNSystemTool.h"
 
 #import "NSURLRequest+QNRequest.h"
 #import "QNURLProtocol.h"
@@ -31,7 +30,6 @@ connectionProxy:(NSDictionary *)connectionProxy
     
     self.requestMetrics = [QNUploadSingleRequestMetrics emptyMetrics];
     self.requestMetrics.startDate = [NSDate date];
-    self.requestMetrics.countOfRequestBodyBytesSent = request.qn_getHttpBody.length;
     
     self.responseData = [NSMutableData data];
     self.progress = progress;
@@ -100,7 +98,8 @@ connectionProxy:(NSDictionary *)connectionProxy
              didSendBodyData:(int64_t)bytesSent
               totalBytesSent:(int64_t)totalBytesSent
     totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
-
+    
+    self.requestMetrics.countOfRequestBodyBytesSent = totalBytesSent;
     if (self.progress) {
         self.progress(totalBytesSent, totalBytesExpectedToSend);
     }

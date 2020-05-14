@@ -170,7 +170,7 @@
     
     QNReportItem *item = [QNReportItem item];
     [item setReportValue:QNReportLogTypeRequest forKey:QNReportRequestKeyLogType];
-//    [item setReportValue:QNReportLogTypeRequest forKey:QNReportRequestKeyStatusCode];
+    [item setReportValue:info.requestReportStatusCode forKey:QNReportRequestKeyStatusCode];
     [item setReportValue:info.reqId forKey:QNReportRequestKeyRequestId];
     [item setReportValue:taskMetricsP.request.qn_domain forKey:QNReportRequestKeyHost];
     [item setReportValue:taskMetricsP.remoteAddress forKey:QNReportRequestKeyRemoteIp];
@@ -192,8 +192,9 @@
     [item setReportValue:@([QNUtils getCurrentThreadID]) forKey:QNReportRequestKeyTid];
     [item setReportValue:self.requestInfo.targetRegionId forKey:QNReportRequestKeyTargetRegionId];
     [item setReportValue:self.requestInfo.currentRegionId forKey:QNReportRequestKeyCurrentRegionId];
-    [item setReportValue:info.msg forKey:QNReportRequestKeyErrorType];
-    [item setReportValue:info.msgDetail forKey:QNReportRequestKeyErrorDescription];
+    [item setReportValue:info.requestReportErrorType forKey:QNReportRequestKeyErrorType];
+    NSString *errorDesc = info.requestReportErrorType ? info.message : nil;
+    [item setReportValue:errorDesc forKey:QNReportRequestKeyErrorDescription];
     [item setReportValue:self.requestInfo.requestType forKey:QNReportRequestKeyUpType]; 
     [item setReportValue:[QNUtils systemName] forKey:QNReportRequestKeyOsName];
     [item setReportValue:[QNUtils systemVersion] forKey:QNReportRequestKeyOsVersion];

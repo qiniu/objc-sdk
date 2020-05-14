@@ -473,7 +473,7 @@
     
     QNReportItem *item = [QNReportItem item];
     [item setReportValue:QNReportLogTypeQuality forKey:QNReportQualityKeyLogType];
-    [item setReportValue:info.msg forKey:QNReportQualityKeyResult];
+    [item setReportValue:info.qualityResult forKey:QNReportQualityKeyResult];
     [item setReportValue:taskMetricsP.totalElaspsedTime forKey:QNReportQualityKeyTotalElaspsedTime];
     [item setReportValue:taskMetricsP.requestCount forKey:QNReportQualityKeyRequestsCount];
     [item setReportValue:taskMetricsP.regionCount forKey:QNReportQualityKeyRegionsCount];

@@ -75,148 +75,55 @@ typedef NS_ENUM(int, QNResponseInfoErrorType){
  */
 @interface QNResponseInfo : NSObject
 
-/**
- *    状态码
- */
+/// 状态码
 @property (readonly) int statusCode;
-
-/**
- *    response 信息
- */
+/// response 信息
 @property (nonatomic, copy, readonly) NSDictionary *responseDictionary;
-
-/**
- *    response message
- */
-@property (nonatomic, copy, readonly) NSString *msg;
-
-/**
- *    response message
- */
-@property (nonatomic, copy, readonly) NSString *msgDetail;
-
-/**
- *    七牛服务器生成的请求ID，用来跟踪请求信息，如果使用过程中出现问题，请反馈此ID
- */
+/// response message
+@property (nonatomic, copy, readonly) NSString *message;
+/// 七牛服务器生成的请求ID，用来跟踪请求信息，如果使用过程中出现问题，请反馈此ID
 @property (nonatomic, copy, readonly) NSString *reqId;
-
-/**
- *    七牛服务器内部跟踪记录
- */
+/// 七牛服务器内部跟踪记录
 @property (nonatomic, copy, readonly) NSString *xlog;
-
-/**
- *    cdn服务器内部跟踪记录
- */
+/// cdn服务器内部跟踪记录
 @property (nonatomic, copy, readonly) NSString *xvia;
-
-/**
- *    错误信息，出错时请反馈此记录
- */
+/// 错误信息，出错时请反馈此记录
 @property (nonatomic, copy, readonly) NSError *error;
-
-/**
- *    服务器域名
- */
+/// 服务器域名
 @property (nonatomic, copy, readonly) NSString *host;
-
-/**
- *    客户端id
- */
+/// 客户端id
 @property (nonatomic, readonly) NSString *id;
-
-/**
- *    时间戳
- */
+/// 时间戳
 @property (readonly) UInt64 timeStamp;
-
 /// 请求过程统计信息
 @property(nonatomic, strong) QNUploadSingleRequestMetrics *requestMetrics;
-
-/**
- *    是否取消
- */
+/// 是否取消
 @property (nonatomic, readonly, getter=isCancelled) BOOL canceled;
-
-/**
- *    成功的请求
- */
+/// 成功的请求
 @property (nonatomic, readonly, getter=isOK) BOOL ok;
-
-/**
- *    是否网络错误
- */
+/// 是否网络错误
 @property (nonatomic, readonly, getter=isConnectionBroken) BOOL broken;
-
-/**
- *    是否TLS错误
- */
+/// 是否TLS错误
 @property (nonatomic, readonly) BOOL isTlsError;
-
-/**
- *    是否可以再次重试，当遇到权限等怎么重试都不可能成功的问题时，返回NO
- */
+/// 是否可以再次重试，当遇到权限等怎么重试都不可能成功的问题时，返回NO
 @property (nonatomic, readonly) BOOL couldRetry;
-
-/**
- *    单个host是否可以再次重试
- */
+/// 单个host是否可以再次重试
 @property (nonatomic, readonly) BOOL couldHostRetry;
-
-/**
- *    单个Region是否可以再次重试
- */
+/// 单个Region是否可以再次重试
 @property (nonatomic, readonly) BOOL couldRegionRetry;
-
-/**
- *    是否为 七牛响应
- */
+/// 是否为 七牛响应
 @property (nonatomic, readonly, getter=isNotQiniu) BOOL notQiniu;
 
-/**
- *    工厂函数，内部使用
- *    @return 取消的实例
- */
+//MARK:-- 构造函数
 + (instancetype)cancelResponse;
-
-/**
- *    工厂函数，内部使用
- *    @param desc 错误参数描述
- *    @return 错误参数实例
- */
++ (instancetype)responseInfoWithNetworkError:(NSString *)desc;
 + (instancetype)responseInfoWithInvalidArgument:(NSString *)desc;
-
-/**
- *    工厂函数，内部使用
- *    @param desc 错误token描述
- *    @return 错误token实例
- */
 + (instancetype)responseInfoWithInvalidToken:(NSString *)desc;
-
-/**
- *    工厂函数，内部使用
- *    @param error 错误信息
- *    @return 文件错误实例
- */
 + (instancetype)responseInfoWithFileError:(NSError *)error;
-
-/**
- *    工厂函数，内部使用
- *    @param path        文件路径
- *    @return 文件错误实例
- */
 + (instancetype)responseInfoOfZeroData:(NSString *)path;
 
-/**
- *    工厂函数，内部使用
- *    @param errorType      错误类型
- *    @param errorDesc      错误详细描述 会被记录在msgDetail里
- *    @return 文件错误实例
- */
 + (instancetype)errorResponseInfo:(QNResponseInfoErrorType)errorType
                         errorDesc:(NSString *)errorDesc;
-
-
 - (instancetype)initWithResponseInfoHost:(NSString *)host
                                 response:(NSHTTPURLResponse *)response
                                     body:(NSData *)body

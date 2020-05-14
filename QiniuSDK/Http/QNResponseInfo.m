@@ -41,6 +41,11 @@ static NSString *kQNErrorDomain = @"qiniu.com";
                                    errorDesc:@"cancelled by user"];
 }
 
++ (instancetype)responseInfoWithNetworkError:(NSString *)desc{
+    return [QNResponseInfo errorResponseInfo:QNResponseInfoErrorTypeNetworkError
+                                   errorDesc:desc];
+}
+
 + (instancetype)responseInfoWithInvalidArgument:(NSString *)desc{
     return [QNResponseInfo errorResponseInfo:QNResponseInfoErrorTypeInvalidArgs
                                    errorDesc:desc];
@@ -78,7 +83,6 @@ static NSString *kQNErrorDomain = @"qiniu.com";
                             error:(NSError *)error{
     QNResponseInfo *response = [[QNResponseInfo alloc] init];
     response.statusCode = errorType;
-    response.msg = [response errorMsgWithErrorCode:errorType];
     response.msgDetail = errorDesc;
     response.requestMetrics = [QNUploadSingleRequestMetrics emptyMetrics];
     if (error) {
@@ -114,20 +118,16 @@ static NSString *kQNErrorDomain = @"qiniu.com";
             _xlog = headers[@"X-Log"];
             _xvia = !headers[@"X-Via"] ? (!headers[@"X-Px"] ? headers[@"Fw-Via"] : headers[@"X-Px"]) : headers[@"X-Via"];
 
-            NSMutableDictionary *errorUserInfo = [@{@"errorHost" : host ?: @""} mutableCopy];
             if (error) {
-                if (!body) {
-                    _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
-                    _responseDictionary = nil;
-                } else {
-                    NSString *str = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding] ?: @"";
-                    [errorUserInfo setDictionary:@{@"error" : str}];
-                    _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
-                    _responseDictionary = nil;
-                }
+                _error = error;
+                _statusCode = (int)error.code;
+                _message = [NSString stringWithFormat:@"%@", error];
+                _responseDictionary = nil;
             } else {
+                NSMutableDictionary *errorUserInfo = [@{@"errorHost" : host ?: @""} mutableCopy];
                 if (!body) {
-                    [errorUserInfo setDictionary:@{@"error":@"no response data"}];
+                    _message = @"no response data";
+                    [errorUserInfo setDictionary:@{@"error":_message}];
                     _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
                     _responseDictionary = nil;
                 } else {
@@ -135,15 +135,17 @@ static NSString *kQNErrorDomain = @"qiniu.com";
                     NSDictionary *responseInfo = nil;
                     responseInfo = [NSJSONSerialization JSONObjectWithData:body options:NSJSONReadingMutableLeaves error:&tmp];
                     if (tmp){
-                        NSString *str = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding] ?: @"";
-                        [errorUserInfo setDictionary:@{@"error" : str}];
+                        _message = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding] ?: @"";
+                        [errorUserInfo setDictionary:@{@"error" : _message}];
                         _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
                         _responseDictionary = nil;
                     } else if (responseInfo && statusCode > 199 && statusCode < 300) {
                         _error = nil;
+                        _message = @"ok";
                         _responseDictionary = responseInfo;
                     } else {
-                        [errorUserInfo setDictionary:@{@"error" : responseInfo ?: @""}];
+                        _message = @"unkown error";
+                        [errorUserInfo setDictionary:@{@"error" : _message}];
                         _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
                         _responseDictionary = responseInfo;
                     }
@@ -152,10 +154,9 @@ static NSString *kQNErrorDomain = @"qiniu.com";
         } else if (error) {
             _error = error;
             _statusCode = (int)error.code;
+            _message = [NSString stringWithFormat:@"%@", error];
             _responseDictionary = nil;
         }
-        
-        _msg = [self msgWithStatusCode:_statusCode];
     }
     return self;
 }
@@ -211,86 +212,6 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 
 - (BOOL)isConnectionBroken {
     return _statusCode == kQNNetworkError || (_statusCode < -1000 && _statusCode != -1003);
-}
-
-
-- (NSString *)msgWithStatusCode:(int)statusCode{
-    NSString *msg = nil;
-    if (statusCode > 199 && statusCode < 300) {
-        msg = @"ok";
-    } else {
-        msg = [self errorMsgWithErrorCode:statusCode];
-    }
-    return msg;
-}
-
-- (NSString *)errorMsgWithErrorCode:(int)errorCode{
-    NSString *msg = nil;
-    switch (errorCode) {
-        case QNResponseInfoErrorTypeUnknownError:
-            msg = @"unknown_error";
-            break;
-        case QNResponseInfoErrorTypeNetworkError:
-        case QNResponseInfoErrorTypeSystemNetworkError:
-            msg = @"network_error";
-            break;
-        case QNResponseInfoErrorTypeTimeout:
-            msg = @"timeout";
-            break;
-        case QNResponseInfoErrorTypeUnknownHost:
-            msg = @"unknown_host";
-            break;
-        case QNResponseInfoErrorTypeCannotConnectToHost:
-            msg = @"cannot_connect_to_host";
-            break;
-        case QNResponseInfoErrorTypeConnectionLost:
-        case QNResponseInfoErrorTypeBadServerResponse:
-            msg = @"transmission_error";
-            break;
-        case QNResponseInfoErrorTypeProxyError:
-            msg = @"proxy_error";
-            break;
-        case QNResponseInfoErrorTypeSSLError:
-        case QNResponseInfoErrorTypeSSLHandShakeError:
-            msg = @"ssl_error";
-            break;
-        case QNResponseInfoErrorTypeCannotDecodeRawData:
-        case QNResponseInfoErrorTypeCannotDecodeContentData:
-        case QNResponseInfoErrorTypeCannotParseResponse:
-            msg = @"response_error";
-            break;
-        case QNResponseInfoErrorTypeTooManyRedirects:
-        case QNResponseInfoErrorTypeRedirectToNonExistentLocation:
-            msg = @"malicious_response";
-            break;
-        case QNResponseInfoErrorTypeUserCanceled:
-        case QNResponseInfoErrorTypeSystemCanceled:
-            msg = @"user_canceled";
-            break;
-        case QNResponseInfoErrorTypeZeroSizeFile:
-            msg = @"zero_size_file";
-            break;
-        case QNResponseInfoErrorTypeInvalidFile:
-            msg = @"invalid_file";
-            break;
-        case QNResponseInfoErrorTypeInvalidToken:
-        case QNResponseInfoErrorTypeInvalidArgs:
-            msg = @"invalid_args";
-            break;
-        case QNResponseInfoErrorTypeUnexpectedSyscallError:
-            msg = @"unexpected_syscall_error";
-            break;
-        case QNResponseInfoErrorTypeLocalIoError:
-            msg = @"local_io_error";
-            break;
-        case QNResponseInfoErrorTypeNetworkSlow:
-            msg = @"network_slow";
-            break;
-        default:
-            msg = @"unknown_error";
-            break;
-    }
-    return msg;
 }
 
 - (NSString *)description {

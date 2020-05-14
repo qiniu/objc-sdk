@@ -7,6 +7,7 @@
 //
 
 #import "QNUploadInfoReporter.h"
+#import "QNResponseInfo.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,6 +28,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)reportItem:(QNReportItem *)item token:(NSString *)token;
 
 @end
+
+
+@interface QNResponseInfo(Report)
+
+@property(nonatomic, assign, readonly)NSNumber *requestReportStatusCode;
+@property(nonatomic,   copy, readonly)NSString *requestReportErrorType;
+
+@property(nonatomic,   copy, readonly)NSString *qualityResult;
+
+@end
+
 
 
 //MARK:-- 日志类型
