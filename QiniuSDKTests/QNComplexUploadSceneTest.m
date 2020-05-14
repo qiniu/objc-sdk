@@ -29,16 +29,16 @@
 }
 
 - (void)testMutiUpload{
-    int maxCount = 10;
+    int maxCount = 100;
     __block int completeCount = 0;
     __block int successCount = 0;
     for (int i=0; i<maxCount; i++) {
         [self template:(i + 1) * 1024 complete:^(BOOL isSuccess){
             @synchronized (self) {
-                completeCount += 1;
                 if (isSuccess) {
                     successCount += 1;
                 }
+                completeCount += 1;
             }
         }];
     }
