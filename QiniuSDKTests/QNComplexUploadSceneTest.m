@@ -29,7 +29,7 @@
 }
 
 - (void)testMutiUpload{
-    int maxCount = 100;
+    int maxCount = 10;
     __block int completeCount = 0;
     __block int successCount = 0;
     for (int i=0; i<maxCount; i++) {
