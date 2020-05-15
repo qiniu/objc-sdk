@@ -148,8 +148,9 @@
 - (BOOL)switchRegion{
     BOOL ret = NO;
     @synchronized (self) {
-        _currentRegionIndex += 1;
-        if (_currentRegionIndex < self.regions.count) {
+        NSInteger regionIndex = _currentRegionIndex + 1;
+        if (regionIndex < self.regions.count) {
+            _currentRegionIndex = regionIndex;
             ret = YES;
         }
     }

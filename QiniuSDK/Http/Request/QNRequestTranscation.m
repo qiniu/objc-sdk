@@ -176,7 +176,7 @@
          progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
          complete:(QNRequestTranscationCompleteHandler)complete{
     
-    self.requestInfo.requestType = QNUploadRequestTypeForm;
+    self.requestInfo.requestType = QNUploadRequestTypeMkblk;
     self.requestInfo.fileOffset = @(blockOffset);
     
     NSString *token = [NSString stringWithFormat:@"UpToken %@", self.token.token];
@@ -216,7 +216,7 @@
            progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
            complete:(QNRequestTranscationCompleteHandler)complete{
     
-    self.requestInfo.requestType = QNUploadRequestTypeForm;
+    self.requestInfo.requestType = QNUploadRequestTypeBput;
     self.requestInfo.fileOffset = @(blockOffset + chunkOffest);
     
     NSString *token = [NSString stringWithFormat:@"UpToken %@", self.token.token];
@@ -253,6 +253,8 @@
         fileName:(NSString *)fileName
    blockContexts:(NSArray <NSString *> *)blockContexts
         complete:(QNRequestTranscationCompleteHandler)complete{
+    
+    self.requestInfo.requestType = QNUploadRequestTypeMkfile;
     
     NSString *token = [NSString stringWithFormat:@"UpToken %@", self.token.token];
     NSDictionary *header = @{@"Authorization" : token,
