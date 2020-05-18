@@ -50,9 +50,8 @@
     XCTAssert(testInfo.reqId, @"Pass");
 }
 
-// test upload 100 file
+// upload 100 file and calculate upload success rate
 - (void)test100Up {
-
     NSInteger count = 100;
     __block NSInteger completeCount = 0;
     __block NSInteger successCount = 0;
@@ -69,12 +68,12 @@
         }];
     }
     
-//    AGWW_WAIT_WHILE(completeCount != 100, 100.0);
-    [NSThread sleepForTimeInterval:300.0];
+    AGWW_WAIT_WHILE(completeCount != count, 100.0);
     
     CGFloat successRate = successCount * 1.0 / count;
+    NSLog(@"successCount: %td", successCount);
     NSLog(@"successRate: %lf", successRate);
-//    XCTAssert(successRate > 0.9, @"Pass");
+    XCTAssert(completeCount == count, @"Pass");
 }
 
 - (void)test100UpTask:(NSString *)taskId complete:(void(^)(BOOL isSuccess))complete{
@@ -83,11 +82,17 @@
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc]initWithConfiguration:config];
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
-    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
+    NSMutableString *contentString = [NSMutableString string];
+    NSString *word = @"Hello, World!";
+    while (contentString.length < 1024) {
+        [contentString appendString:word];
+    }
+    NSData *data = [[contentString copy] dataUsingEncoding:NSUTF8StringEncoding];
     [upManager putData:data key:taskId token:g_token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         if (info.isOK && info.reqId) {
             complete(YES);
         } else {
+            NSLog(@"upload failed. response info is: %@",info);
             complete(NO);
         }
     } option:opt];

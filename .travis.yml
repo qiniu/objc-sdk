@@ -11,14 +11,14 @@ before_install:
   - rm -rf ~/.cocoapods
   - pod setup
   - pod install --verbose --no-repo-update
-  - gem install xcpretty
 
 
 before_script:
   - export QINIU_TEST_ENV="travis"
 
 script:
-  - bash hack/network_loss.sh 0.5
+  - xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -configuration Release -destination 'platform=iOS Simulator,OS=12.4,name=iPhone Xs Max' -enableCodeCoverage YES
+  - xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -configuration Release -destination 'platform=macOS,arch=x86_64'
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
