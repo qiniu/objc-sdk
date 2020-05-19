@@ -29,12 +29,12 @@
 {
     self = [super init];
     if (self) {
-        self.up_time = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970] * 1000;
+        self.up_time = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970];
     }
     return self;
 }
 - (NSString *)toJson {
-    NSMutableDictionary *requestItemDic = [NSMutableDictionary dictionary];
+    NSMutableDictionary *itemDic = [NSMutableDictionary dictionary];
     
     // self class property
     unsigned int selfPropertyCount = 0;
@@ -52,12 +52,12 @@
                 if (0 == strcmp(value, "@\"NSString\"")) {
                     NSString *key = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
                     NSString *ivarValue = [self valueForKey:key];
-                    if (ivarValue) [requestItemDic setValue:ivarValue forKey:key];
+                    if (ivarValue) [itemDic setValue:ivarValue forKey:key];
                 } else {
                     // 默认其他属性的基本类型是int
                     NSString *key = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
                     NSNumber *ivarValue = [self valueForKey:key];
-                    if (ivarValue && ![ivarValue isEqualToNumber:@(QN_IntNotSet)]) [requestItemDic setValue:ivarValue forKey:key];
+                    if (ivarValue && ![ivarValue isEqualToNumber:@(QN_IntNotSet)]) [itemDic setValue:ivarValue forKey:key];
                 }
             }
         }
@@ -81,12 +81,12 @@
                 if (0 == strcmp(value, "@\"NSString\"")) {
                     NSString *key = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
                     NSString *ivarValue = [self valueForKey:key];
-                    if (ivarValue) [requestItemDic setValue:ivarValue forKey:key];
+                    if (ivarValue) [itemDic setValue:ivarValue forKey:key];
                 } else {
                     // 默认其他属性的基本类型是int
                     NSString *key = [NSString stringWithCString:name encoding:NSUTF8StringEncoding];
                     NSNumber *ivarValue = [self valueForKey:key];
-                    if (ivarValue) [requestItemDic setValue:ivarValue forKey:key];
+                    if (ivarValue) [itemDic setValue:ivarValue forKey:key];
                 }
             }
         }
@@ -95,10 +95,10 @@
     free(superProperties);
         
     NSError *error;
-    NSData *requestItemData = [NSJSONSerialization dataWithJSONObject:requestItemDic options:NSJSONWritingPrettyPrinted error:&error];
+    NSData *itemData = [NSJSONSerialization dataWithJSONObject:itemDic options:kNilOptions error:&error];
     if (error) return nil;
-    NSString *requestItemJson = [[NSString alloc] initWithData:requestItemData encoding:NSUTF8StringEncoding];
-    return requestItemJson;
+    NSString *itemJson = [[NSString alloc] initWithData:itemData encoding:NSUTF8StringEncoding];
+    return itemJson;
 }
 @end
 
@@ -398,7 +398,7 @@ static const NSString *reportTypeValueList[] = {@"form", @"mkblk", @"bput", @"mk
 @property (nonatomic, strong) NSString *recorderFilePath;
 @property (nonatomic, strong) dispatch_queue_t recordQueue;
 @property (nonatomic, strong) dispatch_semaphore_t semaphore;
-@property (nonatomic, copy) NSString *X_Log_Client_Id;
+@property (nonatomic, copy, readwrite) NSString *X_Log_Client_Id;
 
 @end
 
