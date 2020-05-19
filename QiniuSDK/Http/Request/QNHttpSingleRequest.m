@@ -91,7 +91,7 @@
         self.client = [[QNUploadSystemClient alloc] init];
     }
     
-    NSLog(@"== request host:%@ / %@", request.URL.host, request.qn_domain);
+    NSLog(@"QN Single Request:%@ / %@", request.URL.absoluteString, request.qn_domain);
     
     __weak typeof(self) weakSelf = self;
     BOOL (^checkCancelHandler)(void) = ^{
@@ -156,7 +156,7 @@
   requestMetrics:(QNUploadSingleRequestMetrics *)requestMetrics
         complete:(QNSingleRequestCompleteHandler)complete {
     
-    [self reportRequest:responseInfo taskMetrics:requestMetrics];
+    [self reportRequest:responseInfo requestMetrics:requestMetrics];
     if (complete) {
         complete(responseInfo, [self.requestMetricsList copy], response);
     }
@@ -164,30 +164,30 @@
 
 //MARK:-- 统计quality日志
 - (void)reportRequest:(QNResponseInfo *)info
-          taskMetrics:(QNUploadSingleRequestMetrics *)taskMetrics {
+       requestMetrics:(QNUploadSingleRequestMetrics *)requestMetrics {
     
-    QNUploadSingleRequestMetrics *taskMetricsP = taskMetrics ?: [QNUploadSingleRequestMetrics emptyMetrics];
+    QNUploadSingleRequestMetrics *requestMetricsP = requestMetrics ?: [QNUploadSingleRequestMetrics emptyMetrics];
     
     QNReportItem *item = [QNReportItem item];
     [item setReportValue:QNReportLogTypeRequest forKey:QNReportRequestKeyLogType];
     [item setReportValue:info.requestReportStatusCode forKey:QNReportRequestKeyStatusCode];
     [item setReportValue:info.reqId forKey:QNReportRequestKeyRequestId];
-    [item setReportValue:taskMetricsP.request.qn_domain forKey:QNReportRequestKeyHost];
-    [item setReportValue:taskMetricsP.remoteAddress forKey:QNReportRequestKeyRemoteIp];
-    [item setReportValue:taskMetricsP.localPort forKey:QNReportRequestKeyPort];
+    [item setReportValue:requestMetricsP.request.qn_domain forKey:QNReportRequestKeyHost];
+    [item setReportValue:requestMetricsP.remoteAddress forKey:QNReportRequestKeyRemoteIp];
+    [item setReportValue:requestMetricsP.localPort forKey:QNReportRequestKeyPort];
     [item setReportValue:self.requestInfo.bucket forKey:QNReportRequestKeyTargetBucket];
     [item setReportValue:self.requestInfo.key forKey:QNReportRequestKeyTargetKey];
-    [item setReportValue:taskMetricsP.totalElaspsedTime forKey:QNReportRequestKeyTotalElaspsedTime];
-    [item setReportValue:taskMetricsP.totalDnsTime forKey:QNReportRequestKeyDnsElapsedTime];
-    [item setReportValue:taskMetricsP.totalConnectTime forKey:QNReportRequestKeyConnectElapsedTime];
-    [item setReportValue:taskMetricsP.totalSecureConnectTime forKey:QNReportRequestKeyTLSConnectElapsedTime];
-    [item setReportValue:taskMetricsP.totalRequestTime forKey:QNReportRequestKeyRequestElapsedTime];
-    [item setReportValue:taskMetricsP.totalWaitTime forKey:QNReportRequestKeyWaitElapsedTime];
-    [item setReportValue:taskMetricsP.totalWaitTime forKey:QNReportRequestKeyResponseElapsedTime];
-    [item setReportValue:taskMetricsP.totalResponseTime forKey:QNReportRequestKeyResponseElapsedTime];
+    [item setReportValue:requestMetricsP.totalElaspsedTime forKey:QNReportRequestKeyTotalElaspsedTime];
+    [item setReportValue:requestMetricsP.totalDnsTime forKey:QNReportRequestKeyDnsElapsedTime];
+    [item setReportValue:requestMetricsP.totalConnectTime forKey:QNReportRequestKeyConnectElapsedTime];
+    [item setReportValue:requestMetricsP.totalSecureConnectTime forKey:QNReportRequestKeyTLSConnectElapsedTime];
+    [item setReportValue:requestMetricsP.totalRequestTime forKey:QNReportRequestKeyRequestElapsedTime];
+    [item setReportValue:requestMetricsP.totalWaitTime forKey:QNReportRequestKeyWaitElapsedTime];
+    [item setReportValue:requestMetricsP.totalWaitTime forKey:QNReportRequestKeyResponseElapsedTime];
+    [item setReportValue:requestMetricsP.totalResponseTime forKey:QNReportRequestKeyResponseElapsedTime];
     [item setReportValue:self.requestInfo.fileOffset forKey:QNReportRequestKeyFileOffset];
-    [item setReportValue:taskMetricsP.bytesSend forKey:QNReportRequestKeyBytesSent];
-    [item setReportValue:taskMetricsP.totalBytes forKey:QNReportRequestKeyBytesTotal];
+    [item setReportValue:requestMetricsP.bytesSend forKey:QNReportRequestKeyBytesSent];
+    [item setReportValue:requestMetricsP.totalBytes forKey:QNReportRequestKeyBytesTotal];
     [item setReportValue:@([QNUtils getCurrentProcessID]) forKey:QNReportRequestKeyPid];
     [item setReportValue:@([QNUtils getCurrentThreadID]) forKey:QNReportRequestKeyTid];
     [item setReportValue:self.requestInfo.targetRegionId forKey:QNReportRequestKeyTargetRegionId];

@@ -169,8 +169,9 @@
     }
     
     NSString *urlString = request.URL.absoluteString;
+    NSLog(@"QN UrlProtocol OriginUrl: %@", urlString);
     urlString = [urlString stringByReplacingOccurrencesOfString:host withString:ip];
-    
+    NSLog(@"QN UrlProtocol RealUrl  : %@", urlString);
     NSMutableURLRequest *requestNew = [request mutableCopy];
     requestNew.URL = [NSURL URLWithString:urlString];
     

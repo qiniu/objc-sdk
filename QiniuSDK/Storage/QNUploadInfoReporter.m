@@ -72,7 +72,7 @@
     if (self) {
         _config = [QNReportConfig sharedInstance];
         _lastReportTime = 0;
-        _recorderFilePath = [NSString stringWithFormat:@"%@/%@", _config.recordDirectory, _recorderFilePath];
+        _recorderFilePath = [NSString stringWithFormat:@"%@/%@", _config.recordDirectory, @"qiniu.log"];
         _fileManager = [NSFileManager defaultManager];
         _recordQueue = dispatch_queue_create("com.qiniu.reporter", DISPATCH_QUEUE_SERIAL);
     }

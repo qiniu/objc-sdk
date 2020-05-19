@@ -24,12 +24,12 @@
 
 @property(nonatomic, strong)QNConfiguration *config;
 @property(nonatomic, strong)QNUploadOption *uploadOption;
-@property(nonatomic, strong)QNUploadRequestInfo *requestInfo;
-@property(nonatomic, strong)QNUploadRequstState *requestState;
 @property(nonatomic,   copy)NSString *key;
 @property(nonatomic, strong)QNUpToken *token;
 
-@property(nonatomic, strong)QNHttpRegionRequest *httpRequest;
+@property(nonatomic, strong)QNUploadRequestInfo *requestInfo;
+@property(nonatomic, strong)QNUploadRequstState *requestState;
+@property(nonatomic, strong)QNHttpRegionRequest *regionRequest;
 
 @end
 @implementation QNRequestTranscation
@@ -75,12 +75,12 @@
         _requestInfo.currentRegionId = currentegion.zoneInfo.zoneRegionId;
         _requestInfo.bucket = token.bucket;
         _requestInfo.key = key;
-        _httpRequest = [[QNHttpRegionRequest alloc] initWithConfig:config
-                                                      uploadOption:uploadOption
-                                                             token:token
-                                                            region:currentegion
-                                                       requestInfo:_requestInfo
-                                                      requestState:_requestState];
+        _regionRequest = [[QNHttpRegionRequest alloc] initWithConfig:config
+                                                        uploadOption:uploadOption
+                                                               token:token
+                                                              region:currentegion
+                                                         requestInfo:_requestInfo
+                                                        requestState:_requestState];
     }
     return self;
 }
@@ -98,10 +98,10 @@
         }
     };
     NSString *action = [NSString stringWithFormat:@"/v3/query?ak=%@&bucket=%@", self.token.access, self.token.bucket];
-    [self.httpRequest get:action
-                  headers:nil
-              shouldRetry:shouldRetry
-                 complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+    [self.regionRequest get:action
+                    headers:nil
+                shouldRetry:shouldRetry
+                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
 
         complete(responseInfo, metrics, response);
     }];
@@ -159,12 +159,12 @@
         }
     };
     
-    [self.httpRequest post:nil
-                   headers:header
-                      body:body
-               shouldRetry:shouldRetry
-                  progress:progress
-                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+    [self.regionRequest post:nil
+                     headers:header
+                        body:body
+                 shouldRetry:shouldRetry
+                    progress:progress
+                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         complete(responseInfo, metrics, response);
     }];
 }
@@ -198,12 +198,12 @@
         }
     };
     
-    [self.httpRequest post:action
-                   headers:header
-                      body:firstChunkData
-               shouldRetry:shouldRetry
-                  progress:progress
-                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+    [self.regionRequest post:action
+                     headers:header
+                        body:firstChunkData
+                 shouldRetry:shouldRetry
+                    progress:progress
+                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
 
         complete(responseInfo, metrics, response);
     }];
@@ -238,12 +238,12 @@
         }
     };
     
-    [self.httpRequest post:action
-                   headers:header
+    [self.regionRequest post:action
+                     headers:header
                       body:chunkData
-               shouldRetry:shouldRetry
-                  progress:progress
-                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+                 shouldRetry:shouldRetry
+                    progress:progress
+                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
 
         complete(responseInfo, metrics, response);
     }];
@@ -289,12 +289,12 @@
         }
     };
     
-    [self.httpRequest post:action
-                   headers:header
-                      body:body
-               shouldRetry:shouldRetry
-                  progress:nil
-                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+    [self.regionRequest post:action
+                     headers:header
+                        body:body
+                 shouldRetry:shouldRetry
+                    progress:nil
+                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
 
         complete(responseInfo, metrics, response);
     }];

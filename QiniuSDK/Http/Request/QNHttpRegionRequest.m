@@ -22,7 +22,7 @@
 @property(nonatomic, strong)QNUploadRequstState *requestState;
 
 @property(nonatomic, strong)QNUploadRegionRequestMetrics *requestMetrics;
-@property(nonatomic, strong)QNHttpSingleRequest *singleRetry;
+@property(nonatomic, strong)QNHttpSingleRequest *singleRequest;
 
 // old server 不验证tls sni
 @property(nonatomic, assign)BOOL isUseOldServer;
@@ -43,7 +43,7 @@
         _uploadOption = uploadOption;
         _region = region;
         _requestState = requestState;
-        _singleRetry = [[QNHttpSingleRequest alloc] initWithConfig:config
+        _singleRequest = [[QNHttpSingleRequest alloc] initWithConfig:config
                                                       uploadOption:uploadOption
                                                              token:token
                                                        requestInfo:requestInfo
@@ -96,17 +96,14 @@
               progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
               complete:(QNRegionRequestCompleteHandler)complete{
     
-    QNResponseInfo *errorResponseInfo = [self checkServer:server];
-    if (errorResponseInfo) {
-        [self complete:errorResponseInfo response:nil complete:complete];;
+    if (!server.host || server.host.length == 0) {
+        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
+        [self complete:responseInfo response:nil complete:complete];
         return;
     }
     
     NSString *serverHost = server.host;
     NSString *serverIP = server.ip;
-    if (!serverHost && serverHost.length == 0) {
-        return;
-    }
     
     if (self.config.converter) {
         serverHost = self.config.converter(serverHost);
@@ -118,7 +115,7 @@
     BOOL isSkipDns = NO;
     NSString *scheme = self.config.useHttps ? @"https://" : @"http://";
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    if (server.ip && server.ip.length > 0) {
+    if (serverIP && serverIP.length > 0) {
         NSString *urlString = [NSString stringWithFormat:@"%@%@%@", scheme, serverIP, action ?: @""];
         request.URL = [NSURL URLWithString:urlString];
         request.qn_domain = serverHost;
@@ -133,11 +130,11 @@
     [request setAllHTTPHeaderFields:headers];
     [request setTimeoutInterval:self.config.timeoutInterval];
     request.HTTPBody = body;
-    [self.singleRetry request:request
-                    isSkipDns:isSkipDns
-                  shouldRetry:shouldRetry
-                     progress:progress
-                     complete:^(QNResponseInfo * _Nullable responseInfo, NSArray<QNUploadSingleRequestMetrics *> * _Nullable metrics, NSDictionary * _Nullable response) {
+    [self.singleRequest request:request
+                      isSkipDns:isSkipDns
+                    shouldRetry:shouldRetry
+                       progress:progress
+                       complete:^(QNResponseInfo * _Nullable responseInfo, NSArray<QNUploadSingleRequestMetrics *> * _Nullable metrics, NSDictionary * _Nullable response) {
         
         [self.requestMetrics addMetricsList:metrics];
         
@@ -186,14 +183,6 @@
         self.isUseOldServer = YES;
     }
     return [self.region getNextServer:self.isUseOldServer freezeServer:self.currentServer];
-}
-
-- (QNResponseInfo *)checkServer:(id <QNUploadServer>)server{
-    QNResponseInfo *responseInfo = nil;
-    if (!server.host || server.host.length == 0) {
-        responseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
-    }
-    return responseInfo;
 }
 
 @end

@@ -67,7 +67,6 @@
         [serverGroups addObject:zoneInfo.src];
     }
     self.domainDictionary = [self createDomainDictionary:serverGroups];
-    NSLog(@":: new hosts: %@ \r\n %@", zoneInfo.acc.allHosts, zoneInfo.src.allHosts);
     
     [serverGroups removeAllObjects];
     if (zoneInfo.old_acc) {
@@ -77,7 +76,6 @@
         [serverGroups addObject:zoneInfo.old_src];
     }
     self.oldDomainDictionary = [self createDomainDictionary:serverGroups];
-    NSLog(@":: old hosts: %@ \r\n %@", zoneInfo.old_acc.allHosts, zoneInfo.old_src.allHosts);
 }
 - (NSDictionary *)createDomainDictionary:(NSArray <QNUploadServerGroup *> *)serverGroups{
     NSDate *freezeDate = [NSDate dateWithTimeIntervalSince1970:0];
@@ -109,7 +107,6 @@
     }
     
     if (freezeServer.serverId) {
-        NSLog(@":: freezz host: %@", freezeServer.serverId);
         [_domainDictionary[freezeServer.serverId] freeze];
         [_oldDomainDictionary[freezeServer.serverId] freeze];
     }
@@ -125,7 +122,6 @@
     if (server == nil) {
         self.isAllFreezed = YES;
     }
-    NSLog(@":: new host: %@", server.serverId);
     return server;
 }
 @end

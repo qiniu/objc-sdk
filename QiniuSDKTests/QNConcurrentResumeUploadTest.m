@@ -25,7 +25,7 @@
         builder.useConcurrentResumeUpload = YES;
         builder.concurrentTaskCount = 3;
         builder.timeoutInterval = 5;
-//        builder.useHttps = NO;
+        builder.useHttps = YES;
     }];
     _upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 }
