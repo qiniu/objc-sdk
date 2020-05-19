@@ -95,13 +95,10 @@
     free(superProperties);
         
     NSError *error;
-    NSData *itemData = [NSJSONSerialization dataWithJSONObject:itemDic options:NSJSONWritingPrettyPrinted error:&error];
+    NSData *itemData = [NSJSONSerialization dataWithJSONObject:itemDic options:kNilOptions error:&error];
     if (error) return nil;
     NSString *itemJson = [[NSString alloc] initWithData:itemData encoding:NSUTF8StringEncoding];
-    NSMutableString *formatJsonString = [NSMutableString stringWithString:itemJson];
-    [formatJsonString replaceOccurrencesOfString:@" " withString:@"" options:NSLiteralSearch range:NSMakeRange(0, formatJsonString.length)];
-    [formatJsonString replaceOccurrencesOfString:@"\n" withString:@"" options:NSLiteralSearch range:NSMakeRange(0, formatJsonString.length)];
-    return formatJsonString;
+    return itemJson;
 }
 @end
 
