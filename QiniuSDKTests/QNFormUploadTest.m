@@ -50,6 +50,55 @@
     XCTAssert(testInfo.reqId, @"Pass");
 }
 
+// upload 100 file and calculate upload success rate
+- (void)test100Up {
+    NSInteger count = 100;
+    __block NSInteger completeCount = 0;
+    __block NSInteger successCount = 0;
+    for (int i=0; i<count; i++) {
+        NSString *taskId = [NSString stringWithFormat:@"test100Up_%d", i];
+        [self test100UpTask:taskId complete:^(BOOL isSuccess) {
+            @synchronized (self) {
+                if (isSuccess) {
+                    successCount += 1;
+                }
+                completeCount += 1;
+                NSLog(@"upload file: test100Up_%d", i);
+            }
+        }];
+    }
+    
+    AGWW_WAIT_WHILE(completeCount != count, 100.0);
+    
+    CGFloat successRate = successCount * 1.0 / count;
+    NSLog(@"successCount: %td", successCount);
+    NSLog(@"successRate: %lf", successRate);
+    XCTAssert(completeCount == count, @"Pass");
+}
+
+- (void)test100UpTask:(NSString *)taskId complete:(void(^)(BOOL isSuccess))complete{
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.timeoutInterval = 5;
+    }];
+    QNUploadManager *upManager = [[QNUploadManager alloc]initWithConfiguration:config];
+    QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
+    NSMutableString *contentString = [NSMutableString string];
+    NSString *word = @"Hello, World!";
+    while (contentString.length < 1024) {
+        [contentString appendString:word];
+    }
+    NSData *data = [[contentString copy] dataUsingEncoding:NSUTF8StringEncoding];
+    [upManager putData:data key:taskId token:g_token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+        if (info.isOK && info.reqId) {
+            complete(YES);
+        } else {
+            NSLog(@"upload failed. response info is: %@",info);
+            complete(NO);
+        }
+    } option:opt];
+}
+
+
 // travis ci iOS simulator 8.1 failed，其他环境（mac, iOS 9.0）正常，待详细排查
 //- (void)testHttpsUp {
 //    __block QNResponseInfo *testInfo = nil;
