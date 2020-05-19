@@ -56,6 +56,11 @@ extern const int kQNFileError;
 @property (nonatomic, copy, readonly) NSString *reqId;
 
 /**
+ *    七牛日志上报返回的X_Log_Client_Id
+ */
+@property (nonatomic, copy, readonly) NSString *xClientId;
+
+/**
  *    七牛服务器内部跟踪记录
  */
 @property (nonatomic, copy, readonly) NSString *xlog;
