@@ -124,6 +124,8 @@
 
 @interface QNUploadInfoReporter : NSObject
 
+@property (nonatomic, copy, readonly) NSString *X_Log_Client_Id;
+
 - (id)init __attribute__((unavailable("Use sharedInstance: instead.")));
 + (instancetype)sharedInstance;
 
