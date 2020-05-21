@@ -14,7 +14,6 @@
 
 @property (nonatomic) float previousPercent;
 
-@property(nonatomic, strong)NSArray <id <QNUploadRegion> > *regions;
 @property(nonatomic, strong)QNRequestTranscation *uploadTranscation;
 
 @end

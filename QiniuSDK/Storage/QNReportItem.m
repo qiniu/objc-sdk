@@ -55,7 +55,7 @@
     }
     
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:self.keyValues
-                                                       options:NSJSONWritingPrettyPrinted
+                                                       options:NSJSONWritingFragmentsAllowed
                                                          error:nil];
     if (!jsonData) {
         return jsonString;
@@ -173,6 +173,7 @@ NSString * const QNReportLogTypeQuality = @"quality";
 
 //MARK:-- 请求信息打点⽇志
 NSString * const QNReportRequestKeyLogType = @"log_type";
+NSString *const QNReportRequestKeyUpTime = @"up_time";
 NSString * const QNReportRequestKeyStatusCode = @"status_code";
 NSString * const QNReportRequestKeyRequestId = @"req_id";
 NSString * const QNReportRequestKeyHost = @"host";
@@ -209,6 +210,7 @@ NSString * const QNReportRequestKeyPrefetchedIpCount = @"prefetched_ip_count";
 
 //MARK:-- 分块上传统计⽇志
 NSString * const QNReportBlockKeyLogType = @"log_type";
+NSString *const QNReportBlockKeyUpTime = @"up_time";
 NSString * const QNReportBlockKeyTargetRegionId = @"target_region_id";
 NSString * const QNReportBlockKeyCurrentRegionId = @"current_region_id";
 NSString * const QNReportBlockKeyTotalElaspsedTime = @"total_elaspsed_time";
@@ -223,6 +225,7 @@ NSString * const QNReportBlockKeyClientTime = @"client_time";
 
 //MARK:-- 上传质量统计
 NSString * const QNReportQualityKeyLogType = @"log_type";
+NSString *const QNReportQualityKeyUpTime = @"up_time";
 NSString * const QNReportQualityKeyResult = @"result";
 NSString * const QNReportQualityKeyTotalElaspsedTime = @"total_elaspsed_time";
 NSString * const QNReportQualityKeyRequestsCount = @"requests_count";

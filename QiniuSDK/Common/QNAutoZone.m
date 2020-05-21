@@ -130,21 +130,17 @@
     QNRequestTranscation *transcation = [self createUploadRequestTranscation:token];
     [transcation quertUploadHosts:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
 
-        if (!responseInfo.error) {
-        
+        if (responseInfo.isOK) {
             QNZonesInfo *zonesInfo = [QNZonesInfo infoWithDictionary:response];
-            if (responseInfo == nil) {
-                ret(kQNInvalidToken, responseInfo);
-            } else {
-                [self.lock lock];
-                [self.cache setValue:zonesInfo forKey:[token index]];
-                [self.lock unlock];
-                [[QNAutoZoneCache share] cache:response forToken:token];
-                ret(0, responseInfo);
-            }
+            [self.lock lock];
+            [self.cache setValue:zonesInfo forKey:[token index]];
+            [self.lock unlock];
+            [[QNAutoZoneCache share] cache:response forToken:token];
+            ret(0, responseInfo);
         } else {
             ret(kQNNetworkError, responseInfo);
         }
+        [self destoryUploadRequestTranscation:transcation];
     }];
 }
 

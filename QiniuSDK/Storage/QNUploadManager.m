@@ -95,35 +95,6 @@
     return sharedInstance;
 }
 
-+ (BOOL)checkAndNotifyError:(NSString *)key
-                      token:(NSString *)token
-                      input:(NSObject *)input
-                   complete:(QNUpCompletionHandler)completionHandler {
-    NSString *desc = nil;
-    if (completionHandler == nil) {
-        @throw [NSException exceptionWithName:NSInvalidArgumentException
-                                       reason:@"no completionHandler"
-                                     userInfo:nil];
-        return YES;
-    }
-    if (input == nil) {
-        desc = @"no input data";
-    } else if (token == nil || [token isEqual:[NSNull null]] || [token isEqualToString:@""]) {
-        desc = @"no token";
-    }
-    if (desc != nil) {
-        QNResponseInfo *info = [QNResponseInfo responseInfoWithInvalidArgument:desc];
-        [QNUploadManager complete:token
-                              key:key
-                     responseInfo:info
-                         response:nil
-                      taskMetrics:nil
-                         complete:completionHandler];
-        return YES;
-    }
-    return NO;
-}
-
 - (void)putData:(NSData *)data
             key:(NSString *)key
           token:(NSString *)token
@@ -168,16 +139,6 @@
                              complete:completionHandler];
             return;
         }
-        if ([data length] == 0) {
-            QNResponseInfo *info = [QNResponseInfo responseInfoOfZeroData:@"put data was nil"];
-            [QNUploadManager complete:token
-                                  key:key
-                         responseInfo:info
-                             response:nil
-                          taskMetrics:nil
-                             complete:completionHandler];
-            return;
-        }
         QNUpTaskCompletionHandler complete = ^(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp) {
             [QNUploadManager complete:token
                                   key:key
@@ -202,7 +163,6 @@
 - (void)putFileInternal:(id<QNFileDelegate>)file
                     key:(NSString *)key
                   token:(NSString *)token
-             identifier:(NSString *)identifier
                complete:(QNUpCompletionHandler)completionHandler
                  option:(QNUploadOption *)option {
     
@@ -313,7 +273,6 @@
        complete:(QNUpCompletionHandler)completionHandler
          option:(QNUploadOption *)option {
     
-    NSString *identifier = [[NSUUID UUID] UUIDString];
     if ([QNUploadManager checkAndNotifyError:key token:token input:filePath complete:completionHandler]) {
         return;
     }
@@ -331,7 +290,7 @@
                              complete:completionHandler];
             return;
         }
-        [self putFileInternal:file key:key token:token identifier:identifier complete:completionHandler option:option];
+        [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
 }
 
@@ -360,7 +319,7 @@
                              complete:completionHandler];
             return;
         }
-        [self putFileInternal:file key:key token:token identifier:nil complete:completionHandler option:option];
+        [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
 #endif
 }
@@ -390,7 +349,7 @@
                              complete:completionHandler];
             return;
         }
-        [self putFileInternal:file key:key token:token identifier:nil complete:completionHandler option:option];
+        [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
 #endif
 }
@@ -418,9 +377,40 @@
                              complete:completionHandler];
             return;
         }
-        [self putFileInternal:file key:key token:token identifier:nil complete:completionHandler option:option];
+        [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
 #endif
+}
+
++ (BOOL)checkAndNotifyError:(NSString *)key
+                      token:(NSString *)token
+                      input:(NSObject *)input
+                   complete:(QNUpCompletionHandler)completionHandler {
+    if (completionHandler == nil) {
+        @throw [NSException exceptionWithName:NSInvalidArgumentException
+                                   reason:@"no completionHandler"
+                                     userInfo:nil];
+        return YES;
+    }
+    
+    NSString *desc = nil;
+    if (input == nil) {
+        desc = @"no input data";
+    } else if (token == nil || [token isEqual:[NSNull null]] || [token isEqualToString:@""]) {
+        desc = @"no token";
+    }
+    if (desc != nil) {
+        QNResponseInfo *info = [QNResponseInfo responseInfoWithInvalidArgument:desc];
+        [QNUploadManager complete:token
+                              key:key
+                     responseInfo:info
+                         response:nil
+                      taskMetrics:nil
+                         complete:completionHandler];
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 + (void)complete:(NSString *)token
@@ -449,6 +439,7 @@
     
     QNReportItem *item = [QNReportItem item];
     [item setReportValue:QNReportLogTypeQuality forKey:QNReportQualityKeyLogType];
+    [item setReportValue:@([[NSDate date] timeIntervalSince1970]) forKey:QNReportQualityKeyUpTime];
     [item setReportValue:info.qualityResult forKey:QNReportQualityKeyResult];
     [item setReportValue:taskMetricsP.totalElaspsedTime forKey:QNReportQualityKeyTotalElaspsedTime];
     [item setReportValue:taskMetricsP.requestCount forKey:QNReportQualityKeyRequestsCount];

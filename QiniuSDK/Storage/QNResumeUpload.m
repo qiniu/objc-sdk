@@ -26,7 +26,9 @@
     [super startToUpload];
     
     self.previousPercent = 0;
-
+    self.uploadChunkErrorResponseInfo = nil;
+    self.uploadChunkErrorResponse = nil;
+    
     [self uploadRestChunk:^{
         
         if ([self.uploadFileInfo isAllUploaded] == NO || self.uploadChunkErrorResponseInfo) {
@@ -64,16 +66,20 @@
 
 - (void)uploadRestChunk:(dispatch_block_t)completeHandler{
     if (!self.uploadFileInfo) {
-        QNResponseInfo *responseInfo = self.uploadChunkErrorResponseInfo ?: [QNResponseInfo responseInfoWithInvalidArgument:@"regions error"];
-        [self complete:responseInfo resp:self.uploadChunkErrorResponse];
+        if (!self.uploadChunkErrorResponseInfo) {
+            self.uploadChunkErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"regions error"];
+            self.uploadChunkErrorResponse = self.uploadChunkErrorResponseInfo.responseDictionary;
+        }
         completeHandler();
         return;
     }
     
     id <QNUploadRegion> currentRegion = [self getCurrentRegion];
     if (!currentRegion) {
-        QNResponseInfo *responseInfo = self.uploadChunkErrorResponseInfo ?: [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
-        [self complete:responseInfo resp:self.uploadChunkErrorResponse];
+        if (!self.uploadChunkErrorResponseInfo) {
+            self.uploadChunkErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
+            self.uploadChunkErrorResponse = self.uploadChunkErrorResponseInfo.responseDictionary;
+        }
         completeHandler();
         return;
     }

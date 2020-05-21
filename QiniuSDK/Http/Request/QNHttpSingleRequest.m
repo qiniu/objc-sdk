@@ -170,6 +170,7 @@
     
     QNReportItem *item = [QNReportItem item];
     [item setReportValue:QNReportLogTypeRequest forKey:QNReportRequestKeyLogType];
+    [item setReportValue:@([[NSDate date] timeIntervalSince1970]) forKey:QNReportRequestKeyUpTime];
     [item setReportValue:info.requestReportStatusCode forKey:QNReportRequestKeyStatusCode];
     [item setReportValue:info.reqId forKey:QNReportRequestKeyRequestId];
     [item setReportValue:requestMetricsP.request.qn_domain forKey:QNReportRequestKeyHost];

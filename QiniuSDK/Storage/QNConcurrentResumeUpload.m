@@ -37,6 +37,8 @@
     [super startToUpload];
     
     self.previousPercent = 0;
+    self.uploadBlockErrorResponseInfo = nil;
+    self.uploadBlockErrorResponse = nil;
     self.uploadTranscations = [NSMutableArray array];
     
     NSLog(@"concurrent resume task count: %u", (unsigned int)self.config.concurrentTaskCount);
@@ -84,16 +86,20 @@
 
 - (void)uploadRestBlock:(dispatch_block_t)completeHandler{
     if (!self.uploadFileInfo) {
-        QNResponseInfo *responseInfo = self.uploadBlockErrorResponseInfo ?: [QNResponseInfo responseInfoWithInvalidArgument:@"regions error"];
-        [self complete:responseInfo resp:self.uploadBlockErrorResponse];
+        if (self.uploadBlockErrorResponseInfo == nil) {
+            self.uploadBlockErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"regions error"];
+            self.uploadBlockErrorResponse = self.uploadBlockErrorResponseInfo.responseDictionary;
+        }
         completeHandler();
         return;
     }
     
     id <QNUploadRegion> currentRegion = [self getCurrentRegion];
     if (!currentRegion) {
-        QNResponseInfo *responseInfo = self.uploadBlockErrorResponseInfo ?: [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
-        [self complete:responseInfo resp:self.uploadBlockErrorResponse];
+        if (self.uploadBlockErrorResponseInfo == nil) {
+            self.uploadBlockErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
+            self.uploadBlockErrorResponse = self.uploadBlockErrorResponseInfo.responseDictionary;
+        }
         completeHandler();
         return;
     }
@@ -115,7 +121,7 @@
         self.option.progressHandler(self.key, percent);
     };
     
-    if ([chunk isFirstData]) {
+    if (chunk) {
         [self makeBlockRequest:block firstChunk:chunk progress:progress completeHandler:completeHandler];
     } else {
         completeHandler();
@@ -164,8 +170,8 @@
                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         
         [self setCurrentRegionRequestMetrics:metrics];
-        completeHandler(responseInfo, response);
         [self destoryUploadRequestTranscation:transcation];
+        completeHandler(responseInfo, response);
     }];
 }
 

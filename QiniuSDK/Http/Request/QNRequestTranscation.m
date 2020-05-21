@@ -14,7 +14,7 @@
 #import "QNConfiguration.h"
 #import "QNUploadOption.h"
 #import "QNZoneInfo.h"
-
+#import "QNUserAgent.h"
 #import "QNResponseInfo.h"
 
 #import "QNUploadFixedHostRegion.h"
@@ -97,9 +97,11 @@
             return NO;
         }
     };
+    
+    NSDictionary *header = @{@"User-Agent" : [kQNUserAgent getUserAgent:self.token.token]};
     NSString *action = [NSString stringWithFormat:@"/v3/query?ak=%@&bucket=%@", self.token.access, self.token.bucket];
     [self.regionRequest get:action
-                    headers:nil
+                    headers:header
                 shouldRetry:shouldRetry
                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
 
@@ -150,6 +152,7 @@
     NSMutableDictionary *header = [NSMutableDictionary dictionary];
     header[@"Content-Type"] = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
     header[@"Content-Length"] = [NSString stringWithFormat:@"%lu", (unsigned long)body.length];
+    header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
     
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
         if (responseInfo.isOK == false) {
@@ -180,8 +183,11 @@
     self.requestInfo.fileOffset = @(blockOffset);
     
     NSString *token = [NSString stringWithFormat:@"UpToken %@", self.token.token];
-    NSDictionary *header = @{@"Authorization" : token,
-                             @"Content-Type" : @"application/octet-stream"};
+    NSMutableDictionary *header = [NSMutableDictionary dictionary];
+    header[@"Authorization"] = token;
+    header[@"Content-Type"] = @"application/octet-stream";
+    header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
+    
     NSString *action = [NSString stringWithFormat:@"/mkblk/%u", (unsigned int)blockSize];
     
     NSString *chunkCrc = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:firstChunkData]];
@@ -220,8 +226,10 @@
     self.requestInfo.fileOffset = @(blockOffset + chunkOffest);
     
     NSString *token = [NSString stringWithFormat:@"UpToken %@", self.token.token];
-    NSDictionary *header = @{@"Authorization" : token,
-                             @"Content-Type" : @"application/octet-stream"};
+    NSMutableDictionary *header = [NSMutableDictionary dictionary];
+    header[@"Authorization"] = token;
+    header[@"Content-Type"] = @"application/octet-stream";
+    header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
     
     NSString *action = [NSString stringWithFormat:@"/bput/%@/%lld", blockContext,  chunkOffest];
     
@@ -257,8 +265,10 @@
     self.requestInfo.requestType = QNUploadRequestTypeMkfile;
     
     NSString *token = [NSString stringWithFormat:@"UpToken %@", self.token.token];
-    NSDictionary *header = @{@"Authorization" : token,
-                             @"Content-Type" : @"application/octet-stream"};
+    NSMutableDictionary *header = [NSMutableDictionary dictionary];
+    header[@"Authorization"] = token;
+    header[@"Content-Type"] = @"application/octet-stream";
+    header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
     
     NSString *mimeType = [[NSString alloc] initWithFormat:@"/mimeType/%@", [QNUrlSafeBase64 encodeString:self.uploadOption.mimeType]];
 

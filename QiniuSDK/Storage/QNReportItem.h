@@ -46,9 +46,9 @@ extern NSString *const QNReportLogTypeRequest;
 extern NSString *const QNReportLogTypeBlock;
 extern NSString *const QNReportLogTypeQuality;
 
-
 //MARK:-- 请求信息打点⽇志
 extern NSString *const QNReportRequestKeyLogType;
+extern NSString *const QNReportRequestKeyUpTime;
 extern NSString *const QNReportRequestKeyStatusCode;
 extern NSString *const QNReportRequestKeyRequestId;
 extern NSString *const QNReportRequestKeyHost;
@@ -85,6 +85,7 @@ extern NSString *const QNReportRequestKeyPrefetchedIpCount;
 
 //MARK:-- 分块上传统计⽇志
 extern NSString *const QNReportBlockKeyLogType;
+extern NSString *const QNReportBlockKeyUpTime;
 extern NSString *const QNReportBlockKeyTargetRegionId;
 extern NSString *const QNReportBlockKeyCurrentRegionId;
 extern NSString *const QNReportBlockKeyTotalElaspsedTime;
@@ -99,6 +100,7 @@ extern NSString *const QNReportBlockKeyClientTime;
 
 //MARK:-- 上传质量统计
 extern NSString *const QNReportQualityKeyLogType;
+extern NSString *const QNReportQualityKeyUpTime;
 extern NSString *const QNReportQualityKeyResult;
 extern NSString *const QNReportQualityKeyTotalElaspsedTime;
 extern NSString *const QNReportQualityKeyRequestsCount;

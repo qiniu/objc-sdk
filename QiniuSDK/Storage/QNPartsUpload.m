@@ -59,7 +59,7 @@
 
 - (void)recordUploadInfo{
     NSString *key = self.recorderKey;
-    if (self.recorder == nil || key == nil || [key isEqualToString:@""]) {
+    if (self.recorder == nil || key == nil || key.length == 0) {
         return;
     }
     NSDictionary *zoneInfo = [[self getCurrentRegion] zoneInfo].detailInfo;
@@ -125,6 +125,7 @@
     
     QNReportItem *item = [QNReportItem item];
     [item setReportValue:QNReportLogTypeBlock forKey:QNReportBlockKeyLogType];
+    [item setReportValue:@([[NSDate date] timeIntervalSince1970]) forKey:QNReportBlockKeyUpTime];
     [item setReportValue:[self getTargetRegion].zoneInfo.zoneRegionId forKey:QNReportBlockKeyTargetRegionId];
     [item setReportValue:[self getCurrentRegion].zoneInfo.zoneRegionId forKey:QNReportBlockKeyCurrentRegionId];
     [item setReportValue:metrics.totalElaspsedTime forKey:QNReportBlockKeyTotalElaspsedTime];

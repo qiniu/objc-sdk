@@ -82,21 +82,13 @@
     NSMutableDictionary *domainDictionary = [NSMutableDictionary dictionary];
     
     for (QNUploadServerGroup *serverGroup in serverGroups) {
-        NSMutableArray *hosts = [NSMutableArray array];
-        if (serverGroup.main) {
-            [hosts addObjectsFromArray:serverGroup.main];
-        }
-        if (serverGroup.backup) {
-            [hosts addObjectsFromArray:serverGroup.backup];
-        }
-        for (NSString *host in hosts) {
+        for (NSString *host in serverGroup.allHosts) {
             QNUploadServerDomain *domain = [[QNUploadServerDomain alloc] init];
             domain.freezeDate = freezeDate;
             domain.host = host;
             [domainDictionary setObject:domain forKey:host];
         }
     }
-    
     return [domainDictionary copy];
 }
 
