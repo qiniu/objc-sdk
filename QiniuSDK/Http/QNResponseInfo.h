@@ -95,8 +95,6 @@ typedef NS_ENUM(int, QNResponseInfoErrorType){
 @property (nonatomic, readonly) NSString *id;
 /// 时间戳
 @property (readonly) UInt64 timeStamp;
-/// 请求过程统计信息
-@property(nonatomic, strong) QNUploadSingleRequestMetrics *requestMetrics;
 /// 是否取消
 @property (nonatomic, readonly, getter=isCancelled) BOOL canceled;
 /// 成功的请求

@@ -22,8 +22,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 @interface QNResponseInfo ()
 
 @property (assign) int statusCode;
-@property (nonatomic, copy) NSString *msg;
-@property (nonatomic, copy) NSString *msgDetail;
+@property (nonatomic, copy) NSString *message;
 @property (nonatomic, copy) NSString *reqId;
 @property (nonatomic, copy) NSString *xlog;
 @property (nonatomic, copy) NSString *xvia;
@@ -83,14 +82,13 @@ static NSString *kQNErrorDomain = @"qiniu.com";
                             error:(NSError *)error{
     QNResponseInfo *response = [[QNResponseInfo alloc] init];
     response.statusCode = errorType;
-    response.msgDetail = errorDesc;
-    response.requestMetrics = [QNUploadSingleRequestMetrics emptyMetrics];
+    response.message = errorDesc;
     if (error) {
        response.error = error;
     } else {
         NSError *error = [[NSError alloc] initWithDomain:kQNErrorDomain
                                                     code:errorType
-                                                userInfo:@{ @"error" : response.msgDetail ?: response.msg ?: @"error" }];
+                                                userInfo:@{ @"error" : response.message ?: @"error" }];
         response.error = error;
     }
     
@@ -107,16 +105,15 @@ static NSString *kQNErrorDomain = @"qiniu.com";
         
         _host = host;
         _timeStamp = [[NSDate date] timeIntervalSince1970];
-        _requestMetrics = [QNUploadSingleRequestMetrics emptyMetrics];
         
         if (response) {
             
             int statusCode = (int)[response statusCode];
             NSDictionary *headers = [response allHeaderFields];
             _statusCode = statusCode;
-            _reqId = headers[@"X-Reqid"];
-            _xlog = headers[@"X-Log"];
-            _xvia = !headers[@"X-Via"] ? (!headers[@"X-Px"] ? headers[@"Fw-Via"] : headers[@"X-Px"]) : headers[@"X-Via"];
+            _reqId = headers[@"x-reqid"];
+            _xlog = headers[@"x-log"];
+            _xvia = headers[@"x-via"] ?: headers[@"x-px"] ?: headers[@"fw-via"];
 
             if (error) {
                 _error = error;

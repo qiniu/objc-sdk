@@ -120,7 +120,6 @@
         QNResponseInfo *responseInfo = nil;
         if (checkCancelHandler()) {
             responseInfo = [QNResponseInfo cancelResponse];
-            responseInfo.requestMetrics = metrics;
             [self complete:responseInfo response:nil requestMetrics:metrics complete:complete];
             return;
         }
@@ -136,7 +135,6 @@
                                                                response:(NSHTTPURLResponse *)response
                                                                    body:responseData
                                                                   error:error];
-        responseInfo.requestMetrics = metrics;
         if (shouldRetry(responseInfo, responseDic)
             && self.currentRetryTime < self.config.retryMax
             && responseInfo.couldHostRetry) {

@@ -13,6 +13,7 @@
 #import "QNUserAgent.h"
 #import "QNAsyncRun.h"
 #import "QNVersion.h"
+#import "QNUtils.h"
 
 @implementation QNReportConfig
 
@@ -32,7 +33,7 @@
         _reportEnable = YES;
         _interval = 10;
         _serverURL = @"https://uplog.qbox.me/log/4";
-        _recordDirectory = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"com.qiniu.report"];
+        _recordDirectory = [NSString stringWithFormat:@"%@/report", [QNUtils sdkCacheDirectory]];
         _maxRecordFileSize = 2 * 1024 * 1024;
         _uploadThreshold = 4 * 1024;
         _timeoutInterval = 10;
@@ -98,7 +99,7 @@
     if (!_config.isReportEnable) {
         return NO;
     }
-    if (!(_config.maxRecordFileSize > _config.uploadThreshold)) {
+    if (_config.maxRecordFileSize <= _config.uploadThreshold) {
         QNAsyncRunInMain(^{
             NSLog(@"maxRecordFileSize must be larger than uploadThreshold");
         });

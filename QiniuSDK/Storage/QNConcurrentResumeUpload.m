@@ -151,6 +151,8 @@
             [self recordUploadInfo];
             [self uploadRestBlock:completeHandler];
         } else {
+            chunk.isUploading = NO;
+            chunk.isCompleted = NO;
             self.uploadBlockErrorResponse = response;
             self.uploadBlockErrorResponseInfo = responseInfo;
             [self setCurrentRegionRequestMetrics:metrics];

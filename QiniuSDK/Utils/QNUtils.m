@@ -73,5 +73,13 @@
 }
 
 
++ (NSString *)sdkDocumentDirectory{
+    return [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"/qiniu"];
+}
+
++ (NSString *)sdkCacheDirectory{
+    return [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"/qiniu"];
+}
+
 @end
 

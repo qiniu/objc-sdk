@@ -50,7 +50,7 @@
 - (NSString *)toJson{
     
     NSString *jsonString = @"{}";
-    if (!self.keyValues) {
+    if (!self.keyValues || self.keyValues.count == 0) {
         return jsonString;
     }
     
@@ -137,12 +137,9 @@
     } else if (self.statusCode == QNResponseInfoErrorTypeUserCanceled
             || self.statusCode == -999){
         result = @"user_canceled";
-    } else if (self.statusCode == QNResponseInfoErrorTypeInvalidFile){
-        result = @"invalid_file";
     } else if (self.statusCode == QNResponseInfoErrorTypeNetworkError){
         result = @"zero_size_file";
-    } else if (self.statusCode == QNResponseInfoErrorTypeInvalidFile
-            || self.statusCode == -1009){
+    } else if (self.statusCode == -1009){
         result = @"network_error";
     } else if (self.statusCode == -1001){
         result = @"timeout";

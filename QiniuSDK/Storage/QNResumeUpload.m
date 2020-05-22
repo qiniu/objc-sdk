@@ -133,6 +133,8 @@
             [self recordUploadInfo];
             [self uploadRestChunk:completeHandler];
         } else {
+            chunk.isUploading = NO;
+            chunk.isCompleted = NO;
             self.uploadChunkErrorResponse = response;
             self.uploadChunkErrorResponseInfo = responseInfo;
             [self setCurrentRegionRequestMetrics:metrics];
@@ -164,6 +166,8 @@
             [self recordUploadInfo];
             [self uploadRestChunk:completeHandler];
         } else {
+            chunk.isUploading = NO;
+            chunk.isCompleted = NO;
             self.uploadChunkErrorResponse = response;
             self.uploadChunkErrorResponseInfo = responseInfo;
             [self setCurrentRegionRequestMetrics:metrics];

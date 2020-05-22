@@ -39,6 +39,12 @@ NS_ASSUME_NONNULL_BEGIN
 /// 获取当前时间戳 单位：ms
 + (NSTimeInterval)currentTimestamp;
 
+/// sdk document文件路径
++ (NSString *)sdkDocumentDirectory;
+
+/// sdk cache文件路径
++ (NSString *)sdkCacheDirectory;
+
 @end
 
 NS_ASSUME_NONNULL_END

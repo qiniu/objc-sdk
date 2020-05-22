@@ -57,7 +57,6 @@
 
 
 
-#define Reporter [QNUploadInfoReporter sharedInstance]
 #define kQNReporter [QNUploadInfoReporter sharedInstance]
 @interface QNUploadInfoReporter : NSObject
 
