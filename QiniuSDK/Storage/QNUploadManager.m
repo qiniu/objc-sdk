@@ -393,14 +393,15 @@
         return YES;
     }
     
-    NSString *desc = nil;
+    QNResponseInfo *info = nil;
     if (input == nil) {
-        desc = @"no input data";
+        info = [QNResponseInfo responseInfoOfZeroData:@"no input data"];
+    } else if ([input isKindOfClass:[NSData class]] && [(NSData *)input length] == 0) {
+        info = [QNResponseInfo responseInfoOfZeroData:@"no input data"];
     } else if (token == nil || [token isEqual:[NSNull null]] || [token isEqualToString:@""]) {
-        desc = @"no token";
+        info = [QNResponseInfo responseInfoWithInvalidToken:@"no token"];
     }
-    if (desc != nil) {
-        QNResponseInfo *info = [QNResponseInfo responseInfoWithInvalidArgument:desc];
+    if (info != nil) {
         [QNUploadManager complete:token
                               key:key
                      responseInfo:info

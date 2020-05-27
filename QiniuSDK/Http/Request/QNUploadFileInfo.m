@@ -5,8 +5,7 @@
 //  Created by yangsen on 2020/4/30.
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
-
-#import "QNUploadData.h"
+#import "QNUploadFileInfo.h"
 
 @interface QNUploadData()
 

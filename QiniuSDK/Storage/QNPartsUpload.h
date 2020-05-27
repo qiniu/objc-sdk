@@ -7,7 +7,7 @@
 //
 
 #import "QNBaseUpload.h"
-#import "QNUploadData.h"
+#import "QNUploadFileInfo.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
