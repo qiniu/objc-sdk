@@ -26,6 +26,8 @@
 @property (nonatomic, assign)NSInteger currentRegionIndex;
 @property (nonatomic, strong)NSMutableArray <id <QNUploadRegion> > *regions;
 
+@property (nonatomic, strong)QNUploadRegionRequestMetrics *currentRegionRequestMetrics;
+
 @end
 
 @implementation QNBaseUpload
@@ -86,11 +88,19 @@
 
 - (void)initData{
     _currentRegionIndex = 0;
+    _metrics = [QNUploadTaskMetrics emptyMetrics];
 }
 
 - (void)run {
-    [self prepareToUpload];
-    [self startToUpload];
+    [_config.zone preQuery:self.token on:^(int code, QNResponseInfo *responseInfo, QNUploadRegionRequestMetrics *metrics) {
+        [self.metrics addMetrics:metrics];
+        if (code == 0) {
+            [self prepareToUpload];
+            [self startToUpload];
+        } else {
+            [self complete:responseInfo resp:responseInfo.responseDictionary];
+        }
+    }];
 }
 
 - (void)prepareToUpload{
@@ -132,7 +142,7 @@
         [defaultRegions addObject:region];
     }
     self.regions = defaultRegions;
-    _metrics = [[QNUploadTaskMetrics alloc] initWithRegions:defaultRegions];
+    self.metrics.regions = defaultRegions;
 }
 
 - (void)insertRegionAtFirstByZoneInfo:(QNZoneInfo *)zoneInfo{
@@ -156,9 +166,11 @@
     }
     return ret;
 }
+
 - (id <QNUploadRegion>)getTargetRegion{
     return self.regions.firstObject;
 }
+
 - (id <QNUploadRegion>)getCurrentRegion{
     id <QNUploadRegion> region = nil;
     @synchronized (self) {
@@ -168,4 +180,16 @@
     }
     return region;
 }
+
+- (void)addRegionRequestMetricsOfOneFlow:(QNUploadRegionRequestMetrics *)metrics{
+    if (metrics == nil) {
+        return;
+    }
+    if (self.currentRegionRequestMetrics == nil) {
+        self.currentRegionRequestMetrics = metrics;
+    } else {
+        [self.currentRegionRequestMetrics addMetrics:metrics];
+    }
+}
+
 @end

@@ -220,11 +220,7 @@
     
     NSString *localIp = [QNIP local];
 
-    if (!localIp || localIp.length == 0) {
-        return YES;
-    }
-    
-    if (![cacheKey.localIp isEqualToString:localIp]) {
+    if (!localIp || localIp.length == 0 || ![cacheKey.localIp isEqualToString:localIp]) {
         return YES;
     }
     
@@ -353,6 +349,7 @@
                 isSuccess = YES;
                 break;
             }
+            rePreNum += 1;
         }
         
         if (!isSuccess) {
@@ -542,7 +539,7 @@
     if (!currentZone || !token) {
         return nil;
     }
-    [currentZone preQuery:[QNUpToken parse:token] on:^(int code, QNResponseInfo *responseInfo) {
+    [currentZone preQuery:[QNUpToken parse:token] on:^(int code, QNResponseInfo *responseInfo, QNUploadRegionRequestMetrics *metrics) {
         dispatch_semaphore_signal(self.semaphore);
     }];
     dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
@@ -551,8 +548,8 @@
     NSMutableArray *autoHosts = [NSMutableArray array];
     NSArray *zoneInfoList = autoZonesInfo.zonesInfo;
     for (QNZoneInfo *info in zoneInfoList) {
-        for (NSString *host in info.allHosts) {
-            [autoHosts addObject:host];
+        if (info.allHosts) {
+            [autoHosts addObjectsFromArray:info.allHosts];
         }
     }
     return [autoHosts copy];
@@ -564,8 +561,8 @@
     for (QNFixedZone *fixZone in fixedZones) {
         QNZonesInfo *zonesInfo = [fixZone getZonesInfoWithToken:nil];
         for (QNZoneInfo *zoneInfo in zonesInfo.zonesInfo) {
-            for (NSString *host in zoneInfo.allHosts) {
-                [localHosts addObject:host];
+            if (zoneInfo.allHosts) {
+                [localHosts addObjectsFromArray:zoneInfo.allHosts];
             }
         }
     }

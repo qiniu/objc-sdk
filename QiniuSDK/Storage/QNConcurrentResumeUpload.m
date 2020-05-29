@@ -142,6 +142,7 @@
             firstChunkData:[self getDataWithChunk:chunk block:block]
                   progress:progress
                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        [self addRegionRequestMetricsOfOneFlow:metrics];
         
         NSString *blockContext = response[@"ctx"];
         if (responseInfo.isOK && blockContext) {
@@ -155,7 +156,6 @@
             chunk.isCompleted = NO;
             self.uploadBlockErrorResponse = response;
             self.uploadBlockErrorResponseInfo = responseInfo;
-            [self setCurrentRegionRequestMetrics:metrics];
             completeHandler();
         }
         [self destoryUploadRequestTranscation:transcation];
@@ -171,7 +171,7 @@
             blockContexts:[self.uploadFileInfo allBlocksContexts]
                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         
-        [self setCurrentRegionRequestMetrics:metrics];
+        [self addRegionRequestMetricsOfOneFlow:metrics];
         [self destoryUploadRequestTranscation:transcation];
         completeHandler(responseInfo, response);
     }];

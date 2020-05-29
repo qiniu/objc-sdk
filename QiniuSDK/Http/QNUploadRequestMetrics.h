@@ -75,6 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithRegion:(id <QNUploadRegion>)region;
 
 - (void)addMetricsList:(NSArray <QNUploadSingleRequestMetrics *> *)metricsList;
+- (void)addMetrics:(QNUploadRegionRequestMetrics*)metrics;
 
 @end
 
@@ -85,12 +86,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSNumber *requestCount;
 @property (nonatomic, strong, readonly) NSNumber *bytesSend;
 @property (nonatomic, strong, readonly) NSNumber *regionCount;
-@property (nonatomic, strong, readonly) NSArray<id <QNUploadRegion>> *regions;
-@property (nonatomic,   copy, readonly) NSArray<QNUploadRegionRequestMetrics *> *metricsList;
+@property (nonatomic, strong) NSArray<id <QNUploadRegion>> *regions;
 
 //MARK:-- 构造
 + (instancetype)emptyMetrics;
-- (instancetype)initWithRegions:(NSArray<id <QNUploadRegion>> *)regions;
 
 - (void)addMetrics:(QNUploadRegionRequestMetrics *)metrics;
 

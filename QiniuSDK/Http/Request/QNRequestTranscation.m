@@ -17,7 +17,7 @@
 #import "QNUserAgent.h"
 #import "QNResponseInfo.h"
 
-#import "QNUploadFixedHostRegion.h"
+#import "QNUploadDomainRegion.h"
 #import "QNHttpRegionRequest.h"
 
 @interface QNRequestTranscation()
@@ -35,10 +35,12 @@
 @implementation QNRequestTranscation
 
 - (instancetype)initWithHosts:(NSArray <NSString *> *)hosts
+                      ioHosts:(NSArray <NSString *> *)ioHosts
                         token:(QNUpToken *)token{
     return [self initWithConfig:[QNConfiguration defaultConfiguration]
                    uploadOption:[QNUploadOption defaultOptions]
                           hosts:hosts
+                        ioHosts:ioHosts
                             key:nil
                           token:token];
 }
@@ -46,10 +48,12 @@
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
                          hosts:(NSArray <NSString *> *)hosts
+                       ioHosts:(NSArray <NSString *> *)ioHosts
                            key:(NSString * _Nullable)key
                          token:(QNUpToken *)token{
     
-    QNUploadFixedHostRegion *region = [QNUploadFixedHostRegion fixedHostRegionWithHosts:hosts];
+    QNUploadDomainRegion *region = [[QNUploadDomainRegion alloc] init];
+    [region setupRegionData:[QNZoneInfo zoneInfoWithMainHosts:hosts ioHosts:ioHosts]];
     return [self initWithConfig:config
                    uploadOption:uploadOption
                    targetRegion:region
@@ -71,8 +75,8 @@
         _key = key;
         _token = token;
         _requestInfo = [[QNUploadRequestInfo alloc] init];
-        _requestInfo.targetRegionId = targetRegion.zoneInfo.zoneRegionId;
-        _requestInfo.currentRegionId = currentegion.zoneInfo.zoneRegionId;
+        _requestInfo.targetRegionId = targetRegion.zoneInfo.regionId;
+        _requestInfo.currentRegionId = currentegion.zoneInfo.regionId;
         _requestInfo.bucket = token.bucket;
         _requestInfo.key = key;
         _regionRequest = [[QNHttpRegionRequest alloc] initWithConfig:config

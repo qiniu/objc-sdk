@@ -147,7 +147,7 @@
         dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{
             
             dispatch_group_enter(group);
-            BOOL isSuccess = [kQNTransactionManager addDnsCheckAndPrefetchTransaction:self.config.zone
+        BOOL isSuccess = [kQNTransactionManager addDnsCheckAndPrefetchTransaction:self.config.zone
                                                                                 token:kDnsTestToken];
             if (isSuccess) {
                 successPrefetchNum += 1;

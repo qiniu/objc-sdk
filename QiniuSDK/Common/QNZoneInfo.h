@@ -10,15 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-typedef enum : NSUInteger {
-    QNZoneRegion_z0,
-    QNZoneRegion_z1,
-    QNZoneRegion_z2,
-    QNZoneRegion_as0,
-    QNZoneRegion_na0,
-    QNZoneRegion_unknown
-} QNZoneRegion;
-
 @interface QNUploadServerGroup : NSObject
 
 @property(nonatomic,  copy, readonly)NSString *info;
@@ -31,6 +22,10 @@ typedef enum : NSUInteger {
 
 @end
 
+
+extern NSString *const QNZoneInfoSDKDefaultIOHost;
+extern NSString *const QNZoneInfoEmptyRegionId;
+
 @interface QNZoneInfo : NSObject
 
 @property (nonatomic, assign, readonly) long ttl;
@@ -39,7 +34,7 @@ typedef enum : NSUInteger {
 @property(nonatomic, strong)QNUploadServerGroup *old_acc;
 @property(nonatomic, strong)QNUploadServerGroup *old_src;
 
-@property(nonatomic,   copy, readonly)NSString *zoneRegionId;
+@property(nonatomic,   copy, readonly)NSString *regionId;
 @property(nonatomic, strong, readonly)NSArray <NSString *> *allHosts;
 @property(nonatomic, strong, readonly)NSDictionary *detailInfo;
 

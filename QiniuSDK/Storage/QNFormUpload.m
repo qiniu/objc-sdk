@@ -49,8 +49,7 @@
                                   fileName:self.fileName
                                   progress:progressHandler
                                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-        
-        [self setCurrentRegionRequestMetrics:metrics];
+        [self addRegionRequestMetricsOfOneFlow:metrics];
         
         if (responseInfo.isOK) {
             self.option.progressHandler(self.key, 1.0);

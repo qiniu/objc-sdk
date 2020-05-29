@@ -7,7 +7,6 @@
 //
 
 #import "QNBaseUpload.h"
-#import "QNUploadFixedHostRegion.h"
 
 @interface QNFormUpload : QNBaseUpload
 

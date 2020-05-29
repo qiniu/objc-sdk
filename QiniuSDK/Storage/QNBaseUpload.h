@@ -20,7 +20,6 @@
 
 #import "QNZone.h"
 #import "QNFileDelegate.h"
-#import "QNUploadFixedHostRegion.h"
 #import "QNUploadRequestMetrics.h"
 
 typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp);;
@@ -37,7 +36,7 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
 @property (nonatomic,   copy, readonly) NSString *recorderKey;
 @property (nonatomic, strong, readonly) QNUpTaskCompletionHandler completionHandler;
 
-@property (nonatomic, strong)QNUploadRegionRequestMetrics *currentRegionRequestMetrics;
+@property (nonatomic, strong, readonly) QNUploadRegionRequestMetrics *currentRegionRequestMetrics;
 @property (nonatomic, strong, readonly) QNUploadTaskMetrics *metrics;
 
 
@@ -82,5 +81,9 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
 - (id <QNUploadRegion>)getTargetRegion;
 /// 获取当前区域
 - (id <QNUploadRegion>)getCurrentRegion;
+
+//MARK: -- upLog
+// 一个上传流程可能会发起多个上传操作（如：上传多个分片），每个上传操作均是以一个Region的host做重试操作
+- (void)addRegionRequestMetricsOfOneFlow:(QNUploadRegionRequestMetrics *)metrics;
 
 @end

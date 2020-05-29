@@ -125,6 +125,8 @@
             firstChunkData:[self getDataWithChunk:chunk block:block]
                   progress:progress
                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        [self addRegionRequestMetricsOfOneFlow:metrics];
+        
         NSString *blockContext = response[@"ctx"];
         if (responseInfo.isOK && blockContext) {
             block.context = blockContext;
@@ -137,7 +139,6 @@
             chunk.isCompleted = NO;
             self.uploadChunkErrorResponse = response;
             self.uploadChunkErrorResponseInfo = responseInfo;
-            [self setCurrentRegionRequestMetrics:metrics];
             completeHandler();
         }
     }];
@@ -158,6 +159,8 @@
                  chunkOffest:chunk.offset
                     progress:progress
                     complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        [self addRegionRequestMetricsOfOneFlow:metrics];
+        
         NSString *blockContext = response[@"ctx"];
         if (responseInfo.isOK && blockContext) {
             block.context = blockContext;
@@ -170,7 +173,6 @@
             chunk.isCompleted = NO;
             self.uploadChunkErrorResponse = response;
             self.uploadChunkErrorResponseInfo = responseInfo;
-            [self setCurrentRegionRequestMetrics:metrics];
             completeHandler();
         }
     }];
@@ -185,7 +187,7 @@
             blockContexts:[self.uploadFileInfo allBlocksContexts]
                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         
-        [self setCurrentRegionRequestMetrics:metrics];
+        [self addRegionRequestMetricsOfOneFlow:metrics];
         completeHandler(responseInfo, response);
     }];
 }

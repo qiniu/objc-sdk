@@ -132,7 +132,7 @@
 
 - (void)preQuery:(QNUpToken *)token
               on:(QNPrequeryReturn)ret {
-    ret(0, nil);
+    ret(0, nil, nil);
 }
 
 - (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token {

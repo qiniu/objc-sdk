@@ -126,8 +126,8 @@
     QNReportItem *item = [QNReportItem item];
     [item setReportValue:QNReportLogTypeBlock forKey:QNReportBlockKeyLogType];
     [item setReportValue:@([[NSDate date] timeIntervalSince1970]) forKey:QNReportBlockKeyUpTime];
-    [item setReportValue:[self getTargetRegion].zoneInfo.zoneRegionId forKey:QNReportBlockKeyTargetRegionId];
-    [item setReportValue:[self getCurrentRegion].zoneInfo.zoneRegionId forKey:QNReportBlockKeyCurrentRegionId];
+    [item setReportValue:[self getTargetRegion].zoneInfo.regionId forKey:QNReportBlockKeyTargetRegionId];
+    [item setReportValue:[self getCurrentRegion].zoneInfo.regionId forKey:QNReportBlockKeyCurrentRegionId];
     [item setReportValue:metrics.totalElaspsedTime forKey:QNReportBlockKeyTotalElaspsedTime];
     [item setReportValue:metrics.bytesSend forKey:QNReportBlockKeyBytesSent];
     [item setReportValue:self.recoveredFrom forKey:QNReportBlockKeyRecoveredFrom];

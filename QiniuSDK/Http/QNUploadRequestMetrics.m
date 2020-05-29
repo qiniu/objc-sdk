@@ -8,6 +8,7 @@
 
 #import "QNUploadRequestMetrics.h"
 #import "NSURLRequest+QNRequest.h"
+#import "QNZoneInfo.h"
 
 @interface QNUploadSingleRequestMetrics()
 @end
@@ -148,6 +149,12 @@
     [_metricsListInter addObjectsFromArray:metricsList];
 }
 
+- (void)addMetrics:(QNUploadRegionRequestMetrics*)metrics{
+    if ([metrics.region.zoneInfo.regionId isEqualToString:self.region.zoneInfo.regionId]) {
+        [_metricsListInter addObjectsFromArray:metrics.metricsListInter];
+    }
+}
+
 - (NSArray<QNUploadSingleRequestMetrics *> *)metricsList{
     return [_metricsListInter copy];
 }
@@ -157,8 +164,7 @@
 
 @interface QNUploadTaskMetrics()
 
-@property (nonatomic, strong) NSArray<id <QNUploadRegion>> *regions;
-@property (nonatomic,   copy) NSMutableArray<QNUploadRegionRequestMetrics *> *metricsListInter;
+@property (nonatomic,   copy) NSMutableDictionary<NSString *, QNUploadRegionRequestMetrics *> *metricsInfo;
 
 @end
 @implementation QNUploadTaskMetrics
@@ -168,18 +174,17 @@
     return metrics;
 }
 
-- (instancetype)initWithRegions:(NSArray<id<QNUploadRegion>> *)regions{
+- (instancetype)init{
     if (self = [super init]) {
-        _regions = regions;
-        _metricsListInter = [NSMutableArray array];
+        _metricsInfo = [NSMutableDictionary dictionary];
     }
     return self;
 }
 
 - (NSNumber *)totalElaspsedTime{
-    if (self.metricsList) {
+    if (self.metricsInfo) {
         double time = 0;
-        for (QNUploadRegionRequestMetrics *metrics in self.metricsList) {
+        for (QNUploadRegionRequestMetrics *metrics in self.metricsInfo.allValues) {
             time += metrics.totalElaspsedTime.doubleValue;
         }
         return time > 0 ? @(time) : nil;
@@ -189,9 +194,9 @@
 }
 
 - (NSNumber *)requestCount{
-    if (self.metricsList) {
+    if (self.metricsInfo) {
         NSInteger count = 0;
-        for (QNUploadRegionRequestMetrics *metrics in self.metricsList) {
+        for (QNUploadRegionRequestMetrics *metrics in self.metricsInfo.allValues) {
             count += metrics.requestCount.integerValue;
         }
         return @(count);
@@ -201,9 +206,9 @@
 }
 
 - (NSNumber *)bytesSend{
-    if (self.metricsList) {
+    if (self.metricsInfo) {
         long long bytes = 0;
-        for (QNUploadRegionRequestMetrics *metrics in self.metricsList) {
+        for (QNUploadRegionRequestMetrics *metrics in self.metricsInfo.allValues) {
             bytes += metrics.bytesSend.longLongValue;
         }
         return @(bytes);
@@ -213,20 +218,32 @@
 }
 
 - (NSNumber *)regionCount{
-    if (self.regions) {
-        return @(self.regions.count);
+    if (self.metricsInfo) {
+        int count = 0;
+        for (QNUploadRegionRequestMetrics *metrics in self.metricsInfo.allValues) {
+            if (![metrics.region.zoneInfo.regionId isEqualToString:QNZoneInfoEmptyRegionId]) {
+                count += 1;
+            }
+        }
+        return @(count);
     } else {
         return @(0);
     }
 }
 
 - (void)addMetrics:(QNUploadRegionRequestMetrics *)metrics{
-    @synchronized (self) {
-        [_metricsListInter addObject:metrics];
+    NSString *regionId = metrics.region.zoneInfo.regionId;
+    if (!regionId) {
+        return;
     }
-}
-- (NSArray<QNUploadSingleRequestMetrics *> *)metricsList{
-    return [_metricsListInter copy];
+    @synchronized (self) {
+        QNUploadRegionRequestMetrics *metricsOld = self.metricsInfo[regionId];
+        if (metricsOld) {
+            [metricsOld addMetrics:metrics];
+        } else {
+            self.metricsInfo[regionId] = metrics;
+        }
+    }
 }
 
 

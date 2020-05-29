@@ -8,11 +8,13 @@
 
 #import "QNZoneInfo.h"
 #import "QNResponseInfo.h"
+#import "QNUploadRequestMetrics.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
-@class QNUpToken, QNZonesInfo;
+@class QNUpToken, QNZonesInfo, QNUploadRegionRequestMetrics;
 
-typedef void (^QNPrequeryReturn)(int code, QNResponseInfo * _Nullable httpResponseInfo);
+typedef void (^QNPrequeryReturn)(int code, QNResponseInfo * _Nullable httpResponseInfo, QNUploadRegionRequestMetrics * _Nullable metrics);
 
 @interface QNZone : NSObject
 

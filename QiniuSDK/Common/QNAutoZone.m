@@ -107,7 +107,7 @@
               on:(QNPrequeryReturn)ret {
     
     if (token == nil || token.index == nil) {
-        ret(-1, nil);
+        ret(-1, nil, nil);
         return;
     }
     
@@ -123,7 +123,7 @@
     }
     
     if (zonesInfo != nil) {
-        ret(0, nil);
+        ret(0, nil, nil);
         return;
     }
 
@@ -136,16 +136,19 @@
             [self.cache setValue:zonesInfo forKey:[token index]];
             [self.lock unlock];
             [[QNAutoZoneCache share] cache:response forToken:token];
-            ret(0, responseInfo);
+            ret(0, responseInfo, metrics);
         } else {
-            ret(kQNNetworkError, responseInfo);
+            ret(kQNNetworkError, responseInfo, metrics);
         }
         [self destoryUploadRequestTranscation:transcation];
     }];
 }
 
 - (QNRequestTranscation *)createUploadRequestTranscation:(QNUpToken *)token{
-    QNRequestTranscation *transcation = [[QNRequestTranscation alloc] initWithHosts:@[@"uc.qbox.me"] token:token];
+    
+    QNRequestTranscation *transcation = [[QNRequestTranscation alloc] initWithHosts:@[@"uc.qbox.me"]
+                                                                            ioHosts:@[QNZoneInfoSDKDefaultIOHost]
+                                                                              token:token];
     [self.transcations addObject:transcation];
     return transcation;
 }

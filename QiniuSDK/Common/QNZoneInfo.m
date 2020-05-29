@@ -36,9 +36,11 @@
 @end
 
 
+NSString * const QNZoneInfoSDKDefaultIOHost = @"sdkDefaultIOHost";
+NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
+
 @interface QNZoneInfo()
 
-@property(nonatomic, assign) QNZoneRegion zoneRegion;
 @property(nonatomic, assign) long ttl;
 @property(nonatomic, strong) NSDate *buildDate;
 
@@ -83,22 +85,22 @@
     NSArray *io_main = [io_src objectForKey:@"main"];
     NSString *io_host = io_main.count > 0 ? io_main[0] : nil;
     
-    QNZoneRegion zoneRegion = QNZoneRegion_unknown;
+    NSString *regionId = @"unknown";
     if ([io_host isEqualToString:@"iovip.qbox.me"]) {
-        zoneRegion = QNZoneRegion_z0;
+        regionId = @"z0";
     } else if ([io_host isEqualToString:@"iovip-z1.qbox.me"]) {
-        zoneRegion = QNZoneRegion_z1;
+        regionId = @"z1";
     } else if ([io_host isEqualToString:@"iovip-z2.qbox.me"]) {
-        zoneRegion = QNZoneRegion_z2;
+        regionId = @"z2";
     } else if ([io_host isEqualToString:@"iovip-na0.qbox.me"]) {
-        zoneRegion = QNZoneRegion_na0;
+        regionId = @"na0";
     } else if ([io_host isEqualToString:@"iovip-as0.qbox.me"]) {
-        zoneRegion = QNZoneRegion_as0;
-    } else {
-        zoneRegion = QNZoneRegion_unknown;
+        regionId = @"as0";
+    } else if ([io_host isEqualToString:QNZoneInfoSDKDefaultIOHost]) {
+        regionId = QNZoneInfoEmptyRegionId;
     }
     
-    QNZoneInfo *zoneInfo = [[QNZoneInfo alloc] init:ttl zoneRegion:zoneRegion];
+    QNZoneInfo *zoneInfo = [[QNZoneInfo alloc] init:ttl regionId:regionId];
     zoneInfo.acc = [QNUploadServerGroup buildInfoFromDictionary:acc];
     zoneInfo.src = [QNUploadServerGroup buildInfoFromDictionary:src];
     zoneInfo.old_acc = [QNUploadServerGroup buildInfoFromDictionary:old_acc];
@@ -117,18 +119,11 @@
 }
 
 - (instancetype)init:(long)ttl
-        zoneRegion:(QNZoneRegion)zoneRegion {
+            regionId:(NSString *)regionId {
     if (self = [super init]) {
         _ttl = ttl;
         _buildDate = [NSDate date];
-        _zoneRegion = zoneRegion;
-        
-        NSArray *zoneRegionIds = @[@"z0", @"z1", @"z2", @"as0", @"na0", @"unknown"];
-        if (zoneRegion >= 0 && zoneRegion < zoneRegionIds.count) {
-            _zoneRegionId = zoneRegionIds[zoneRegion];
-        } else {
-            _zoneRegionId = @"unknown";
-        }
+        _regionId = regionId;
     }
     return self;
 }
