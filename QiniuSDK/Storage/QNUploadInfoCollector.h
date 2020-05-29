@@ -64,6 +64,7 @@ extern NSString *const parse_error;  // 解析响应错误
 extern NSString *const malicious_response;   // 用户劫持错误
 extern NSString *const user_canceled;   // 用户主动取消
 extern NSString *const bad_request;   // API 失败是由于客户端的参数错误导致，⽆法依靠重试来解决的(例如 4xx 错误， upload token 错误，⽬标 bucket 不存在，⽂件已经存在，区域不正确，额度不够 等)
+extern NSString *const protocol_error;   // 协议错误
 
 extern int64_t QN_IntNotSet;
 
