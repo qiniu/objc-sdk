@@ -1,5 +1,9 @@
 #Changelog
 
+## 7.3.5 (2020-05-29)
+## 增加
+日志上报errorType新增prototol_error协议错误
+
 ## 7.3.4 (2020-05-20)
 ## 增加
 QNResponse添加xClientId字段回调
