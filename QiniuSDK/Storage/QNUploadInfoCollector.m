@@ -45,6 +45,7 @@ NSString *const parse_error = @"parse_error";
 NSString *const malicious_response = @"malicious_response";
 NSString *const user_canceled = @"user_canceled";
 NSString *const bad_request = @"bad_request";
+NSString *const protocol_error = @"protocol_error";
 
 static NSString *const requestTypes[] = {@"form", @"mkblk", @"bput", @"mkfile", @"put", @"init_parts", @"upload_part", @"complete_part", @"uc_query", @"httpdns_query"};
 
