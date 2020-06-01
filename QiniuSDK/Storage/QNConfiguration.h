@@ -58,7 +58,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (readonly) UInt32 putThreshold;
 
 /**
- *    上传失败时每个上传域名的重试次数，默认重试3次
+ *    上传失败时每个上传域名的重试次数，默认重试1次
  */
 @property (readonly) UInt32 retryMax;
 
@@ -160,7 +160,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (assign) UInt32 putThreshold;
 
 /**
- *    上传失败时每个上传域名的重试次数，默认重试3次
+ *    上传失败时每个上传域名的重试次数，默认重试1次
  */
 @property (assign) UInt32 retryMax;
 

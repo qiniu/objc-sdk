@@ -16,7 +16,7 @@
 @property(nonatomic, strong)NSDate *freezeDate;
 @end
 @implementation QNUploadServerDomain
-- (QNUploadServer *)getNextServer{
+- (QNUploadServer *)getServer{
     if (!self.host || self.host.length == 0) {
         return nil;
     }
@@ -49,8 +49,11 @@
 
 @interface QNUploadDomainRegion()
 @property(atomic   , assign)BOOL isAllFreezed;
+@property(nonatomic, strong)NSArray <NSString *> *domainHostList;
 @property(nonatomic, strong)NSDictionary <NSString *, QNUploadServerDomain *> *domainDictionary;
+@property(nonatomic, strong)NSArray <NSString *> *oldDomainHostList;
 @property(nonatomic, strong)NSDictionary <NSString *, QNUploadServerDomain *> *oldDomainDictionary;
+
 @property(nonatomic, strong, nullable)QNZoneInfo *zoneInfo;
 @end
 @implementation QNUploadDomainRegion
@@ -60,20 +63,26 @@
     
     self.isAllFreezed = NO;
     NSMutableArray *serverGroups = [NSMutableArray array];
+    NSMutableArray *domainHostList = [NSMutableArray array];
     if (zoneInfo.acc) {
         [serverGroups addObject:zoneInfo.acc];
+        [domainHostList addObjectsFromArray:zoneInfo.acc.allHosts];
     }
     if (zoneInfo.src) {
         [serverGroups addObject:zoneInfo.src];
+        [domainHostList addObjectsFromArray:zoneInfo.src.allHosts];
     }
     self.domainDictionary = [self createDomainDictionary:serverGroups];
     
     [serverGroups removeAllObjects];
+    NSMutableArray *oldDomainHostList = [NSMutableArray array];
     if (zoneInfo.old_acc) {
         [serverGroups addObject:zoneInfo.old_acc];
+        [oldDomainHostList addObjectsFromArray:zoneInfo.old_acc.allHosts];
     }
     if (zoneInfo.old_src) {
         [serverGroups addObject:zoneInfo.old_src];
+        [oldDomainHostList addObjectsFromArray:zoneInfo.old_src.allHosts];
     }
     self.oldDomainDictionary = [self createDomainDictionary:serverGroups];
 }
@@ -103,14 +112,16 @@
         [_oldDomainDictionary[freezeServer.serverId] freeze];
     }
     
+    NSArray *hostList = isOldServer ? self.oldDomainHostList : self.domainHostList;
     NSDictionary *domainInfo = isOldServer ? self.oldDomainDictionary : self.domainDictionary;
     QNUploadServer *server = nil;
-    for (QNUploadServerDomain *domainP in domainInfo.allValues) {
-        server = [domainP getNextServer];
+    for (NSString *host in hostList) {
+        server = [domainInfo[host] getServer];
         if (server) {
            break;
         }
     }
+    
     if (server == nil) {
         self.isAllFreezed = YES;
     }
