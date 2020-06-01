@@ -72,6 +72,7 @@
         [serverGroups addObject:zoneInfo.src];
         [domainHostList addObjectsFromArray:zoneInfo.src.allHosts];
     }
+    self.domainHostList = domainHostList;
     self.domainDictionary = [self createDomainDictionary:serverGroups];
     
     [serverGroups removeAllObjects];
@@ -84,6 +85,7 @@
         [serverGroups addObject:zoneInfo.old_src];
         [oldDomainHostList addObjectsFromArray:zoneInfo.old_src.allHosts];
     }
+    self.oldDomainHostList = oldDomainHostList;
     self.oldDomainDictionary = [self createDomainDictionary:serverGroups];
 }
 - (NSDictionary *)createDomainDictionary:(NSArray <QNUploadServerGroup *> *)serverGroups{
