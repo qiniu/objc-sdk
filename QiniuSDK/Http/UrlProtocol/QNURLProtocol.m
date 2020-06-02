@@ -192,12 +192,12 @@
 
 - (void)loadingRequest:(NSURLRequest *)request{
     
+    self.httpsClient = [QNCFHttpClient client:request];
+    self.httpsClient.delegate = self;
+    
     [NSURLProtocol setProperty:@(YES)
                         forKey:kQNReuqestIdentifiers
                      inRequest:self.httpsClient.request];
-    
-    self.httpsClient = [QNCFHttpClient client:request];
-    self.httpsClient.delegate = self;
     
     [self.httpsClient startLoading];
 }
