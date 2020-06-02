@@ -101,8 +101,8 @@
         [self setValue:nil forHTTPHeaderField:kQNURLReuestHostKey];
     }
     
-    NSTimeInterval timestmap = [[NSDate date] timeIntervalSince1970];
-    NSString *identifier = [NSString stringWithFormat:@"%lf%@", timestmap, qn_domain];
+    NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
+    NSString *identifier = [NSString stringWithFormat:@"%lf%@", timestamp, qn_domain];
     [self setQn_identifier:identifier];
 }
 

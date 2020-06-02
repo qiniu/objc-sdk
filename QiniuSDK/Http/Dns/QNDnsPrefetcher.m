@@ -175,12 +175,12 @@
 @implementation QNDnsPrefetcher
 
 + (instancetype)shared{
-    static QNDnsPrefetcher *prefethcer = nil;
+    static QNDnsPrefetcher *prefetcher = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        prefethcer = [[QNDnsPrefetcher alloc] init];
+        prefetcher = [[QNDnsPrefetcher alloc] init];
     });
-    return prefethcer;
+    return prefetcher;
 }
 
 - (instancetype)init{
@@ -240,7 +240,7 @@
     
     NSLog(@"== localFetch");
     [self preFetchHosts:[self getLocalPreHost]];
-    [self recoderDnsCache];
+    [self recorderDnsCache];
     [self endPreFetch];
 }
 //MARK: -- 检测并预取
@@ -250,7 +250,7 @@
         return;
     }
     [self preFetchHosts:[self getCurrentZoneHosts:currentZone token:token]];
-    [self recoderDnsCache];
+    [self recorderDnsCache];
     [self endPreFetch];
 }
 /// 检测已预取dns是否还有效，无效则重新预取
@@ -259,17 +259,17 @@
         return;
     }
     [self preFetchHosts:[self.addressDictionary allKeys]];
-    [self recoderDnsCache];
+    [self recorderDnsCache];
     [self endPreFetch];
 }
 
 //MARK: -- 强制无效缓存
-// 无效缓存，会根据inetAddress的host，无效host所有缓存
+// 无效缓存，会根据inetAddress的host，无效host对应的ip缓存
 - (void)invalidInetAdress:(id <QNInetAddressDelegate>)inetAddress{
     NSArray *inetAddressList = self.addressDictionary[inetAddress.hostValue];
     NSMutableArray *inetAddressListNew = [NSMutableArray array];
     for (id <QNInetAddressDelegate> inetAddressP in inetAddressList) {
-        if (![inetAddressP.ipValue isEqualToString:inetAddressP.ipValue]) {
+        if (![inetAddress.ipValue isEqualToString:inetAddressP.ipValue]) {
             [inetAddressListNew addObject:inetAddressP];
         }
     }
@@ -434,7 +434,7 @@
     return NO;
 }
 
-- (BOOL)recoderDnsCache{
+- (BOOL)recorderDnsCache{
     NSTimeInterval currentTime = [QNUtils currentTimestamp];
     NSString *localIp = [QNIP local];
     
@@ -447,17 +447,17 @@
     NSString *cacheKey = [dnsCacheKey toString];
 
     NSError *error;
-    id <QNRecorderDelegate> recoder = [QNDnsCacheFile dnsCacheFile:kQNGloableConfiguration.dnscacheDir
+    id <QNRecorderDelegate> recorder = [QNDnsCacheFile dnsCacheFile:kQNGloableConfiguration.dnscacheDir
                                                              error:&error];
     if (error) {
         return NO;
     }
     
     [self setDnsCacheKey:dnsCacheKey];
-    return [self recoderDnsCache:recoder cacheKey:cacheKey];
+    return [self recorderDnsCache:recorder cacheKey:cacheKey];
 }
 
-- (BOOL)recoderDnsCache:(id <QNRecorderDelegate>)recoder cacheKey:(NSString *)cacheKey{
+- (BOOL)recorderDnsCache:(id <QNRecorderDelegate>)recorder cacheKey:(NSString *)cacheKey{
     NSMutableDictionary *addressInfo = [NSMutableDictionary dictionary];
     for (NSString *key in self.addressDictionary.allKeys) {
         
@@ -481,7 +481,7 @@
                                                    options:NSJSONWritingPrettyPrinted
                                                      error:&error];
     if (error == nil && data) {
-        [recoder set:cacheKey data:data];
+        [recorder set:cacheKey data:data];
         return YES;
     } else {
         return NO;
