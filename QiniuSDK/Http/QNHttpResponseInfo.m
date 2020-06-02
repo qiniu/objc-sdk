@@ -131,6 +131,8 @@
                         _errorType = parse_error;
                     } else if (error.code == -999) {
                         _errorType = user_canceled;
+                    } else if (error.code == 100) {
+                        _errorType = protocol_error;
                     } else {
                         _errorType = unknown_error;
                     }

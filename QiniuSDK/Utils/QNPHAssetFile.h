@@ -10,10 +10,8 @@
 
 #import "QNFileDelegate.h"
 
-API_AVAILABLE_BEGIN(ios(9.1))
-
 @class PHAsset;
-@interface QNPHAssetFile : NSObject <QNFileDelegate>
+API_AVAILABLE(ios(9.1)) @interface QNPHAssetFile : NSObject <QNFileDelegate>
 /**
  *    打开指定文件
  *
@@ -25,5 +23,3 @@ API_AVAILABLE_BEGIN(ios(9.1))
 - (instancetype)init:(PHAsset *)phAsset
                error:(NSError *__autoreleasing *)error;
 @end
-
-API_AVAILABLE_END

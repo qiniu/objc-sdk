@@ -83,17 +83,12 @@ didCompleteWithError:(nullable NSError *)error {
             _sessionStatistics = [[QNSessionStatistics alloc] init];
             
             // remote_ip & port
-#if __IPHONE_OS_VERSION_MIN_REQUIRED
+    #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
             if (@available(iOS 13.0, *)) {
                 _sessionStatistics.remoteIp = transactionMetrics.remoteAddress;
                 _sessionStatistics.port = [transactionMetrics.remotePort unsignedShortValue];
-            } else {
-                NSString *remoteIpAddressAndPort = [transactionMetrics valueForKey:@"__remoteAddressAndPort"];
-                NSRange indexRange = [remoteIpAddressAndPort rangeOfString:@":"];
-                _sessionStatistics.remoteIp = [remoteIpAddressAndPort substringToIndex:indexRange.location];
-                _sessionStatistics.port = [[remoteIpAddressAndPort substringFromIndex:indexRange.location + 1] intValue];
             }
-#endif
+    #endif
             
             // time
             _sessionStatistics.totalElapsedTime = metrics.taskInterval.duration * 1000;

@@ -20,7 +20,6 @@
 
 // request type item - 用于统计单个请求的打点信息
 @interface QNReportRequestItem : QNReportBaseItem
-- (id)init __attribute__((unavailable("Use buildWith: instead.")));
 + (instancetype)buildWithUpType:(NSString *)up_type
                    TargetBucket:(NSString *)target_bucket
                       targetKey:(NSString *)target_key
@@ -53,7 +52,6 @@
 
 // block type item - 用于统计分片上传整体质量信息
 @interface QNReportBlockItem : QNReportBaseItem
-- (id)init __attribute__((unavailable("Use buildWith: instead.")));
 + (instancetype)buildWithTargetRegionId:(NSString *)target_region_id
                         currentRegionId:(NSString *)current_region_id
                        totalElapsedTime:(int64_t)total_elapsed_time
@@ -68,7 +66,6 @@
 
 // quality type item - 用于统计上传结果
 @interface QNReportQualityItem : QNReportBaseItem
-- (id)init __attribute__((unavailable("Use buildWith: instead.")));
 + (instancetype)buildWithResult:(NSString *)result
                totalElapsedTime:(int64_t)total_elapsed_time
                   requestsCount:(int64_t)requests_count
@@ -123,6 +120,8 @@
 #define Reporter [QNUploadInfoReporter sharedInstance]
 
 @interface QNUploadInfoReporter : NSObject
+
+@property (nonatomic, copy, readonly) NSString *X_Log_Client_Id;
 
 - (id)init __attribute__((unavailable("Use sharedInstance: instead.")));
 + (instancetype)sharedInstance;

@@ -10,6 +10,7 @@
 #import "QNHttpResponseInfo.h"
 #import "QNUserAgent.h"
 #import "QNVersion.h"
+#import "QNUploadInfoReporter.h"
 
 const int kQNZeroDataSize = -6;
 const int kQNInvalidToken = -5;
@@ -127,6 +128,7 @@ static NSString *domain = @"qiniu.com";
         _duration = duration;
         _id = [QNUserAgent sharedInstance].id;
         _timeStamp = [[NSDate date] timeIntervalSince1970];
+        _xClientId = Reporter.X_Log_Client_Id;
     }
     return self;
 }
@@ -158,12 +160,13 @@ static NSString *domain = @"qiniu.com";
         _duration = duration;
         _id = [QNUserAgent sharedInstance].id;
         _timeStamp = [[NSDate date] timeIntervalSince1970];
+        _xClientId = Reporter.X_Log_Client_Id;
     }
     return self;
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<%@= id: %@, ver: %@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ duration: %.3f s time: %llu error: %@>", NSStringFromClass([self class]), _id, kQiniuVersion, _statusCode, _reqId, _xlog, _xvia, _host, _duration, _timeStamp, _error];
+    return [NSString stringWithFormat:@"<%@= id: %@, ver: %@, status: %d, requestId: %@, xClientId: %@, xlog: %@, xvia: %@, host: %@ duration: %.3f s time: %llu error: %@>", NSStringFromClass([self class]), _id, kQiniuVersion, _statusCode, _reqId, _xClientId, _xlog, _xvia, _host, _duration, _timeStamp, _error];
 }
 
 - (BOOL)isCancelled {
