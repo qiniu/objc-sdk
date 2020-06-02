@@ -556,14 +556,12 @@
 }
 
 - (NSArray <NSString *> *)getFixedZoneHosts{
-    NSArray <QNFixedZone *> *fixedZones = [QNFixedZone localsZoneInfo];
     NSMutableArray *localHosts = [NSMutableArray array];
-    for (QNFixedZone *fixZone in fixedZones) {
-        QNZonesInfo *zonesInfo = [fixZone getZonesInfoWithToken:nil];
-        for (QNZoneInfo *zoneInfo in zonesInfo.zonesInfo) {
-            if (zoneInfo.allHosts) {
-                [localHosts addObjectsFromArray:zoneInfo.allHosts];
-            }
+    QNFixedZone *fixedZone = [QNFixedZone localsZoneInfo];
+    QNZonesInfo *zonesInfo = [fixedZone getZonesInfoWithToken:nil];
+    for (QNZoneInfo *zoneInfo in zonesInfo.zonesInfo) {
+        if (zoneInfo.allHosts) {
+            [localHosts addObjectsFromArray:zoneInfo.allHosts];
         }
     }
     return [localHosts copy];

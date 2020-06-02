@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  *   获取本地所有固定zone信息
  */
-+ (NSArray <QNFixedZone *> *)localsZoneInfo;
++ (QNFixedZone *)localsZoneInfo;
 
 @end
 

@@ -103,7 +103,7 @@
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == kQNInvalidArgument, @"Pass");
+    XCTAssert(testInfo.statusCode == kQNZeroDataSize, @"Pass");
 }
 
 - (void)testNoFile {
@@ -118,7 +118,7 @@
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == kQNInvalidArgument, @"Pass");
+    XCTAssert(testInfo.statusCode == kQNZeroDataSize, @"Pass");
 }
 
 - (void)testNoToken {
@@ -133,7 +133,7 @@
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == kQNInvalidArgument, @"Pass");
+    XCTAssert(testInfo.statusCode == kQNInvalidToken, @"Pass");
 
     testInfo = nil;
     testResp = nil;
@@ -145,7 +145,7 @@
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == kQNInvalidArgument, @"Pass");
+    XCTAssert(testInfo.statusCode == kQNInvalidToken, @"Pass");
 
     testInfo = nil;
     testResp = nil;
@@ -157,7 +157,7 @@
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == kQNInvalidArgument, @"Pass");
+    XCTAssert(testInfo.statusCode == kQNZeroDataSize, @"Pass");
 }
 
 - (void)testNoComplete {

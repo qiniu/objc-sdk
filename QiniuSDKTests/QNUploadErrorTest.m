@@ -92,10 +92,10 @@
     AGWW_WAIT_WHILE(isComplete == NO, 60 * 30);
 }
 
-- (void)testError_631{
+- (void)notestError_631{
     
     QNUploadErrorTestParam *param = [QNUploadErrorTestParam param];
-    param.token = @"jH983zIUFIP1OVumiBVGeAfiLYJvwrF45S-t22eu:mnkuT6Y_k3UaKMMs2qYROs6yqjs=:eyJzY29wZSI6InpvbmV0ZXN0LXNwYWNlIiwiZGVhZGxpbmUiOjE1ODkyNzU5NDN9";
+    param.token = g_631_token;
     
     __block BOOL isComplete = NO;
     [self upload:param complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {

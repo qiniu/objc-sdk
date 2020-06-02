@@ -162,6 +162,21 @@ static NSString *kQNErrorDomain = @"qiniu.com";
     return _statusCode == kQNRequestCancelled || _statusCode == -999;
 }
 
+- (BOOL)isTlsError{
+    if (_statusCode == NSURLErrorSecureConnectionFailed
+        || _statusCode == NSURLErrorServerCertificateHasBadDate
+        || _statusCode == NSURLErrorServerCertificateUntrusted
+        || _statusCode == NSURLErrorServerCertificateHasUnknownRoot
+        || _statusCode == NSURLErrorServerCertificateNotYetValid
+        || _statusCode == NSURLErrorClientCertificateRejected
+        || _statusCode == NSURLErrorClientCertificateRequired
+        || _statusCode == NSURLErrorCannotLoadFromNetwork) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 - (BOOL)isNotQiniu {
     // reqId is nill means the server is not qiniu
     return (_statusCode >= 200 && _statusCode < 500) && _reqId == nil;

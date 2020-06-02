@@ -7,10 +7,12 @@
 //
 
 #import "QNAutoZone.h"
+#import "QNConfig.h"
 #import "QNRequestTranscation.h"
 #import "QNZoneInfo.h"
 #import "QNUpToken.h"
 #import "QNResponseInfo.h"
+#import "QNFixedZone.h"
 
 @interface QNAutoZoneCache : NSObject
 @property(nonatomic, strong)NSMutableDictionary *cache;
@@ -138,7 +140,16 @@
             [[QNAutoZoneCache share] cache:response forToken:token];
             ret(0, responseInfo, metrics);
         } else {
-            ret(kQNNetworkError, responseInfo, metrics);
+            
+            if (responseInfo.isConnectionBroken) {
+                ret(kQNNetworkError, responseInfo, metrics);
+            } else {
+                QNZonesInfo *zonesInfo = [[QNFixedZone localsZoneInfo] getZonesInfoWithToken:token];
+                [self.lock lock];
+                [self.cache setValue:zonesInfo forKey:[token index]];
+                [self.lock unlock];
+                ret(0, responseInfo, metrics);
+            }
         }
         [self destoryUploadRequestTranscation:transcation];
     }];
@@ -146,7 +157,7 @@
 
 - (QNRequestTranscation *)createUploadRequestTranscation:(QNUpToken *)token{
     
-    QNRequestTranscation *transcation = [[QNRequestTranscation alloc] initWithHosts:@[@"uc.qbox.me"]
+    QNRequestTranscation *transcation = [[QNRequestTranscation alloc] initWithHosts:@[kQNPreQueryHost]
                                                                             ioHosts:@[QNZoneInfoSDKDefaultIOHost]
                                                                               token:token];
     [self.transcations addObject:transcation];

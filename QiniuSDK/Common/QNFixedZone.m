@@ -109,14 +109,24 @@
     return zAs0;
 }
 
-+ (NSArray <QNFixedZone *> *)localsZoneInfo{
++ (QNFixedZone *)localsZoneInfo{
 
-    NSArray *zonesInfo = @[[QNFixedZone zone0],
-                           [QNFixedZone zone1],
-                           [QNFixedZone zone2],
-                           [QNFixedZone zoneNa0],
-                           [QNFixedZone zoneAs0]];
-    return zonesInfo;
+    NSArray *zones = @[[QNFixedZone zone0],
+                       [QNFixedZone zone1],
+                       [QNFixedZone zone2],
+                       [QNFixedZone zoneNa0],
+                       [QNFixedZone zoneAs0]];
+    
+    NSMutableArray <QNZoneInfo *> *zoneInfoArray = [NSMutableArray array];
+    for (QNFixedZone *zone in zones) {
+        if (zone.zonesInfo.zonesInfo) {
+            [zoneInfoArray addObjectsFromArray:zone.zonesInfo.zonesInfo];
+        }
+    }
+    
+    QNFixedZone *fixedZone = [[QNFixedZone alloc] init];
+    fixedZone.zonesInfo = [[QNZonesInfo alloc] initWithZonesInfo:[zoneInfoArray copy]];
+    return fixedZone;
 }
 
 - (QNZonesInfo *)createZonesInfo:(NSArray <NSString *> *)upDomains
