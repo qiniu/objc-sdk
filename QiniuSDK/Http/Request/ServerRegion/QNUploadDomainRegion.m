@@ -13,16 +13,31 @@
 #import "QNDnsPrefetcher.h"
 
 @interface QNUploadIpGroup : NSObject
-@property(nonatomic,   copy)NSString *groupType;
-@property(nonatomic, strong)NSArray <NSString *> *ipList;
+@property(nonatomic,   copy, readonly)NSString *groupType;
+@property(nonatomic, strong, readonly)NSArray <NSString *> *ipList;
 @end
 @implementation QNUploadIpGroup
+- (instancetype)initWithGroupType:(NSString *)groupType
+                           ipList:(NSArray <NSString *> *)ipList{
+    if (self = [super init]) {
+        _groupType = groupType;
+        _ipList = ipList;
+    }
+    return self;
+}
+- (NSString *)getServerIP{
+    if (!self.ipList || self.ipList.count == 0) {
+        return nil;
+    } else {
+        return self.ipList[arc4random()%self.ipList.count];
+    }
+}
 @end
 
 @interface QNUploadServerDomain: NSObject
 @property(atomic   , assign)BOOL isAllFreezed;
 @property(nonatomic,   copy)NSString *host;
-@property(nonatomic, strong)NSArray <NSString *> *ipList;
+@property(nonatomic, strong)NSArray <QNUploadIpGroup *> *ipGroupList;
 @end
 @implementation QNUploadServerDomain
 + (QNUploadServerDomain *)domain:(NSString *)host{
@@ -36,33 +51,22 @@
         return nil;
     }
     
-    if (!self.ipList || self.ipList.count == 0) {
-        NSMutableArray *ipList = [NSMutableArray array];
-        NSArray *inetAddresses = [kQNDnsPrefetcher getInetAddressByHost:self.host];
-        for (id <QNInetAddressDelegate> inetAddress in inetAddresses) {
-            NSString *ipValue = inetAddress.ipValue;
-            if (ipValue && ipValue.length > 0) {
-                [ipList addObject:ipValue];
-            }
-        }
-        self.ipList = ipList;
+    if (!self.ipGroupList || self.ipGroupList.count == 0) {
+        [self createIpGroupList];
     }
     
-    if (self.ipList && self.ipList.count > 0) {
-        NSString *serverIp = nil;
-        for (NSString *ip in self.ipList) {
-            NSString *ipType = [self getIpType:ip];
-            if (ipType && ![kQNUploadServerFreezeManager isFreezeHost:self.host type:ipType]) {
-                serverIp = ip;
+    if (self.ipGroupList && self.ipGroupList.count > 0) {
+        QNUploadServer *server = nil;
+        for (QNUploadIpGroup *ipGroup in self.ipGroupList) {
+            if (![kQNUploadServerFreezeManager isFreezeHost:self.host type:ipGroup.groupType]) {
+                server = [QNUploadServer server:self.host host:self.host ip:[ipGroup getServerIP]];
                 break;
             }
         }
-        if (serverIp != nil) {
-            return [QNUploadServer server:self.host host:self.host ip:serverIp];
-        } else {
+        if (server == nil) {
             self.isAllFreezed = true;
-            return nil;
         }
+        return server;
     } else if (![kQNUploadServerFreezeManager isFreezeHost:self.host type:nil]){
         return [QNUploadServer server:self.host host:self.host ip:nil];
     } else {
@@ -70,11 +74,42 @@
         return nil;
     }
 }
+- (void)createIpGroupList{
+    @synchronized (self) {
+        if (self.ipGroupList && self.ipGroupList.count > 0) {
+            return;
+        }
+        
+        NSMutableDictionary *ipGroupInfos = [NSMutableDictionary dictionary];
+        NSArray *inetAddresses = [kQNDnsPrefetcher getInetAddressByHost:self.host];
+        for (id <QNInetAddressDelegate> inetAddress in inetAddresses) {
+            NSString *ipValue = inetAddress.ipValue;
+            NSString *groupType = [self getIpType:ipValue];
+            if (groupType) {
+                NSMutableArray *ipList = ipGroupInfos[groupType] ?: [NSMutableArray array];
+                [ipList addObject:ipValue];
+                ipGroupInfos[groupType] = ipList;
+            }
+        }
+        
+        NSMutableArray *ipGroupList = [NSMutableArray array];
+        for (NSString *groupType in ipGroupInfos.allKeys) {
+            NSArray *ipList = ipGroupInfos[groupType];
+            QNUploadIpGroup *ipGroup = [[QNUploadIpGroup alloc] initWithGroupType:groupType ipList:ipList];
+            [ipGroupList addObject:ipGroup];
+        }
+        self.ipGroupList = ipGroupList;
+    }
+}
 - (void)freeze:(NSString *)ip{
     [kQNUploadServerFreezeManager freezeHost:self.host type:[self getIpType:ip]];
 }
 - (NSString *)getIpType:(NSString *)ip{
+    
     NSString *type = nil;
+    if (!ip || ip.length == 0) {
+        return type;
+    }
     if ([ip containsString:@":"]) {
         type = @"ipv6";
     } else if ([ip containsString:@"."]){

@@ -31,7 +31,7 @@
 }
 - (void)freeze{
     @synchronized (self) {
-        self.freezeDate = [NSDate dateWithTimeIntervalSinceNow:20*60];
+        self.freezeDate = [NSDate dateWithTimeIntervalSinceNow:10*60];
     }
 }
 @end
@@ -64,7 +64,7 @@
         return true;
     }
     BOOL isFreezed = true;
-    NSString *infoKey = [NSString stringWithFormat:@"%@%@", host, type];
+    NSString *infoKey = [self getItemInfoKey:host type:type];
     QNUploadServerFreezeItem *item = self.freezeInfo[infoKey];
     if (!item || ![item isFreezedByDate:[NSDate date]]) {
         isFreezed = false;
@@ -76,13 +76,17 @@
     if (!host || host.length == 0) {
         return;
     }
-    NSString *infoKey = [NSString stringWithFormat:@"%@%@", host, type];
+    NSString *infoKey = [self getItemInfoKey:host type:type];
     QNUploadServerFreezeItem *item = self.freezeInfo[infoKey];
     if (!item) {
         item = [QNUploadServerFreezeItem item:host type:type];
         self.freezeInfo[infoKey] = item;
     }
     [item freeze];
+}
+
+- (NSString *)getItemInfoKey:(NSString *)host type:(NSString *)type{
+    return [NSString stringWithFormat:@"%@:%@", host ?: @"none", type ?: @"none"];
 }
 
 @end
