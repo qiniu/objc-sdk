@@ -63,7 +63,7 @@
 - (void)testHttpPost{
     
     NSData *data = [@"This is a test" dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *params = @{@"token" : g_token};
+    NSDictionary *params = @{@"token" : token_z0};
     NSURLRequest *request = [self postRequest:@"http://upload.qiniup.com"
                                        domain:@"upload.qiniup.com"
                                         param:params
@@ -73,7 +73,7 @@
 
 - (void)testHttpsPost{
     NSData *data = [@"This is a test" dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *params = @{@"token" : g_token};
+    NSDictionary *params = @{@"token" : token_z0};
     NSURLRequest *request = [self postRequest:@"https://upload.qiniup.com"
                                        domain:@"upload.qiniup.com"
                                         param:params
@@ -84,7 +84,7 @@
 - (void)testHttpPostByIP{
     
     NSData *data = [@"This is a test" dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *params = @{@"token" : g_token};
+    NSDictionary *params = @{@"token" : token_z0};
     NSURLRequest *request = [self postRequest:@"http://218.98.28.30"
                                        domain:@"upload.qiniup.com"
                                         param:params
@@ -94,7 +94,7 @@
 
 - (void)testHttpsPostByIP{
     NSData *data = [@"This is a test" dataUsingEncoding:NSUTF8StringEncoding];
-    NSDictionary *params = @{@"token" : g_token};
+    NSDictionary *params = @{@"token" : token_z0};
     NSURLRequest *request = [self postRequest:@"https://218.98.28.30"
                                        domain:@"upload.qiniup.com"
                                         param:params

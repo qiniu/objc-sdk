@@ -8,7 +8,6 @@
 
 #import "QNUploadSystemClient.h"
 #import "QNUserAgent.h"
-
 #import "NSURLRequest+QNRequest.h"
 #import "QNURLProtocol.h"
 

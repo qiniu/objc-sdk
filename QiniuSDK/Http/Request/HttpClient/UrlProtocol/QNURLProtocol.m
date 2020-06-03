@@ -9,7 +9,6 @@
 #import "QNURLProtocol.h"
 #import "QNCFHttpClient.h"
 #import "NSURLRequest+QNRequest.h"
-#import "QNDnsPrefetcher.h"
 #import "NSObject+QNSwizzle.h"
 #import <objc/runtime.h>
 
@@ -92,7 +91,7 @@
     [[QNRequestInfoManager share] removeRequestInfoForRequest:self];
 }
 - (BOOL)qnHttps_shouldInit{
-    if ([self qn_isQiNiuRequest]
+    if ([self qn_isQiNiuRequest] && self.qn_ip.length > 0
         && ([self.URL.absoluteString hasPrefix:@"http://"] || [self.URL.absoluteString hasPrefix:@"https://"])) {
         return YES;
     } else {
@@ -147,11 +146,7 @@
     if ([NSURLProtocol propertyForKey:kQNReuqestIdentifiers inRequest:request]) {
         return NO;
     }
-
-    id <QNInetAddressDelegate> address = [kQNDnsPrefetcher getInetAddressByHost:request.URL.host].firstObject;
-    
-    if ([request qnHttps_shouldInit]
-        && address.ipValue && address.ipValue.length > 0) {
+    if ([request qnHttps_shouldInit]) {
         return YES;
     } else {
         return NO;
@@ -161,21 +156,7 @@
 
 + (NSURLRequest *)canonicalRequestForRequest:(NSURLRequest *)request {
     
-    NSString *host = request.URL.host;
-    NSString *ip = [kQNDnsPrefetcher getInetAddressByHost:host].firstObject.ipValue;
-    
-    if (!ip || ip.length == 0) {
-        return request;
-    }
-    
-    NSString *urlString = request.URL.absoluteString;
-    NSLog(@"QN UrlProtocol OriginUrl: %@", urlString);
-    urlString = [urlString stringByReplacingOccurrencesOfString:host withString:ip];
-    NSLog(@"QN UrlProtocol RealUrl  : %@", urlString);
-    NSMutableURLRequest *requestNew = [request mutableCopy];
-    requestNew.URL = [NSURL URLWithString:urlString];
-    
-    return [requestNew copy];
+    return request;
 }
 
 

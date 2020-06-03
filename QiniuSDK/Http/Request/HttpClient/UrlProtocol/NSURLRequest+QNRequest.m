@@ -13,6 +13,7 @@
 @implementation NSURLRequest(QNRequest)
 
 #define kQNURLReuestHostKey @"Host"
+#define kQNURLReuestIPKey @"QNURLReuestIP"
 #define kQNURLReuestIdentifierKey @"QNURLReuestIdentifier"
 - (BOOL)qn_isQiNiuRequest{
     if (self.qn_identifier && self.qn_domain) {
@@ -32,6 +33,10 @@
         host = self.URL.host;
     }
     return host;
+}
+
+- (NSString *)qn_ip{
+    return self.allHTTPHeaderFields[kQNURLReuestIPKey];
 }
 
 - (NSDictionary *)qn_allHTTPHeaderFields{
@@ -104,6 +109,14 @@
     NSTimeInterval timestmap = [[NSDate date] timeIntervalSince1970];
     NSString *identifier = [NSString stringWithFormat:@"%lf%@", timestmap, qn_domain];
     [self setQn_identifier:identifier];
+}
+
+- (void)setQn_ip:(NSString *)qn_ip{
+    if (qn_ip) {
+        [self addValue:qn_ip forHTTPHeaderField:kQNURLReuestIPKey];
+    } else {
+        [self setValue:nil forHTTPHeaderField:kQNURLReuestIPKey];
+    }
 }
 
 - (void)setQn_identifier:(NSString *)qn_identifier{

@@ -9,40 +9,89 @@
 #import "QNUploadDomainRegion.h"
 #import "QNUploadServer.h"
 #import "QNZoneInfo.h"
+#import "QNUploadServerFreezeManager.h"
+#import "QNDnsPrefetcher.h"
+
+@interface QNUploadIpGroup : NSObject
+@property(nonatomic,   copy)NSString *groupType;
+@property(nonatomic, strong)NSArray <NSString *> *ipList;
+@end
+@implementation QNUploadIpGroup
+@end
 
 @interface QNUploadServerDomain: NSObject
+@property(atomic   , assign)BOOL isAllFreezed;
 @property(nonatomic,   copy)NSString *host;
 @property(nonatomic, strong)NSArray <NSString *> *ipList;
-@property(nonatomic, strong)NSDate *freezeDate;
 @end
 @implementation QNUploadServerDomain
++ (QNUploadServerDomain *)domain:(NSString *)host{
+    QNUploadServerDomain *domain = [[QNUploadServerDomain alloc] init];
+    domain.host = host;
+    domain.isAllFreezed = false;
+    return domain;
+}
 - (QNUploadServer *)getServer{
-    if (!self.host || self.host.length == 0) {
+    if (self.isAllFreezed || !self.host || self.host.length == 0) {
         return nil;
     }
     
-    NSDate *currentDate = [NSDate date];
-    if ([self isFreezedByDate:currentDate]) {
-       return nil;
+    if (!self.ipList || self.ipList.count == 0) {
+        NSMutableArray *ipList = [NSMutableArray array];
+        NSArray *inetAddresses = [kQNDnsPrefetcher getInetAddressByHost:self.host];
+        for (id <QNInetAddressDelegate> inetAddress in inetAddresses) {
+            NSString *ipValue = inetAddress.ipValue;
+            if (ipValue && ipValue.length > 0) {
+                [ipList addObject:ipValue];
+            }
+        }
+        self.ipList = ipList;
     }
     
-    return [QNUploadServer server:self.host
-                             host:self.host
-                               ip:self.ipList.firstObject];
+    if (self.ipList && self.ipList.count > 0) {
+        NSString *serverIp = nil;
+        for (NSString *ip in self.ipList) {
+            NSString *ipType = [self getIpType:ip];
+            if (ipType && ![kQNUploadServerFreezeManager isFreezeHost:self.host type:ipType]) {
+                serverIp = ip;
+                break;
+            }
+        }
+        if (serverIp != nil) {
+            return [QNUploadServer server:self.host host:self.host ip:serverIp];
+        } else {
+            self.isAllFreezed = true;
+            return nil;
+        }
+    } else if (![kQNUploadServerFreezeManager isFreezeHost:self.host type:nil]){
+        return [QNUploadServer server:self.host host:self.host ip:nil];
+    } else {
+        self.isAllFreezed = true;
+        return nil;
+    }
 }
-- (BOOL)isFreezedByDate:(NSDate *)date{
-    BOOL isFreezed = YES;
-    @synchronized (self) {
-        if ([self.freezeDate timeIntervalSinceDate:date] < 0){
-            isFreezed = NO;
+- (void)freeze:(NSString *)ip{
+    [kQNUploadServerFreezeManager freezeHost:self.host type:[self getIpType:ip]];
+}
+- (NSString *)getIpType:(NSString *)ip{
+    NSString *type = nil;
+    if ([ip containsString:@":"]) {
+        type = @"ipv6";
+    } else if ([ip containsString:@"."]){
+        NSInteger firstNumber = [[ip componentsSeparatedByString:@"."].firstObject integerValue];
+        if (firstNumber > 0 && firstNumber < 127) {
+            type = @"ipv4-A";
+        } else if (firstNumber > 127 && firstNumber <= 191) {
+            type = @"ipv4-B";
+        } else if (firstNumber > 191 && firstNumber <= 223) {
+            type = @"ipv4-C";
+        } else if (firstNumber > 223 && firstNumber <= 239) {
+            type = @"ipv4-D";
+        } else if (firstNumber > 239 && firstNumber < 255) {
+            type = @"ipv4-E";
         }
     }
-    return isFreezed;
-}
-- (void)freeze{
-    @synchronized (self) {
-        self.freezeDate = [NSDate dateWithTimeIntervalSinceNow:20*60];
-    }
+    return type;
 }
 @end
 
@@ -89,14 +138,11 @@
     self.oldDomainDictionary = [self createDomainDictionary:serverGroups];
 }
 - (NSDictionary *)createDomainDictionary:(NSArray <QNUploadServerGroup *> *)serverGroups{
-    NSDate *freezeDate = [NSDate dateWithTimeIntervalSince1970:0];
     NSMutableDictionary *domainDictionary = [NSMutableDictionary dictionary];
     
     for (QNUploadServerGroup *serverGroup in serverGroups) {
         for (NSString *host in serverGroup.allHosts) {
-            QNUploadServerDomain *domain = [[QNUploadServerDomain alloc] init];
-            domain.freezeDate = freezeDate;
-            domain.host = host;
+            QNUploadServerDomain *domain = [QNUploadServerDomain domain:host];
             [domainDictionary setObject:domain forKey:host];
         }
     }
@@ -110,8 +156,8 @@
     }
     
     if (freezeServer.serverId) {
-        [_domainDictionary[freezeServer.serverId] freeze];
-        [_oldDomainDictionary[freezeServer.serverId] freeze];
+        [_domainDictionary[freezeServer.serverId] freeze:freezeServer.ip];
+        [_oldDomainDictionary[freezeServer.serverId] freeze:freezeServer.ip];
     }
     
     NSArray *hostList = isOldServer ? self.oldDomainHostList : self.domainHostList;

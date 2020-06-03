@@ -119,11 +119,13 @@
         NSString *urlString = [NSString stringWithFormat:@"%@%@%@", scheme, serverIP, action ?: @""];
         request.URL = [NSURL URLWithString:urlString];
         request.qn_domain = serverHost;
+        request.qn_ip = serverIP;
         isSkipDns = YES;
     } else {
         NSString *urlString = [NSString stringWithFormat:@"%@%@%@", scheme, serverHost, action ?: @""];
         request.URL = [NSURL URLWithString:urlString];
         request.qn_domain = serverHost;
+        request.qn_ip = nil;
         isSkipDns = NO;
     }
     request.HTTPMethod = method;

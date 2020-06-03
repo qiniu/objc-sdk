@@ -139,6 +139,9 @@
 		31F553E9245A75B4000B66AD /* QNUploadFileInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 31F553E7245A75B4000B66AD /* QNUploadFileInfo.h */; };
 		31F553EA245A75B4000B66AD /* QNUploadFileInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F553E8245A75B4000B66AD /* QNUploadFileInfo.m */; };
 		31F553EE245A7D5A000B66AD /* QNUploadRegionInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 31F553EC245A7D5A000B66AD /* QNUploadRegionInfo.h */; };
+		31FD091F248662F900217848 /* QNUploadServerFreezeManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 31FD091D248662F900217848 /* QNUploadServerFreezeManager.h */; };
+		31FD0920248662F900217848 /* QNUploadServerFreezeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31FD091E248662F900217848 /* QNUploadServerFreezeManager.m */; };
+		31FD0921248662F900217848 /* QNUploadServerFreezeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 31FD091E248662F900217848 /* QNUploadServerFreezeManager.m */; };
 		7CF44E0E25F6BE604AE68F92 /* libPods-QiniuSDK_iOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 422A3A07B38819979BBFE724 /* libPods-QiniuSDK_iOSTests.a */; };
 		A31ADA71DBBF1F4D8A065061 /* libPods-QiniuSDK_Mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 73B66D8E78B0B3A0BEEA45A6 /* libPods-QiniuSDK_Mac.a */; };
 		BA8408541BE251010093B013 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA8408521BE250C80093B013 /* SystemConfiguration.framework */; };
@@ -312,6 +315,8 @@
 		31F553E7245A75B4000B66AD /* QNUploadFileInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNUploadFileInfo.h; sourceTree = "<group>"; };
 		31F553E8245A75B4000B66AD /* QNUploadFileInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUploadFileInfo.m; sourceTree = "<group>"; };
 		31F553EC245A7D5A000B66AD /* QNUploadRegionInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNUploadRegionInfo.h; sourceTree = "<group>"; };
+		31FD091D248662F900217848 /* QNUploadServerFreezeManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNUploadServerFreezeManager.h; sourceTree = "<group>"; };
+		31FD091E248662F900217848 /* QNUploadServerFreezeManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUploadServerFreezeManager.m; sourceTree = "<group>"; };
 		32036F4A07041AC3410DBF2F /* Pods-QiniuSDK_Mac.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_Mac.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_Mac/Pods-QiniuSDK_Mac.release.xcconfig"; sourceTree = "<group>"; };
 		422A3A07B38819979BBFE724 /* libPods-QiniuSDK_iOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuSDK_iOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		466E7AACB5F77BA0D4DE4070 /* Pods-QiniuSDK_MacTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_MacTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_MacTests/Pods-QiniuSDK_MacTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -552,6 +557,8 @@
 				3149A1DB2462A57300A2A15B /* QNUploadServer.m */,
 				3149A1D82462A57300A2A15B /* QNUploadDomainRegion.h */,
 				3149A1D92462A57300A2A15B /* QNUploadDomainRegion.m */,
+				31FD091D248662F900217848 /* QNUploadServerFreezeManager.h */,
+				31FD091E248662F900217848 /* QNUploadServerFreezeManager.m */,
 			);
 			path = ServerRegion;
 			sourceTree = "<group>";
@@ -753,6 +760,7 @@
 				31A18415246A7652001D6EEE /* QNReportItem.h in Headers */,
 				DF482FD81B0DA8A2000DAD98 /* QNConfiguration.h in Headers */,
 				3149446C2448515900386F16 /* QNZoneInfo.h in Headers */,
+				31FD091F248662F900217848 /* QNUploadServerFreezeManager.h in Headers */,
 				316A4B8824346364007BF564 /* QNTransactionManager.h in Headers */,
 				CCC3A50822DC10CB00D835B1 /* QNConcurrentResumeUpload.h in Headers */,
 				31F553992456F2F3000B66AD /* QNALAssetFile.h in Headers */,
@@ -1051,6 +1059,7 @@
 				DF2CDE6A19DAC6A400CE01FB /* QNUploadManager.m in Sources */,
 				3149A1DD2462A57400A2A15B /* QNUploadDomainRegion.m in Sources */,
 				31C2EEE4242DE86300713A33 /* QNUtils.m in Sources */,
+				31FD0920248662F900217848 /* QNUploadServerFreezeManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1132,6 +1141,7 @@
 				DF2CDE6B19DAC6A400CE01FB /* QNUploadManager.m in Sources */,
 				3149A1DE2462A57400A2A15B /* QNUploadDomainRegion.m in Sources */,
 				31C2EEE5242DE86D00713A33 /* QNUtils.m in Sources */,
+				31FD0921248662F900217848 /* QNUploadServerFreezeManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

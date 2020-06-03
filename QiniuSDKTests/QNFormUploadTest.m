@@ -37,7 +37,7 @@
     
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-    [self.upManager putData:data key:@"你好" token:g_token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+    [self.upManager putData:data key:@"你好" token:token_z0 complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         testInfo = info;
         testResp = resp;
     }
@@ -62,7 +62,7 @@
 //        builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
 //    }];
 //    QNUploadManager *upManager = [[QNUploadManager alloc]initWithConfiguration:config];
-//    [upManager putData:data key:@"你好" token:g_token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//    [upManager putData:data key:@"你好" token:token_z0 complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
 //        testInfo = info;
 //        testResp = resp;
 //    } option:opt];
@@ -179,7 +179,7 @@
     __block NSString *key = nil;
 
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-    [self.upManager putData:data key:nil token:g_token complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
+    [self.upManager putData:data key:nil token:token_z0 complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
         key = k;
         testInfo = info;
         testResp = resp;
@@ -216,7 +216,7 @@
 //    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 //
 //    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-//    [upManager putData:data key:nil token:g_token complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
+//    [upManager putData:data key:nil token:token_z0 complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
 //        key = k;
 //        testInfo = info;
 //        testResp = resp;
@@ -249,7 +249,7 @@
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-    [upManager putData:data key:nil token:g_token complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
+    [upManager putData:data key:nil token:token_z0 complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
         key = k;
         testInfo = info;
         testResp = resp;
@@ -283,7 +283,7 @@
 //    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 //
 //    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-//    [upManager putData:data key:nil token:g_token complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
+//    [upManager putData:data key:nil token:token_z0 complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
 //        key = k;
 //        testInfo = info;
 //        testResp = resp;
@@ -306,7 +306,7 @@
 
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
     NSData *data = [@"" dataUsingEncoding:NSUTF8StringEncoding];
-    [self.upManager putData:data key:@"你好" token:g_token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+    [self.upManager putData:data key:@"你好" token:token_z0 complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         testInfo = info;
         testResp = resp;
     }
