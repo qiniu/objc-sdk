@@ -47,7 +47,7 @@
 }
 
 - (void) template:(int)size pos:(float)pos {
-    NSString *keyUp = [NSString stringWithFormat:@"fileRecoder_%dk", size];
+    NSString *keyUp = [NSString stringWithFormat:@"fileRecorder_%dk", size];
     QNTempFile *tempFile = [QNTempFile createTempfileWithSize:size * 1024 identifier:keyUp];
     __block NSString *key = nil;
     __block QNResponseInfo *info = nil;

@@ -1,5 +1,6 @@
 language: objective-c
 osx_image: xcode11
+sudo: true
 
 before_install:
   - rvm install 2.6.4
@@ -10,6 +11,7 @@ before_install:
   - rm -rf ~/.cocoapods
   - pod setup
   - pod install --verbose --no-repo-update
+
 
 before_script:
   - export QINIU_TEST_ENV="travis"

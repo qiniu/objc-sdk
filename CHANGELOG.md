@@ -1,6 +1,22 @@
 #Changelog
 
-## 7.3.1 (2019-12-31)
+## 7.3.5 (2020-05-29)
+## 增加
+日志上报errorType新增prototol_error协议错误
+
+## 7.3.4 (2020-05-20)
+## 增加
+QNResponse添加xClientId字段回调
+添加network_loss.sh
+## 修正
+uplog up_time字段修改
+uplog json format校正
+
+## 7.3.3 (2020-05-12)
+## 改变
+* uplog v4版本更新
+
+## 7.3.2 (2019-12-31)
 ## 改变
 * v2 prequery 升级到 v3，支持跨区域双活切换
 * 修改上传域名重试逻辑
