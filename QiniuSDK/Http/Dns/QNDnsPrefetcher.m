@@ -631,9 +631,8 @@
         
         QNTransaction *transcation = [QNTransaction transaction:kQNLoadLocalDnsTranscationName after:0 action:^{
             
-            if ([kQNDnsPrefetcher recoverCache]) {
-                [kQNDnsPrefetcher localFetch];
-            }
+            [kQNDnsPrefetcher recoverCache];
+            [kQNDnsPrefetcher localFetch];
         }];
         [[QNTransactionManager shared] addTransaction:transcation];
     });

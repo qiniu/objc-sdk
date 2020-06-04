@@ -39,14 +39,11 @@
     static QNFixedZone *z0 = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        static const NSArray<NSString *> *uplist = nil;
-        if (!uplist) {
-            uplist = [[NSArray alloc] initWithObjects:@"upload.qiniup.com", @"upload-nb.qiniup.com",
-                                                      @"upload-xs.qiniup.com", @"up.qiniup.com",
-                                                      @"up-nb.qiniup.com", @"up-xs.qiniup.com",
-                                                      @"upload.qbox.me", @"up.qbox.me", nil];
-            z0 = [QNFixedZone createWithHost:(NSArray<NSString *> *)uplist];
-        }
+        NSArray<NSString *> *uplist = @[@"upload.qiniup.com", @"upload-nb.qiniup.com",
+                                        @"upload-xs.qiniup.com", @"up.qiniup.com",
+                                        @"up-nb.qiniup.com", @"up-xs.qiniup.com",
+                                        @"upload.qbox.me", @"up.qbox.me"];
+        z0 = [QNFixedZone createWithHost:(NSArray<NSString *> *)uplist];
     });
     return z0;
 }
@@ -55,12 +52,9 @@
     static QNFixedZone *z1 = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        static const NSArray<NSString *> *uplist = nil;
-        if (!uplist) {
-            uplist = [[NSArray alloc] initWithObjects:@"upload-z1.qiniup.com", @"up-z1.qiniup.com",
-                                                      @"upload-z1.qbox.me", @"up-z1.qbox.me", nil];
-            z1 = [QNFixedZone createWithHost:(NSArray<NSString *> *)uplist];
-        }
+        NSArray<NSString *> *uplist = @[@"upload-z1.qiniup.com", @"up-z1.qiniup.com",
+                                        @"upload-z1.qbox.me", @"up-z1.qbox.me"];
+        z1 = [QNFixedZone createWithHost:(NSArray<NSString *> *)uplist];
     });
     return z1;
 }
@@ -69,14 +63,11 @@
     static QNFixedZone *z2 = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        static const NSArray<NSString *> *uplist = nil;
-        if (!uplist) {
-            uplist = [[NSArray alloc] initWithObjects:@"upload-z2.qiniup.com", @"upload-gz.qiniup.com",
-                                                      @"upload-fs.qiniup.com", @"up-z2.qiniup.com",
-                                                      @"up-gz.qiniup.com", @"up-fs.qiniup.com",
-                                                      @"upload-z2.qbox.me", @"up-z2.qbox.me", nil];
-            z2 = [QNFixedZone createWithHost:(NSArray<NSString *> *)uplist];
-        }
+        NSArray<NSString *> *uplist = @[@"upload-z2.qiniup.com", @"upload-gz.qiniup.com",
+                                        @"upload-fs.qiniup.com", @"up-z2.qiniup.com",
+                                        @"up-gz.qiniup.com", @"up-fs.qiniup.com",
+                                        @"upload-z2.qbox.me", @"up-z2.qbox.me"];
+        z2 = [QNFixedZone createWithHost:(NSArray<NSString *> *)uplist];
     });
     return z2;
 }
@@ -85,12 +76,9 @@
     static QNFixedZone *zNa0 = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        static const NSArray<NSString *> *uplist = nil;
-        if (!uplist) {
-            uplist = [[NSArray alloc] initWithObjects:@"upload-na0.qiniup.com", @"up-na0.qiniup.com",
-                                                      @"upload-na0.qbox.me", @"up-na0.qbox.me", nil];
-            zNa0 = [QNFixedZone createWithHost:(NSArray<NSString *> *)uplist];
-        }
+        NSArray<NSString *> *uplist = @[@"upload-na0.qiniup.com", @"up-na0.qiniup.com",
+                                        @"upload-na0.qbox.me", @"up-na0.qbox.me"];
+        zNa0 = [QNFixedZone createWithHost:(NSArray<NSString *> *)uplist];
     });
     return zNa0;
 }
@@ -99,12 +87,9 @@
     static QNFixedZone *zAs0 = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        static const NSArray<NSString *> *uplist = nil;
-        if (!uplist) {
-            uplist = [[NSArray alloc] initWithObjects:@"upload-as0.qiniup.com", @"up-as0.qiniup.com",
-                                                      @"upload-as0.qbox.me", @"up-as0.qbox.me", nil];
-            zAs0 = [QNFixedZone createWithHost:(NSArray<NSString *> *)uplist];
-        }
+        NSArray<NSString *> *uplist = @[@"upload-as0.qiniup.com", @"up-as0.qiniup.com",
+                                        @"upload-as0.qbox.me", @"up-as0.qbox.me"];
+        zAs0 = [QNFixedZone createWithHost:(NSArray<NSString *> *)uplist];
     });
     return zAs0;
 }
