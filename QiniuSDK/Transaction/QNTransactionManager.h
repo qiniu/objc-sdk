@@ -47,10 +47,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)shared;
 
 /// 根据name查找事务
-- (NSArray <QNTransaction *> *)transcationsForName:(NSString *)name;
+- (NSArray <QNTransaction *> *)transactionsForName:(NSString *)name;
 
 /// 是否存在某个名称的事务
-- (BOOL)existTranscationsForName:(NSString *)name;
+- (BOOL)existtransactionsForName:(NSString *)name;
 
 /// 添加一个事务
 - (void)addTransaction:(QNTransaction *)transaction;

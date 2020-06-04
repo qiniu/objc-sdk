@@ -144,11 +144,12 @@
        complete:(QNUpCompletionHandler)completionHandler
          option:(QNUploadOption *)option {
 
-    [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone
-                                                               token:token];
     if ([QNUploadManager checkAndNotifyError:key token:token input:data identifier:identifier complete:completionHandler]) {
         return;
     }
+    
+    [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone
+                                                               token:token];
 
     QNUpToken *t = [QNUpToken parse:token];
     if (t == nil) {
@@ -206,9 +207,6 @@
                complete:(QNUpCompletionHandler)completionHandler
                  option:(QNUploadOption *)option {
     
-    [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone
-                                                               token:token];
-    
     @autoreleasepool {
         QNUpToken *t = [QNUpToken parse:token];
         if (t == nil) {
@@ -222,6 +220,9 @@
             [Collector update:CK_key value:key identifier:identifier];
         }
 
+        [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone
+                                                                   token:token];
+        
         [_config.zone preQuery:t on:^(int code, QNHttpResponseInfo *httpResponseInfo) {
             [Collector addRequestWithType:QNRequestType_ucQuery httpResponseInfo:httpResponseInfo fileOffset:QN_IntNotSet targetRegionId:nil currentRegionId:nil identifier:identifier];
             if (code != 0) {

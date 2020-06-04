@@ -107,14 +107,14 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
     }
 }
 
-- (NSArray <QNTransaction *> *)transcationsForName:(NSString *)name{
-    NSMutableArray *transcations = [NSMutableArray array];
+- (NSArray <QNTransaction *> *)transactionsForName:(NSString *)name{
+    NSMutableArray *transactions = [NSMutableArray array];
     [self enumerate:^(QNTransaction *transaction, BOOL * _Nonnull stop) {
         if ([transaction.name isEqualToString:name]) {
-            [transcations addObject:transaction];
+            [transactions addObject:transaction];
         }
     }];
-    return [transcations copy];
+    return [transactions copy];
 }
 
 - (void)enumerate:(void(^)(QNTransaction *transaction, BOOL * _Nonnull stop))handler {
@@ -218,12 +218,12 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
     return self;
 }
 
-- (NSArray <QNTransaction *> *)transcationsForName:(NSString *)name{
-    return [self.transactionList transcationsForName:name];
+- (NSArray <QNTransaction *> *)transactionsForName:(NSString *)name{
+    return [self.transactionList transactionsForName:name];
 }
 
-- (BOOL)existTranscationsForName:(NSString *)name{
-    NSArray *transactionList = [self transcationsForName:name];
+- (BOOL)existtransactionsForName:(NSString *)name{
+    NSArray *transactionList = [self transactionsForName:name];
     if (transactionList && transactionList.count > 0) {
         return YES;
     } else {
