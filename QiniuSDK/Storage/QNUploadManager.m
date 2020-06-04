@@ -111,11 +111,12 @@
        complete:(QNUpCompletionHandler)completionHandler
          option:(QNUploadOption *)option {
 
-    [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone
-                                                               token:token];
     if ([QNUploadManager checkAndNotifyError:key token:token input:data complete:completionHandler]) {
         return;
     }
+    
+    [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone
+                                                               token:token];
 
     QNUpToken *t = [QNUpToken parse:token];
     if (t == nil) {
@@ -155,9 +156,6 @@
                complete:(QNUpCompletionHandler)completionHandler
                  option:(QNUploadOption *)option {
     
-    [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone
-                                                               token:token];
-    
     @autoreleasepool {
         QNUpToken *t = [QNUpToken parse:token];
         if (t == nil) {
@@ -171,6 +169,7 @@
             return;
         }
 
+
         QNUpTaskCompletionHandler complete = ^(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp) {
             [file close];
             [QNUploadManager complete:token
@@ -180,6 +179,9 @@
                           taskMetrics:metrics
                              complete:completionHandler];
         };
+
+        [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone
+                                                                   token:token];
 
         if ([file size] <= self.config.putThreshold) {
             NSError *error;

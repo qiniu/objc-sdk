@@ -130,7 +130,7 @@
 @end
 @implementation QNURLProtocol
 
-#define kQNReuqestIdentifiers @"QNReuqestIdentifiers"
+#define kQNRequestIdentifiers @"QNRequestIdentifiers"
 
 + (void)registerProtocol{
     [NSURLProtocol registerClass:[QNURLProtocol class]];
@@ -143,7 +143,7 @@
 //MARK: -- overload
 + (BOOL)canInitWithRequest:(NSURLRequest *)request {
 
-    if ([NSURLProtocol propertyForKey:kQNReuqestIdentifiers inRequest:request]) {
+    if ([NSURLProtocol propertyForKey:kQNRequestIdentifiers inRequest:request]) {
         return NO;
     }
     if ([request qnHttps_shouldInit]) {
@@ -178,7 +178,7 @@
     self.httpsClient.delegate = self;
     
     [NSURLProtocol setProperty:@(YES)
-                        forKey:kQNReuqestIdentifiers
+                        forKey:kQNRequestIdentifiers
                      inRequest:self.httpsClient.request];
     
     [self.httpsClient startLoading];

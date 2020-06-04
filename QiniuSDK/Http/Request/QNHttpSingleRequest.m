@@ -85,7 +85,7 @@
            progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
            complete:(QNSingleRequestCompleteHandler)complete{
     
-    if (isSkipDns && kQNGloableConfiguration.isDnsOpen) {
+    if (isSkipDns && kQNGlobalConfiguration.isDnsOpen) {
         self.client = [[QNUploadSystemClient alloc] init];
     } else {
         self.client = [[QNUploadSystemClient alloc] init];
