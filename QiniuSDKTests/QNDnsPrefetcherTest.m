@@ -67,7 +67,7 @@
 - (void)tearDown {
     [super tearDown];
     
-    kQNGloableConfiguration.dns = nil;
+    kQNGlobalConfiguration.dns = nil;
 }
 
 - (void)testLocalLoad {
@@ -98,7 +98,7 @@
     address.ipValue = CustomIPValue;
     [kQNDnsPrefetcher invalidInetAdress:address];
     
-    kQNGloableConfiguration.dns = [[CustomDns alloc] init];
+    kQNGlobalConfiguration.dns = [[CustomDns alloc] init];
     [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:kDnsTestToken];
     
     QN_TEST_CASE_WAIT_TIME(2);
@@ -119,8 +119,8 @@
     
     CustomDns *dns = [[CustomDns alloc] init];
     dns.isTestTtl = YES;
-    kQNGloableConfiguration.dns = dns;
-    kQNGloableConfiguration.dnsCacheTime = 120;
+    kQNGlobalConfiguration.dns = dns;
+    kQNGlobalConfiguration.dnsCacheTime = 120;
     
     [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:kDnsTestToken];
     

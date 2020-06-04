@@ -197,7 +197,7 @@
     id <QNRecorderDelegate> recorder = nil;
     
     NSError *error;
-    recorder = [QNDnsCacheFile dnsCacheFile:kQNGloableConfiguration.dnscacheDir
+    recorder = [QNDnsCacheFile dnsCacheFile:kQNGlobalConfiguration.dnscacheDir
                                       error:&error];
     if (error) {
         return YES;
@@ -321,12 +321,12 @@
 
 - (void)preFetchHosts:(NSArray <NSString *> *)fetchHosts{
     
-    self.httpDns.defalutTtl = kQNGloableConfiguration.dnsCacheTime;
+    self.httpDns.defalutTtl = kQNGlobalConfiguration.dnsCacheTime;
     
     NSArray *nextFetchHosts = fetchHosts;
     
     nextFetchHosts = [self preFetchHosts:nextFetchHosts
-                                     dns:kQNGloableConfiguration.dns];
+                                     dns:kQNGlobalConfiguration.dns];
     
     nextFetchHosts = [self preFetchHosts:nextFetchHosts
                                      dns:self.httpDns];
@@ -348,7 +348,7 @@
         int rePreNum = 0;
         BOOL isSuccess = NO;
         
-        while (rePreNum < kQNGloableConfiguration.dnsRepreHostNum) {
+        while (rePreNum < kQNGlobalConfiguration.dnsRepreHostNum) {
             if ([self preFetchHost:host dns:dns]) {
                 isSuccess = YES;
                 break;
@@ -447,7 +447,7 @@
     NSString *cacheKey = [dnsCacheKey toString];
 
     NSError *error;
-    id <QNRecorderDelegate> recorder = [QNDnsCacheFile dnsCacheFile:kQNGloableConfiguration.dnscacheDir
+    id <QNRecorderDelegate> recorder = [QNDnsCacheFile dnsCacheFile:kQNGlobalConfiguration.dnscacheDir
                                                              error:&error];
     if (error) {
         return NO;
@@ -579,7 +579,7 @@
 
 //MARK: --
 - (BOOL)isDnsOpen{
-    return [kQNGloableConfiguration isDnsOpen];
+    return [kQNGlobalConfiguration isDnsOpen];
 }
 
 - (QNDnsCacheKey *)dnsCacheKey{
