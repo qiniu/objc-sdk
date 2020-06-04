@@ -63,14 +63,14 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 
 @end
 
-@interface QNGloableConfiguration()
+@interface QNGlobalConfiguration()
 @end
-@implementation QNGloableConfiguration
+@implementation QNGlobalConfiguration
 + (instancetype)shared{
-    static QNGloableConfiguration *config = nil;
+    static QNGlobalConfiguration *config = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        config = [[QNGloableConfiguration alloc] init];
+        config = [[QNGlobalConfiguration alloc] init];
         [config setupData];
     });
     return config;

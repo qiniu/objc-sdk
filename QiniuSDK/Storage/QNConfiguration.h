@@ -109,8 +109,8 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @end
 
 
-#define kQNGloableConfiguration [QNGloableConfiguration shared]
-@interface QNGloableConfiguration : NSObject
+#define kQNGlobalConfiguration [QNGlobalConfiguration shared]
+@interface QNGlobalConfiguration : NSObject
 
 /**
  *   是否开启dns预解析 默认开启
