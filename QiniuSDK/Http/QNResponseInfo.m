@@ -223,7 +223,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 }
 
 - (BOOL)isConnectionBroken {
-    return _statusCode == kQNNetworkError || (_statusCode < -1000 && _statusCode != -1003);
+    return _statusCode == kQNNetworkError || _statusCode == NSURLErrorNotConnectedToInternet;
 }
 
 - (NSString *)description {
