@@ -612,8 +612,8 @@
 
 //MARK: -- DNS 事务
 @implementation QNTransactionManager(Dns)
-#define kQNLoadLocalDnsTranscationName @"QNLoadLocalDnsTranscation"
-#define kQNDnsCheckAndPrefetchTranscationName @"QNDnsCheckAndPrefetchTranscationName"
+#define kQNLoadLocalDnstransactionName @"QNLoadLocalDnstransaction"
+#define kQNDnsCheckAndPrefetchtransactionName @"QNDnsCheckAndPrefetchtransactionName"
 
 - (void)addDnsLocalLoadTransaction{
     
@@ -624,12 +624,12 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         
-        QNTransaction *transcation = [QNTransaction transaction:kQNLoadLocalDnsTranscationName after:0 action:^{
+        QNTransaction *transaction = [QNTransaction transaction:kQNLoadLocalDnstransactionName after:0 action:^{
             
             [kQNDnsPrefetcher recoverCache];
             [kQNDnsPrefetcher localFetch];
         }];
-        [[QNTransactionManager shared] addTransaction:transcation];
+        [[QNTransactionManager shared] addTransaction:transaction];
     });
 }
 
@@ -648,11 +648,11 @@
         QNTransactionManager *transactionManager = [QNTransactionManager shared];
         
         if (![transactionManager existtransactionsForName:token]) {
-            QNTransaction *transcation = [QNTransaction transaction:token after:0 action:^{
+            QNTransaction *transaction = [QNTransaction transaction:token after:0 action:^{
                
                 [kQNDnsPrefetcher checkAndPrefetchDnsIfNeed:currentZone token:token];
             }];
-            [transactionManager addTransaction:transcation];
+            [transactionManager addTransaction:transaction];
             
             ret = YES;
         }
@@ -669,17 +669,17 @@
     @synchronized (kQNDnsPrefetcher) {
         
         QNTransactionManager *transactionManager = [QNTransactionManager shared];
-        QNTransaction *transaction = [transactionManager transactionsForName:kQNDnsCheckAndPrefetchTranscationName].firstObject;
+        QNTransaction *transaction = [transactionManager transactionsForName:kQNDnsCheckAndPrefetchtransactionName].firstObject;
         
         if (!transaction) {
             
-            QNTransaction *transcation = [QNTransaction timeTransaction:kQNDnsCheckAndPrefetchTranscationName
+            QNTransaction *transaction = [QNTransaction timeTransaction:kQNDnsCheckAndPrefetchtransactionName
                                                                   after:10
                                                                interval:120
                                                                  action:^{
                 [kQNDnsPrefetcher checkWhetherCachedDnsValid];
             }];
-            [transactionManager addTransaction:transcation];
+            [transactionManager addTransaction:transaction];
         } else {
             [transactionManager preformTransaction:transaction];
         }

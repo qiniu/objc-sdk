@@ -74,7 +74,7 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
     }
 }
 
-- (void)handlerAction:(long long)time{
+- (void)handleAction:(long long)time{
     if (![self shouldAction:time]) {
         return;
     }
@@ -289,7 +289,7 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
 }
 
 - (void)handleTransaction:(QNTransaction *)transaction{
-    [transaction handlerAction:self.time];
+    [transaction handleAction:self.time];
 }
 
 //MARK: -- thread
@@ -300,7 +300,7 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
             self.thread = [[NSThread alloc] initWithTarget:weakSelf
                                                   selector:@selector(threadHandler)
                                                      object:nil];
-            self.thread.name = @"com.qiniu.transcation";
+            self.thread.name = @"com.qiniu.transaction";
             [self.thread start];
         }
     }
