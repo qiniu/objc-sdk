@@ -35,7 +35,7 @@
 @end
 
 @interface QNUploadServerDomain: NSObject
-@property(atomic   , assign)BOOL isAllFreezed;
+@property(atomic   , assign)BOOL isAllFrozen;
 @property(nonatomic,   copy)NSString *host;
 @property(nonatomic, strong)NSArray <QNUploadIpGroup *> *ipGroupList;
 @end
@@ -43,11 +43,11 @@
 + (QNUploadServerDomain *)domain:(NSString *)host{
     QNUploadServerDomain *domain = [[QNUploadServerDomain alloc] init];
     domain.host = host;
-    domain.isAllFreezed = false;
+    domain.isAllFrozen = false;
     return domain;
 }
 - (QNUploadServer *)getServer{
-    if (self.isAllFreezed || !self.host || self.host.length == 0) {
+    if (self.isAllFrozen || !self.host || self.host.length == 0) {
         return nil;
     }
     
@@ -58,19 +58,19 @@
     if (self.ipGroupList && self.ipGroupList.count > 0) {
         QNUploadServer *server = nil;
         for (QNUploadIpGroup *ipGroup in self.ipGroupList) {
-            if (![kQNUploadServerFreezeManager isFreezeHost:self.host type:ipGroup.groupType]) {
+            if (![kQNUploadServerFreezeManager isFrozenHost:self.host type:ipGroup.groupType]) {
                 server = [QNUploadServer server:self.host host:self.host ip:[ipGroup getServerIP]];
                 break;
             }
         }
         if (server == nil) {
-            self.isAllFreezed = true;
+            self.isAllFrozen = true;
         }
         return server;
-    } else if (![kQNUploadServerFreezeManager isFreezeHost:self.host type:nil]){
+    } else if (![kQNUploadServerFreezeManager isFrozenHost:self.host type:nil]){
         return [QNUploadServer server:self.host host:self.host ip:nil];
     } else {
-        self.isAllFreezed = true;
+        self.isAllFrozen = true;
         return nil;
     }
 }
@@ -132,7 +132,7 @@
 
 
 @interface QNUploadDomainRegion()
-@property(atomic   , assign)BOOL isAllFreezed;
+@property(atomic   , assign)BOOL isAllFrozen;
 @property(nonatomic, strong)NSArray <NSString *> *domainHostList;
 @property(nonatomic, strong)NSDictionary <NSString *, QNUploadServerDomain *> *domainDictionary;
 @property(nonatomic, strong)NSArray <NSString *> *oldDomainHostList;
@@ -145,7 +145,7 @@
 - (void)setupRegionData:(QNZoneInfo *)zoneInfo{
     _zoneInfo = zoneInfo;
     
-    self.isAllFreezed = NO;
+    self.isAllFrozen = NO;
     NSMutableArray *serverGroups = [NSMutableArray array];
     NSMutableArray *domainHostList = [NSMutableArray array];
     if (zoneInfo.acc) {
@@ -186,7 +186,7 @@
 
 - (id<QNUploadServer>)getNextServer:(BOOL)isOldServer
                        freezeServer:(id<QNUploadServer>)freezeServer{
-    if (self.isAllFreezed) {
+    if (self.isAllFrozen) {
         return nil;
     }
     
@@ -206,7 +206,7 @@
     }
     
     if (server == nil) {
-        self.isAllFreezed = YES;
+        self.isAllFrozen = YES;
     }
     return server;
 }

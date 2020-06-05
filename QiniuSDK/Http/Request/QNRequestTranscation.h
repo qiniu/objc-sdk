@@ -37,7 +37,7 @@ typedef void(^QNRequestTranscationCompleteHandler)(QNResponseInfo * _Nullable re
                            key:(NSString * _Nullable)key
                          token:(QNUpToken *)token;
 
-- (void)quertUploadHosts:(QNRequestTranscationCompleteHandler)complete;
+- (void)queryUploadHosts:(QNRequestTranscationCompleteHandler)complete;
 
 - (void)uploadFormData:(NSData *)data
               fileName:(NSString *)fileName

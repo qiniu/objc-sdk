@@ -90,7 +90,7 @@
 }
 
 //MARK: -- uc query
-- (void)quertUploadHosts:(QNRequestTranscationCompleteHandler)complete{
+- (void)queryUploadHosts:(QNRequestTranscationCompleteHandler)complete{
     
     self.requestInfo.requestType = QNUploadRequestTypeUCQuery;
     

@@ -59,7 +59,7 @@
     return self;
 }
 
-- (BOOL)isFreezeHost:(NSString *)host type:(NSString *)type{
+- (BOOL)isFrozenHost:(NSString *)host type:(NSString *)type{
     if (!host || host.length == 0) {
         return true;
     }
