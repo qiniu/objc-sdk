@@ -8,7 +8,7 @@
 
 #import "QNAutoZone.h"
 #import "QNConfig.h"
-#import "QNRequestTranscation.h"
+#import "QNRequestTransaction.h"
 #import "QNZoneInfo.h"
 #import "QNUpToken.h"
 #import "QNResponseInfo.h"
@@ -83,7 +83,7 @@
 
 @property(nonatomic, strong)NSMutableDictionary *cache;
 @property(nonatomic, strong)NSLock *lock;
-@property(nonatomic, strong)NSMutableArray <QNRequestTranscation *> *transcations;
+@property(nonatomic, strong)NSMutableArray <QNRequestTransaction *> *transactions;
 
 @end
 @implementation QNAutoZone
@@ -92,7 +92,7 @@
     if (self = [super init]) {
         _cache = [NSMutableDictionary new];
         _lock = [NSLock new];
-        _transcations = [NSMutableArray array];
+        _transactions = [NSMutableArray array];
     }
     return self;
 }
@@ -129,8 +129,8 @@
         return;
     }
 
-    QNRequestTranscation *transcation = [self createUploadRequestTranscation:token];
-    [transcation queryUploadHosts:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+    QNRequestTransaction *transaction = [self createUploadRequestTransaction:token];
+    [transaction queryUploadHosts:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
 
         if (responseInfo.isOK) {
             QNZonesInfo *zonesInfo = [QNZonesInfo infoWithDictionary:response];
@@ -151,22 +151,22 @@
                 ret(0, responseInfo, metrics);
             }
         }
-        [self destoryUploadRequestTranscation:transcation];
+        [self destoryUploadRequestTransaction:transaction];
     }];
 }
 
-- (QNRequestTranscation *)createUploadRequestTranscation:(QNUpToken *)token{
+- (QNRequestTransaction *)createUploadRequestTransaction:(QNUpToken *)token{
     
-    QNRequestTranscation *transcation = [[QNRequestTranscation alloc] initWithHosts:@[kQNPreQueryHost]
+    QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithHosts:@[kQNPreQueryHost]
                                                                             ioHosts:@[QNZoneInfoSDKDefaultIOHost]
                                                                               token:token];
-    [self.transcations addObject:transcation];
-    return transcation;
+    [self.transactions addObject:transaction];
+    return transaction;
 }
 
-- (void)destoryUploadRequestTranscation:(QNRequestTranscation *)transcation{
-    if (transcation) {
-        [self.transcations removeObject:transcation];
+- (void)destoryUploadRequestTransaction:(QNRequestTransaction *)transaction{
+    if (transaction) {
+        [self.transactions removeObject:transaction];
     }
 }
 

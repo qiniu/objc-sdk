@@ -1,12 +1,12 @@
 //
-//  QNRequestTranscation.m
+//  QNRequestTransaction.m
 //  QiniuSDK
 //
 //  Created by yangsen on 2020/4/30.
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
-#import "QNRequestTranscation.h"
+#import "QNRequestTransaction.h"
 
 #import "QNCrc32.h"
 #import "QNUrlSafeBase64.h"
@@ -20,7 +20,7 @@
 #import "QNUploadDomainRegion.h"
 #import "QNHttpRegionRequest.h"
 
-@interface QNRequestTranscation()
+@interface QNRequestTransaction()
 
 @property(nonatomic, strong)QNConfiguration *config;
 @property(nonatomic, strong)QNUploadOption *uploadOption;
@@ -32,7 +32,7 @@
 @property(nonatomic, strong)QNHttpRegionRequest *regionRequest;
 
 @end
-@implementation QNRequestTranscation
+@implementation QNRequestTransaction
 
 - (instancetype)initWithHosts:(NSArray <NSString *> *)hosts
                       ioHosts:(NSArray <NSString *> *)ioHosts
@@ -90,7 +90,7 @@
 }
 
 //MARK: -- uc query
-- (void)queryUploadHosts:(QNRequestTranscationCompleteHandler)complete{
+- (void)queryUploadHosts:(QNRequestTransactionCompleteHandler)complete{
     
     self.requestInfo.requestType = QNUploadRequestTypeUCQuery;
     
@@ -117,7 +117,7 @@
 - (void)uploadFormData:(NSData *)data
               fileName:(NSString *)fileName
               progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-              complete:(QNRequestTranscationCompleteHandler)complete{
+              complete:(QNRequestTransactionCompleteHandler)complete{
 
     self.requestInfo.requestType = QNUploadRequestTypeForm;
     
@@ -181,7 +181,7 @@
         blockSize:(long long)blockSize
    firstChunkData:(NSData *)firstChunkData
          progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-         complete:(QNRequestTranscationCompleteHandler)complete{
+         complete:(QNRequestTransactionCompleteHandler)complete{
     
     self.requestInfo.requestType = QNUploadRequestTypeMkblk;
     self.requestInfo.fileOffset = @(blockOffset);
@@ -224,7 +224,7 @@
           chunkData:(NSData *)chunkData
         chunkOffest:(long long)chunkOffest
            progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-           complete:(QNRequestTranscationCompleteHandler)complete{
+           complete:(QNRequestTransactionCompleteHandler)complete{
     
     self.requestInfo.requestType = QNUploadRequestTypeBput;
     self.requestInfo.fileOffset = @(blockOffset + chunkOffest);
@@ -264,7 +264,7 @@
 - (void)makeFile:(long long)fileSize
         fileName:(NSString *)fileName
    blockContexts:(NSArray <NSString *> *)blockContexts
-        complete:(QNRequestTranscationCompleteHandler)complete{
+        complete:(QNRequestTransactionCompleteHandler)complete{
     
     self.requestInfo.requestType = QNUploadRequestTypeMkfile;
     

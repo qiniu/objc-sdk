@@ -9,7 +9,7 @@
 #import "QNConcurrentResumeUpload.h"
 #import "QNResponseInfo.h"
 #import "QNAsyncRun.h"
-#import "QNRequestTranscation.h"
+#import "QNRequestTransaction.h"
 
 @interface QNConcurrentResumeUpload()
 
@@ -17,7 +17,7 @@
 @property(nonatomic, strong) dispatch_queue_t uploadQueue;
 
 @property(nonatomic, assign) float previousPercent;
-@property(nonatomic, strong)NSMutableArray <QNRequestTranscation *> *uploadTranscations;
+@property(nonatomic, strong)NSMutableArray <QNRequestTransaction *> *uploadTransactions;
 
 @property(nonatomic, strong)QNResponseInfo *uploadBlockErrorResponseInfo;
 @property(nonatomic, strong)NSDictionary *uploadBlockErrorResponse;
@@ -39,7 +39,7 @@
     self.previousPercent = 0;
     self.uploadBlockErrorResponseInfo = nil;
     self.uploadBlockErrorResponse = nil;
-    self.uploadTranscations = [NSMutableArray array];
+    self.uploadTransactions = [NSMutableArray array];
     
     NSLog(@"concurrent resume task count: %u", (unsigned int)self.config.concurrentTaskCount);
     for (int i = 0; i < self.config.concurrentTaskCount; i++) {
@@ -133,11 +133,11 @@
                 progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
          completeHandler:(dispatch_block_t)completeHandler{
     
-    QNRequestTranscation *transcation = [self createUploadRequestTranscation];
+    QNRequestTransaction *transaction = [self createUploadRequestTransaction];
     
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
-    [transcation makeBlock:block.offset
+    [transaction makeBlock:block.offset
                  blockSize:block.size
             firstChunkData:[self getDataWithChunk:chunk block:block]
                   progress:progress
@@ -158,39 +158,39 @@
             self.uploadBlockErrorResponseInfo = responseInfo;
             completeHandler();
         }
-        [self destoryUploadRequestTranscation:transcation];
+        [self destoryUploadRequestTransaction:transaction];
     }];
 }
 
 - (void)makeFileRequest:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler {
     
-    QNRequestTranscation *transcation = [self createUploadRequestTranscation];
+    QNRequestTransaction *transaction = [self createUploadRequestTransaction];
     
-    [transcation makeFile:self.uploadFileInfo.size
+    [transaction makeFile:self.uploadFileInfo.size
                  fileName:self.fileName
             blockContexts:[self.uploadFileInfo allBlocksContexts]
                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         
         [self addRegionRequestMetricsOfOneFlow:metrics];
-        [self destoryUploadRequestTranscation:transcation];
+        [self destoryUploadRequestTransaction:transaction];
         completeHandler(responseInfo, response);
     }];
 }
 
-- (QNRequestTranscation *)createUploadRequestTranscation{
-    QNRequestTranscation *transcation = [[QNRequestTranscation alloc] initWithConfig:self.config
+- (QNRequestTransaction *)createUploadRequestTransaction{
+    QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithConfig:self.config
                                                                         uploadOption:self.option
                                                                         targetRegion:[self getTargetRegion]
                                                                         currentegion:[self getCurrentRegion]
                                                                                  key:self.key
                                                                                token:self.token];
-    [self.uploadTranscations addObject:transcation];
-    return transcation;
+    [self.uploadTransactions addObject:transaction];
+    return transaction;
 }
 
-- (void)destoryUploadRequestTranscation:(QNRequestTranscation *)transcation{
-    if (transcation) {
-        [self.uploadTranscations removeObject:transcation];
+- (void)destoryUploadRequestTransaction:(QNRequestTransaction *)transaction{
+    if (transaction) {
+        [self.uploadTransactions removeObject:transaction];
     }
 }
 

@@ -8,12 +8,12 @@
 
 #import "QNResumeUpload.h"
 #import "QNResponseInfo.h"
-#import "QNRequestTranscation.h"
+#import "QNRequestTransaction.h"
 
 @interface QNResumeUpload ()
 
 @property (nonatomic, assign) float previousPercent;
-@property(nonatomic, strong)QNRequestTranscation *uploadTranscation;
+@property(nonatomic, strong)QNRequestTransaction *uploadTransaction;
 
 @property(nonatomic, strong)QNResponseInfo *uploadChunkErrorResponseInfo;
 @property(nonatomic, strong)NSDictionary *uploadChunkErrorResponse;
@@ -119,8 +119,8 @@
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
     
-    QNRequestTranscation *transcation = [self createUploadRequestTranscation];
-    [transcation makeBlock:block.offset
+    QNRequestTransaction *transaction = [self createUploadRequestTransaction];
+    [transaction makeBlock:block.offset
                  blockSize:block.size
             firstChunkData:[self getDataWithChunk:chunk block:block]
                   progress:progress
@@ -152,8 +152,8 @@
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
     
-    QNRequestTranscation *transcation = [self createUploadRequestTranscation];
-    [transcation uploadChunk:block.context
+    QNRequestTransaction *transaction = [self createUploadRequestTransaction];
+    [transaction uploadChunk:block.context
                  blockOffset:block.offset
                    chunkData:[self getDataWithChunk:chunk block:block]
                  chunkOffest:chunk.offset
@@ -180,9 +180,9 @@
 
 - (void)makeFile:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler {
     
-    QNRequestTranscation *transcation = [self createUploadRequestTranscation];
+    QNRequestTransaction *transaction = [self createUploadRequestTransaction];
     
-    [transcation makeFile:self.uploadFileInfo.size
+    [transaction makeFile:self.uploadFileInfo.size
                  fileName:self.fileName
             blockContexts:[self.uploadFileInfo allBlocksContexts]
                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
@@ -192,15 +192,15 @@
     }];
 }
 
-- (QNRequestTranscation *)createUploadRequestTranscation{
-    QNRequestTranscation *transcation = [[QNRequestTranscation alloc] initWithConfig:self.config
+- (QNRequestTransaction *)createUploadRequestTransaction{
+    QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithConfig:self.config
                                                                         uploadOption:self.option
                                                                         targetRegion:[self getTargetRegion]
                                                                         currentegion:[self getCurrentRegion]
                                                                                  key:self.key
                                                                                token:self.token];
-    self.uploadTranscation = transcation;
-    return transcation;
+    self.uploadTransaction = transaction;
+    return transaction;
 }
 
 - (NSData *)getDataWithChunk:(QNUploadData *)chunk block:(QNUploadBlock *)block{

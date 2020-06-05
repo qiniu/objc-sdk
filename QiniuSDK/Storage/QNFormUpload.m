@@ -8,13 +8,13 @@
 
 #import "QNFormUpload.h"
 #import "QNResponseInfo.h"
-#import "QNRequestTranscation.h"
+#import "QNRequestTransaction.h"
 
 @interface QNFormUpload ()
 
 @property (nonatomic) float previousPercent;
 
-@property(nonatomic, strong)QNRequestTranscation *uploadTranscation;
+@property(nonatomic, strong)QNRequestTransaction *uploadTransaction;
 
 @end
 
@@ -22,7 +22,7 @@
 
 - (void)startToUpload {
     
-    self.uploadTranscation = [[QNRequestTranscation alloc] initWithConfig:self.config
+    self.uploadTransaction = [[QNRequestTransaction alloc] initWithConfig:self.config
                                                              uploadOption:self.option
                                                              targetRegion:[self getTargetRegion]
                                                              currentegion:[self getCurrentRegion]
@@ -45,7 +45,7 @@
         }
     };
  
-    [self.uploadTranscation uploadFormData:self.data
+    [self.uploadTransaction uploadFormData:self.data
                                   fileName:self.fileName
                                   progress:progressHandler
                                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
