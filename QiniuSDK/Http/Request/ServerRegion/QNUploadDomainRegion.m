@@ -74,6 +74,19 @@
         return nil;
     }
 }
+- (QNUploadServer *)getOneServer{
+    if (!self.host || self.host.length == 0) {
+        return nil;
+    }
+    if (self.ipGroupList && self.ipGroupList.count > 0) {
+        NSInteger index = arc4random()%self.ipGroupList.count;
+        QNUploadIpGroup *ipGroup = self.ipGroupList[index];
+        QNUploadServer *server = [QNUploadServer server:self.host host:self.host ip:[ipGroup getServerIP]];;
+        return server;
+    } else {
+        return [QNUploadServer server:self.host host:self.host ip:nil];
+    }
+}
 - (void)createIpGroupList{
     @synchronized (self) {
         if (self.ipGroupList && self.ipGroupList.count > 0) {
@@ -132,6 +145,8 @@
 
 
 @interface QNUploadDomainRegion()
+// 是否获取过，PS：当第一次获取Domain，而区域所有Domain又全部冻结时，返回一个domain尝试一次
+@property(atomic   , assign)BOOL hasGot;
 @property(atomic   , assign)BOOL isAllFrozen;
 @property(nonatomic, strong)NSArray <NSString *> *domainHostList;
 @property(nonatomic, strong)NSDictionary <NSString *, QNUploadServerDomain *> *domainDictionary;
@@ -204,7 +219,12 @@
            break;
         }
     }
-    
+    if (server == nil && !self.hasGot && hostList.count > 0) {
+        NSInteger index = arc4random()%hostList.count;
+        NSString *host = hostList[index];
+        server = [domainInfo[host] getOneServer];
+    }
+    self.hasGot = true;
     if (server == nil) {
         self.isAllFrozen = YES;
     }
