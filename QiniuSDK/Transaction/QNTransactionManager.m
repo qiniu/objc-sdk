@@ -253,7 +253,7 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
 //    }
 }
 
-- (void)preformTransaction:(QNTransaction *)transaction{
+- (void)performTransaction:(QNTransaction *)transaction{
     if (!transaction) {
         return;
     }
