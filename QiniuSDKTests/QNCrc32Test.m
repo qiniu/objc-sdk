@@ -25,11 +25,11 @@
 
 - (void)testFile {
     NSError *error;
-    NSURL *file = [QNTempFile createTempfileWithSize:5 * 1024 * 1024];
-    UInt32 u = [QNCrc32 file:[file relativePath] error:&error];
+    QNTempFile *file = [QNTempFile createTempfileWithSize:5 * 1024 * 1024 identifier:@"crc_5M"];
+    UInt32 u = [QNCrc32 file:[file.fileUrl relativePath] error:&error];
 
-    XCTAssert(u == 3376132981, @"Pass");
-    [QNTempFile removeTempfile:file];
+    XCTAssert(u == 1630269785, @"Pass");
+    [file remove];
 }
 
 @end

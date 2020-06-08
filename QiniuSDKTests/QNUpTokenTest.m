@@ -12,6 +12,7 @@
 #import "QNTestConfig.h"
 #import "QNUpToken.h"
 
+
 @interface QNUpTokenTest : XCTestCase
 
 @end

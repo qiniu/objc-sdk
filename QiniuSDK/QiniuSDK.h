@@ -8,6 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "QNFixedZone.h"
+#import "QNAutoZone.h"
 #import "QNConfiguration.h"
 #import "QNFileRecorder.h"
 #import "QNResponseInfo.h"

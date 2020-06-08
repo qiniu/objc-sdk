@@ -47,8 +47,8 @@
 }
 
 - (void) template:(int)size pos:(float)pos {
-    NSURL *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
-    NSString *keyUp = [NSString stringWithFormat:@"r-%dk", size];
+    NSString *keyUp = [NSString stringWithFormat:@"fileRecorder_%dk", size];
+    QNTempFile *tempFile = [QNTempFile createTempfileWithSize:size * 1024 identifier:keyUp];
     __block NSString *key = nil;
     __block QNResponseInfo *info = nil;
     __block BOOL flag = NO;
@@ -64,7 +64,7 @@
         cancellationSignal:^BOOL() {
             return flag;
         }];
-    [_upManager putFile:tempFile.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
     }
@@ -87,7 +87,7 @@
                                         params:nil
                                       checkCrc:NO
                             cancellationSignal:nil];
-    [_upManager putFile:tempFile.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
     }
@@ -98,7 +98,7 @@
     XCTAssert(info.isOK, @"Pass");
     XCTAssert(!failed, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
-    [QNTempFile removeTempfile:tempFile];
+    [tempFile remove];
 }
 
 - (void)tearDown {
@@ -113,11 +113,18 @@
 //    [self template:700 pos:0.1];
 //}
 
-- (void)test4M {
+- (void)test3M {
     if (_inTravis) {
         return;
     }
-    [self template:4 * 1024 + 1 pos:0.9];
+    [self template:3 * 1024 + 1 pos:0.7];
+}
+
+- (void)test20M {
+    if (_inTravis) {
+        return;
+    }
+    [self template:4 * 1024 + 1 pos:0.7];
 }
 
 //#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED

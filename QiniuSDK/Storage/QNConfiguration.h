@@ -8,11 +8,17 @@
 
 #import <Foundation/Foundation.h>
 #import "QNRecorderDelegate.h"
-
+#import "QNDns.h"
+#import "QNZone.h"
 /**
- *    断点上传时的分块大小
+ * 断点上传时的分块大小
  */
 extern const UInt32 kQNBlockSize;
+
+/**
+ *  DNS默认缓存时间
+ */
+extern const UInt32 kQNDefaultDnsCacheTime;
 
 /**
  *    转换为用户需要的url
@@ -26,7 +32,7 @@ typedef NSString * (^QNUrlConvert)(NSString *url);
 @class QNConfigurationBuilder;
 @class QNZone;
 @class QNReportConfig;
-@class QNHttpResponseInfo;
+
 /**
  *    Builder block
  *
@@ -100,93 +106,39 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 @end
 
-typedef void (^QNPrequeryReturn)(int code, QNHttpResponseInfo *info);
-typedef NS_ENUM(NSUInteger, QNZoneInfoType) {
-    QNZoneInfoTypeMain,
-    QNZoneInfoTypeBackup,
-};
 
-@class QNUpToken;
-@class QNBaseZoneInfo;
+#define kQNGlobalConfiguration [QNGlobalConfiguration shared]
+@interface QNGlobalConfiguration : NSObject
 
-@interface QNZonesInfo : NSObject
+/**
+ *   是否开启dns预解析 默认开启
+ */
+@property(nonatomic, assign)BOOL isDnsOpen;
 
-@property (readonly, nonatomic) NSArray<QNBaseZoneInfo *> *zonesInfo;
+/**
+ *   dns 预取失败后 会进行重新预取  rePreHostNum为最多尝试次数
+ */
+@property(nonatomic, assign)UInt32 dnsRepreHostNum;
 
-@property (readonly, nonatomic) BOOL hasBackupZone;
+/**
+ *   dns预取缓存时间  单位：秒
+ */
+@property(nonatomic, assign)UInt32 dnsCacheTime;
 
-- (NSString *)getZoneInfoRegionNameWithType:(QNZoneInfoType)type;
+/**
+ *   自定义DNS解析客户端host
+ */
+@property(nonatomic, strong) id <QNDnsDelegate> dns;
+
+/**
+ *   dns解析结果本地缓存路径
+ */
+@property(nonatomic,  copy, readonly)NSString *dnscacheDir;
+
++ (instancetype)shared;
 
 @end
 
-@interface QNZone : NSObject
-
-/**
- *    默认上传服务器地址列表
- */
-- (void)preQueryWithToken:(QNUpToken *)token
-                       on:(QNPrequeryReturn)ret;
-
-- (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token;
-
-- (NSString *)up:(QNUpToken *)token
-zoneInfoType:(QNZoneInfoType)zoneInfoType
-         isHttps:(BOOL)isHttps
-    frozenDomain:(NSString *)frozenDomain;
-
-@end
-
-@interface QNFixedZone : QNZone
-
-/**
- *    zone 0 华东
- *
- *    @return 实例
- */
-+ (instancetype)zone0;
-
-/**
- *    zone 1 华北
- *
- *    @return 实例
- */
-+ (instancetype)zone1;
-
-/**
- *    zone 2 华南
- *
- *    @return 实例
- */
-+ (instancetype)zone2;
-
-/**
- *    zone Na0 北美
- *
- *    @return 实例
- */
-+ (instancetype)zoneNa0;
-
-/**
- *    zone As0 新加坡
- *
- *    @return 实例
-*/
-+ (instancetype)zoneAs0;
-
-/**
- *    Zone初始化方法
- *
- *    @param upList     默认上传服务器地址列表
- *
- *    @return Zone实例
- */
-- (instancetype)initWithupDomainList:(NSArray<NSString *> *)upList;
-
-@end
-
-@interface QNAutoZone : QNZone
- 
-@end
 
 @interface QNConfigurationBuilder : NSObject
 

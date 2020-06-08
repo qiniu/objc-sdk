@@ -14,6 +14,9 @@
 #import "QNSystemTool.h"
 #import "QNUploadInfoCollector.h"
 
+#import "NSURLRequest+QNRequest.h"
+#import "QNURLProtocol.h"
+
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 @implementation QNSessionStatistics
 - (instancetype)init
@@ -144,6 +147,8 @@ didCompleteWithError:(nullable NSError *)error {
         _timeout = timeout;
         _converter = converter;
         _sessionArray = [NSMutableArray array];
+
+        [QNURLProtocol registerProtocol];
         _lock = [[NSLock alloc] init];
     }
     return self;
@@ -168,13 +173,16 @@ didCompleteWithError:(nullable NSError *)error {
         request.URL = url;
         domain = url.host;
     }
+
+    request.qn_domain = request.URL.host;
     [request setTimeoutInterval:_timeout];
     [request setValue:[[QNUserAgent sharedInstance] getUserAgent:access] forHTTPHeaderField:@"User-Agent"];
     [request setValue:nil forHTTPHeaderField:@"Accept-Language"];
     
     QNSessionDelegateHandler *delegate = [[QNSessionDelegateHandler alloc] init];
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration qn_sessionConfiguration];
     configuration.connectionProxyDictionary = _proxyDict ? _proxyDict : nil;
+
     __block NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:delegate delegateQueue:_delegateQueue];
     [_sessionArray addObject:@{@"identifier":identifier,@"session":session}];
 
@@ -267,11 +275,12 @@ withIdentifier:(NSString *)identifier
     withCompleteBlock:(QNCompleteBlock)completeBlock {
     QNAsyncRun(^{
         NSURL *URL = [NSURL URLWithString:url];
-        NSString *domain = URL.host;
-        NSURLRequest *request = [NSURLRequest requestWithURL:URL];
 
+        NSString *domain = URL.host;
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
+        request.qn_domain = URL.host;
         QNSessionDelegateHandler *delegate = [[QNSessionDelegateHandler alloc] init];
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration qn_sessionConfiguration];
         __block NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:delegate delegateQueue:self.delegateQueue];
         NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request];
         delegate.cancelBlock = nil;

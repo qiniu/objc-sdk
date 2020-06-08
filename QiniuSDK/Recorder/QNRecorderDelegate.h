@@ -52,4 +52,9 @@ typedef NSString * (^QNRecorderKeyGenerator)(NSString *uploadKey, NSString *file
  */
 - (NSError *)del:(NSString *)key;
 
+/**
+ *   缓存文件名称
+ */
+- (NSString *)getFileName;
+
 @end

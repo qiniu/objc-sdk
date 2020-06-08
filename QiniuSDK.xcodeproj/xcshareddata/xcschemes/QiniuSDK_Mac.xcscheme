@@ -20,6 +20,20 @@
                ReferencedContainer = "container:QiniuSDK.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "DF2CDE0919DAC05500CE01FB"
+               BuildableName = "QiniuSDK_MacTests.xctest"
+               BlueprintName = "QiniuSDK_MacTests"
+               ReferencedContainer = "container:QiniuSDK.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
