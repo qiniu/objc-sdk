@@ -686,7 +686,7 @@
             }];
             [transactionManager addTransaction:transaction];
         } else {
-            [transactionManager preformTransaction:transaction];
+            [transactionManager performTransaction:transaction];
         }
     }
 }

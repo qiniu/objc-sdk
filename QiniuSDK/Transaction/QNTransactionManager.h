@@ -59,7 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeTransaction:(QNTransaction *)transaction;
 
 /// 在下一次循环执行事务, 该事务如果未被添加到事务列表，会自动添加
-- (void)preformTransaction:(QNTransaction *)transaction;
+- (void)performTransaction:(QNTransaction *)transaction;
 
 /// 销毁资源 清空事务链表 销毁常驻线程
 - (void)destroyResource;
