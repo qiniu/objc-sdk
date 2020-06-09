@@ -110,7 +110,8 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
 - (NSArray <QNTransaction *> *)transactionsForName:(NSString *)name{
     NSMutableArray *transactions = [NSMutableArray array];
     [self enumerate:^(QNTransaction *transaction, BOOL * _Nonnull stop) {
-        if ([transaction.name isEqualToString:name]) {
+        if ((name == nil && transaction.name == nil)
+            || (name != nil && transaction.name != nil && [transaction.name isEqualToString:name])) {
             [transactions addObject:transaction];
         }
     }];
@@ -232,7 +233,9 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
 }
 
 - (void)addTransaction:(QNTransaction *)transaction{
-
+    if (transaction == nil) {
+        return;
+    }
     transaction.actionTime = self.time + transaction.after;
     [self.transactionList add:transaction];
     
@@ -240,21 +243,14 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
 }
 
 - (void)removeTransaction:(QNTransaction *)transaction{
-    
-    BOOL canDestroyResource = NO;
-
-    [self.transactionList remove:transaction];
-    if ([self.transactionList isEmpty]) {
-        canDestroyResource = YES;
+    if (transaction == nil) {
+        return;
     }
-//    
-//    if (canDestroyResource) {
-//        [self destroyResource];
-//    }
+    [self.transactionList remove:transaction];
 }
 
 - (void)performTransaction:(QNTransaction *)transaction{
-    if (!transaction) {
+    if (transaction == nil) {
         return;
     }
     @synchronized (self) {
@@ -298,7 +294,7 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
         if (self.thread == nil) {
             __weak typeof(self) weakSelf = self;
             self.thread = [[NSThread alloc] initWithTarget:weakSelf
-                                                  selector:@selector(threadHandler)
+                                                  selector:@selector(threadAction)
                                                      object:nil];
             self.thread.name = @"com.qiniu.transaction";
             [self.thread start];
@@ -306,7 +302,7 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
     }
 }
 
-- (void)threadHandler{
+- (void)threadAction{
 
     @autoreleasepool {
         if (self.timer == nil) {

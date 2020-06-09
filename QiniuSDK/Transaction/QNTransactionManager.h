@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 事务名称
 @property(nonatomic,   copy, readonly)NSString *name;
-//  事务延迟执行时间 单位：秒
+/// 事务延迟执行时间 单位：秒
 @property(nonatomic, assign, readonly)NSInteger after;
 /// 事务内容
 @property(nonatomic,   copy, readonly)void(^action)(void);
