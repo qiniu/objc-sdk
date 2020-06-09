@@ -33,7 +33,7 @@
     __block int completeCount = 0;
     __block int successCount = 0;
     for (int i=0; i<maxCount; i++) {
-        [self template:(i + 1) * 1024 complete:^(BOOL isSuccess){
+        [self template:(i + 1) * 100 complete:^(BOOL isSuccess){
             @synchronized (self) {
                 if (isSuccess) {
                     successCount += 1;
