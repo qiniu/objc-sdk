@@ -3,7 +3,6 @@ source 'https://github.com/CocoaPods/Specs.git'
 target "QiniuDemo" do
   platform :ios, "7.0"
   pod 'Qiniu',:path => '../'
-  pod 'HappyDNS', :path => '../../HappyDns_iOS'
 end
 
 target "QiniuDemoTests" do
