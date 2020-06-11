@@ -97,11 +97,13 @@
         
     } else if (self.statusCode > 299){
         errorType = @"response_error";
-    } else if (self.statusCode == QNResponseInfoErrorTypeInvalidFile
-            || self.statusCode == -1009){
+    } else if (self.statusCode == QNResponseInfoErrorTypeNetworkError
+            || self.statusCode == -1003 || self.statusCode == -1006 || self.statusCode == -1008){
         errorType = @"network_error";
+    } else if (self.statusCode == -1009){
+           errorType = @"network_slow";
     } else if (self.statusCode == -1001){
-        errorType = @"timeout";
+           errorType = @"timeout";
     } else if (self.statusCode == -1004){
         errorType = @"cannot_connect_to_host";
     } else if (self.statusCode == -1005 || self.statusCode == -1011){
@@ -113,7 +115,7 @@
     } else if (self.statusCode == -1007 || self.statusCode == -1010){
         errorType = @"malicious_response";
     } else if (self.statusCode == QNResponseInfoErrorTypeUserCanceled
-            || self.statusCode == -999){
+            || self.statusCode == -999){//  NSURLErrorCancelled
         errorType = @"user_canceled";
     } else {
         errorType = @"unknown_error";
