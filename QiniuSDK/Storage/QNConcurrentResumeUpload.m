@@ -158,7 +158,7 @@
             self.uploadBlockErrorResponseInfo = responseInfo;
             completeHandler();
         }
-        [self destoryUploadRequestTransaction:transaction];
+        [self destroyUploadRequestTransaction:transaction];
     }];
 }
 
@@ -172,7 +172,7 @@
                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         
         [self addRegionRequestMetricsOfOneFlow:metrics];
-        [self destoryUploadRequestTransaction:transaction];
+        [self destroyUploadRequestTransaction:transaction];
         completeHandler(responseInfo, response);
     }];
 }
@@ -188,7 +188,7 @@
     return transaction;
 }
 
-- (void)destoryUploadRequestTransaction:(QNRequestTransaction *)transaction{
+- (void)destroyUploadRequestTransaction:(QNRequestTransaction *)transaction{
     if (transaction) {
         [self.uploadTransactions removeObject:transaction];
     }

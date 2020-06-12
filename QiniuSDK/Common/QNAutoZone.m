@@ -151,7 +151,7 @@
                 ret(0, responseInfo, metrics);
             }
         }
-        [self destoryUploadRequestTransaction:transaction];
+        [self destroyUploadRequestTransaction:transaction];
     }];
 }
 
@@ -164,7 +164,7 @@
     return transaction;
 }
 
-- (void)destoryUploadRequestTransaction:(QNRequestTransaction *)transaction{
+- (void)destroyUploadRequestTransaction:(QNRequestTransaction *)transaction{
     if (transaction) {
         [self.transactions removeObject:transaction];
     }
