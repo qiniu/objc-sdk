@@ -97,7 +97,7 @@
         
     } else if (self.statusCode > 299){
         errorType = @"response_error";
-    } else if (self.statusCode == QNResponseInfoErrorTypeNetworkError
+    } else if (self.statusCode == kQNNetworkError
             || self.statusCode == -1003 || self.statusCode == -1006 || self.statusCode == -1008){
         errorType = @"network_error";
     } else if (self.statusCode == -1009){
@@ -114,7 +114,7 @@
         errorType = @"parse_error";
     } else if (self.statusCode == -1007 || self.statusCode == -1010){
         errorType = @"malicious_response";
-    } else if (self.statusCode == QNResponseInfoErrorTypeUserCanceled
+    } else if (self.statusCode == kQNRequestCancelled
             || self.statusCode == -999){//  NSURLErrorCancelled
         errorType = @"user_canceled";
     } else {
@@ -129,17 +129,17 @@
         result = @"ok";
     } else if (self.statusCode > 399 && self.statusCode < 500) {
         result = @"bad_request";
-    } else if (self.statusCode == QNResponseInfoErrorTypeZeroSizeFile){
+    } else if (self.statusCode == kQNZeroDataSize){
         result = @"zero_size_file";
-    } else if (self.statusCode == QNResponseInfoErrorTypeInvalidFile){
+    } else if (self.statusCode == kQNFileError){
         result = @"invalid_file";
-    } else if (self.statusCode == QNResponseInfoErrorTypeInvalidToken
-            || self.statusCode == QNResponseInfoErrorTypeInvalidArgs){
+    } else if (self.statusCode == kQNInvalidToken
+            || self.statusCode == kQNInvalidArgument){
         result = @"invalid_args";
-    } else if (self.statusCode == QNResponseInfoErrorTypeUserCanceled
+    } else if (self.statusCode == kQNRequestCancelled
             || self.statusCode == -999){
         result = @"user_canceled";
-    } else if (self.statusCode == QNResponseInfoErrorTypeNetworkError){
+    } else if (self.statusCode == kQNNetworkError){
         result = @"zero_size_file";
     } else if (self.statusCode == -1009){
         result = @"network_error";

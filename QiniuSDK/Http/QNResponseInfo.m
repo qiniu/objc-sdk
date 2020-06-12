@@ -36,27 +36,27 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 @implementation QNResponseInfo
 
 + (instancetype)cancelResponse {
-    return [QNResponseInfo errorResponseInfo:QNResponseInfoErrorTypeUserCanceled
+    return [QNResponseInfo errorResponseInfo:kQNRequestCancelled
                                    errorDesc:@"cancelled by user"];
 }
 
 + (instancetype)responseInfoWithNetworkError:(NSString *)desc{
-    return [QNResponseInfo errorResponseInfo:QNResponseInfoErrorTypeNetworkError
+    return [QNResponseInfo errorResponseInfo:kQNNetworkError
                                    errorDesc:desc];
 }
 
 + (instancetype)responseInfoWithInvalidArgument:(NSString *)desc{
-    return [QNResponseInfo errorResponseInfo:QNResponseInfoErrorTypeInvalidArgs
+    return [QNResponseInfo errorResponseInfo:kQNInvalidArgument
                                    errorDesc:desc];
 }
 
 + (instancetype)responseInfoWithInvalidToken:(NSString *)desc {
-    return [QNResponseInfo errorResponseInfo:QNResponseInfoErrorTypeInvalidToken
+    return [QNResponseInfo errorResponseInfo:kQNInvalidToken
                                    errorDesc:desc];
 }
 
 + (instancetype)responseInfoWithFileError:(NSError *)error {
-    return [QNResponseInfo errorResponseInfo:QNResponseInfoErrorTypeInvalidFile
+    return [QNResponseInfo errorResponseInfo:kQNFileError
                                    errorDesc:nil
                                        error:error];
 }
@@ -68,16 +68,16 @@ static NSString *kQNErrorDomain = @"qiniu.com";
     } else {
         desc = [[NSString alloc] initWithFormat:@"file %@ size is 0", path];
     }
-    return [QNResponseInfo errorResponseInfo:QNResponseInfoErrorTypeZeroSizeFile
+    return [QNResponseInfo errorResponseInfo:kQNZeroDataSize
                                    errorDesc:desc];
 }
 
-+ (instancetype)errorResponseInfo:(QNResponseInfoErrorType)errorType
++ (instancetype)errorResponseInfo:(int)errorType
                         errorDesc:(NSString *)errorDesc{
     return [self errorResponseInfo:errorType errorDesc:errorDesc error:nil];
 }
 
-+ (instancetype)errorResponseInfo:(QNResponseInfoErrorType)errorType
++ (instancetype)errorResponseInfo:(int)errorType
                         errorDesc:(NSString *)errorDesc
                             error:(NSError *)error{
     QNResponseInfo *response = [[QNResponseInfo alloc] init];
@@ -199,7 +199,6 @@ static NSString *kQNErrorDomain = @"qiniu.com";
     } else {
         return YES;
     }
-//    return (_statusCode >= 500 && _statusCode < 600 && _statusCode != 579) || _statusCode == 996 || _statusCode == 406 || (_statusCode == 200 && _error != nil) || _statusCode < -1000 || self.isNotQiniu;
 }
 
 - (BOOL)couldRegionRetry{

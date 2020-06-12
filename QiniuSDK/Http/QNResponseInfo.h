@@ -38,38 +38,6 @@ extern const int kQNInvalidToken;
  */
 extern const int kQNFileError;
 
-typedef NS_ENUM(int, QNResponseInfoErrorType){
-    QNResponseInfoErrorTypeNetworkError = -1, // 未知⽹络错误
-    QNResponseInfoErrorTypeUserCanceled = -2, // ⽤户主动取消
-    QNResponseInfoErrorTypeInvalidArgs = -3, // 调⽤参数出错
-    QNResponseInfoErrorTypeInvalidFile = -4, // ⽂件内容错误
-    QNResponseInfoErrorTypeInvalidToken = -5, // token 无效
-    QNResponseInfoErrorTypeZeroSizeFile = -6, // ⽂件⼤⼩错误
-    
-    QNResponseInfoErrorTypeProxyError = -200, // 当前使⽤了 HTTP Proxy 且 Proxy 出错
-    
-    QNResponseInfoErrorTypeUnexpectedSyscallError, // ⾮预期的，⽆法解决的系统调⽤错误（例如内存分配错误，线程创建错误等因为资源不⾜⽽造成的错误）
-    QNResponseInfoErrorTypeLocalIoError, // 本地 I/O 错误
-    QNResponseInfoErrorTypeNetworkSlow, // ⽹速过低或没有⽹络造成上传失败的
-    
-    QNResponseInfoErrorTypeSystemCanceled = -999, // ⽤户主动取消
-    QNResponseInfoErrorTypeSystemNetworkError = -1009, // 未知⽹络错误
-    QNResponseInfoErrorTypeTimeout = -1001, // 超时错误
-    QNResponseInfoErrorTypeUnknownHost, // DNS 解析错误
-    QNResponseInfoErrorTypeCannotConnectToHost = -1004, // 连接服务器错误
-    QNResponseInfoErrorTypeConnectionLost = -1005, // 传输错误
-    QNResponseInfoErrorTypeBadServerResponse = -1011, // 传输错误
-    QNResponseInfoErrorTypeSSLHandShakeError = -9807, // SSL握手错误
-    QNResponseInfoErrorTypeSSLError = -2001, // 加密错误
-    QNResponseInfoErrorTypeCannotDecodeRawData = -1015, // 解析响应错误
-    QNResponseInfoErrorTypeCannotDecodeContentData = -1016, // 解析响应错误
-    QNResponseInfoErrorTypeCannotParseResponse = -1017, // 解析响应错误
-    QNResponseInfoErrorTypeTooManyRedirects = -1007, // ⽤户劫持错误
-    QNResponseInfoErrorTypeRedirectToNonExistentLocation = -1010, // ⽤户劫持错误
-    
-    QNResponseInfoErrorTypeUnknownError = -500, // 未知错误
-};
-
 /**
  *    上传完成后返回的状态信息
  */
@@ -120,7 +88,7 @@ typedef NS_ENUM(int, QNResponseInfoErrorType){
 + (instancetype)responseInfoWithFileError:(NSError *)error;
 + (instancetype)responseInfoOfZeroData:(NSString *)path;
 
-+ (instancetype)errorResponseInfo:(QNResponseInfoErrorType)errorType
++ (instancetype)errorResponseInfo:(int)errorType
                         errorDesc:(NSString *)errorDesc;
 - (instancetype)initWithResponseInfoHost:(NSString *)host
                                 response:(NSHTTPURLResponse *)response
