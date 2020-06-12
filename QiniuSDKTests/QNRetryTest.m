@@ -56,7 +56,7 @@
     __block int completeCount = 0;
     __block int successCount = 0;
     for (int i=0; i<maxCount; i++) {
-        [self validHostTemplate:(i + 1) * 1024 complete:^(BOOL isSuccess){
+        [self validHostTemplate:(i + 1) * 100 complete:^(BOOL isSuccess){
             @synchronized (self) {
                 if (isSuccess) {
                     successCount += 1;
@@ -87,7 +87,7 @@
                             @"uptemp09.qbox.me", @"uptemp10.qbox.me",
                             @"uptemp11.qbox.me", @"uptemp12.qbox.me",
                             @"uptemp13.qbox.me", @"uptemp14.qbox.me",
-                            @"upload.qiniup.com"];
+                            @"upload.qiniup.com", @"up.qbox.me"];
         builder.useHttps = YES;
         builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
     }];
