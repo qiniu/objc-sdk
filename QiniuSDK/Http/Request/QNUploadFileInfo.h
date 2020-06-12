@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 // 块大小
 @property(nonatomic, assign, readonly)long long size;
 // 需要上传的片数据
-@property(nonatomic, strong, readonly)NSArray <QNUploadData *> *uploadDatas;
+@property(nonatomic, strong, readonly)NSArray <QNUploadData *> *uploadDataList;
 // block上传上下文信息
 @property(nonatomic,  copy)NSString *context;
 // 是否已完成上传【不进行离线缓存】

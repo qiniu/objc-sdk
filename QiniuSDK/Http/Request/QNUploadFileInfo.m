@@ -78,7 +78,7 @@
 @property(nonatomic, assign)long long offset;
 @property(nonatomic, assign)long long size;
 @property(nonatomic, assign)NSInteger index;
-@property(nonatomic, strong)NSArray <QNUploadData *> *uploadDatas;
+@property(nonatomic, strong)NSArray <QNUploadData *> *uploadDataList;
 
 @end
 @implementation QNUploadBlock
@@ -94,18 +94,18 @@
     block.index = [dictionary[@"index"] integerValue];
     block.context = dictionary[@"context"];
     
-    NSArray *uploadDataInfos = dictionary[@"uploadDatas"];
+    NSArray *uploadDataInfos = dictionary[@"uploadDataList"];
     if ([uploadDataInfos isKindOfClass:[NSArray class]]) {
         
-        NSMutableArray *uploadDatas = [NSMutableArray array];
+        NSMutableArray *uploadDataList = [NSMutableArray array];
         for (NSDictionary *uploadDataInfo in uploadDataInfos) {
             
             QNUploadData *data = [QNUploadData dataFromDictionary:uploadDataInfo];
             if (data) {
-                [uploadDatas addObject:data];
+                [uploadDataList addObject:data];
             }
         }
-        block.uploadDatas = [uploadDatas copy];
+        block.uploadDataList = [uploadDataList copy];
     }
     return block;
 }
@@ -125,7 +125,7 @@
 
 - (BOOL)isCompleted{
     BOOL isCompleted = YES;
-    for (QNUploadData *data in self.uploadDatas) {
+    for (QNUploadData *data in self.uploadDataList) {
         if (data.isCompleted == NO) {
             isCompleted = NO;
             break;
@@ -136,7 +136,7 @@
 
 - (float)progress{
     float progress = 0;
-    for (QNUploadData *data in self.uploadDatas) {
+    for (QNUploadData *data in self.uploadDataList) {
         progress += data.progress * ((float)data.size / (float)self.size);
     }
     return progress;
@@ -158,16 +158,16 @@
         offSize += dataSizeP;
         dataIndex += 1;
     }
-    self.uploadDatas = [datas copy];
+    self.uploadDataList = [datas copy];
 }
 
 - (QNUploadData *)nextUploadData{
-    if (!self.uploadDatas || self.uploadDatas.count == 0) {
+    if (!self.uploadDataList || self.uploadDataList.count == 0) {
         return nil;
     }
     
     QNUploadData *data = nil;
-    for (QNUploadData *dataP in self.uploadDatas) {
+    for (QNUploadData *dataP in self.uploadDataList) {
         if (!dataP.isCompleted && !dataP.isUploading) {
             data = dataP;
             break;
@@ -177,7 +177,7 @@
 }
 
 - (void)clearUploadState{
-    for (QNUploadData *data in self.uploadDatas) {
+    for (QNUploadData *data in self.uploadDataList) {
         [data clearUploadState];
     }
 }
@@ -192,17 +192,17 @@
         dictionary[@"context"] = self.context;
     }
 
-    if (self.uploadDatas) {
+    if (self.uploadDataList) {
         
         NSMutableArray *uploadDataInfos = [NSMutableArray array];
-        for (QNUploadData *data in self.uploadDatas) {
+        for (QNUploadData *data in self.uploadDataList) {
             
             NSDictionary *uploadDataInfo = [data toDictionary];
             if (uploadDataInfo) {
                 [uploadDataInfos addObject:uploadDataInfo];
             }
         }
-        dictionary[@"uploadDatas"]  = [uploadDataInfos copy];
+        dictionary[@"uploadDataList"]  = [uploadDataInfos copy];
     }
     
     return [dictionary copy];
