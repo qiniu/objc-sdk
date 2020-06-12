@@ -39,9 +39,7 @@
     static QNFixedZone *z0 = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSArray<NSString *> *uplist = @[@"upload.qiniup.com", @"upload-nb.qiniup.com",
-                                        @"upload-xs.qiniup.com", @"up.qiniup.com",
-                                        @"up-nb.qiniup.com", @"up-xs.qiniup.com",
+        NSArray<NSString *> *uplist = @[@"upload.qiniup.com", @"up.qiniup.com",
                                         @"upload.qbox.me", @"up.qbox.me"];
         z0 = [QNFixedZone createWithHost:(NSArray<NSString *> *)uplist];
     });
@@ -63,9 +61,7 @@
     static QNFixedZone *z2 = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSArray<NSString *> *uplist = @[@"upload-z2.qiniup.com", @"upload-gz.qiniup.com",
-                                        @"upload-fs.qiniup.com", @"up-z2.qiniup.com",
-                                        @"up-gz.qiniup.com", @"up-fs.qiniup.com",
+        NSArray<NSString *> *uplist = @[@"upload-z2.qiniup.com", @"up-z2.qiniup.com",
                                         @"upload-z2.qbox.me", @"up-z2.qbox.me"];
         z2 = [QNFixedZone createWithHost:(NSArray<NSString *> *)uplist];
     });
