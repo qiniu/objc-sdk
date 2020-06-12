@@ -163,14 +163,9 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 }
 
 - (BOOL)isTlsError{
-    if (_statusCode == NSURLErrorSecureConnectionFailed
-        || _statusCode == NSURLErrorServerCertificateHasBadDate
-        || _statusCode == NSURLErrorServerCertificateUntrusted
-        || _statusCode == NSURLErrorServerCertificateHasUnknownRoot
-        || _statusCode == NSURLErrorServerCertificateNotYetValid
+    if (_statusCode == NSURLErrorServerCertificateHasBadDate
         || _statusCode == NSURLErrorClientCertificateRejected
-        || _statusCode == NSURLErrorClientCertificateRequired
-        || _statusCode == NSURLErrorCannotLoadFromNetwork) {
+        || _statusCode == NSURLErrorClientCertificateRequired) {
         return true;
     } else {
         return false;
