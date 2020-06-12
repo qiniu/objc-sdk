@@ -28,6 +28,7 @@ connectionProxy:(NSDictionary *)connectionProxy
        complete:(QNRequestClientCompleteHandler)complete {
     
     self.requestMetrics = [QNUploadSingleRequestMetrics emptyMetrics];
+    self.requestMetrics.remoteAddress = request.qn_ip;
     self.requestMetrics.startDate = [NSDate date];
     
     self.responseData = [NSMutableData data];
@@ -85,12 +86,13 @@ connectionProxy:(NSDictionary *)connectionProxy
     self.requestMetrics.responseStartDate = transactionMetrics.responseStartDate;
     self.requestMetrics.responseEndDate = transactionMetrics.responseEndDate;
     
-    if (@available(iOS 13.0, *)) {
-        self.requestMetrics.localAddress = transactionMetrics.localAddress;
-        self.requestMetrics.localPort = transactionMetrics.localPort;
-        self.requestMetrics.remoteAddress = transactionMetrics.remoteAddress;
-        self.requestMetrics.remotePort = transactionMetrics.remotePort;
-    }
+//    if (@available(iOS 13.0, *)) {
+//        self.requestMetrics.localAddress = transactionMetrics.localAddress;
+//        self.requestMetrics.localPort = transactionMetrics.localPort;
+//        self.requestMetrics.remoteAddress = transactionMetrics.remoteAddress;
+//        self.requestMetrics.remotePort = transactionMetrics.remotePort;
+//    }
+    
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
