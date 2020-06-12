@@ -86,12 +86,14 @@ connectionProxy:(NSDictionary *)connectionProxy
     self.requestMetrics.responseStartDate = transactionMetrics.responseStartDate;
     self.requestMetrics.responseEndDate = transactionMetrics.responseEndDate;
     
-//    if (@available(iOS 13.0, *)) {
-//        self.requestMetrics.localAddress = transactionMetrics.localAddress;
-//        self.requestMetrics.localPort = transactionMetrics.localPort;
-//        self.requestMetrics.remoteAddress = transactionMetrics.remoteAddress;
-//        self.requestMetrics.remotePort = transactionMetrics.remotePort;
-//    }
+#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
+    if (@available(iOS 13.0, *)) {
+        self.requestMetrics.localAddress = transactionMetrics.localAddress;
+        self.requestMetrics.localPort = transactionMetrics.localPort;
+        self.requestMetrics.remoteAddress = transactionMetrics.remoteAddress;
+        self.requestMetrics.remotePort = transactionMetrics.remotePort;
+    }
+#endif
     
 }
 

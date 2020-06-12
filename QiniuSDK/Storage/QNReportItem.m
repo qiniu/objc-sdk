@@ -93,7 +93,9 @@
 
 - (NSString *)requestReportErrorType{
     NSString *errorType = nil;
-    if (self.statusCode > 199 && self.statusCode < 300) {
+    if (self.statusCode == 100){
+        errorType = @"protocol_error";
+    } else if (self.statusCode > 199 && self.statusCode < 300) {
         
     } else if (self.statusCode > 299){
         errorType = @"response_error";

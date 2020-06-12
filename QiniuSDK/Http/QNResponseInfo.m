@@ -183,6 +183,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 
 - (BOOL)couldRetry {
     if (self.isCancelled
+        || _statusCode == 100
         || (_statusCode > 300 && _statusCode < 400)
         || (_statusCode > 400 && _statusCode < 500)
         || _statusCode == 501 || _statusCode == 573
