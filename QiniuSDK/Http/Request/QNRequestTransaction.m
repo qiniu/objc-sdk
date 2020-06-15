@@ -8,6 +8,7 @@
 
 #import "QNRequestTransaction.h"
 
+#import "QNUtils.h"
 #import "QNCrc32.h"
 #import "QNUrlSafeBase64.h"
 #import "QNUpToken.h"
@@ -148,6 +149,9 @@
         }
         [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
     }
+    
+    fileName = [QNUtils formEscape:fileName];
+    
     NSString *filePair = [NSString stringWithFormat:@"--%@\r\n%@; name=\"%@\"; filename=\"%@\"\nContent-Type:%@\r\n\r\n", boundary, disposition, @"file", fileName, self.uploadOption.mimeType];
     [body appendData:[filePair dataUsingEncoding:NSUTF8StringEncoding]];
     [body appendData:data];

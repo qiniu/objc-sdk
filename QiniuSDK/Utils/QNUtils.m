@@ -81,5 +81,12 @@
     return [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"/qiniu"];
 }
 
++ (NSString *)formEscape:(NSString *)string{
+    NSString *ret = string;
+    ret = [ret stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
+    ret = [ret stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+    return ret;
+}
+
 @end
 

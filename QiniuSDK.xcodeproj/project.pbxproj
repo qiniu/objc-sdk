@@ -90,6 +90,8 @@
 		31C2EEE5242DE86D00713A33 /* QNUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEE2242DE86300713A33 /* QNUtils.m */; };
 		31C2EEEC242DEF6A00713A33 /* QNUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEEB242DEF6A00713A33 /* QNUtilTest.m */; };
 		31C2EEED242DEF6A00713A33 /* QNUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEEB242DEF6A00713A33 /* QNUtilTest.m */; };
+		31DD31D624971BD7004BFDDE /* QNUploadFileNameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31DD31D524971BD7004BFDDE /* QNUploadFileNameTest.m */; };
+		31DD31D724971BD7004BFDDE /* QNUploadFileNameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31DD31D524971BD7004BFDDE /* QNUploadFileNameTest.m */; };
 		31F553932456F2F3000B66AD /* QNUrlSafeBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F5537D2456F2F2000B66AD /* QNUrlSafeBase64.m */; };
 		31F553942456F2F3000B66AD /* QNPHAssetResource.h in Headers */ = {isa = PBXBuildFile; fileRef = 31F5537E2456F2F2000B66AD /* QNPHAssetResource.h */; };
 		31F553952456F2F3000B66AD /* QNEtag.h in Headers */ = {isa = PBXBuildFile; fileRef = 31F5537F2456F2F2000B66AD /* QNEtag.h */; };
@@ -283,6 +285,7 @@
 		31C2EEE1242DE86300713A33 /* QNUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNUtils.h; sourceTree = "<group>"; };
 		31C2EEE2242DE86300713A33 /* QNUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUtils.m; sourceTree = "<group>"; };
 		31C2EEEB242DEF6A00713A33 /* QNUtilTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUtilTest.m; sourceTree = "<group>"; };
+		31DD31D524971BD7004BFDDE /* QNUploadFileNameTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUploadFileNameTest.m; sourceTree = "<group>"; };
 		31F5537D2456F2F2000B66AD /* QNUrlSafeBase64.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNUrlSafeBase64.m; sourceTree = "<group>"; };
 		31F5537E2456F2F2000B66AD /* QNPHAssetResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNPHAssetResource.h; sourceTree = "<group>"; };
 		31F5537F2456F2F2000B66AD /* QNEtag.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNEtag.h; sourceTree = "<group>"; };
@@ -715,6 +718,7 @@
 				31A1840D246942E0001D6EEE /* QNComplexUploadSceneTest.m */,
 				31A1841024694A3C001D6EEE /* QNUploadErrorTest.m */,
 				31FD09232487506300217848 /* QNRetryTest.m */,
+				31DD31D524971BD7004BFDDE /* QNUploadFileNameTest.m */,
 			);
 			path = QiniuSDKTests;
 			sourceTree = SOURCE_ROOT;
@@ -1077,6 +1081,7 @@
 				DF0A03241B3BAC3900E3778C /* QNFormUploadTest.m in Sources */,
 				DFFE0E6019E6575600D7A0FC /* QNFileRecorderTest.m in Sources */,
 				DF437CDF1B243A2C0099587B /* QNUpTokenTest.m in Sources */,
+				31DD31D624971BD7004BFDDE /* QNUploadFileNameTest.m in Sources */,
 				31A1840E246942E0001D6EEE /* QNComplexUploadSceneTest.m in Sources */,
 				DF3C504A19DD7D9F000F548F /* QNResumeUploadTest.m in Sources */,
 				31FD09242487506300217848 /* QNRetryTest.m in Sources */,
@@ -1160,6 +1165,7 @@
 				DF0A03261B3BAC6E00E3778C /* QNBase64Test.m in Sources */,
 				DF0A03271B3BAC6E00E3778C /* QNCrc32Test.m in Sources */,
 				DF0A03281B3BAC6E00E3778C /* QNFormUploadTest.m in Sources */,
+				31DD31D724971BD7004BFDDE /* QNUploadFileNameTest.m in Sources */,
 				31A1840F246942E0001D6EEE /* QNComplexUploadSceneTest.m in Sources */,
 				DF0A03291B3BAC6E00E3778C /* QNResumeUploadTest.m in Sources */,
 				31FD09252487506300217848 /* QNRetryTest.m in Sources */,
