@@ -93,7 +93,9 @@
 
 - (NSString *)requestReportErrorType{
     NSString *errorType = nil;
-    if (self.statusCode == 100){
+    if (self.statusCode == -1){
+        errorType = @"network_error";
+    } else if (self.statusCode == 100){
         errorType = @"protocol_error";
     } else if (self.statusCode > 199 && self.statusCode < 300) {
 //        NSURLErrorFailingURLErrorKey
@@ -101,8 +103,6 @@
         errorType = @"response_error";
     } else if (self.statusCode == -1003){
         errorType = @"unknown_host";
-    } else if (self.statusCode == -1){
-        errorType = @"network_error";
     } else if (self.statusCode == -1009){
            errorType = @"network_slow";
     } else if (self.statusCode == -1001){
@@ -152,7 +152,7 @@
         result = @"timeout";
     } else if (self.statusCode == -1004){
         result = @"cannot_connect_to_host";
-    } else if (self.statusCode == -1005 || self.statusCode == -1011){
+    } else if (self.statusCode == -1005 || self.statusCode == -1021){
         result = @"transmission_error";
     } else if (self.statusCode == -1200 || self.statusCode == -1201 || self.statusCode == -1202
                || self.statusCode == -1203 || self.statusCode == -1204 || self.statusCode == -1205
