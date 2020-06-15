@@ -27,16 +27,23 @@
     return 4 * 1024 * 1024;
 }
 
-- (void)prepareToUpload{
-    [super prepareToUpload];
-    [self recoverUploadInfoFromRecord];
+- (int)prepareToUpload{
+    int code = [super prepareToUpload];
+    if (code != 0) {
+        return code;
+    }
     
+    [self recoverUploadInfoFromRecord];
     if (self.uploadFileInfo == nil) {
         self.uploadFileInfo = [[QNUploadFileInfo alloc] initWithFileSize:[self.file size]
                                                                blockSize:[QNPartsUpload blockSize]
                                                                 dataSize:[self getUploadChunkSize]
                                                               modifyTime:(NSInteger)[self.file modifyTime]];
     }
+    if (self.file == nil) {
+        code = kQNLocalIOError;
+    }
+    return code;
 }
 
 

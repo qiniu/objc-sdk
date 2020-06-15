@@ -103,8 +103,9 @@
     }];
 }
 
-- (void)prepareToUpload{
+- (int)prepareToUpload{
     [self setupRegions];
+    return 0;
 }
 
 - (void)startToUpload{

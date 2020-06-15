@@ -133,13 +133,21 @@
                 progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
          completeHandler:(dispatch_block_t)completeHandler{
     
+    NSData *chunkData = [self getDataWithChunk:chunk block:block];
+    if (chunkData == nil) {
+        self.uploadBlockErrorResponseInfo = [QNResponseInfo responseInfoWithLocalIOError:@"get chunk data error"];
+        self.uploadBlockErrorResponse = self.uploadBlockErrorResponseInfo.responseDictionary;
+        completeHandler();
+        return;
+    }
+    
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
     
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
     [transaction makeBlock:block.offset
                  blockSize:block.size
-            firstChunkData:[self getDataWithChunk:chunk block:block]
+            firstChunkData:chunkData
                   progress:progress
                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         [self addRegionRequestMetricsOfOneFlow:metrics];

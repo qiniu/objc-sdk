@@ -16,6 +16,7 @@ const int kQNFileError = -4;
 const int kQNInvalidArgument = -3;
 const int kQNRequestCancelled = -2;
 const int kQNNetworkError = -1;
+const int kQNLocalIOError = -7;
 
 static NSString *kQNErrorDomain = @"qiniu.com";
 
@@ -69,6 +70,11 @@ static NSString *kQNErrorDomain = @"qiniu.com";
         desc = [[NSString alloc] initWithFormat:@"file %@ size is 0", path];
     }
     return [QNResponseInfo errorResponseInfo:kQNZeroDataSize
+                                   errorDesc:desc];
+}
+
++ (instancetype)responseInfoWithLocalIOError:(NSString *)desc{
+    return [QNResponseInfo errorResponseInfo:kQNLocalIOError
                                    errorDesc:desc];
 }
 

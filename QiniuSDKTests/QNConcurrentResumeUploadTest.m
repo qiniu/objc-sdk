@@ -293,7 +293,7 @@
         builder.converter = ^NSString *(NSString *url) {
             return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
         };
-        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com", @"upnono.qiniu.com", nil];
+        NSArray *upList = [[NSArray alloc] initWithObjects:@"up-na0.qiniu.com", @"up-na0.qiniu.com", nil];
         builder.useHttps = NO;
         builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
     }];
@@ -315,7 +315,7 @@
     NSLog(@"info %@", info);
     XCTAssert(info.isOK, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
-    XCTAssert([info.host isEqual:@"up.qiniu.com"], @"Pass");
+    XCTAssert([info.host isEqual:@"up-na0.qiniu.com"], @"Pass");
     [tempFile remove];
 }
 

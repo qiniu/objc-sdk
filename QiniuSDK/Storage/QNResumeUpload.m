@@ -116,13 +116,21 @@
          progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
   completeHandler:(dispatch_block_t)completeHandler{
     
+    NSData *chunkData = [self getDataWithChunk:chunk block:block];
+    if (chunkData == nil) {
+        self.uploadChunkErrorResponseInfo = [QNResponseInfo responseInfoWithLocalIOError:@"get chunk data error"];
+        self.uploadChunkErrorResponse = self.uploadChunkErrorResponseInfo.responseDictionary;
+        completeHandler();
+        return;
+    }
+    
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
     
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
     [transaction makeBlock:block.offset
                  blockSize:block.size
-            firstChunkData:[self getDataWithChunk:chunk block:block]
+            firstChunkData:chunkData
                   progress:progress
                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         [self addRegionRequestMetricsOfOneFlow:metrics];
@@ -149,13 +157,21 @@
            progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
     completeHandler:(dispatch_block_t)completeHandler{
     
+    NSData *chunkData = [self getDataWithChunk:chunk block:block];
+    if (chunkData == nil) {
+        self.uploadChunkErrorResponseInfo = [QNResponseInfo responseInfoWithLocalIOError:@"get chunk data error"];
+        self.uploadChunkErrorResponse = self.uploadChunkErrorResponseInfo.responseDictionary;
+        completeHandler();
+        return;
+    }
+    
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
     
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
     [transaction uploadChunk:block.context
                  blockOffset:block.offset
-                   chunkData:[self getDataWithChunk:chunk block:block]
+                   chunkData:chunkData
                  chunkOffest:chunk.offset
                     progress:progress
                     complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {

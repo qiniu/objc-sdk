@@ -39,6 +39,12 @@ extern const int kQNInvalidToken;
 extern const int kQNFileError;
 
 /**
+ *    本地 I/O 错误
+ */
+extern const int kQNLocalIOError;
+
+
+/**
  *    上传完成后返回的状态信息
  */
 @interface QNResponseInfo : NSObject
@@ -87,6 +93,7 @@ extern const int kQNFileError;
 + (instancetype)responseInfoWithInvalidToken:(NSString *)desc;
 + (instancetype)responseInfoWithFileError:(NSError *)error;
 + (instancetype)responseInfoOfZeroData:(NSString *)path;
++ (instancetype)responseInfoWithLocalIOError:(NSString *)desc;
 
 + (instancetype)errorResponseInfo:(int)errorType
                         errorDesc:(NSString *)errorDesc;

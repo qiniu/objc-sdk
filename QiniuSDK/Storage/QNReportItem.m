@@ -95,6 +95,8 @@
     NSString *errorType = nil;
     if (self.statusCode == -1){
         errorType = @"network_error";
+    } else if (self.statusCode == kQNLocalIOError){
+        errorType = @"local_io_error";
     } else if (self.statusCode == 100){
         errorType = @"protocol_error";
     } else if (self.statusCode > 199 && self.statusCode < 300) {
@@ -132,6 +134,8 @@
     NSString *result = nil;
     if (self.statusCode > 199 && self.statusCode < 300) {
         result = @"ok";
+    } else if (self.statusCode == kQNLocalIOError){
+        result = @"local_io_error";
     } else if (self.statusCode > 399 && self.statusCode < 500) {
         result = @"bad_request";
     } else if (self.statusCode == kQNZeroDataSize){

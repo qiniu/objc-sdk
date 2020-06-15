@@ -63,7 +63,7 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
 //MARK:-- 上传
 - (void)run;
 
-- (void)prepareToUpload;
+- (int)prepareToUpload;
 
 - (void)startToUpload;
 
