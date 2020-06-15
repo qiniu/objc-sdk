@@ -22,7 +22,7 @@
 @implementation QNUploadErrorTestParam
 + (instancetype)param{
     QNUploadErrorTestParam *p = [[QNUploadErrorTestParam alloc] init];
-    p.token = token_z0;
+    p.token = token_na0;
     p.key = @"upload_error_128K";
     p.tempFile = [QNTempFile createTempfileWithSize:128 * 1024 identifier:p.key];
     return p;

@@ -53,7 +53,7 @@
     QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler:^(NSString *key, float percent) {
         NSLog(@"progress %f", percent);
     }];
-    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_z0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         
         if (i.isOK && i.reqId && [keyUp isEqualToString:k] && [tempFile.fileHash isEqualToString:resp[@"hash"]]) {
             complete(YES);

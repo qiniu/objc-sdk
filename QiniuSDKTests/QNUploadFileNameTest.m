@@ -57,7 +57,7 @@
     __block QNResponseInfo *responseInfo = nil;
     __block NSDictionary *response = nil;
     __block NSString *key = nil;
-    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_z0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         
         response = resp;
         key = k;

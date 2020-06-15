@@ -52,7 +52,7 @@
         cancellationSignal:^BOOL() {
             return flag;
         }];
-    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_z0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
     }
@@ -75,7 +75,7 @@
     QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler:^(NSString *key, float percent) {
         NSLog(@"progress %f", percent);
     }];
-    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_z0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
         testResp = resp;
@@ -107,7 +107,7 @@
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
-    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_z0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
         testResp = resp;
@@ -127,7 +127,7 @@
     __block QNResponseInfo *info = nil;
     __block NSDictionary *testResp = nil;
     __block NSString *key = nil;
-    [_upManager putFile:tempFile.fileUrl.path key:nil token:token_z0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [_upManager putFile:tempFile.fileUrl.path key:nil token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
         testResp = resp;
@@ -151,7 +151,7 @@
     QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler:^(NSString *key, float percent) {
         NSLog(@"progress %f", percent);
     }];
-    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_z0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
     }
@@ -217,7 +217,7 @@
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
-    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_z0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
     } option:opt];
@@ -228,7 +228,7 @@
     isReupload = YES;
     
     QNUploadManager *upManager_re = [[QNUploadManager alloc] initWithConfiguration:config];
-    [upManager_re putFile:tempFile.fileUrl.path key:keyUp token:token_z0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [upManager_re putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
     } option:opt];
@@ -293,7 +293,7 @@
 //    NSString *keyUp = [NSString stringWithFormat:@"%dkproxy", size];
 //    __block QNResponseInfo *info = nil;
 //    __block NSString *key = nil;
-//    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_z0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+//    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
 //        key = k;
 //        info = i;
 //    }
@@ -324,7 +324,7 @@
     QNTempFile *tempFile = [QNTempFile createTempfileWithSize:600 * 1024 identifier:keyUp];
     __block QNResponseInfo *info = nil;
     __block NSString *key = nil;
-    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_z0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
     }
@@ -356,7 +356,7 @@
 //    NSString *keyUp = [NSString stringWithFormat:@"%dkconvert", size];
 //    __block QNResponseInfo *info = nil;
 //    __block NSString *key = nil;
-//    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_z0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+//    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
 //        key = k;
 //        info = i;
 //    }

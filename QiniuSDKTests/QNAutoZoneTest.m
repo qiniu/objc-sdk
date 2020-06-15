@@ -39,7 +39,7 @@
 
 - (void)testHttp {
     QNAutoZone* autoZone = [[QNAutoZone alloc] init];
-    QNUpToken* tok = [QNUpToken parse:token_z0];
+    QNUpToken* tok = [QNUpToken parse:token_na0];
     __block int x = 0;
     __block int c = 0;
     [autoZone preQuery:tok on:^(int code, QNResponseInfo *info, QNUploadRegionRequestMetrics *metrics) {
