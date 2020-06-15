@@ -96,11 +96,12 @@
     if (self.statusCode == 100){
         errorType = @"protocol_error";
     } else if (self.statusCode > 199 && self.statusCode < 300) {
-        
+//        NSURLErrorFailingURLErrorKey
     } else if (self.statusCode > 299){
         errorType = @"response_error";
-    } else if (self.statusCode == kQNNetworkError
-            || self.statusCode == -1003 || self.statusCode == -1006 || self.statusCode == -1008){
+    } else if (self.statusCode == -1003){
+        errorType = @"unknown_host";
+    } else if (self.statusCode == -1){
         errorType = @"network_error";
     } else if (self.statusCode == -1009){
            errorType = @"network_slow";
@@ -108,16 +109,18 @@
            errorType = @"timeout";
     } else if (self.statusCode == -1004){
         errorType = @"cannot_connect_to_host";
-    } else if (self.statusCode == -1005 || self.statusCode == -1011){
+    } else if (self.statusCode == -1005 || self.statusCode == -1021){
         errorType = @"transmission_error";
-    } else if (self.statusCode == -2001 ||self.statusCode == -9807){
+    } else if (self.statusCode == -1200 || self.statusCode == -1201 || self.statusCode == -1202
+               || self.statusCode == -1203 || self.statusCode == -1204 || self.statusCode == -1205
+               || self.statusCode == -1206 || self.statusCode == -9807){
         errorType = @"ssl_error";
     } else if (self.statusCode == -1015 || self.statusCode == -1016 || self.statusCode == -1017){
         errorType = @"parse_error";
     } else if (self.statusCode == -1007 || self.statusCode == -1010){
         errorType = @"malicious_response";
     } else if (self.statusCode == kQNRequestCancelled
-            || self.statusCode == -999){//  NSURLErrorCancelled
+            || self.statusCode == -999){
         errorType = @"user_canceled";
     } else {
         errorType = @"unknown_error";
@@ -151,7 +154,9 @@
         result = @"cannot_connect_to_host";
     } else if (self.statusCode == -1005 || self.statusCode == -1011){
         result = @"transmission_error";
-    } else if (self.statusCode == -2001 ||self.statusCode == -9807){
+    } else if (self.statusCode == -1200 || self.statusCode == -1201 || self.statusCode == -1202
+               || self.statusCode == -1203 || self.statusCode == -1204 || self.statusCode == -1205
+               || self.statusCode == -1206 || self.statusCode == -9807){
         result = @"ssl_error";
     } else if (self.statusCode == -1015 || self.statusCode == -1016 || self.statusCode == -1017){
         result = @"parse_error";
