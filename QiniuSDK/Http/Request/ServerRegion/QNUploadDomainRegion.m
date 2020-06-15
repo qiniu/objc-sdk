@@ -126,17 +126,19 @@
     if ([ip containsString:@":"]) {
         type = @"ipv6";
     } else if ([ip containsString:@"."]){
-        NSInteger firstNumber = [[ip componentsSeparatedByString:@"."].firstObject integerValue];
-        if (firstNumber > 0 && firstNumber < 127) {
-            type = @"ipv4-A";
-        } else if (firstNumber > 127 && firstNumber <= 191) {
-            type = @"ipv4-B";
-        } else if (firstNumber > 191 && firstNumber <= 223) {
-            type = @"ipv4-C";
-        } else if (firstNumber > 223 && firstNumber <= 239) {
-            type = @"ipv4-D";
-        } else if (firstNumber > 239 && firstNumber < 255) {
-            type = @"ipv4-E";
+        NSArray *ipNumberStrings = [ip componentsSeparatedByString:@"."];
+        if (ipNumberStrings.count == 4) {
+            NSInteger firstNumber = [ipNumberStrings.firstObject integerValue];
+            if (firstNumber > 0 && firstNumber < 127) {
+                type = [NSString stringWithFormat:@"%@-%ld", @"ipv4-A", firstNumber];
+            } else if (firstNumber > 127 && firstNumber <= 191) {
+                NSInteger secondNumber = [ipNumberStrings[1] integerValue];
+                type = [NSString stringWithFormat:@"%@-%ld-%ld", @"ipv4-B", firstNumber, secondNumber];
+            } else if (firstNumber > 191 && firstNumber <= 223) {
+                NSInteger secondNumber = [ipNumberStrings[1] integerValue];
+                NSInteger thirdNumber = [ipNumberStrings[2] integerValue];
+                type = [NSString stringWithFormat:@"%@-%ld-%ld-%ld", @"ipv4-C", firstNumber, secondNumber, thirdNumber];
+            }
         }
     }
     return type;
