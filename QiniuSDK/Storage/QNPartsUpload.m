@@ -29,7 +29,7 @@
 
 - (void)prepareToUpload{
     [super prepareToUpload];
-    [self recoveryUploadInfoFromRecord];
+    [self recoverUploadInfoFromRecord];
     
     if (self.uploadFileInfo == nil) {
         self.uploadFileInfo = [[QNUploadFileInfo alloc] initWithFileSize:[self.file size]
@@ -81,7 +81,7 @@
     [self.recorder del:self.recorderKey];
 }
 
-- (void)recoveryUploadInfoFromRecord{
+- (void)recoverUploadInfoFromRecord{
     NSString *key = self.recorderKey;
     if (self.recorder == nil || key == nil || [key isEqualToString:@""]) {
         return;
@@ -98,7 +98,7 @@
         [self.recorder del:self.key];
         return;
     }
-    NSLog(@"Reupload revovr info: %@", info);
+    NSLog(@"Reupload recover info: %@", info);
     QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:info[kQNRecordZoneInfoKey]];
     QNUploadFileInfo *fileInfo = [QNUploadFileInfo infoFromDictionary:info[kQNRecordFileInfoKey]];
     self.recoveredFrom = @(fileInfo.progress * fileInfo.size);
