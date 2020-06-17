@@ -97,8 +97,6 @@
         errorType = @"network_error";
     } else if (self.statusCode == kQNLocalIOError){
         errorType = @"local_io_error";
-    } else if (self.statusCode == kQNMaliciousResponseError){
-        errorType = @"malicious_response";
     } else if (self.statusCode == 100){
         errorType = @"protocol_error";
     } else if (self.statusCode > 199 && self.statusCode < 300) {
@@ -121,7 +119,7 @@
         errorType = @"ssl_error";
     } else if (self.statusCode == -1015 || self.statusCode == -1016 || self.statusCode == -1017){
         errorType = @"parse_error";
-    } else if (self.statusCode == -1007 || self.statusCode == -1010){
+    } else if (self.statusCode == -1007 || self.statusCode == -1010 || kQNMaliciousResponseError){
         errorType = @"malicious_response";
     } else if (self.statusCode == kQNRequestCancelled
             || self.statusCode == -999){
@@ -138,8 +136,6 @@
         result = @"ok";
     } else if (self.statusCode == kQNLocalIOError){
         result = @"local_io_error";
-    } else if (self.statusCode == kQNMaliciousResponseError){
-        result = @"malicious_response";
     } else if (self.statusCode > 399 && self.statusCode < 500) {
         result = @"bad_request";
     } else if (self.statusCode == kQNZeroDataSize){
@@ -166,7 +162,7 @@
         result = @"ssl_error";
     } else if (self.statusCode == -1015 || self.statusCode == -1016 || self.statusCode == -1017){
         result = @"parse_error";
-    } else if (self.statusCode == -1007 || self.statusCode == -1010){
+    } else if (self.statusCode == -1007 || self.statusCode == -1010 || kQNMaliciousResponseError){
         result = @"malicious_response";
     } else {
         result = @"unknown_error";
