@@ -101,13 +101,11 @@
     }];
 
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        NSArray *upList = [[NSArray alloc] initWithObjects:@"uptemp.qbox.me", nil];
         builder.useHttps = YES;
-        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
-    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_z0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
         testResp = resp;
@@ -241,13 +239,13 @@
     [tempFile remove];
 }
 
-//- (void)test500ks {
-//    [self templateHttps:500];
-//}
-//
-//- (void)test600ks {
-//    [self templateHttps:600];
-//}
+- (void)test1Ms {
+    [self templateHttps:1024 * 1];
+}
+
+- (void)test5Ms {
+    [self templateHttps:1024 * 5];
+}
 
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
 
