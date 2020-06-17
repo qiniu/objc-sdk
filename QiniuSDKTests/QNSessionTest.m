@@ -52,37 +52,6 @@
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
     XCTAssert(testInfo.reqId, @"Pass");
-
-    testInfo = nil;
-    [_httpManager post:@"http://httpbin.org/status/500" withData:data withParams:nil withHeaders:nil withIdentifier:nil withCompleteBlock:^(QNResponseInfo *httpResponseInfo, NSDictionary *respBody) {
-        testInfo = httpResponseInfo;
-    } withProgressBlock:nil withCancelBlock:nil withAccess:nil];
-
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    XCTAssert((testInfo.statusCode == 500), @"Pass");
-    XCTAssert(testInfo.error != nil, @"Pass");
-
-    testInfo = nil;
-    [_httpManager post:@"http://httpbin.org/status/418" withData:data withParams:nil withHeaders:nil withIdentifier:nil withCompleteBlock:^(QNResponseInfo *httpResponseInfo, NSDictionary *respBody) {
-        testInfo = httpResponseInfo;
-    } withProgressBlock:nil withCancelBlock:nil withAccess:nil];
-
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == 418, @"Pass");
-    XCTAssert(testInfo.error != nil, @"Pass");
-
-    testInfo = nil;
-    [_httpManager post:@"http://httpbin.org/status/200" withData:data withParams:nil withHeaders:nil withIdentifier:nil withCompleteBlock:^(QNResponseInfo *httpResponseInfo, NSDictionary *respBody) {
-        testInfo = httpResponseInfo;
-    } withProgressBlock:nil withCancelBlock:nil withAccess:nil];
-
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == 200, @"Pass");
-    XCTAssert(!testInfo.isOK, @"Pass");
-    XCTAssert(testInfo.error != nil, @"Pass");
 }
 
 //- (void)testProxy {

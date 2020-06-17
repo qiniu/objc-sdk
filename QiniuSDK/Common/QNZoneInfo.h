@@ -41,6 +41,10 @@ extern NSString *const QNZoneInfoEmptyRegionId;
 + (QNZoneInfo *)zoneInfoWithMainHosts:(NSArray <NSString *> *)mainHosts
                               ioHosts:(NSArray <NSString *> * _Nullable)ioHosts;
 
++ (QNZoneInfo *)zoneInfoWithMainHosts:(NSArray <NSString *> *)mainHosts
+                             oldHosts:(NSArray <NSString *> * _Nullable)oldHosts
+                              ioHosts:(NSArray <NSString *> * _Nullable)ioHosts;
+
 //内部使用
 + (QNZoneInfo *)zoneInfoFromDictionary:(NSDictionary *)detailInfo;
 

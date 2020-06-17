@@ -52,6 +52,12 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
 
 + (QNZoneInfo *)zoneInfoWithMainHosts:(NSArray *)mainHosts
                               ioHosts:(NSArray *)ioHosts{
+    return [self zoneInfoWithMainHosts:mainHosts oldHosts:nil ioHosts:ioHosts];
+}
+
++ (QNZoneInfo *)zoneInfoWithMainHosts:(NSArray <NSString *> *)mainHosts
+                             oldHosts:(NSArray <NSString *> *)oldHosts
+                              ioHosts:(NSArray <NSString *> * _Nullable)ioHosts{
     
     if (!mainHosts || ![mainHosts isKindOfClass:[NSArray class]] || mainHosts.count == 0) {
         return nil;
@@ -62,7 +68,8 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
     }
     
     QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:@{@"ttl" : @(86400*1000),
-                                                                @"up" : @{@"acc" : @{@"main" : mainHosts}},
+                                                                @"up" : @{@"acc" : @{@"main" : mainHosts},
+                                                                          @"old_acc" : @{@"main" : oldHosts ?: @[]}},
                                                                 @"io" : @{@"src" : @{@"main" : ioHosts ?: @[]}}}];
     return zoneInfo;
 }

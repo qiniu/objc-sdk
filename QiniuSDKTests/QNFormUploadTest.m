@@ -78,7 +78,7 @@
 
 - (void)test100UpTask:(NSString *)taskId complete:(void(^)(BOOL isSuccess))complete{
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        builder.timeoutInterval = 5;
+        
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc]initWithConfiguration:config];
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
