@@ -43,6 +43,11 @@ extern const int kQNFileError;
  */
 extern const int kQNLocalIOError;
 
+/**
+ *    ⽤户劫持错误 错误
+ */
+extern const int kQNMaliciousResponseError;
+
 
 /**
  *    上传完成后返回的状态信息

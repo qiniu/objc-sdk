@@ -17,6 +17,7 @@ const int kQNInvalidArgument = -3;
 const int kQNRequestCancelled = -2;
 const int kQNNetworkError = -1;
 const int kQNLocalIOError = -7;
+const int kQNMaliciousResponseError = -8;
 
 static NSString *kQNErrorDomain = @"qiniu.com";
 
@@ -120,8 +121,12 @@ static NSString *kQNErrorDomain = @"qiniu.com";
             _reqId = headers[@"x-reqid"];
             _xlog = headers[@"x-log"];
             _xvia = headers[@"x-via"] ?: headers[@"x-px"] ?: headers[@"fw-via"];
-
-            if (error) {
+            if (_reqId == nil || _xlog == nil) {
+                _statusCode = kQNMaliciousResponseError;
+                _message = @"this is a malicious response";
+                _responseDictionary = nil;
+                _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:_statusCode userInfo:@{@"error" : _message}];
+            } else if (error) {
                 _error = error;
                 _statusCode = (int)error.code;
                 _message = [NSString stringWithFormat:@"%@", error];
@@ -180,11 +185,11 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 
 - (BOOL)isNotQiniu {
     // reqId is nill means the server is not qiniu
-    return (_statusCode >= 200 && _statusCode < 500) && _reqId == nil;
+    return _reqId == nil || _xlog == nil;
 }
 
 - (BOOL)isOK {
-    return (_statusCode >= 200 && _statusCode < 300) && _error == nil && _reqId != nil;
+    return (_statusCode >= 200 && _statusCode < 300) && _error == nil && _reqId != nil && _xlog != nil;
 }
 
 - (BOOL)couldRetry {
