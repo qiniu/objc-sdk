@@ -26,11 +26,11 @@
 
 @implementation QNConcurrentResumeUpload
 
-- (void)prepareToUpload{
+- (int)prepareToUpload{
     self.uploadGroup = dispatch_group_create();
     self.uploadQueue = dispatch_queue_create("com.qiniu.concurrentUpload", DISPATCH_QUEUE_SERIAL);
     self.chunkSize = @([self.class blockSize]);
-    [super prepareToUpload];
+    return [super prepareToUpload];
 }
 
 - (void)startToUpload{

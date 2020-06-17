@@ -150,7 +150,7 @@
                     [self performRequest:newServer
                                   action:action
                                  headers:headers
-                            method:method
+                                  method:method
                                     body:body
                              shouldRetry:shouldRetry
                                 progress:progress
