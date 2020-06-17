@@ -9,4 +9,5 @@
 #import <Foundation/Foundation.h>
 
 //MArk: -- 内部布置 尽量不要修改
-#define kQNPreQueryHost @"uc.qbox.me"
+#define kQNPreQueryHost00 @"uc.qbox.me"
+#define kQNPreQueryHost01 @"api.qiniu.com"

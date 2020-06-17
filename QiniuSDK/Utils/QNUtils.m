@@ -21,7 +21,7 @@
 }
 
 + (NSString *)sdkLanguage{
-    return @"OC";
+    return @"Object-C";
 }
 
 + (int64_t)getCurrentProcessID {

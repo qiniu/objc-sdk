@@ -8,7 +8,7 @@
 
 #import "QNResponseInfo.h"
 #import "QNUserAgent.h"
-#import "QNVersion.h"
+#import "QNUtils.h"
 
 const int kQNZeroDataSize = -6;
 const int kQNInvalidToken = -5;
@@ -228,7 +228,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<%@= id: %@, ver: %@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ time: %llu error: %@>", NSStringFromClass([self class]), _id, kQiniuVersion, _statusCode, _reqId, _xlog, _xvia, _host, _timeStamp, _error];
+    return [NSString stringWithFormat:@"<%@= id: %@, ver: %@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ time: %llu error: %@>", NSStringFromClass([self class]), _id, [QNUtils sdkVerion], _statusCode, _reqId, _xlog, _xvia, _host, _timeStamp, _error];
 }
 
 @end

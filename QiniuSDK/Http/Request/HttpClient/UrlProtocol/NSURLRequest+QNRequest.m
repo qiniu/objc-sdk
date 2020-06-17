@@ -13,7 +13,7 @@
 @implementation NSURLRequest(QNRequest)
 
 #define kQNURLReuestHostKey @"Host"
-#define kQNURLReuestIPKey @"QNURLReuestIP"
+#define kQNURLRequestIPKey @"QNURLRequestIP"
 #define kQNURLReuestIdentifierKey @"QNURLReuestIdentifier"
 - (BOOL)qn_isQiNiuRequest{
     if (self.qn_identifier && self.qn_domain) {
@@ -36,7 +36,7 @@
 }
 
 - (NSString *)qn_ip{
-    return self.allHTTPHeaderFields[kQNURLReuestIPKey];
+    return self.allHTTPHeaderFields[kQNURLRequestIPKey];
 }
 
 - (NSDictionary *)qn_allHTTPHeaderFields{
@@ -113,9 +113,9 @@
 
 - (void)setQn_ip:(NSString *)qn_ip{
     if (qn_ip) {
-        [self addValue:qn_ip forHTTPHeaderField:kQNURLReuestIPKey];
+        [self addValue:qn_ip forHTTPHeaderField:kQNURLRequestIPKey];
     } else {
-        [self setValue:nil forHTTPHeaderField:kQNURLReuestIPKey];
+        [self setValue:nil forHTTPHeaderField:kQNURLRequestIPKey];
     }
 }
 

@@ -69,23 +69,23 @@
 }
 
 - (void)request:(NSURLRequest *)request
-      isSkipDns:(BOOL)isSkipDns
+      toSkipDns:(BOOL)toSkipDns
     shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
        progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
        complete:(QNSingleRequestCompleteHandler)complete{
     
     _currentRetryTime = 1;
     _requestMetricsList = [NSMutableArray array];
-    [self retryRquest:request isSkipDns:isSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
+    [self retryRequest:request toSkipDns:toSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
 }
 
-- (void)retryRquest:(NSURLRequest *)request
-          isSkipDns:(BOOL)isSkipDns
+- (void)retryRequest:(NSURLRequest *)request
+          toSkipDns:(BOOL)toSkipDns
         shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
            progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
            complete:(QNSingleRequestCompleteHandler)complete{
     
-    if (isSkipDns && kQNGlobalConfiguration.isDnsOpen) {
+    if (toSkipDns && kQNGlobalConfiguration.isDnsOpen) {
         self.client = [[QNUploadSystemClient alloc] init];
     } else {
         self.client = [[QNUploadSystemClient alloc] init];
@@ -140,7 +140,7 @@
             && responseInfo.couldHostRetry) {
             self.currentRetryTime += 1;
             QNAsyncRunAfter(self.config.retryInterval, kQNBackgroundQueue, ^{
-                [self retryRquest:request isSkipDns:isSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
+                [self retryRequest:request toSkipDns:toSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
             });
         } else {
             [self complete:responseInfo response:responseDic requestMetrics:metrics complete:complete];
@@ -198,7 +198,7 @@
     [item setReportValue:[QNUtils systemName] forKey:QNReportRequestKeyOsName];
     [item setReportValue:[QNUtils systemVersion] forKey:QNReportRequestKeyOsVersion];
     [item setReportValue:[QNUtils sdkLanguage] forKey:QNReportRequestKeySDKName];
-    [item setReportValue:kQiniuVersion forKey:QNReportRequestKeySDKVersion];
+    [item setReportValue:[QNUtils sdkVerion] forKey:QNReportRequestKeySDKVersion];
     [item setReportValue:@([QNUtils currentTimestamp]) forKey:QNReportRequestKeyClientTime];
     [item setReportValue:[QNUtils getCurrentNetworkType] forKey:QNReportRequestKeyNetworkType];
     [item setReportValue:[QNUtils getCurrentSignalStrength] forKey:QNReportRequestKeySignalStrength];

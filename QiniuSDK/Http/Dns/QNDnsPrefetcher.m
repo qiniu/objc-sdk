@@ -498,8 +498,8 @@
     NSArray *fixedHosts = [self getFixedZoneHosts];
     [localHosts addObjectsFromArray:fixedHosts];
     
-    NSString *ucHost = kQNPreQueryHost;
-    [localHosts addObject:ucHost];
+    [localHosts addObject:kQNPreQueryHost00];
+    [localHosts addObject:kQNPreQueryHost01];
     
     return [localHosts copy];
 }
@@ -516,8 +516,8 @@
     NSArray *autoHosts = [self getCurrentZoneHosts:currentZone token:token];
     [fetchHosts addObjectsFromArray:autoHosts];
     
-    NSString *ucHost = kQNPreQueryHost;
-    [fetchHosts addObject:ucHost];
+    [fetchHosts addObject:kQNPreQueryHost00];
+    [fetchHosts addObject:kQNPreQueryHost01];
     
     NSArray *cacheHost = [self getCacheHosts];
     [fetchHosts addObjectsFromArray:cacheHost];
