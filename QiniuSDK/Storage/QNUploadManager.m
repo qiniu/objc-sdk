@@ -188,7 +188,7 @@
             NSData *data = [file readAllWithError:&error];
             [file close];
             if (error) {
-                QNResponseInfo *info = [QNResponseInfo responseInfoWithLocalIOError:error.description];
+                QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
                 [QNUploadManager complete:token
                                       key:key
                              responseInfo:info
