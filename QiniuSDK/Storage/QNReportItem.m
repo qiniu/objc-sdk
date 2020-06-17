@@ -148,9 +148,7 @@
     } else if (self.statusCode == kQNRequestCancelled
             || self.statusCode == -999){
         result = @"user_canceled";
-    } else if (self.statusCode == kQNNetworkError){
-        result = @"zero_size_file";
-    } else if (self.statusCode == -1009){
+    } else if (self.statusCode == -1009 || self.statusCode == kQNNetworkError){
         result = @"network_error";
     } else if (self.statusCode == -1001){
         result = @"timeout";
