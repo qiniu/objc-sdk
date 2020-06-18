@@ -1,5 +1,5 @@
 //
-//  QNDnsPrefetcher.h
+//  QNDnsPrefetch.h
 //  QnDNS
 //
 //  Created by yangsen on 2020/3/26.
@@ -13,8 +13,8 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define kQNDnsPrefetcher [QNDnsPrefetcher shared]
-@interface QNDnsPrefetcher : NSObject
+#define kQNDnsPrefetcher [QNDnsPrefetch shared]
+@interface QNDnsPrefetch : NSObject
 
 + (instancetype)shared;
 

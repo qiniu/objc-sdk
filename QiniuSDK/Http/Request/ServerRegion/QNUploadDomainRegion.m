@@ -10,7 +10,7 @@
 #import "QNUploadServer.h"
 #import "QNZoneInfo.h"
 #import "QNUploadServerFreezeManager.h"
-#import "QNDnsPrefetcher.h"
+#import "QNDnsPrefetch.h"
 
 @interface QNUploadIpGroup : NSObject
 @property(nonatomic,   copy, readonly)NSString *groupType;

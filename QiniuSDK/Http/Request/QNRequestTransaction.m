@@ -96,11 +96,7 @@
     self.requestInfo.requestType = QNUploadRequestTypeUCQuery;
     
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
-        if (responseInfo.isOK == false) {
-            return YES;
-        } else {
-            return NO;
-        }
+        return (BOOL)!responseInfo.isOK;
     };
     
     NSDictionary *header = @{@"User-Agent" : [kQNUserAgent getUserAgent:self.token.token]};
@@ -163,11 +159,7 @@
     header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
     
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
-        if (responseInfo.isOK == false) {
-            return YES;
-        } else {
-            return NO;
-        }
+        return (BOOL)!responseInfo.isOK;
     };
     
     [self.regionRequest post:nil
@@ -204,12 +196,7 @@
         
         NSString *ctx = response[@"ctx"];
         NSString *crcServer = [NSString stringWithFormat:@"%@", response[@"crc32"]];
-        if (responseInfo.isOK == false
-            || (responseInfo.isOK && (!ctx || (self.uploadOption.checkCrc && ![chunkCrc isEqualToString:crcServer])))) {
-            return YES;
-        } else {
-            return NO;
-        }
+        return (BOOL)(responseInfo.isOK == false || (responseInfo.isOK && (!ctx || (self.uploadOption.checkCrc && ![chunkCrc isEqualToString:crcServer]))));
     };
     
     [self.regionRequest post:action
@@ -246,12 +233,7 @@
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
         NSString *ctx = response[@"ctx"];
         NSString *crcServer = [NSString stringWithFormat:@"%@", response[@"crc32"]];
-        if (responseInfo.isOK == false
-            || (responseInfo.isOK && (!ctx || (self.uploadOption.checkCrc && ![chunkCrc isEqualToString:crcServer])))) {
-            return YES;
-        } else {
-            return NO;
-        }
+        return (BOOL)(responseInfo.isOK == false || (responseInfo.isOK && (!ctx || (self.uploadOption.checkCrc && ![chunkCrc isEqualToString:crcServer]))));
     };
     
     [self.regionRequest post:action
@@ -300,11 +282,7 @@
     [body appendData:[bodyString dataUsingEncoding:NSUTF8StringEncoding]];
     
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
-        if (responseInfo.isOK == false) {
-            return YES;
-        } else {
-            return NO;
-        }
+        return (BOOL)(!responseInfo.isOK);
     };
     
     [self.regionRequest post:action

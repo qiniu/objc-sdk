@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 当前上传的region
 @property(nonatomic,   copy, nullable)NSString *currentRegionId;
 
+- (BOOL)shouldReportRequestLog;
 
 @end
 
@@ -34,5 +35,6 @@ extern NSString *const QNUploadRequestTypeForm;
 extern NSString *const QNUploadRequestTypeMkblk;
 extern NSString *const QNUploadRequestTypeBput;
 extern NSString *const QNUploadRequestTypeMkfile;
+extern NSString * const QNUploadRequestTypeUpLog;
 
 NS_ASSUME_NONNULL_END

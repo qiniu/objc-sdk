@@ -80,10 +80,10 @@
 }
 
 - (void)retryRequest:(NSURLRequest *)request
-          toSkipDns:(BOOL)toSkipDns
-        shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
-           progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-           complete:(QNSingleRequestCompleteHandler)complete{
+           toSkipDns:(BOOL)toSkipDns
+         shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
+            progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
+            complete:(QNSingleRequestCompleteHandler)complete{
     
     if (toSkipDns && kQNGlobalConfiguration.isDnsOpen) {
         self.client = [[QNUploadSystemClient alloc] init];
@@ -95,11 +95,11 @@
     
     __weak typeof(self) weakSelf = self;
     BOOL (^checkCancelHandler)(void) = ^{
-        BOOL isCancel = weakSelf.requestState.isUserCancel;
-        if (!isCancel && weakSelf.uploadOption.cancellationSignal) {
-            isCancel = weakSelf.uploadOption.cancellationSignal();
+        BOOL isCancelled = weakSelf.requestState.isUserCancel;
+        if (!isCancelled && weakSelf.uploadOption.cancellationSignal) {
+            isCancelled = weakSelf.uploadOption.cancellationSignal();
         }
-        return isCancel;
+        return isCancelled;
     };
     
     [self.client request:request connectionProxy:self.config.proxy progress:^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
@@ -163,6 +163,10 @@
 //MARK:-- 统计quality日志
 - (void)reportRequest:(QNResponseInfo *)info
        requestMetrics:(QNUploadSingleRequestMetrics *)requestMetrics {
+    
+    if (! [self.requestInfo shouldReportRequestLog]) {
+        return;
+    }
     
     QNUploadSingleRequestMetrics *requestMetricsP = requestMetrics ?: [QNUploadSingleRequestMetrics emptyMetrics];
     

@@ -46,7 +46,7 @@
 
 #import "QNReportItem.h"
 
-#import "QNDnsPrefetcher.h"
+#import "QNDnsPrefetch.h"
 #import "QNZone.h"
 
 @interface QNUploadManager ()

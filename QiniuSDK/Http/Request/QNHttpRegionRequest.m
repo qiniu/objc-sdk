@@ -54,7 +54,7 @@
 
 - (void)get:(NSString *)action
     headers:(NSDictionary *)headers
-   shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
+shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
    complete:(QNRegionRequestCompleteHandler)complete{
     
     self.requestMetrics = [[QNUploadRegionRequestMetrics alloc] initWithRegion:self.region];

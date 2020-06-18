@@ -137,11 +137,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
 
 - (BOOL)isValid{
     NSDate *currentDate = [NSDate date];
-    if (self.ttl > [currentDate timeIntervalSinceDate:self.buildDate]) {
-        return YES;
-    } else {
-        return NO;
-    }
+    return self.ttl > [currentDate timeIntervalSinceDate:self.buildDate];
 }
 
 @end

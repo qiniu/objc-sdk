@@ -75,12 +75,12 @@
 		31BAA27E243DBE5D00B7E883 /* NSURLRequest+QNRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31BAA271243DB83700B7E883 /* NSURLRequest+QNRequest.m */; };
 		31BAA280243DBE6200B7E883 /* QNURLProtocol.m in Sources */ = {isa = PBXBuildFile; fileRef = 31BAA273243DB83700B7E883 /* QNURLProtocol.m */; };
 		31C2EECA242CC52600713A33 /* QNDnsCacheKey.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C2EEC3242CC52600713A33 /* QNDnsCacheKey.h */; };
-		31C2EECB242CC52600713A33 /* QNDnsPrefetcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C2EEC4242CC52600713A33 /* QNDnsPrefetcher.h */; };
+		31C2EECB242CC52600713A33 /* QNDnsPrefetch.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C2EEC4242CC52600713A33 /* QNDnsPrefetch.h */; };
 		31C2EECC242CC52600713A33 /* QNDnsCacheFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C2EEC5242CC52600713A33 /* QNDnsCacheFile.h */; };
 		31C2EECD242CC52600713A33 /* QNDnsCacheKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEC6242CC52600713A33 /* QNDnsCacheKey.m */; };
 		31C2EECF242CC52600713A33 /* QNDnsCacheKey.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEC6242CC52600713A33 /* QNDnsCacheKey.m */; };
-		31C2EED1242CC52600713A33 /* QNDnsPrefetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEC7242CC52600713A33 /* QNDnsPrefetcher.m */; };
-		31C2EED3242CC52600713A33 /* QNDnsPrefetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEC7242CC52600713A33 /* QNDnsPrefetcher.m */; };
+		31C2EED1242CC52600713A33 /* QNDnsPrefetch.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEC7242CC52600713A33 /* QNDnsPrefetch.m */; };
+		31C2EED3242CC52600713A33 /* QNDnsPrefetch.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEC7242CC52600713A33 /* QNDnsPrefetch.m */; };
 		31C2EED5242CC52600713A33 /* QNDnsCacheFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEC8242CC52600713A33 /* QNDnsCacheFile.m */; };
 		31C2EED7242CC52600713A33 /* QNDnsCacheFile.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEC8242CC52600713A33 /* QNDnsCacheFile.m */; };
 		31C2EED9242CC52600713A33 /* QNDns.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C2EEC9242CC52600713A33 /* QNDns.h */; };
@@ -275,10 +275,10 @@
 		31BAA274243DB83700B7E883 /* NSURLRequest+QNRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSURLRequest+QNRequest.h"; sourceTree = "<group>"; };
 		31BAA276243DB83700B7E883 /* QNURLProtocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNURLProtocol.h; sourceTree = "<group>"; };
 		31C2EEC3242CC52600713A33 /* QNDnsCacheKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNDnsCacheKey.h; sourceTree = "<group>"; };
-		31C2EEC4242CC52600713A33 /* QNDnsPrefetcher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNDnsPrefetcher.h; sourceTree = "<group>"; };
+		31C2EEC4242CC52600713A33 /* QNDnsPrefetch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNDnsPrefetch.h; sourceTree = "<group>"; };
 		31C2EEC5242CC52600713A33 /* QNDnsCacheFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNDnsCacheFile.h; sourceTree = "<group>"; };
 		31C2EEC6242CC52600713A33 /* QNDnsCacheKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNDnsCacheKey.m; sourceTree = "<group>"; };
-		31C2EEC7242CC52600713A33 /* QNDnsPrefetcher.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNDnsPrefetcher.m; sourceTree = "<group>"; };
+		31C2EEC7242CC52600713A33 /* QNDnsPrefetch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNDnsPrefetch.m; sourceTree = "<group>"; };
 		31C2EEC8242CC52600713A33 /* QNDnsCacheFile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNDnsCacheFile.m; sourceTree = "<group>"; };
 		31C2EEC9242CC52600713A33 /* QNDns.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNDns.h; sourceTree = "<group>"; };
 		31C2EEDA242CC76200713A33 /* QNConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNConfig.h; sourceTree = "<group>"; };
@@ -518,8 +518,8 @@
 				31C2EEC8242CC52600713A33 /* QNDnsCacheFile.m */,
 				31C2EEC3242CC52600713A33 /* QNDnsCacheKey.h */,
 				31C2EEC6242CC52600713A33 /* QNDnsCacheKey.m */,
-				31C2EEC4242CC52600713A33 /* QNDnsPrefetcher.h */,
-				31C2EEC7242CC52600713A33 /* QNDnsPrefetcher.m */,
+				31C2EEC4242CC52600713A33 /* QNDnsPrefetch.h */,
+				31C2EEC7242CC52600713A33 /* QNDnsPrefetch.m */,
 			);
 			path = Dns;
 			sourceTree = "<group>";
@@ -743,7 +743,7 @@
 				31F553942456F2F3000B66AD /* QNPHAssetResource.h in Headers */,
 				DF0D23CD19DCE6C400D6B68F /* QNResponseInfo.h in Headers */,
 				31C2EED9242CC52600713A33 /* QNDns.h in Headers */,
-				31C2EECB242CC52600713A33 /* QNDnsPrefetcher.h in Headers */,
+				31C2EECB242CC52600713A33 /* QNDnsPrefetch.h in Headers */,
 				31C2EEDC242CC76200713A33 /* QNConfig.h in Headers */,
 				31F553972456F2F3000B66AD /* QNUrlSafeBase64.h in Headers */,
 				31F553A62456F2F3000B66AD /* QNFile.h in Headers */,
@@ -1018,7 +1018,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				31C2EED1242CC52600713A33 /* QNDnsPrefetcher.m in Sources */,
+				31C2EED1242CC52600713A33 /* QNDnsPrefetch.m in Sources */,
 				DF0D23CF19DCE6E500D6B68F /* QNResponseInfo.m in Sources */,
 				31F553932456F2F3000B66AD /* QNUrlSafeBase64.m in Sources */,
 				31A18416246A7652001D6EEE /* QNReportItem.m in Sources */,
@@ -1102,7 +1102,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				31C2EED3242CC52600713A33 /* QNDnsPrefetcher.m in Sources */,
+				31C2EED3242CC52600713A33 /* QNDnsPrefetch.m in Sources */,
 				314944692448503C00386F16 /* QNZone.m in Sources */,
 				DF0D23D019DCE6E500D6B68F /* QNResponseInfo.m in Sources */,
 				31A18417246A7652001D6EEE /* QNReportItem.m in Sources */,

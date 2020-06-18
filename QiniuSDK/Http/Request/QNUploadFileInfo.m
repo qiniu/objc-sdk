@@ -48,11 +48,7 @@
 }
 
 - (BOOL)isFirstData{
-    if (self.index == 0) {
-        return YES;
-    } else {
-        return NO;
-    }
+    return self.index == 0;
 }
 
 - (void)clearUploadState{
@@ -118,7 +114,7 @@
         _offset = offset;
         _size = blockSize;
         _index = index;
-        [self createDatas:dataSize];
+        [self createDataList:dataSize];
     }
     return self;
 }
@@ -142,7 +138,7 @@
     return progress;
 }
 
-- (void)createDatas:(long long)dataSize{
+- (void)createDataList:(long long)dataSize{
     
     long long offSize = 0;
     NSInteger dataIndex = 0;

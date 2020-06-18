@@ -7,7 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "QNDnsPrefetcher.h"
+#import "QNDnsPrefetch.h"
 #import "QNTestConfig.h"
 #import "QNFixedZone.h"
 #import <AGAsyncTestHelper.h>

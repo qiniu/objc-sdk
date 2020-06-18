@@ -1,12 +1,12 @@
 //
-//  QNDnsPrefetcher.m
+//  QNDnsPrefetch.m
 //  QnDNS
 //
 //  Created by yangsen on 2020/3/26.
 //  Copyright © 2020 com.qiniu. All rights reserved.
 //
 
-#import "QNDnsPrefetcher.h"
+#import "QNDnsPrefetch.h"
 #import "QNDnsCacheKey.h"
 #import "QNConfig.h"
 #import "QNDnsCacheFile.h"
@@ -85,11 +85,7 @@
         return NO;
     }
     NSTimeInterval currentTimestamp = [[NSDate date] timeIntervalSince1970];
-    if (currentTimestamp > self.timestampValue.doubleValue + self.ttlValue.doubleValue) {
-        return NO;
-    } else {
-        return YES;
-    }
+    return currentTimestamp > self.timestampValue.doubleValue + self.ttlValue.doubleValue;
 }
 
 - (NSString *)toJsonInfo{
@@ -154,7 +150,7 @@
 
 
 //MARK: -- DNS Prefetcher
-@interface QNDnsPrefetcher()
+@interface QNDnsPrefetch()
 {
     QNDnsCacheKey *_dnsCacheKey;
 }
@@ -171,13 +167,13 @@
 
 @end
 
-@implementation QNDnsPrefetcher
+@implementation QNDnsPrefetch
 
 + (instancetype)shared{
-    static QNDnsPrefetcher *prefetcher = nil;
+    static QNDnsPrefetch *prefetcher = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        prefetcher = [[QNDnsPrefetcher alloc] init];
+        prefetcher = [[QNDnsPrefetch alloc] init];
     });
     return prefetcher;
 }

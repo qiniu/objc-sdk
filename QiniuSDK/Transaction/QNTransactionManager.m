@@ -67,11 +67,7 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
 }
 
 - (BOOL)maybeCompleted:(long long)time{
-    if (time >= self.actionTime && self.type == QNTransactionTypeNormal) {
-        return YES;
-    } else {
-        return NO;
-    }
+    return [self shouldAction:time] && self.type == QNTransactionTypeNormal;
 }
 
 - (void)handleAction:(long long)time{
