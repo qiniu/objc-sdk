@@ -223,7 +223,7 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
     return [self.transactionList transactionsForName:name];
 }
 
-- (BOOL)existtransactionsForName:(NSString *)name{
+- (BOOL)existTransactionsForName:(NSString *)name{
     NSArray *transactionList = [self transactionsForName:name];
     if (transactionList && transactionList.count > 0) {
         return YES;

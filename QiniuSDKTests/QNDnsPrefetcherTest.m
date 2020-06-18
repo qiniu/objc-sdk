@@ -83,7 +83,7 @@
 
 - (void)testPreFetch {
     
-    [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:kDnsTestToken];
+    [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:[QNUpToken parse:kDnsTestToken]];
     
     AGWW_WAIT_WHILE([kQNDnsPrefetcher getInetAddressByHost:kCustomHost] == nil, 60 * 5);
     
@@ -99,7 +99,7 @@
     [kQNDnsPrefetcher invalidInetAdress:address];
     
     kQNGlobalConfiguration.dns = [[CustomDns alloc] init];
-    [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:kDnsTestToken];
+    [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:[QNUpToken parse:kDnsTestToken]];
     
     QN_TEST_CASE_WAIT_TIME(2);
     
@@ -122,7 +122,7 @@
     kQNGlobalConfiguration.dns = dns;
     kQNGlobalConfiguration.dnsCacheTime = 120;
     
-    [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:kDnsTestToken];
+    [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:[QNUpToken parse:kDnsTestToken]];
     
     QN_TEST_CASE_WAIT_TIME(2);
     
@@ -147,8 +147,7 @@
         dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{
             
             dispatch_group_enter(group);
-        BOOL isSuccess = [kQNTransactionManager addDnsCheckAndPrefetchTransaction:self.config.zone
-                                                                                token:kDnsTestToken];
+        BOOL isSuccess = [kQNTransactionManager addDnsCheckAndPrefetchTransaction:self.config.zone token:[QNUpToken parse:kDnsTestToken]];
             if (isSuccess) {
                 successPrefetchNum += 1;
             }
@@ -157,7 +156,7 @@
     }
     
     dispatch_group_notify(group, dispatch_get_main_queue(), ^{
-        XCTAssert(successPrefetchNum == 1, @"success");
+        XCTAssert(successPrefetchNum <= 1, @"success");
     });
     
     QN_TEST_CASE_WAIT_TIME(2);

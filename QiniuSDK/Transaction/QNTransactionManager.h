@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSArray <QNTransaction *> *)transactionsForName:(NSString *)name;
 
 /// 是否存在某个名称的事务
-- (BOOL)existtransactionsForName:(NSString *)name;
+- (BOOL)existTransactionsForName:(NSString *)name;
 
 /// 添加一个事务
 - (void)addTransaction:(QNTransaction *)transaction;

@@ -646,7 +646,7 @@
         
         QNTransactionManager *transactionManager = [QNTransactionManager shared];
         
-        if (![transactionManager existtransactionsForName:token.token]) {
+        if (![transactionManager existTransactionsForName:token.token]) {
             QNTransaction *transaction = [QNTransaction transaction:token.token after:0 action:^{
                
                 [kQNDnsPrefetcher checkAndPrefetchDnsIfNeed:currentZone token:token];
