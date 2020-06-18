@@ -164,7 +164,7 @@
         } else {
             break;
         }
-        i ++;
+        i++;
     }
     
     NSInteger j = ipNumberStrings.count - 1;

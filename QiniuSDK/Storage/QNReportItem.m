@@ -122,7 +122,7 @@
     } else if (self.statusCode == -1007 || self.statusCode == -1010 || kQNMaliciousResponseError){
         errorType = @"malicious_response";
     } else if (self.statusCode == kQNRequestCancelled
-            || self.statusCode == -999){
+            || self.statusCode == NSURLErrorCancelled){
         errorType = @"user_canceled";
     } else {
         errorType = @"unknown_error";

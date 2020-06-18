@@ -95,8 +95,13 @@
     [_config.zone preQuery:self.token on:^(int code, QNResponseInfo *responseInfo, QNUploadRegionRequestMetrics *metrics) {
         [self.metrics addMetrics:metrics];
         if (code == 0) {
-            [self prepareToUpload];
-            [self startToUpload];
+            int prepareCode = [self prepareToUpload];
+            if (prepareCode == 0) {
+                [self startToUpload];
+            } else {
+                QNResponseInfo *responseInfoP = [QNResponseInfo errorResponseInfo:prepareCode errorDesc:nil];
+                [self complete:responseInfoP resp:responseInfoP.responseDictionary];
+            }
         } else {
             [self complete:responseInfo resp:responseInfo.responseDictionary];
         }
