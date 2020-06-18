@@ -104,27 +104,29 @@
         return;
     }
     
-    QNUploadData *chunk = [self.uploadFileInfo nextUploadData];
-    QNUploadBlock *block = chunk ? [self.uploadFileInfo blockWithIndex:chunk.blockIndex] : nil;
-    
-    void (^progress)(long long, long long) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
-        chunk.progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
-        float percent = self.uploadFileInfo.progress;
-        if (percent > 0.95) {
-            percent = 0.95;
-        }
-        if (percent > self.previousPercent) {
-            self.previousPercent = percent;
+    @synchronized (self) {
+        QNUploadData *chunk = [self.uploadFileInfo nextUploadData];
+        QNUploadBlock *block = chunk ? [self.uploadFileInfo blockWithIndex:chunk.blockIndex] : nil;
+        
+        void (^progress)(long long, long long) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
+            chunk.progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
+            float percent = self.uploadFileInfo.progress;
+            if (percent > 0.95) {
+                percent = 0.95;
+            }
+            if (percent > self.previousPercent) {
+                self.previousPercent = percent;
+            } else {
+                percent = self.previousPercent;
+            }
+            self.option.progressHandler(self.key, percent);
+        };
+        
+        if (chunk) {
+            [self makeBlockRequest:block firstChunk:chunk progress:progress completeHandler:completeHandler];
         } else {
-            percent = self.previousPercent;
+            completeHandler();
         }
-        self.option.progressHandler(self.key, percent);
-    };
-    
-    if (chunk) {
-        [self makeBlockRequest:block firstChunk:chunk progress:progress completeHandler:completeHandler];
-    } else {
-        completeHandler();
     }
 }
 
