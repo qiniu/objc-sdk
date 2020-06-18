@@ -10,7 +10,6 @@
 #import "QNDnsCacheKey.h"
 #import "QNConfig.h"
 #import "QNDnsCacheFile.h"
-#import "QNUpToken.h"
 #import "QNUtils.h"
 #import "QNAsyncRun.h"
 #import "QNFixedZone.h"
@@ -241,7 +240,7 @@
 }
 //MARK: -- 检测并预取
 /// 根据token检测Dns缓存信息时效，无效则预取。 完成预取操作返回YES，反之返回NO
-- (void)checkAndPrefetchDnsIfNeed:(QNZone *)currentZone token:(NSString *)token{
+- (void)checkAndPrefetchDnsIfNeed:(QNZone *)currentZone token:(QNUpToken *)token{
     if ([self prepareToPreFetch] == NO) {
         return;
     }
@@ -505,7 +504,7 @@
 }
 
 - (NSArray <NSString *> *)getAllPreHost:(QNZone *)currentZone
-                                  token:(NSString *)token{
+                                  token:(QNUpToken *)token{
     
     NSMutableSet *set = [NSMutableSet set];
     NSMutableArray *fetchHosts = [NSMutableArray array];
@@ -535,16 +534,16 @@
 }
 
 - (NSArray <NSString *> *)getCurrentZoneHosts:(QNZone *)currentZone
-                                        token:(NSString *)token{
-    if (!currentZone || !token) {
+                                        token:(QNUpToken *)token{
+    if (!currentZone || !token || !token.token) {
         return nil;
     }
-    [currentZone preQuery:[QNUpToken parse:token] on:^(int code, QNResponseInfo *responseInfo, QNUploadRegionRequestMetrics *metrics) {
+    [currentZone preQuery:token on:^(int code, QNResponseInfo *responseInfo, QNUploadRegionRequestMetrics *metrics) {
         dispatch_semaphore_signal(self.semaphore);
     }];
     dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
     
-    QNZonesInfo *autoZonesInfo = [currentZone getZonesInfoWithToken:[QNUpToken parse:token]];
+    QNZonesInfo *autoZonesInfo = [currentZone getZonesInfoWithToken:token];
     NSMutableArray *autoHosts = [NSMutableArray array];
     NSArray *zoneInfoList = autoZonesInfo.zonesInfo;
     for (QNZoneInfo *info in zoneInfoList) {
@@ -633,7 +632,7 @@
     });
 }
 
-- (BOOL)addDnsCheckAndPrefetchTransaction:(QNZone *)currentZone token:(NSString *)token{
+- (BOOL)addDnsCheckAndPrefetchTransaction:(QNZone *)currentZone token:(QNUpToken *)token{
     if (!token) {
         return NO;
     }
@@ -647,8 +646,8 @@
         
         QNTransactionManager *transactionManager = [QNTransactionManager shared];
         
-        if (![transactionManager existtransactionsForName:token]) {
-            QNTransaction *transaction = [QNTransaction transaction:token after:0 action:^{
+        if (![transactionManager existtransactionsForName:token.token]) {
+            QNTransaction *transaction = [QNTransaction transaction:token.token after:0 action:^{
                
                 [kQNDnsPrefetcher checkAndPrefetchDnsIfNeed:currentZone token:token];
             }];

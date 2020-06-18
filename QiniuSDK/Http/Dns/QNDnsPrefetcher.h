@@ -6,10 +6,10 @@
 //  Copyright © 2020 com.qiniu. All rights reserved.
 //
 
-#import "QNTransactionManager.h"
 #import "QNDns.h"
+#import "QNUpToken.h"
 #import "QNConfiguration.h"
-
+#import "QNTransactionManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)addDnsLocalLoadTransaction;
 
 /// 添加检测并预取dns事务 如果未开启DNS 或 事务队列中存在token对应的事务未处理，则返回NO
-- (BOOL)addDnsCheckAndPrefetchTransaction:(QNZone *)currentZone token:(NSString *)token;
+- (BOOL)addDnsCheckAndPrefetchTransaction:(QNZone *)currentZone token:(QNUpToken *)token;
 
 /// 设置定时事务：检测已缓存DNS有效情况事务 无效会重新预取
 - (void)setDnsCheckWhetherCachedValidTransactionAction;
