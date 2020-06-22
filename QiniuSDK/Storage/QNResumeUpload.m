@@ -172,7 +172,7 @@
     [transaction uploadChunk:block.context
                  blockOffset:block.offset
                    chunkData:chunkData
-                 chunkOffest:chunk.offset
+                 chunkOffset:chunk.offset
                     progress:progress
                     complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         [self addRegionRequestMetricsOfOneFlow:metrics];
