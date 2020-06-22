@@ -94,7 +94,7 @@
         }
         
         NSMutableDictionary *ipGroupInfos = [NSMutableDictionary dictionary];
-        NSArray *inetAddresses = [kQNDnsPrefetcher getInetAddressByHost:self.host];
+        NSArray *inetAddresses = [kQNDnsPrefetch getInetAddressByHost:self.host];
         for (id <QNInetAddressDelegate> inetAddress in inetAddresses) {
             NSString *ipValue = inetAddress.ipValue;
             NSString *groupType = [self getIpType:ipValue];

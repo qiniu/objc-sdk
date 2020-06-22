@@ -22,7 +22,7 @@
 #import "NSURLRequest+QNRequest.h"
 
 
-@implementation QNUploadRequstState
+@implementation QNUploadRequestState
 - (instancetype)init{
     if (self = [super init]) {
         [self initData];
@@ -43,7 +43,7 @@
 @property(nonatomic, strong)QNUploadOption *uploadOption;
 @property(nonatomic, strong)QNUpToken *token;
 @property(nonatomic, strong)QNUploadRequestInfo *requestInfo;
-@property(nonatomic, strong)QNUploadRequstState *requestState;
+@property(nonatomic, strong)QNUploadRequestState *requestState;
 
 @property(nonatomic, strong)NSMutableArray <QNUploadSingleRequestMetrics *> *requestMetricsList;
 
@@ -56,7 +56,7 @@
                   uploadOption:(QNUploadOption *)uploadOption
                          token:(QNUpToken *)token
                    requestInfo:(QNUploadRequestInfo *)requestInfo
-                  requestState:(QNUploadRequstState *)requestState{
+                  requestState:(QNUploadRequestState *)requestState{
     if (self = [super init]) {
         _config = config;
         _uploadOption = uploadOption;
@@ -202,7 +202,7 @@
     [item setReportValue:[QNUtils systemName] forKey:QNReportRequestKeyOsName];
     [item setReportValue:[QNUtils systemVersion] forKey:QNReportRequestKeyOsVersion];
     [item setReportValue:[QNUtils sdkLanguage] forKey:QNReportRequestKeySDKName];
-    [item setReportValue:[QNUtils sdkVerion] forKey:QNReportRequestKeySDKVersion];
+    [item setReportValue:[QNUtils sdkVersion] forKey:QNReportRequestKeySDKVersion];
     [item setReportValue:@([QNUtils currentTimestamp]) forKey:QNReportRequestKeyClientTime];
     [item setReportValue:[QNUtils getCurrentNetworkType] forKey:QNReportRequestKeyNetworkType];
     [item setReportValue:[QNUtils getCurrentSignalStrength] forKey:QNReportRequestKeySignalStrength];

@@ -607,22 +607,22 @@
 
 //MARK: -- DNS 事务
 @implementation QNTransactionManager(Dns)
-#define kQNLoadLocalDnstransactionName @"QNLoadLocalDnstransaction"
-#define kQNDnsCheckAndPrefetchtransactionName @"QNDnsCheckAndPrefetchtransactionName"
+#define kQNLoadLocalDnsTransactionName @"QNLoadLocalDnsTransaction"
+#define kQNDnsCheckAndPrefetchTransactionName @"QNDnsCheckAndPrefetchTransactionName"
 
 - (void)addDnsLocalLoadTransaction{
     
-    if ([kQNDnsPrefetcher isDnsOpen] == NO) {
+    if ([kQNDnsPrefetch isDnsOpen] == NO) {
         return;
     }
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         
-        QNTransaction *transaction = [QNTransaction transaction:kQNLoadLocalDnstransactionName after:0 action:^{
+        QNTransaction *transaction = [QNTransaction transaction:kQNLoadLocalDnsTransactionName after:0 action:^{
             
-            [kQNDnsPrefetcher recoverCache];
-            [kQNDnsPrefetcher localFetch];
+            [kQNDnsPrefetch recoverCache];
+            [kQNDnsPrefetch localFetch];
         }];
         [[QNTransactionManager shared] addTransaction:transaction];
     });
@@ -633,19 +633,19 @@
         return NO;
     }
     
-    if ([kQNDnsPrefetcher isDnsOpen] == NO) {
+    if ([kQNDnsPrefetch isDnsOpen] == NO) {
         return NO;
     }
     
     BOOL ret = NO;
-    @synchronized (kQNDnsPrefetcher) {
+    @synchronized (kQNDnsPrefetch) {
         
         QNTransactionManager *transactionManager = [QNTransactionManager shared];
         
         if (![transactionManager existTransactionsForName:token.token]) {
             QNTransaction *transaction = [QNTransaction transaction:token.token after:0 action:^{
                
-                [kQNDnsPrefetcher checkAndPrefetchDnsIfNeed:currentZone token:token];
+                [kQNDnsPrefetch checkAndPrefetchDnsIfNeed:currentZone token:token];
             }];
             [transactionManager addTransaction:transaction];
             
@@ -657,22 +657,22 @@
 
 - (void)setDnsCheckWhetherCachedValidTransactionAction{
 
-    if ([kQNDnsPrefetcher isDnsOpen] == NO) {
+    if ([kQNDnsPrefetch isDnsOpen] == NO) {
         return;
     }
     
-    @synchronized (kQNDnsPrefetcher) {
+    @synchronized (kQNDnsPrefetch) {
         
         QNTransactionManager *transactionManager = [QNTransactionManager shared];
-        QNTransaction *transaction = [transactionManager transactionsForName:kQNDnsCheckAndPrefetchtransactionName].firstObject;
+        QNTransaction *transaction = [transactionManager transactionsForName:kQNDnsCheckAndPrefetchTransactionName].firstObject;
         
         if (!transaction) {
             
-            QNTransaction *transaction = [QNTransaction timeTransaction:kQNDnsCheckAndPrefetchtransactionName
+            QNTransaction *transaction = [QNTransaction timeTransaction:kQNDnsCheckAndPrefetchTransactionName
                                                                   after:10
                                                                interval:120
                                                                  action:^{
-                [kQNDnsPrefetcher checkWhetherCachedDnsValid];
+                [kQNDnsPrefetch checkWhetherCachedDnsValid];
             }];
             [transactionManager addTransaction:transaction];
         } else {

@@ -12,9 +12,9 @@
 
 @implementation NSURLRequest(QNRequest)
 
-#define kQNURLReuestHostKey @"Host"
+#define kQNURLRequestHostKey @"Host"
 #define kQNURLRequestIPKey @"QNURLRequestIP"
-#define kQNURLReuestIdentifierKey @"QNURLReuestIdentifier"
+#define kQNURLRequestIdentifierKey @"QNURLRequestIdentifier"
 - (BOOL)qn_isQiNiuRequest{
     if (self.qn_identifier && self.qn_domain) {
         return YES;
@@ -24,11 +24,11 @@
 }
 
 - (NSString *)qn_identifier{
-    return self.allHTTPHeaderFields[kQNURLReuestIdentifierKey];
+    return self.allHTTPHeaderFields[kQNURLRequestIdentifierKey];
 }
 
 - (NSString *)qn_domain{
-    NSString *host = self.allHTTPHeaderFields[kQNURLReuestHostKey];
+    NSString *host = self.allHTTPHeaderFields[kQNURLRequestHostKey];
     if (host == nil) {
         host = self.URL.host;
     }
@@ -43,7 +43,7 @@
     NSDictionary *headerFields = [self.allHTTPHeaderFields copy];
     NSMutableDictionary *headerFieldsNew = [NSMutableDictionary dictionary];
     for (NSString *key in headerFields) {
-        if (![key isEqualToString:kQNURLReuestIdentifierKey]) {
+        if (![key isEqualToString:kQNURLRequestIdentifierKey]) {
             [headerFieldsNew setObject:headerFields[key] forKey:key];
         }
     }
@@ -52,7 +52,7 @@
 
 + (instancetype)qn_requestWithURL:(NSURL *)url{
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    [request setValue:url.host forHTTPHeaderField:kQNURLReuestHostKey];
+    [request setValue:url.host forHTTPHeaderField:kQNURLRequestHostKey];
     return request;
 }
 
@@ -101,9 +101,9 @@
 
 - (void)setQn_domain:(NSString *)qn_domain{
     if (qn_domain) {
-        [self addValue:qn_domain forHTTPHeaderField:kQNURLReuestHostKey];
+        [self addValue:qn_domain forHTTPHeaderField:kQNURLRequestHostKey];
     } else {
-        [self setValue:nil forHTTPHeaderField:kQNURLReuestHostKey];
+        [self setValue:nil forHTTPHeaderField:kQNURLRequestHostKey];
     }
     
     NSTimeInterval timestamp = [[NSDate date] timeIntervalSince1970];
@@ -121,9 +121,9 @@
 
 - (void)setQn_identifier:(NSString *)qn_identifier{
     if (qn_identifier) {
-        [self addValue:qn_identifier forHTTPHeaderField:kQNURLReuestIdentifierKey];
+        [self addValue:qn_identifier forHTTPHeaderField:kQNURLRequestIdentifierKey];
     } else {
-        [self setValue:nil forHTTPHeaderField:kQNURLReuestIdentifierKey];
+        [self setValue:nil forHTTPHeaderField:kQNURLRequestIdentifierKey];
     }
 }
 

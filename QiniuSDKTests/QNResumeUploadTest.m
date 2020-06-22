@@ -281,7 +281,7 @@
 //        builder.proxy = proxyDict;
 //        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com", @"upnono.qiniu.com", nil];
 //        builder.useHttps = NO;
-//        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+//        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:upList];
 //    }];
 //
 //    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
@@ -312,7 +312,7 @@
         };
         NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono-na0.qiniu.com", @"upnono-na0.qiniu.com", nil];
         builder.useHttps = NO;
-        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:upList];
     }];
 
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];

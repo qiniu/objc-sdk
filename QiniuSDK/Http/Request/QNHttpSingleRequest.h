@@ -11,11 +11,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class QNUploadRequstState, QNResponseInfo, QNConfiguration, QNUploadOption, QNUpToken, QNUploadSingleRequestMetrics;
+@class QNUploadRequestState, QNResponseInfo, QNConfiguration, QNUploadOption, QNUpToken, QNUploadSingleRequestMetrics;
 
 typedef void(^QNSingleRequestCompleteHandler)(QNResponseInfo * _Nullable responseInfo, NSArray <QNUploadSingleRequestMetrics *> * _Nullable metrics, NSDictionary * _Nullable response);
 
-@interface QNUploadRequstState : NSObject
+@interface QNUploadRequestState : NSObject
 
 @property(atomic, assign)BOOL isUserCancel;
 
@@ -28,7 +28,7 @@ typedef void(^QNSingleRequestCompleteHandler)(QNResponseInfo * _Nullable respons
                   uploadOption:(QNUploadOption *)uploadOption
                          token:(QNUpToken *)token
                    requestInfo:(QNUploadRequestInfo *)requestInfo
-                  requestState:(QNUploadRequstState *)requestState;
+                  requestState:(QNUploadRequestState *)requestState;
 
 
 /// 网络请求

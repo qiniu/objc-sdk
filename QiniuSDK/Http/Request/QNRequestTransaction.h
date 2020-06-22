@@ -27,7 +27,7 @@ typedef void(^QNRequestTransactionCompleteHandler)(QNResponseInfo * _Nullable re
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
                   targetRegion:(id <QNUploadRegion>)targetRegion
-                  currentegion:(id <QNUploadRegion>)currentegion
+                 currentRegion:(id <QNUploadRegion>)currentRegion
                            key:(NSString * _Nullable)key
                          token:(QNUpToken *)token;
 - (instancetype)initWithConfig:(QNConfiguration *)config
@@ -53,7 +53,7 @@ typedef void(^QNRequestTransactionCompleteHandler)(QNResponseInfo * _Nullable re
 - (void)uploadChunk:(NSString *)blockContext
         blockOffset:(long long)blockOffset
           chunkData:(NSData *)chunkData
-        chunkOffest:(long long)chunkOffest
+        chunkOffset:(long long)chunkOffset
            progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
            complete:(QNRequestTransactionCompleteHandler)complete;
 

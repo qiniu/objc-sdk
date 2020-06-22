@@ -36,10 +36,10 @@
             if (self.uploadChunkErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
                 BOOL isSwitched = [self switchRegionAndUpload];
                 if (isSwitched == NO) {
-                    [self complete:self.uploadChunkErrorResponseInfo resp:self.uploadChunkErrorResponse];
+                    [self complete:self.uploadChunkErrorResponseInfo response:self.uploadChunkErrorResponse];
                 }
             } else {
-                [self complete:self.uploadChunkErrorResponseInfo resp:self.uploadChunkErrorResponse];
+                [self complete:self.uploadChunkErrorResponseInfo response:self.uploadChunkErrorResponse];
             }
             
         } else {
@@ -49,15 +49,15 @@
                     if (responseInfo.couldRetry && [self.config allowBackupHost]) {
                         BOOL isSwitched = [self switchRegionAndUpload];
                         if (isSwitched == NO) {
-                            [self complete:responseInfo resp:response];
+                            [self complete:responseInfo response:response];
                         }
                     } else {
-                        [self complete:responseInfo resp:response];
+                        [self complete:responseInfo response:response];
                     }
                 } else {
                     self.option.progressHandler(self.key, 1.0);
                     [self removeUploadInfoRecord];
-                    [self complete:responseInfo resp:response];
+                    [self complete:responseInfo response:response];
                 }
             }];
         }
@@ -212,7 +212,7 @@
     QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithConfig:self.config
                                                                         uploadOption:self.option
                                                                         targetRegion:[self getTargetRegion]
-                                                                        currentegion:[self getCurrentRegion]
+                                                                       currentRegion:[self getCurrentRegion]
                                                                                  key:self.key
                                                                                token:self.token];
     self.uploadTransaction = transaction;

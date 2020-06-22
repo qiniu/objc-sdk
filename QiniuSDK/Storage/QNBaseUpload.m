@@ -100,10 +100,10 @@
                 [self startToUpload];
             } else {
                 QNResponseInfo *responseInfoP = [QNResponseInfo errorResponseInfo:prepareCode errorDesc:nil];
-                [self complete:responseInfoP resp:responseInfoP.responseDictionary];
+                [self complete:responseInfoP response:responseInfoP.responseDictionary];
             }
         } else {
-            [self complete:responseInfo resp:responseInfo.responseDictionary];
+            [self complete:responseInfo response:responseInfo.responseDictionary];
         }
     }];
 }
@@ -129,12 +129,12 @@
 }
 
 - (void)complete:(QNResponseInfo *)info
-            resp:(NSDictionary *)resp{
+        response:(NSDictionary *)response{
     if (self.currentRegionRequestMetrics) {
         [self.metrics addMetrics:self.currentRegionRequestMetrics];
     }
     if (self.completionHandler) {
-        self.completionHandler(info, _key, _metrics, resp);
+        self.completionHandler(info, _key, _metrics, response);
     }
 }
 

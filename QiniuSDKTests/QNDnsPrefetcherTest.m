@@ -77,7 +77,7 @@
     
     QN_TEST_CASE_WAIT_TIME(5);
 
-    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetcher getInetAddressByHost:host];
+    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetch getInetAddressByHost:host];
     XCTAssert(addressList.count > 0, @"success");
 }
 
@@ -85,9 +85,9 @@
     
     [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:[QNUpToken parse:kDnsTestToken]];
     
-    AGWW_WAIT_WHILE([kQNDnsPrefetcher getInetAddressByHost:kCustomHost] == nil, 60 * 5);
+    AGWW_WAIT_WHILE([kQNDnsPrefetch getInetAddressByHost:kCustomHost] == nil, 60 * 5);
     
-    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetcher getInetAddressByHost:kCustomHost];
+    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
     XCTAssert(addressList.count > 0, @"success");
 }
 
@@ -96,14 +96,14 @@
     InetAddress *address = [[InetAddress alloc] init];
     address.hostValue = kCustomHost;
     address.ipValue = CustomIPValue;
-    [kQNDnsPrefetcher invalidInetAdress:address];
+    [kQNDnsPrefetch invalidInetAdress:address];
     
     kQNGlobalConfiguration.dns = [[CustomDns alloc] init];
     [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:[QNUpToken parse:kDnsTestToken]];
     
     QN_TEST_CASE_WAIT_TIME(2);
     
-    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetcher getInetAddressByHost:kCustomHost];
+    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
     NSLog(@"addressList count: %ld", addressList.count);
     XCTAssert(addressList.count==1, @"success");
     XCTAssert([addressList.firstObject.ipValue isEqualToString:CustomIPValue], @"success");
@@ -114,7 +114,7 @@
     InetAddress *address = [[InetAddress alloc] init];
     address.hostValue = kCustomHost;
     address.ipValue = CustomIPValue;
-    [kQNDnsPrefetcher invalidInetAdress:address];
+    [kQNDnsPrefetch invalidInetAdress:address];
     QN_TEST_CASE_WAIT_TIME(1);
     
     CustomDns *dns = [[CustomDns alloc] init];
@@ -126,7 +126,7 @@
     
     QN_TEST_CASE_WAIT_TIME(2);
     
-    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetcher getInetAddressByHost:kCustomHost];
+    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
     
     XCTAssert(addressList.count==1, @"success");
     XCTAssert(addressList.firstObject.ttlValue.doubleValue == 120, @"success");

@@ -58,10 +58,10 @@
     return isSwitched;
 }
 
-- (void)complete:(QNResponseInfo *)info resp:(NSDictionary *)resp{
+- (void)complete:(QNResponseInfo *)info response:(NSDictionary *)response{
     [self reportBlock];
     [self.file close];
-    [super complete:info resp:resp];
+    [super complete:info response:response];
 }
 
 

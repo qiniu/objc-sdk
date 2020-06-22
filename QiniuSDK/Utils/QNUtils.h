@@ -13,7 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface QNUtils : NSObject
 
 /// SDK 名称
-+ (NSString *)sdkVerion;
++ (NSString *)sdkVersion;
 
 /// SDK 开发语言
 + (NSString *)sdkLanguage;

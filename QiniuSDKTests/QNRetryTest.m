@@ -89,7 +89,7 @@
                             @"uptemp13.qbox.me", @"uptemp14.qbox.me",
                             @"upload-na0.qiniup.com", @"up-na0.qbox.me"];
         builder.useHttps = YES;
-        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:upList];
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
@@ -121,7 +121,7 @@
                             @"uptemp11.qbox.me", @"uptemp12.qbox.me",
                             @"uptemp13.qbox.me", @"uptemp14.qbox.me"];
         builder.useHttps = YES;
-        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:upList];
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 

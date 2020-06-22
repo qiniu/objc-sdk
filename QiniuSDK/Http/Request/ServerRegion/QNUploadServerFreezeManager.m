@@ -20,14 +20,14 @@
     item.type = type;
     return item;
 }
-- (BOOL)isFreezedByDate:(NSDate *)date{
-    BOOL isFreezed = YES;
+- (BOOL)isFrozenByDate:(NSDate *)date{
+    BOOL isFrozen = YES;
     @synchronized (self) {
         if (!self.freezeDate || [self.freezeDate timeIntervalSinceDate:date] < 0){
-            isFreezed = NO;
+            isFrozen = NO;
         }
     }
-    return isFreezed;
+    return isFrozen;
 }
 - (void)freeze{
     @synchronized (self) {
@@ -63,13 +63,13 @@
     if (!host || host.length == 0) {
         return true;
     }
-    BOOL isFreezed = true;
+    BOOL isFrozen = true;
     NSString *infoKey = [self getItemInfoKey:host type:type];
     QNUploadServerFreezeItem *item = self.freezeInfo[infoKey];
-    if (!item || ![item isFreezedByDate:[NSDate date]]) {
-        isFreezed = false;
+    if (!item || ![item isFrozenByDate:[NSDate date]]) {
+        isFrozen = false;
     }
-    return isFreezed;
+    return isFrozen;
 }
 
 - (void)freezeHost:(NSString *)host type:(NSString *)type{

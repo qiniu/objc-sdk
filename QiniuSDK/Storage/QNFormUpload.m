@@ -25,7 +25,7 @@
     self.uploadTransaction = [[QNRequestTransaction alloc] initWithConfig:self.config
                                                              uploadOption:self.option
                                                              targetRegion:[self getTargetRegion]
-                                                             currentegion:[self getCurrentRegion]
+                                                            currentRegion:[self getCurrentRegion]
                                                                       key:self.key
                                                                     token:self.token];
 
@@ -53,14 +53,14 @@
         
         if (responseInfo.isOK) {
             self.option.progressHandler(self.key, 1.0);
-            [self complete:responseInfo resp:response];
+            [self complete:responseInfo response:response];
         } else if (responseInfo.couldRetry && self.config.allowBackupHost) {
             BOOL isSwitched = [self switchRegionAndUpload];
             if (isSwitched == NO) {
-                [self complete:responseInfo resp:response];
+                [self complete:responseInfo response:response];
             }
         } else {
-            [self complete:responseInfo resp:response];
+            [self complete:responseInfo response:response];
         }
     }];
 }

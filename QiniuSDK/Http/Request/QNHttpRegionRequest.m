@@ -19,7 +19,7 @@
 
 @property(nonatomic, strong)QNConfiguration *config;
 @property(nonatomic, strong)QNUploadOption *uploadOption;
-@property(nonatomic, strong)QNUploadRequstState *requestState;
+@property(nonatomic, strong)QNUploadRequestState *requestState;
 
 @property(nonatomic, strong)QNUploadRegionRequestMetrics *requestMetrics;
 @property(nonatomic, strong)QNHttpSingleRequest *singleRequest;
@@ -37,7 +37,7 @@
                          token:(QNUpToken *)token
                         region:(id <QNUploadRegion>)region
                    requestInfo:(QNUploadRequestInfo *)requestInfo
-                  requestState:(QNUploadRequstState *)requestState{
+                  requestState:(QNUploadRequestState *)requestState{
     if (self = [super init]) {
         _config = config;
         _uploadOption = uploadOption;

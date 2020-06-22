@@ -29,7 +29,7 @@
 @property(nonatomic, strong)QNUpToken *token;
 
 @property(nonatomic, strong)QNUploadRequestInfo *requestInfo;
-@property(nonatomic, strong)QNUploadRequstState *requestState;
+@property(nonatomic, strong)QNUploadRequestState *requestState;
 @property(nonatomic, strong)QNHttpRegionRequest *regionRequest;
 
 @end
@@ -58,7 +58,7 @@
     return [self initWithConfig:config
                    uploadOption:uploadOption
                    targetRegion:region
-                   currentegion:region
+                  currentRegion:region
                             key:key
                           token:token];
 }
@@ -66,24 +66,24 @@
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
                   targetRegion:(id <QNUploadRegion>)targetRegion
-                  currentegion:(id <QNUploadRegion>)currentegion
+                 currentRegion:(id <QNUploadRegion>)currentRegion
                            key:(NSString *)key
                          token:(QNUpToken *)token{
     if (self = [super init]) {
         _config = config;
         _uploadOption = uploadOption;
-        _requestState = [[QNUploadRequstState alloc] init];
+        _requestState = [[QNUploadRequestState alloc] init];
         _key = key;
         _token = token;
         _requestInfo = [[QNUploadRequestInfo alloc] init];
         _requestInfo.targetRegionId = targetRegion.zoneInfo.regionId;
-        _requestInfo.currentRegionId = currentegion.zoneInfo.regionId;
+        _requestInfo.currentRegionId = currentRegion.zoneInfo.regionId;
         _requestInfo.bucket = token.bucket;
         _requestInfo.key = key;
         _regionRequest = [[QNHttpRegionRequest alloc] initWithConfig:config
                                                         uploadOption:uploadOption
                                                                token:token
-                                                              region:currentegion
+                                                              region:currentRegion
                                                          requestInfo:_requestInfo
                                                         requestState:_requestState];
     }
@@ -213,12 +213,12 @@
 - (void)uploadChunk:(NSString *)blockContext
         blockOffset:(long long)blockOffset
           chunkData:(NSData *)chunkData
-        chunkOffest:(long long)chunkOffest
+        chunkOffset:(long long)chunkOffset
            progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
            complete:(QNRequestTransactionCompleteHandler)complete{
     
     self.requestInfo.requestType = QNUploadRequestTypeBput;
-    self.requestInfo.fileOffset = @(blockOffset + chunkOffest);
+    self.requestInfo.fileOffset = @(blockOffset + chunkOffset);
     
     NSString *token = [NSString stringWithFormat:@"UpToken %@", self.token.token];
     NSMutableDictionary *header = [NSMutableDictionary dictionary];
@@ -226,7 +226,7 @@
     header[@"Content-Type"] = @"application/octet-stream";
     header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
     
-    NSString *action = [NSString stringWithFormat:@"/bput/%@/%lld", blockContext,  chunkOffest];
+    NSString *action = [NSString stringWithFormat:@"/bput/%@/%lld", blockContext,  chunkOffset];
     
     NSString *chunkCrc = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:chunkData]];
     

@@ -152,7 +152,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
                         _message = @"ok";
                         _responseDictionary = responseInfo;
                     } else {
-                        _message = @"unkown error";
+                        _message = @"unknown error";
                         [errorUserInfo setDictionary:@{@"error" : _message}];
                         _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
                         _responseDictionary = responseInfo;
@@ -233,7 +233,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 }
 
 - (NSString *)description {
-    return [NSString stringWithFormat:@"<%@= id: %@, ver: %@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ time: %llu error: %@>", NSStringFromClass([self class]), _id, [QNUtils sdkVerion], _statusCode, _reqId, _xlog, _xvia, _host, _timeStamp, _error];
+    return [NSString stringWithFormat:@"<%@= id: %@, ver: %@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ time: %llu error: %@>", NSStringFromClass([self class]), _id, [QNUtils sdkVersion], _statusCode, _reqId, _xlog, _xvia, _host, _timeStamp, _error];
 }
 
 @end

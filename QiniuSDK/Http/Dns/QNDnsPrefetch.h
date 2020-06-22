@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define kQNDnsPrefetcher [QNDnsPrefetch shared]
+#define kQNDnsPrefetch [QNDnsPrefetch shared]
 @interface QNDnsPrefetch : NSObject
 
 + (instancetype)shared;

@@ -100,7 +100,7 @@
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         NSArray *upList = [[NSArray alloc] initWithObjects:@"uptemp.qbox.me", nil];
         builder.useHttps = YES;
-        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:upList];
         builder.useConcurrentResumeUpload = YES;
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
@@ -263,7 +263,7 @@
 //        builder.proxy = proxyDict;
 //        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com", @"upnono.qiniu.com", nil];
 //        builder.useHttps = NO;
-//        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+//        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:upList];
 //    }];
 //
 //    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
@@ -294,7 +294,7 @@
         };
         NSArray *upList = [[NSArray alloc] initWithObjects:@"up-na0.qiniu.com", @"up-na0.qiniu.com", nil];
         builder.useHttps = NO;
-        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:upList];
     }];
 
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];

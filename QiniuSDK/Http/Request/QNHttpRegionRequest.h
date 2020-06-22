@@ -13,7 +13,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
-@class QNUploadRequstState, QNResponseInfo, QNConfiguration, QNUploadOption, QNUpToken, QNUploadRegionRequestMetrics;
+@class QNUploadRequestState, QNResponseInfo, QNConfiguration, QNUploadOption, QNUpToken, QNUploadRegionRequestMetrics;
 
 typedef void(^QNRegionRequestCompleteHandler)(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response);
 
@@ -28,7 +28,7 @@ typedef void(^QNRegionRequestCompleteHandler)(QNResponseInfo * _Nullable respons
                          token:(QNUpToken *)token
                         region:(id <QNUploadRegion>)region
                    requestInfo:(QNUploadRequestInfo *)requestInfo
-                  requestState:(QNUploadRequstState *)requestState;
+                  requestState:(QNUploadRequestState *)requestState;
 
 
 - (void)get:(NSString * _Nullable)action

@@ -16,7 +16,7 @@
 
 @implementation QNUtils
 
-+ (NSString *)sdkVerion{
++ (NSString *)sdkVersion{
     return kQiniuVersion;
 }
 

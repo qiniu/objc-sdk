@@ -21,8 +21,8 @@
     static QNFixedZone *z0 = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        z0 = [[QNFixedZone alloc] initWithupDomainList:@[@"upload.qiniup.com", @"up.qiniup.com"]
-                                             oldUplist:@[@"upload.qbox.me", @"up.qbox.me"]
+        z0 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload.qiniup.com", @"up.qiniup.com"]
+                                             oldUpList:@[@"upload.qbox.me", @"up.qbox.me"]
                                             ioHostList:@[@"iovip.qbox.me"]];
     });
     return z0;
@@ -32,8 +32,8 @@
     static QNFixedZone *z1 = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        z1 = [[QNFixedZone alloc] initWithupDomainList:@[@"upload-z1.qiniup.com", @"up-z1.qiniup.com"]
-                                             oldUplist:@[@"upload-z1.qbox.me", @"up-z1.qbox.me"]
+        z1 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload-z1.qiniup.com", @"up-z1.qiniup.com"]
+                                             oldUpList:@[@"upload-z1.qbox.me", @"up-z1.qbox.me"]
                                             ioHostList:@[@"iovip-z1.qbox.me"]];
     });
     return z1;
@@ -43,8 +43,8 @@
     static QNFixedZone *z2 = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        z2 = [[QNFixedZone alloc] initWithupDomainList:@[@"upload-z2.qiniup.com", @"up-z2.qiniup.com"]
-                                             oldUplist:@[@"upload-z2.qbox.me", @"up-z2.qbox.me"]
+        z2 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload-z2.qiniup.com", @"up-z2.qiniup.com"]
+                                             oldUpList:@[@"upload-z2.qbox.me", @"up-z2.qbox.me"]
                                             ioHostList:@[@"iovip-z2.qbox.me"]];
     });
     return z2;
@@ -54,8 +54,8 @@
     static QNFixedZone *zNa0 = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        zNa0 = [[QNFixedZone alloc] initWithupDomainList:@[@"upload-na0.qiniup.com", @"up-na0.qiniup.com"]
-                                               oldUplist:@[@"upload-na0.qbox.me", @"up-na0.qbox.me"]
+        zNa0 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload-na0.qiniup.com", @"up-na0.qiniup.com"]
+                                               oldUpList:@[@"upload-na0.qbox.me", @"up-na0.qbox.me"]
                                               ioHostList:@[@"iovip-na0.qbox.me"]];
     });
     return zNa0;
@@ -65,8 +65,8 @@
     static QNFixedZone *zAs0 = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        zAs0 = [[QNFixedZone alloc] initWithupDomainList:@[@"upload-as0.qiniup.com", @"up-as0.qiniup.com"]
-                                               oldUplist:@[@"upload-as0.qbox.me", @"up-as0.qbox.me"]
+        zAs0 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload-as0.qiniup.com", @"up-as0.qiniup.com"]
+                                               oldUpList:@[@"upload-as0.qbox.me", @"up-as0.qbox.me"]
                                               ioHostList:@[@"iovip-as0.qbox.me"]];;
     });
     return zAs0;
@@ -93,7 +93,7 @@
 }
 
 + (instancetype)createWithHost:(NSArray<NSString *> *)upList {
-    return [[QNFixedZone alloc] initWithupDomainList:upList oldUplist:nil ioHostList:nil];
+    return [[QNFixedZone alloc] initWithUpDomainList:upList oldUpList:nil ioHostList:nil];
 }
 
 - (QNZonesInfo *)createZonesInfo:(NSArray <NSString *> *)upDomains
@@ -113,21 +113,21 @@
     return zonesInfo;
 }
 
-- (instancetype)initWithupDomainList:(NSArray<NSString *> *)upList {
+- (instancetype)initWithUpDomainList:(NSArray<NSString *> *)upList {
     if (self = [super init]) {
         self.zonesInfo = [self createZonesInfo:upList ioHosts:nil];
     }
     return self;
 }
-- (instancetype)initWithupDomainList:(NSArray<NSString *> *)upList
+- (instancetype)initWithUpDomainList:(NSArray<NSString *> *)upList
                           ioHostList:(NSArray<NSString *> *)ioHostList {
     if (self = [super init]) {
         self.zonesInfo = [self createZonesInfo:upList ioHosts:ioHostList];
     }
     return self;
 }
-- (instancetype)initWithupDomainList:(NSArray<NSString *> *)upList
-                           oldUplist:(NSArray<NSString *> *)oldUpList
+- (instancetype)initWithUpDomainList:(NSArray<NSString *> *)upList
+                           oldUpList:(NSArray<NSString *> *)oldUpList
                           ioHostList:(NSArray<NSString *> *)ioHostList {
     if (self = [super init]) {
         self.zonesInfo = [self createZonesInfo:upList oldUpDomains:oldUpList ioHosts:ioHostList];

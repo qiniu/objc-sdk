@@ -70,7 +70,7 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
 - (BOOL)switchRegionAndUpload;
 
 - (void)complete:(QNResponseInfo *)info
-            resp:(NSDictionary *)resp;
+        response:(NSDictionary *)response;
 
 //MARK: -- 机房管理
 /// 在区域列表头部插入一个区域
