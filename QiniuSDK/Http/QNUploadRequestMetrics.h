@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nullable, copy) NSDate *startDate;
 @property (nullable, copy) NSDate *endDate;
-@property (nonatomic, strong, readonly) NSNumber *totalElaspsedTime;
+@property (nonatomic, strong, readonly) NSNumber *totalElapsedTime;
 
 @property (nullable, copy) NSDate *domainLookupStartDate;
 @property (nullable, copy) NSDate *domainLookupEndDate;
@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNUploadRegionRequestMetrics : NSObject
 
-@property (nonatomic, strong, readonly) NSNumber *totalElaspsedTime;
+@property (nonatomic, strong, readonly) NSNumber *totalElapsedTime;
 @property (nonatomic, strong, readonly) NSNumber *requestCount;
 @property (nonatomic, strong, readonly) NSNumber *bytesSend;
 @property (nonatomic, strong, readonly) id <QNUploadRegion> region;
@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNUploadTaskMetrics : NSObject
 
-@property (nonatomic, strong, readonly) NSNumber *totalElaspsedTime;
+@property (nonatomic, strong, readonly) NSNumber *totalElapsedTime;
 @property (nonatomic, strong, readonly) NSNumber *requestCount;
 @property (nonatomic, strong, readonly) NSNumber *bytesSend;
 @property (nonatomic, strong, readonly) NSNumber *regionCount;

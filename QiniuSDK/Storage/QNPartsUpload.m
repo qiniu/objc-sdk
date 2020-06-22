@@ -136,7 +136,7 @@
     [item setReportValue:@([[NSDate date] timeIntervalSince1970]) forKey:QNReportBlockKeyUpTime];
     [item setReportValue:[self getTargetRegion].zoneInfo.regionId forKey:QNReportBlockKeyTargetRegionId];
     [item setReportValue:[self getCurrentRegion].zoneInfo.regionId forKey:QNReportBlockKeyCurrentRegionId];
-    [item setReportValue:metrics.totalElaspsedTime forKey:QNReportBlockKeyTotalElaspsedTime];
+    [item setReportValue:metrics.totalElapsedTime forKey:QNReportBlockKeyTotalElapsedTime];
     [item setReportValue:metrics.bytesSend forKey:QNReportBlockKeyBytesSent];
     [item setReportValue:self.recoveredFrom forKey:QNReportBlockKeyRecoveredFrom];
     [item setReportValue:@(self.file.size) forKey:QNReportBlockKeyFileSize];

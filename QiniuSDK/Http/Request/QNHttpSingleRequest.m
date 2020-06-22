@@ -180,7 +180,7 @@
     [item setReportValue:requestMetricsP.localPort forKey:QNReportRequestKeyPort];
     [item setReportValue:self.requestInfo.bucket forKey:QNReportRequestKeyTargetBucket];
     [item setReportValue:self.requestInfo.key forKey:QNReportRequestKeyTargetKey];
-    [item setReportValue:requestMetricsP.totalElaspsedTime forKey:QNReportRequestKeyTotalElaspsedTime];
+    [item setReportValue:requestMetricsP.totalElapsedTime forKey:QNReportRequestKeyTotalElapsedTime];
     [item setReportValue:requestMetricsP.totalDnsTime forKey:QNReportRequestKeyDnsElapsedTime];
     [item setReportValue:requestMetricsP.totalConnectTime forKey:QNReportRequestKeyConnectElapsedTime];
     [item setReportValue:requestMetricsP.totalSecureConnectTime forKey:QNReportRequestKeyTLSConnectElapsedTime];

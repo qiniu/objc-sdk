@@ -33,7 +33,7 @@
     _countOfResponseBodyBytesReceived = 0;
 }
 
-- (NSNumber *)totalElaspsedTime{
+- (NSNumber *)totalElapsedTime{
     return [self timeFromStartDate:self.startDate
                          toEndDate:self.endDate];
 }
@@ -113,11 +113,11 @@
     return self;
 }
 
-- (NSNumber *)totalElaspsedTime{
+- (NSNumber *)totalElapsedTime{
     if (self.metricsList) {
         double time = 0;
         for (QNUploadSingleRequestMetrics *metrics in self.metricsList) {
-            time += metrics.totalElaspsedTime.doubleValue;
+            time += metrics.totalElapsedTime.doubleValue;
         }
         return time > 0 ? @(time) : nil;
     } else {
@@ -181,11 +181,11 @@
     return self;
 }
 
-- (NSNumber *)totalElaspsedTime{
+- (NSNumber *)totalElapsedTime{
     if (self.metricsInfo) {
         double time = 0;
         for (QNUploadRegionRequestMetrics *metrics in self.metricsInfo.allValues) {
-            time += metrics.totalElaspsedTime.doubleValue;
+            time += metrics.totalElapsedTime.doubleValue;
         }
         return time > 0 ? @(time) : nil;
     } else {
