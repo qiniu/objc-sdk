@@ -14,8 +14,8 @@
 #import <objc/runtime.h>
 
 @interface QNRequestInfo : NSObject
-@property(nonatomic, strong)NSURLSession *session;
-@property(nonatomic, strong)NSURLSessionDataTask *task;
+@property(nonatomic, weak)NSURLSession *session;
+@property(nonatomic, weak)NSURLSessionDataTask *task;
 @end
 @implementation QNRequestInfo
 @end
@@ -88,7 +88,7 @@
     info.task = task;
     [[QNRequestInfoManager share] setRequestInfo:info forRequest:self];
 }
-- (void)qn_requestComplete{
+- (void)qn_requestRemoveTask{
     [[QNRequestInfoManager share] removeRequestInfoForRequest:self];
 }
 - (BOOL)qnHttps_shouldInit{
@@ -154,6 +154,7 @@
         && address.ipValue && address.ipValue.length > 0) {
         return YES;
     } else {
+        [request qn_requestRemoveTask];
         return NO;
     }
 }
@@ -225,7 +226,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend{
 - (void)didFinish {
     
     [self.client URLProtocolDidFinishLoading:self];
-    [self.request qn_requestComplete];
+    [self.request qn_requestRemoveTask];
 }
 
 - (void)didLoadData:(nonnull NSData *)data {
