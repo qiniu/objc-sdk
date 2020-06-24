@@ -6,6 +6,6 @@ target "QiniuDemo" do
 end
 
 target "QiniuDemoTests" do
-  platform :ios, "7.0"
-  pod 'Qiniu',:path => '../'
+#  platform :ios, "7.0"
+#  pod 'Qiniu',:path => '../'
 end

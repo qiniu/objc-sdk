@@ -42,6 +42,7 @@ typedef void (^QNSessionComplete)(NSData * _Nullable data, NSURLResponse * _Null
 didCompleteWithError:(nullable NSError *)error {
     // bytes_sent & bytes_total
     self.completeBlock(_responseData, task.response, error);
+    [session finishTasksAndInvalidate];
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task
