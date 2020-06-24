@@ -124,7 +124,7 @@
     if (_inTravis) {
         return;
     }
-    [self template:4 * 1024 + 1 pos:0.7];
+    [self template:20 * 1024 + 1 pos:0.7];
 }
 
 //#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED

@@ -65,7 +65,7 @@
         
     } option:opt];
     
-    WAIT_WHILE(responseInfo == nil, 60);
+    WAIT_WHILE(responseInfo == nil, 5*60);
     
     XCTAssert(responseInfo.isOK && responseInfo.reqId, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
