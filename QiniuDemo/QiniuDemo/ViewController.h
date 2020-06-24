@@ -11,8 +11,5 @@
 
 @interface ViewController : UIViewController
 
-@property (nonatomic, weak) IBOutlet UIButton* chooseBtn;
-@property (nonatomic, weak) IBOutlet UIButton* uploadBtn;
-@property (nonatomic, weak) IBOutlet UIImageView* preViewImage;
 
 @end

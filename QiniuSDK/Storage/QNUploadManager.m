@@ -42,7 +42,7 @@
 
 
 #import "QNUpToken.h"
-#import "QNUploadOption+Private.h"
+#import "QNUploadOption.h"
 
 #import "QNReportItem.h"
 

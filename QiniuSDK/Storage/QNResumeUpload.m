@@ -55,7 +55,9 @@
                         [self complete:responseInfo response:response];
                     }
                 } else {
-                    self.option.progressHandler(self.key, 1.0);
+                    QNAsyncRunInMain(^{
+                        self.option.progressHandler(self.key, 1.0);
+                     });
                     [self removeUploadInfoRecord];
                     [self complete:responseInfo response:response];
                 }
@@ -98,7 +100,9 @@
         } else {
             percent = self.previousPercent;
         }
-        self.option.progressHandler(self.key, percent);
+        QNAsyncRunInMain(^{
+            self.option.progressHandler(self.key, percent);
+        });
         NSLog(@"resume  progress:%lf  blockIndex:%ld chunkIndex:%ld", percent, (long)block.index, (long)chunk.index);
     };
     

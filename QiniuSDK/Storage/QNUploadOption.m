@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-#import "QNUploadOption+Private.h"
+#import "QNUploadOption.h"
 #import "QNUploadManager.h"
 
 static NSString *mime(NSString *mimeType) {

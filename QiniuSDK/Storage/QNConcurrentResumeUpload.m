@@ -75,7 +75,9 @@
                         [self complete:responseInfo response:response];
                     }
                 } else {
-                    self.option.progressHandler(self.key, 1.0);
+                    QNAsyncRunInMain(^{
+                        self.option.progressHandler(self.key, 1.0);
+                    });
                     [self removeUploadInfoRecord];
                     [self complete:responseInfo response:response];
                 }
@@ -119,7 +121,9 @@
             } else {
                 percent = self.previousPercent;
             }
-            self.option.progressHandler(self.key, percent);
+            QNAsyncRunInMain(^{
+                self.option.progressHandler(self.key, percent);
+            });
         };
         
         if (chunk) {
