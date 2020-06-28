@@ -69,6 +69,8 @@ connectionProxy:(NSDictionary *)connectionProxy
     self.requestMetrics.countOfResponseBodyBytesReceived = task.response.expectedContentLength;
     self.requestMetrics.countOfRequestHeaderBytesSent = [NSString stringWithFormat:@"%@", task.currentRequest.allHTTPHeaderFields].length;
     self.complete(task.response, self.requestMetrics,self.responseData, error);
+    
+    [session finishTasksAndInvalidate];
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didFinishCollectingMetrics:(NSURLSessionTaskMetrics *)metrics  API_AVAILABLE(ios(10.0)) {
