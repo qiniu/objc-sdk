@@ -74,6 +74,7 @@ didCompleteWithError:(nullable NSError *)error {
     _sessionStatistics.bytesSent = task.countOfBytesSent;
     _sessionStatistics.bytesTotal = task.countOfBytesExpectedToSend;
     self.completeBlock(_responseData, task.response, error, _sessionStatistics);
+    [session finishTasksAndInvalidate];
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didFinishCollectingMetrics:(NSURLSessionTaskMetrics *)metrics  API_AVAILABLE(ios(10.0)) {

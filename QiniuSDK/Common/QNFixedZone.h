@@ -51,7 +51,6 @@ NS_ASSUME_NONNULL_BEGIN
  *    Zone初始化方法
  *
  *    @param upList     默认上传服务器地址列表
- *    @param zoneRegion 区域
  *    @return Zone实例
  */
 - (instancetype)initWithupDomainList:(NSArray<NSString *> *)upList;
