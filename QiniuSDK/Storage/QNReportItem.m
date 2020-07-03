@@ -213,8 +213,9 @@ NSString * const QNReportRequestKeySDKVersion = @"sdk_version";
 NSString * const QNReportRequestKeyClientTime = @"client_time";
 NSString * const QNReportRequestKeyNetworkType = @"network_type";
 NSString * const QNReportRequestKeySignalStrength = @"signal_strength";
-NSString * const QNReportRequestKeyPrefetchedIpCount = @"prefetched_ip_count";
-
+NSString * const QNReportRequestKeyPrefetchedDnsSource = @"prefetched_dns_source";
+NSString * const QNReportRequestKeyPrefetchedBefore = @"prefetched_before";
+NSString * const QNReportRequestKeyPrefetchedErrorMessage = @"prefetched_error_message";
 
 //MARK:-- 分块上传统计⽇志
 NSString * const QNReportBlockKeyLogType = @"log_type";

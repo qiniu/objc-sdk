@@ -16,6 +16,8 @@
 #import "QNResponseInfo.h"
 #import "QNRequestClient.h"
 
+#import "QNDnsPrefetch.h"
+
 #import "QNReportItem.h"
 
 #import "QNUploadSystemClient.h"
@@ -69,6 +71,7 @@
 }
 
 - (void)request:(NSURLRequest *)request
+         server:(id <QNUploadServer>)server
       toSkipDns:(BOOL)toSkipDns
     shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
        progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
@@ -76,10 +79,11 @@
     
     _currentRetryTime = 0;
     _requestMetricsList = [NSMutableArray array];
-    [self retryRequest:request toSkipDns:toSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
+    [self retryRequest:request server:server toSkipDns:toSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
 }
 
 - (void)retryRequest:(NSURLRequest *)request
+              server:(id <QNUploadServer>)server
            toSkipDns:(BOOL)toSkipDns
          shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
             progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
@@ -120,7 +124,7 @@
         QNResponseInfo *responseInfo = nil;
         if (checkCancelHandler()) {
             responseInfo = [QNResponseInfo cancelResponse];
-            [self complete:responseInfo response:nil requestMetrics:metrics complete:complete];
+            [self complete:responseInfo server:server response:nil requestMetrics:metrics complete:complete];
             return;
         }
         
@@ -140,21 +144,22 @@
             && responseInfo.couldHostRetry) {
             self.currentRetryTime += 1;
             QNAsyncRunAfter(self.config.retryInterval, kQNBackgroundQueue, ^{
-                [self retryRequest:request toSkipDns:toSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
+                [self retryRequest:request server:server toSkipDns:toSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
             });
         } else {
-            [self complete:responseInfo response:responseDic requestMetrics:metrics complete:complete];
+            [self complete:responseInfo server:server response:responseDic requestMetrics:metrics complete:complete];
         }
     }];
     
 }
 
 - (void)complete:(QNResponseInfo *)responseInfo
+          server:(id <QNUploadServer>)server
         response:(NSDictionary *)response
   requestMetrics:(QNUploadSingleRequestMetrics *)requestMetrics
         complete:(QNSingleRequestCompleteHandler)complete {
     
-    [self reportRequest:responseInfo requestMetrics:requestMetrics];
+    [self reportRequest:responseInfo server:server requestMetrics:requestMetrics];
     if (complete) {
         complete(responseInfo, [self.requestMetricsList copy], response);
     }
@@ -162,6 +167,7 @@
 
 //MARK:-- 统计quality日志
 - (void)reportRequest:(QNResponseInfo *)info
+               server:(id <QNUploadServer>)server
        requestMetrics:(QNUploadSingleRequestMetrics *)requestMetrics {
     
     if (! [self.requestInfo shouldReportRequestLog]) {
@@ -170,9 +176,10 @@
     
     QNUploadSingleRequestMetrics *requestMetricsP = requestMetrics ?: [QNUploadSingleRequestMetrics emptyMetrics];
     
+    NSInteger currentTimestamp = [QNUtils currentTimestamp];
     QNReportItem *item = [QNReportItem item];
     [item setReportValue:QNReportLogTypeRequest forKey:QNReportRequestKeyLogType];
-    [item setReportValue:@([[NSDate date] timeIntervalSince1970]) forKey:QNReportRequestKeyUpTime];
+    [item setReportValue:@(currentTimestamp/1000) forKey:QNReportRequestKeyUpTime];
     [item setReportValue:info.requestReportStatusCode forKey:QNReportRequestKeyStatusCode];
     [item setReportValue:info.reqId forKey:QNReportRequestKeyRequestId];
     [item setReportValue:requestMetricsP.request.qn_domain forKey:QNReportRequestKeyHost];
@@ -206,7 +213,14 @@
     [item setReportValue:@([QNUtils currentTimestamp]) forKey:QNReportRequestKeyClientTime];
     [item setReportValue:[QNUtils getCurrentNetworkType] forKey:QNReportRequestKeyNetworkType];
     [item setReportValue:[QNUtils getCurrentSignalStrength] forKey:QNReportRequestKeySignalStrength];
-
+    
+    [item setReportValue:server.source forKey:QNReportRequestKeyPrefetchedDnsSource];
+    if (server.ipPrefetchedTime) {
+        NSInteger prefetchTime = currentTimestamp/1000 - [server.ipPrefetchedTime integerValue];
+        [item setReportValue:@(prefetchTime) forKey:QNReportRequestKeyPrefetchedBefore];
+    }
+    [item setReportValue:kQNDnsPrefetch.lastPrefetchedErrorMessage forKey:QNReportRequestKeyPrefetchedErrorMessage];
+    
     [kQNReporter reportItem:item token:self.token.token];
 }
 

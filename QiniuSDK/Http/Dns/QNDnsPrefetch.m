@@ -19,9 +19,10 @@
 //MARK: -- 缓存模型
 @interface QNInetAddress : NSObject<QNInetAddressDelegate>
 
-@property(nonatomic,  copy)NSString *hostValue;
-@property(nonatomic,  copy)NSString *ipValue;
+@property(nonatomic,   copy)NSString *hostValue;
+@property(nonatomic,   copy)NSString *ipValue;
 @property(nonatomic, strong)NSNumber *ttlValue;
+@property(nonatomic,   copy)NSString *sourceValue;
 @property(nonatomic, strong)NSNumber *timestampValue;
 
 /// 构造方法 addressData为json String / Dictionary / Data / 遵循 QNInetAddressDelegate的实例
@@ -64,6 +65,9 @@
         }
         if ([address respondsToSelector:@selector(ttlValue)] && [address ttlValue]) {
             dic[@"ttlValue"] = [address ttlValue];
+        }
+        if ([address respondsToSelector:@selector(source)] && [address sourceValue]) {
+            dic[@"sourceValue"] = [address sourceValue];
         }
         if ([address respondsToSelector:@selector(timestampValue)] && [address timestampValue]) {
             dic[@"timestampValue"] = [address timestampValue];
@@ -111,7 +115,7 @@
 }
 
 - (NSDictionary *)toDictionary{
-    return [self dictionaryWithValuesForKeys:@[@"ipValue", @"hostValue", @"ttlValue", @"timestampValue"]];
+    return [self dictionaryWithValuesForKeys:@[@"ipValue", @"hostValue", @"ttlValue", @"sourceValue", @"timestampValue"]];
 }
 
 - (void)setValue:(id)value forUndefinedKey:(NSString *)key{}
@@ -135,6 +139,15 @@
 - (NSNumber *)timestampValue{
     return @(self.timeStamp);
 }
+- (NSString *)sourceValue{
+    if (self.source == QNRecordSourceSystem) {
+        return @"system";
+    } else if (self.source == QNRecordSourceDnspodFree || self.source == QNRecordSourceDnspodEnterprise) {
+        return @"httpdns";
+    } else {
+        return @"none";
+    }
+}
 @end
 
 @interface QNDnsManager(DNS)<QNDnsDelegate>
@@ -154,6 +167,9 @@
 {
     QNDnsCacheKey *_dnsCacheKey;
 }
+// 最近一次预取错误信息
+@property(nonatomic,  copy)NSString *lastPrefetchedErrorMessage;
+
 /// 是否正在预取，正在预取会直接取消新的预取操作请求
 @property(atomic, assign)BOOL isPrefetching;
 /// 获取AutoZone时的同步锁
@@ -372,6 +388,9 @@
         for (id <QNInetAddressDelegate>inetAddress in addressList) {
             QNInetAddress *address = [QNInetAddress inetAddress:inetAddress];
             if (address) {
+                if (dns == kQNGlobalConfiguration.dns) {
+                    address.sourceValue = @"customized";
+                }
                 address.hostValue = preHost;
                 if (!address.ttlValue) {
                     address.ttlValue = @(kQNDefaultDnsCacheTime);
@@ -598,6 +617,11 @@
         QNDnspodFree *dnspodFree = [[QNDnspodFree alloc] init];
         QNDnsManager *httpDns = [[QNDnsManager alloc] init:@[systemDnsresolver, dnspodFree]
                                                networkInfo:nil];
+        
+        __weak typeof(self)weakSelf = self;
+        httpDns.queryErrorHandler = ^(NSError *error, NSString *host) {
+            weakSelf.lastPrefetchedErrorMessage = [error localizedDescription];
+        };
         _httpDns = httpDns;
     }
     return _httpDns;

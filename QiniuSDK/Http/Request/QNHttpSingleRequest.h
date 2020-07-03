@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "QNUploadRequestInfo.h"
+#import "QNIUploadServer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,10 +34,12 @@ typedef void(^QNSingleRequestCompleteHandler)(QNResponseInfo * _Nullable respons
 
 /// 网络请求
 /// @param request 请求内容
+/// @param server server信息，目前仅用于日志统计
 /// @param toSkipDns 请求是否需要跳过Dns 当请求的中配置了IP即可跳过 反之不跳过
 /// @param progress 上传进度回调
 /// @param complete 上传完成回调
 - (void)request:(NSURLRequest *)request
+         server:(id <QNUploadServer>)server
       toSkipDns:(BOOL)toSkipDns
     shouldRetry:(BOOL(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))shouldRetry
        progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress

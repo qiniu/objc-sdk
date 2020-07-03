@@ -11,7 +11,7 @@
 @implementation QNUploadRequestInfo
 
 - (BOOL)shouldReportRequestLog{
-    return [self.requestType isEqualToString:QNUploadRequestTypeUpLog];
+    return ![self.requestType isEqualToString:QNUploadRequestTypeUpLog];
 }
 
 @end

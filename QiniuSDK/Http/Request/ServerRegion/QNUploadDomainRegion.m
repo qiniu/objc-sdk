@@ -14,18 +14,18 @@
 
 @interface QNUploadIpGroup : NSObject
 @property(nonatomic,   copy, readonly)NSString *groupType;
-@property(nonatomic, strong, readonly)NSArray <NSString *> *ipList;
+@property(nonatomic, strong, readonly)NSArray <id <QNInetAddressDelegate> > *ipList;
 @end
 @implementation QNUploadIpGroup
 - (instancetype)initWithGroupType:(NSString *)groupType
-                           ipList:(NSArray <NSString *> *)ipList{
+                           ipList:(NSArray <id <QNInetAddressDelegate> > *)ipList{
     if (self = [super init]) {
         _groupType = groupType;
         _ipList = ipList;
     }
     return self;
 }
-- (NSString *)getServerIP{
+- (id <QNInetAddressDelegate>)getServerIP{
     if (!self.ipList || self.ipList.count == 0) {
         return nil;
     } else {
@@ -59,7 +59,8 @@
         QNUploadServer *server = nil;
         for (QNUploadIpGroup *ipGroup in self.ipGroupList) {
             if (![kQNUploadServerFreezeManager isFrozenHost:self.host type:ipGroup.groupType]) {
-                server = [QNUploadServer server:self.host host:self.host ip:[ipGroup getServerIP]];
+                id <QNInetAddressDelegate> inetAddress = [ipGroup getServerIP];
+                server = [QNUploadServer server:self.host host:self.host ip:inetAddress.ipValue source:inetAddress.sourceValue ipPrefetchedTime:inetAddress.timestampValue];
                 break;
             }
         }
@@ -68,7 +69,7 @@
         }
         return server;
     } else if (![kQNUploadServerFreezeManager isFrozenHost:self.host type:nil]){
-        return [QNUploadServer server:self.host host:self.host ip:nil];
+        return [QNUploadServer server:self.host host:self.host ip:nil source:nil ipPrefetchedTime:nil];
     } else {
         self.isAllFrozen = true;
         return nil;
@@ -81,10 +82,11 @@
     if (self.ipGroupList && self.ipGroupList.count > 0) {
         NSInteger index = arc4random()%self.ipGroupList.count;
         QNUploadIpGroup *ipGroup = self.ipGroupList[index];
-        QNUploadServer *server = [QNUploadServer server:self.host host:self.host ip:[ipGroup getServerIP]];;
+        id <QNInetAddressDelegate> inetAddress = [ipGroup getServerIP];
+        QNUploadServer *server = [QNUploadServer server:self.host host:self.host ip:inetAddress.ipValue source:inetAddress.sourceValue ipPrefetchedTime:inetAddress.timestampValue];;
         return server;
     } else {
-        return [QNUploadServer server:self.host host:self.host ip:nil];
+        return [QNUploadServer server:self.host host:self.host ip:nil source:nil ipPrefetchedTime:nil];
     }
 }
 - (void)createIpGroupList{
@@ -100,7 +102,7 @@
             NSString *groupType = [self getIpType:ipValue];
             if (groupType) {
                 NSMutableArray *ipList = ipGroupInfos[groupType] ?: [NSMutableArray array];
-                [ipList addObject:ipValue];
+                [ipList addObject:inetAddress];
                 ipGroupInfos[groupType] = ipList;
             }
         }

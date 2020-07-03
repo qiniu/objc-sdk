@@ -6,19 +6,11 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "QNIUploadServer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class QNZoneInfo;
-@protocol QNUploadServer <NSObject>
-
-@property(nonatomic,  copy, nullable, readonly)NSString *serverId;
-@property(nonatomic,  copy, nullable, readonly)NSString *ip;
-@property(nonatomic,  copy, nullable, readonly)NSString *host;
-
-@end
-
 
 @protocol QNUploadRegion <NSObject>
 

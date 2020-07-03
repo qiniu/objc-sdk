@@ -21,6 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// ip有效时间 单位：秒
 @property(nonatomic, strong, readonly)NSNumber *ttlValue;
 
+/// ip预取来源, 自定义dns返回 @"customized"
+@property(nonatomic,  copy, readonly)NSString *sourceValue;
+
 /// 解析到host时的时间戳 单位：秒
 @property(nonatomic, strong, readonly)NSNumber *timestampValue;
 

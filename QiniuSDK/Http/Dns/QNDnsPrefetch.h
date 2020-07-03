@@ -16,6 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 #define kQNDnsPrefetch [QNDnsPrefetch shared]
 @interface QNDnsPrefetch : NSObject
 
+// 最近一次预取错误信息
+@property(nonatomic,  copy, readonly)NSString *lastPrefetchedErrorMessage;
+
 + (instancetype)shared;
 
 // 无效缓存，会根据inetAddress的host获取缓存列表，并移除inetAddress

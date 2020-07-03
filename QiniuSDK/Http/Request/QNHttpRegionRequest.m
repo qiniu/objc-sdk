@@ -133,6 +133,7 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
     [request setTimeoutInterval:self.config.timeoutInterval];
     request.HTTPBody = body;
     [self.singleRequest request:request
+                         server:server
                       toSkipDns:toSkipDns
                     shouldRetry:shouldRetry
                        progress:progress

@@ -14,7 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)server:(NSString * _Nullable)serverId
                   host:(NSString * _Nullable)host
-                    ip:(NSString * _Nullable)ip;
+                    ip:(NSString * _Nullable)ip
+                source:(NSString * _Nullable)source
+      ipPrefetchedTime:(NSNumber * _Nullable)ipPrefetchedTime;
 
 @end
 

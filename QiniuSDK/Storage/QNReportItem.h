@@ -80,7 +80,9 @@ extern NSString *const QNReportRequestKeySDKVersion;
 extern NSString *const QNReportRequestKeyClientTime;
 extern NSString *const QNReportRequestKeyNetworkType;
 extern NSString *const QNReportRequestKeySignalStrength;
-extern NSString *const QNReportRequestKeyPrefetchedIpCount;
+extern NSString * const QNReportRequestKeyPrefetchedDnsSource;
+extern NSString * const QNReportRequestKeyPrefetchedBefore;
+extern NSString * const QNReportRequestKeyPrefetchedErrorMessage;
 
 
 //MARK:-- 分块上传统计⽇志
