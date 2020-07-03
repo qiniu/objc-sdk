@@ -1,7 +1,8 @@
 source 'https://github.com/CocoaPods/Specs.git'
 
 def shared_dependencies
-  pod 'HappyDNS', '0.3.16'
+#  pod 'HappyDNS', '0.3.16'
+  pod 'HappyDNS', :path => '../HappyDns_iOS'
 end
 
 def test_dependencies
