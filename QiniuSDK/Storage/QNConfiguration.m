@@ -91,7 +91,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
         _chunkSize = 2 * 1024 * 1024;
         _putThreshold = 4 * 1024 * 1024;
         _retryMax = 1;
-        _timeoutInterval = 60;
+        _timeoutInterval = 90;
         _retryInterval = 0.5;
         _reportConfig = [QNReportConfig sharedInstance];
 

@@ -82,7 +82,7 @@
     }
                  option:opt];
     AGWW_WAIT_WHILE(key == nil, 60 * 30);
-    NSLog(@"info %@", info);
+    NSLog(@"%@ info %@", keyUp, info);
     XCTAssert(info.isOK, @"Pass");
     XCTAssert(info.reqId, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
@@ -112,7 +112,7 @@
     }
                 option:opt];
     AGWW_WAIT_WHILE(key == nil, 60 * 30);
-    NSLog(@"info %@", info);
+    NSLog(@"%@ info %@", key, info);
     XCTAssert(info.isOK, @"Pass");
     XCTAssert(info.reqId, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");

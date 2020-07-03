@@ -63,7 +63,7 @@
         _token = token;
         _requestInfo = requestInfo;
         _requestState = requestState;
-        _currentRetryTime = 1;
+        _currentRetryTime = 0;
     }
     return self;
 }
@@ -74,7 +74,7 @@
        progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
        complete:(QNSingleRequestCompleteHandler)complete{
     
-    _currentRetryTime = 1;
+    _currentRetryTime = 0;
     _requestMetricsList = [NSMutableArray array];
     [self retryRequest:request toSkipDns:toSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
 }
