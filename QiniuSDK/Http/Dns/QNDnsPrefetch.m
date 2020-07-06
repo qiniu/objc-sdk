@@ -17,7 +17,7 @@
 #import <HappyDNS/HappyDNS.h>
 
 //MARK: -- 缓存模型
-@interface QNInetAddress : NSObject<QNInetAddressDelegate>
+@interface QNDnsNetworkAddress : NSObject<QNIDnsNetworkAddress>
 
 @property(nonatomic,   copy)NSString *hostValue;
 @property(nonatomic,   copy)NSString *ipValue;
@@ -25,7 +25,7 @@
 @property(nonatomic,   copy)NSString *sourceValue;
 @property(nonatomic, strong)NSNumber *timestampValue;
 
-/// 构造方法 addressData为json String / Dictionary / Data / 遵循 QNInetAddressDelegate的实例
+/// 构造方法 addressData为json String / Dictionary / Data / 遵循 QNIDnsNetworkAddress的实例
 + (instancetype)inetAddress:(id)addressInfo;
 
 /// 是否有效，根据时间戳判断
@@ -38,7 +38,7 @@
 - (NSDictionary *)toDictionary;
 
 @end
-@implementation QNInetAddress
+@implementation QNDnsNetworkAddress
 
 + (instancetype)inetAddress:(id)addressInfo{
     
@@ -54,8 +54,8 @@
         addressDic = [NSJSONSerialization JSONObjectWithData:(NSData *)addressInfo
                                                      options:NSJSONReadingMutableLeaves
                                                        error:nil];
-    } else if ([addressInfo conformsToProtocol:@protocol(QNInetAddressDelegate)]){
-        id <QNInetAddressDelegate> address = (id <QNInetAddressDelegate> )addressInfo;
+    } else if ([addressInfo conformsToProtocol:@protocol(QNIDnsNetworkAddress)]){
+        id <QNIDnsNetworkAddress> address = (id <QNIDnsNetworkAddress> )addressInfo;
         NSMutableDictionary *dic = [NSMutableDictionary dictionary];
         if ([address respondsToSelector:@selector(hostValue)] && [address hostValue]) {
             dic[@"hostValue"] = [address hostValue];
@@ -76,7 +76,7 @@
     }
     
     if (addressDic) {
-        QNInetAddress *address = [[QNInetAddress alloc] init];
+        QNDnsNetworkAddress *address = [[QNDnsNetworkAddress alloc] init];
         [address setValuesForKeysWithDictionary:addressDic];
         return address;
     } else {
@@ -124,7 +124,7 @@
 
 
 //MARK: -- HappyDNS 适配
-@interface QNRecord(DNS)<QNInetAddressDelegate>
+@interface QNRecord(DNS)<QNIDnsNetworkAddress>
 @end
 @implementation QNRecord(DNS)
 - (NSString *)hostValue{
@@ -154,7 +154,7 @@
 @end
 @implementation QNDnsManager(DNS)
 
-- (NSArray<id<QNInetAddressDelegate>> *)lookup:(NSString *)host{
+- (NSArray<id<QNIDnsNetworkAddress>> *)lookup:(NSString *)host{
 
     return [self queryRecords:host];
 }
@@ -179,7 +179,7 @@
 /// happy的dns解析对象列表，会使用多个dns解析对象 包括系统解析
 @property(nonatomic, strong)QNDnsManager * httpDns;
 /// 缓存DNS解析结果
-@property(nonatomic, strong)NSMutableDictionary <NSString *, NSArray<QNInetAddress *>*> *addressDictionary;
+@property(nonatomic, strong)NSMutableDictionary <NSString *, NSArray<QNDnsNetworkAddress *>*> *addressDictionary;
 
 @end
 
@@ -272,10 +272,10 @@
 
 //MARK: -- 强制无效缓存
 // 无效缓存，会根据inetAddress的host，无效host对应的ip缓存
-- (void)invalidInetAdress:(id <QNInetAddressDelegate>)inetAddress{
+- (void)invalidInetAdress:(id <QNIDnsNetworkAddress>)inetAddress{
     NSArray *inetAddressList = self.addressDictionary[inetAddress.hostValue];
     NSMutableArray *inetAddressListNew = [NSMutableArray array];
-    for (id <QNInetAddressDelegate> inetAddressP in inetAddressList) {
+    for (id <QNIDnsNetworkAddress> inetAddressP in inetAddressList) {
         if (![inetAddress.ipValue isEqualToString:inetAddressP.ipValue]) {
             [inetAddressListNew addObject:inetAddressP];
         }
@@ -285,13 +285,13 @@
 
 //MARK: -- 读取缓存的DNS信息
 /// 根据host从缓存中读取DNS信息
-- (NSArray <id <QNInetAddressDelegate> > *)getInetAddressByHost:(NSString *)host{
+- (NSArray <id <QNIDnsNetworkAddress> > *)getInetAddressByHost:(NSString *)host{
 
     if ([self isDnsOpen] == NO) {
         return nil;
     }
     
-    NSArray <QNInetAddress *> *addressList = self.addressDictionary[host];
+    NSArray <QNDnsNetworkAddress *> *addressList = self.addressDictionary[host];
     if (![addressList.firstObject isValid]) {
         QNAsyncRun(^{
             [[QNTransactionManager shared] setDnsCheckWhetherCachedValidTransactionAction];
@@ -379,16 +379,16 @@
         return NO;
     }
     
-    NSArray<QNInetAddress *>* preAddressList = self.addressDictionary[preHost];
+    NSArray<QNDnsNetworkAddress *>* preAddressList = self.addressDictionary[preHost];
     if (preAddressList && [preAddressList.firstObject isValid]) {
         return YES;
     }
     
-    NSArray <id <QNInetAddressDelegate> > * addressList = [dns lookup:preHost];
+    NSArray <id <QNIDnsNetworkAddress> > * addressList = [dns lookup:preHost];
     if (addressList && addressList.count > 0) {
         NSMutableArray *addressListP = [NSMutableArray array];
-        for (id <QNInetAddressDelegate>inetAddress in addressList) {
-            QNInetAddress *address = [QNInetAddress inetAddress:inetAddress];
+        for (id <QNIDnsNetworkAddress>inetAddress in addressList) {
+            QNDnsNetworkAddress *address = [QNDnsNetworkAddress inetAddress:inetAddress];
             if (address) {
                 if (dns == kQNGlobalConfiguration.dns) {
                     address.sourceValue = @"customized";
@@ -425,11 +425,11 @@
         NSArray *ips = dataDic[key];
         if ([ips isKindOfClass:[NSArray class]]) {
             
-            NSMutableArray <QNInetAddress *> * addressList = [NSMutableArray array];
+            NSMutableArray <QNDnsNetworkAddress *> * addressList = [NSMutableArray array];
             
             for (NSDictionary *ipInfo in ips) {
                 if ([ipInfo isKindOfClass:[NSDictionary class]]) {
-                    QNInetAddress *address = [QNInetAddress inetAddress:ipInfo];
+                    QNDnsNetworkAddress *address = [QNDnsNetworkAddress inetAddress:ipInfo];
                     if (address) {
                         [addressList addObject:address];
                     }
@@ -476,7 +476,7 @@
         
         NSArray *addressModelList = self.addressDictionary[key];
         NSMutableArray * addressDicList = [NSMutableArray array];
-        for (QNInetAddress *ipInfo in addressModelList) {
+        for (QNDnsNetworkAddress *ipInfo in addressModelList) {
             
             NSDictionary *addressDic = [ipInfo toDictionary];
             if (addressDic) {
@@ -599,7 +599,7 @@
     }
     return _dnsCacheKey;
 }
-- (NSMutableDictionary<NSString *,NSArray<QNInetAddress *> *> *)addressDictionary{
+- (NSMutableDictionary<NSString *,NSArray<QNDnsNetworkAddress *> *> *)addressDictionary{
     if (_addressDictionary == nil) {
         _addressDictionary = [NSMutableDictionary dictionary];
     }

@@ -13,7 +13,7 @@
 #import <AGAsyncTestHelper.h>
 #import "XCTestCase+QNTest.h"
 
-@interface InetAddress : NSObject <QNInetAddressDelegate>
+@interface InetAddress : NSObject <QNIDnsNetworkAddress>
 
 @property(nonatomic,   copy)NSString *hostValue;
 @property(nonatomic,   copy)NSString *ipValue;
@@ -30,7 +30,7 @@
 @end
 @implementation CustomDns
 
-- (NSArray<id<QNInetAddressDelegate>> *)lookup:(NSString *)host{
+- (NSArray<id<QNIDnsNetworkAddress>> *)lookup:(NSString *)host{
     
     InetAddress *inetAddress = [[InetAddress alloc] init];
     inetAddress.hostValue = host;
@@ -77,7 +77,7 @@
     
     QN_TEST_CASE_WAIT_TIME(5);
 
-    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetch getInetAddressByHost:host];
+    NSArray <id <QNIDnsNetworkAddress>> *addressList = [kQNDnsPrefetch getInetAddressByHost:host];
     XCTAssert(addressList.count > 0, @"success");
 }
 
@@ -87,7 +87,7 @@
     
     AGWW_WAIT_WHILE([kQNDnsPrefetch getInetAddressByHost:kCustomHost] == nil, 60 * 5);
     
-    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
+    NSArray <id <QNIDnsNetworkAddress>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
     XCTAssert(addressList.count > 0, @"success");
 }
 
@@ -103,7 +103,7 @@
     
     QN_TEST_CASE_WAIT_TIME(2);
     
-    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
+    NSArray <id <QNIDnsNetworkAddress>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
     NSLog(@"addressList count: %ld", addressList.count);
     XCTAssert(addressList.count==1, @"success");
     XCTAssert([addressList.firstObject.ipValue isEqualToString:CustomIPValue], @"success");
@@ -126,7 +126,7 @@
     
     QN_TEST_CASE_WAIT_TIME(2);
     
-    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
+    NSArray <id <QNIDnsNetworkAddress>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
     
     XCTAssert(addressList.count==1, @"success");
     XCTAssert(addressList.firstObject.ttlValue.doubleValue == 120, @"success");

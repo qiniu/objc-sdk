@@ -14,18 +14,18 @@
 
 @interface QNUploadIpGroup : NSObject
 @property(nonatomic,   copy, readonly)NSString *groupType;
-@property(nonatomic, strong, readonly)NSArray <id <QNInetAddressDelegate> > *ipList;
+@property(nonatomic, strong, readonly)NSArray <id <QNIDnsNetworkAddress> > *ipList;
 @end
 @implementation QNUploadIpGroup
 - (instancetype)initWithGroupType:(NSString *)groupType
-                           ipList:(NSArray <id <QNInetAddressDelegate> > *)ipList{
+                           ipList:(NSArray <id <QNIDnsNetworkAddress> > *)ipList{
     if (self = [super init]) {
         _groupType = groupType;
         _ipList = ipList;
     }
     return self;
 }
-- (id <QNInetAddressDelegate>)getServerIP{
+- (id <QNIDnsNetworkAddress>)getServerIP{
     if (!self.ipList || self.ipList.count == 0) {
         return nil;
     } else {
@@ -59,7 +59,7 @@
         QNUploadServer *server = nil;
         for (QNUploadIpGroup *ipGroup in self.ipGroupList) {
             if (![kQNUploadServerFreezeManager isFrozenHost:self.host type:ipGroup.groupType]) {
-                id <QNInetAddressDelegate> inetAddress = [ipGroup getServerIP];
+                id <QNIDnsNetworkAddress> inetAddress = [ipGroup getServerIP];
                 server = [QNUploadServer server:self.host host:self.host ip:inetAddress.ipValue source:inetAddress.sourceValue ipPrefetchedTime:inetAddress.timestampValue];
                 break;
             }
@@ -82,7 +82,7 @@
     if (self.ipGroupList && self.ipGroupList.count > 0) {
         NSInteger index = arc4random()%self.ipGroupList.count;
         QNUploadIpGroup *ipGroup = self.ipGroupList[index];
-        id <QNInetAddressDelegate> inetAddress = [ipGroup getServerIP];
+        id <QNIDnsNetworkAddress> inetAddress = [ipGroup getServerIP];
         QNUploadServer *server = [QNUploadServer server:self.host host:self.host ip:inetAddress.ipValue source:inetAddress.sourceValue ipPrefetchedTime:inetAddress.timestampValue];;
         return server;
     } else {
@@ -97,7 +97,7 @@
         
         NSMutableDictionary *ipGroupInfos = [NSMutableDictionary dictionary];
         NSArray *inetAddresses = [kQNDnsPrefetch getInetAddressByHost:self.host];
-        for (id <QNInetAddressDelegate> inetAddress in inetAddresses) {
+        for (id <QNIDnsNetworkAddress> inetAddress in inetAddresses) {
             NSString *ipValue = inetAddress.ipValue;
             NSString *groupType = [self getIpType:ipValue];
             if (groupType) {

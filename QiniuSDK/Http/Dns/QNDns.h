@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol QNInetAddressDelegate <NSObject>
+@protocol QNIDnsNetworkAddress <NSObject>
 
 /// 域名
 @property(nonatomic,  copy, readonly)NSString *hostValue;
@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol QNDnsDelegate <NSObject>
 
 /// 根据host获取解析结果
-- (NSArray < id <QNInetAddressDelegate> > *)lookup:(NSString *)host;
+- (NSArray < id <QNIDnsNetworkAddress> > *)lookup:(NSString *)host;
 
 @end
 

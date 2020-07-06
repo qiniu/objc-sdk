@@ -22,10 +22,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)shared;
 
 // 无效缓存，会根据inetAddress的host获取缓存列表，并移除inetAddress
-- (void)invalidInetAdress:(id <QNInetAddressDelegate>)inetAddress;
+- (void)invalidInetAdress:(id <QNIDnsNetworkAddress>)inetAddress;
 
 /// 根据host从缓存中读取DNS信息
-- (NSArray <id <QNInetAddressDelegate> > *)getInetAddressByHost:(NSString *)host;
+- (NSArray <id <QNIDnsNetworkAddress> > *)getInetAddressByHost:(NSString *)host;
 
 @end
 
