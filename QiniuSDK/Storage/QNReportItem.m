@@ -131,11 +131,14 @@
 }
 
 - (NSString *)qualityResult{
-    NSString *result = nil;
+    
+    NSString *result = [self requestReportErrorType];
+    if (result) {
+        return result;
+    }
+    
     if (self.statusCode > 199 && self.statusCode < 300) {
         result = @"ok";
-    } else if (self.statusCode == kQNLocalIOError){
-        result = @"local_io_error";
     } else if (self.statusCode > 399 && self.statusCode < 500) {
         result = @"bad_request";
     } else if (self.statusCode == kQNZeroDataSize){
@@ -145,25 +148,6 @@
     } else if (self.statusCode == kQNInvalidToken
             || self.statusCode == kQNInvalidArgument){
         result = @"invalid_args";
-    } else if (self.statusCode == kQNRequestCancelled
-            || self.statusCode == -999){
-        result = @"user_canceled";
-    } else if (self.statusCode == -1009 || self.statusCode == kQNNetworkError){
-        result = @"network_error";
-    } else if (self.statusCode == -1001){
-        result = @"timeout";
-    } else if (self.statusCode == -1004){
-        result = @"cannot_connect_to_host";
-    } else if (self.statusCode == -1005 || self.statusCode == -1021){
-        result = @"transmission_error";
-    } else if (self.statusCode == -1200 || self.statusCode == -1201 || self.statusCode == -1202
-               || self.statusCode == -1203 || self.statusCode == -1204 || self.statusCode == -1205
-               || self.statusCode == -1206 || self.statusCode == -9807){
-        result = @"ssl_error";
-    } else if (self.statusCode == -1015 || self.statusCode == -1016 || self.statusCode == -1017){
-        result = @"parse_error";
-    } else if (self.statusCode == -1007 || self.statusCode == -1010 || kQNMaliciousResponseError){
-        result = @"malicious_response";
     } else {
         result = @"unknown_error";
     }
