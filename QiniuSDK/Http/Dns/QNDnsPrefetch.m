@@ -307,6 +307,8 @@
         return NO;
     }
     
+    self.lastPrefetchedErrorMessage = nil;
+    
     if (self.isPrefetching == YES) {
         return NO;
     }
