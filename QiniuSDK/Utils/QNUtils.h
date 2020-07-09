@@ -48,6 +48,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// form escape
 + (NSString *)formEscape:(NSString *)string;
 
+/// 根据ip和host来确定IP的类型，host可为空
++ (NSString *)getIpType:(NSString *)ip host:(NSString *)host;
+
 @end
 
 NS_ASSUME_NONNULL_END

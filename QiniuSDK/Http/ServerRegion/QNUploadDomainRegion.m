@@ -11,6 +11,7 @@
 #import "QNZoneInfo.h"
 #import "QNUploadServerFreezeManager.h"
 #import "QNDnsPrefetch.h"
+#import "QNUtils.h"
 
 @interface QNUploadIpGroup : NSObject
 @property(nonatomic,   copy, readonly)NSString *groupType;
@@ -99,7 +100,7 @@
         NSArray *inetAddresses = [kQNDnsPrefetch getInetAddressByHost:self.host];
         for (id <QNIDnsNetworkAddress> inetAddress in inetAddresses) {
             NSString *ipValue = inetAddress.ipValue;
-            NSString *groupType = [self getIpType:ipValue];
+            NSString *groupType = [QNUtils getIpType:ipValue host:self.host];
             if (groupType) {
                 NSMutableArray *ipList = ipGroupInfos[groupType] ?: [NSMutableArray array];
                 [ipList addObject:inetAddress];
@@ -117,73 +118,9 @@
     }
 }
 - (void)freeze:(NSString *)ip{
-    [kQNUploadServerFreezeManager freezeHost:self.host type:[self getIpType:ip]];
-}
-- (NSString *)getIpType:(NSString *)ip{
-    
-    NSString *type = nil;
-    if (!ip || ip.length == 0) {
-        return type;
-    }
-    if ([ip containsString:@":"]) {
-        type = [self getIPV6StringType:ip];
-    } else if ([ip containsString:@"."]){
-        type = [self getIPV4StringType:ip];
-    }
-    return type;
+    [kQNUploadServerFreezeManager freezeHost:self.host type:[QNUtils getIpType:ip host:self.host]];
 }
 
-- (NSString *)getIPV4StringType:(NSString *)ipv4String{
-    NSString *type = nil;
-    NSArray *ipNumberStrings = [ipv4String componentsSeparatedByString:@"."];
-    if (ipNumberStrings.count == 4) {
-        NSInteger firstNumber = [ipNumberStrings.firstObject integerValue];
-        if (firstNumber > 0 && firstNumber < 127) {
-            type = [NSString stringWithFormat:@"%@-%ld", @"ipv4-A", firstNumber];
-        } else if (firstNumber > 127 && firstNumber <= 191) {
-            NSInteger secondNumber = [ipNumberStrings[1] integerValue];
-            type = [NSString stringWithFormat:@"%@-%ld-%ld", @"ipv4-B", firstNumber, secondNumber];
-        } else if (firstNumber > 191 && firstNumber <= 223) {
-            NSInteger secondNumber = [ipNumberStrings[1] integerValue];
-            NSInteger thirdNumber = [ipNumberStrings[2] integerValue];
-            type = [NSString stringWithFormat:@"%@-%ld-%ld-%ld", @"ipv4-C", firstNumber, secondNumber, thirdNumber];
-        }
-    }
-    return type;
-}
-
-- (NSString *)getIPV6StringType:(NSString *)ipv6String{
-    NSArray *ipNumberStrings = [ipv6String componentsSeparatedByString:@":"];
-    NSMutableArray *ipNumberStringsReal = [@[@"0000", @"0000", @"0000", @"0000",
-                                            @"0000", @"0000", @"0000", @"0000"] mutableCopy];
-    NSArray *suppleStrings = @[@"0000", @"000", @"00", @"0", @""];
-    NSInteger i = 0;
-    while (i < ipNumberStrings.count) {
-        NSString *ipNumberString = ipNumberStrings[i];
-        if (ipNumberString.length > 0) {
-            ipNumberString = [NSString stringWithFormat:@"%@%@", suppleStrings[ipNumberString.length], ipNumberString];
-            ipNumberStringsReal[i] = ipNumberString;
-        } else {
-            break;
-        }
-        i++;
-    }
-    
-    NSInteger j = ipNumberStrings.count - 1;
-    NSInteger indexReal = ipNumberStringsReal.count - 1;
-    while (i < j) {
-        NSString *ipNumberString = ipNumberStrings[j];
-        if (ipNumberString.length > 0) {
-            ipNumberString = [NSString stringWithFormat:@"%@%@", suppleStrings[ipNumberString.length], ipNumberString];
-            ipNumberStringsReal[indexReal] = ipNumberString;
-        } else {
-            break;
-        }
-        j--;
-        indexReal--;
-    }
-    return [[ipNumberStringsReal subarrayWithRange:NSMakeRange(0, 4)] componentsJoinedByString:@"-"];
-}
 @end
 
 

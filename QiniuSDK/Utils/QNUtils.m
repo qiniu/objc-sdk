@@ -88,5 +88,73 @@
     return ret;
 }
 
++ (NSString *)getIpType:(NSString *)ip host:(NSString *)host{
+    
+    NSString *type = nil;
+    if (!ip || ip.length == 0) {
+        return type;
+    }
+    if ([ip containsString:@":"]) {
+        type = [self getIPV6StringType:ip host:host];
+    } else if ([ip containsString:@"."]){
+        type = [self getIPV4StringType:ip host:host];
+    }
+    return type;
+}
+
++ (NSString *)getIPV4StringType:(NSString *)ipv4String host:(NSString *)host{
+    NSString *type = nil;
+    NSArray *ipNumberStrings = [ipv4String componentsSeparatedByString:@"."];
+    if (ipNumberStrings.count == 4) {
+        NSInteger firstNumber = [ipNumberStrings.firstObject integerValue];
+        if (firstNumber > 0 && firstNumber < 127) {
+            type = [NSString stringWithFormat:@"%@-%ld", @"ipv4-A", firstNumber];
+        } else if (firstNumber > 127 && firstNumber <= 191) {
+            NSInteger secondNumber = [ipNumberStrings[1] integerValue];
+            type = [NSString stringWithFormat:@"%@-%ld-%ld", @"ipv4-B", firstNumber, secondNumber];
+        } else if (firstNumber > 191 && firstNumber <= 223) {
+            NSInteger secondNumber = [ipNumberStrings[1] integerValue];
+            NSInteger thirdNumber = [ipNumberStrings[2] integerValue];
+            type = [NSString stringWithFormat:@"%@-%ld-%ld-%ld", @"ipv4-C", firstNumber, secondNumber, thirdNumber];
+        }
+    }
+    type = [NSString stringWithFormat:@"%@-%@", host ?:@"", type];
+    return type;
+}
+
++ (NSString *)getIPV6StringType:(NSString *)ipv6String host:(NSString *)host{
+    NSArray *ipNumberStrings = [ipv6String componentsSeparatedByString:@":"];
+    NSMutableArray *ipNumberStringsReal = [@[@"0000", @"0000", @"0000", @"0000",
+                                            @"0000", @"0000", @"0000", @"0000"] mutableCopy];
+    NSArray *suppleStrings = @[@"0000", @"000", @"00", @"0", @""];
+    NSInteger i = 0;
+    while (i < ipNumberStrings.count) {
+        NSString *ipNumberString = ipNumberStrings[i];
+        if (ipNumberString.length > 0) {
+            ipNumberString = [NSString stringWithFormat:@"%@%@", suppleStrings[ipNumberString.length], ipNumberString];
+            ipNumberStringsReal[i] = ipNumberString;
+        } else {
+            break;
+        }
+        i++;
+    }
+    
+    NSInteger j = ipNumberStrings.count - 1;
+    NSInteger indexReal = ipNumberStringsReal.count - 1;
+    while (i < j) {
+        NSString *ipNumberString = ipNumberStrings[j];
+        if (ipNumberString.length > 0) {
+            ipNumberString = [NSString stringWithFormat:@"%@%@", suppleStrings[ipNumberString.length], ipNumberString];
+            ipNumberStringsReal[indexReal] = ipNumberString;
+        } else {
+            break;
+        }
+        j--;
+        indexReal--;
+    }
+    NSString *numberInfo = [[ipNumberStringsReal subarrayWithRange:NSMakeRange(0, 4)] componentsJoinedByString:@"-"];
+    return [NSString stringWithFormat:@"%@-%@-%@", host ?:@"", @"IPV6-", numberInfo];
+}
+
 @end
 
