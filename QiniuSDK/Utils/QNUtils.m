@@ -108,14 +108,14 @@
     if (ipNumberStrings.count == 4) {
         NSInteger firstNumber = [ipNumberStrings.firstObject integerValue];
         if (firstNumber > 0 && firstNumber < 127) {
-            type = [NSString stringWithFormat:@"%@-%ld", @"ipv4-A", firstNumber];
+            type = [NSString stringWithFormat:@"%@-%ld", @"ipv4-A", (long)firstNumber];
         } else if (firstNumber > 127 && firstNumber <= 191) {
             NSInteger secondNumber = [ipNumberStrings[1] integerValue];
-            type = [NSString stringWithFormat:@"%@-%ld-%ld", @"ipv4-B", firstNumber, secondNumber];
+            type = [NSString stringWithFormat:@"%@-%ld-%ld", @"ipv4-B", (long)firstNumber, secondNumber];
         } else if (firstNumber > 191 && firstNumber <= 223) {
             NSInteger secondNumber = [ipNumberStrings[1] integerValue];
             NSInteger thirdNumber = [ipNumberStrings[2] integerValue];
-            type = [NSString stringWithFormat:@"%@-%ld-%ld-%ld", @"ipv4-C", firstNumber, secondNumber, thirdNumber];
+            type = [NSString stringWithFormat:@"%@-%ld-%ld-%ld", @"ipv4-C", (long)firstNumber, secondNumber, thirdNumber];
         }
     }
     type = [NSString stringWithFormat:@"%@-%@", host ?:@"", type];
