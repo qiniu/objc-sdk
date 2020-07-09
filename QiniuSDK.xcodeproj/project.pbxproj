@@ -491,13 +491,6 @@
 			path = Collect;
 			sourceTree = "<group>";
 		};
-		314E49E524B6EC1400310A03 /* NetworkCheck */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = NetworkCheck;
-			sourceTree = "<group>";
-		};
 		316A4B852434633C007BF564 /* Transaction */ = {
 			isa = PBXGroup;
 			children = (
@@ -617,7 +610,6 @@
 			isa = PBXGroup;
 			children = (
 				31F553EB245A7D24000B66AD /* ServerRegion */,
-				314E49E524B6EC1400310A03 /* NetworkCheck */,
 				31F553C8245968F8000B66AD /* Request */,
 				31BAA27D243DB85700B7E883 /* Dns */,
 				DF293C9C19DBC2AE00799011 /* QNUserAgent.h */,
