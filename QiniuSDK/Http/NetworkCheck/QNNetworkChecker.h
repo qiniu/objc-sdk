@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // 单个IP一次检测次数 默认：2次
 @property(nonatomic, assign)int maxCheckCount;
+// 单个IP检测的最长时间 maxTime >= 1 && maxTime <= 600  默认：9秒
+@property(nonatomic, assign)int maxTime;
 
 @property(nonatomic, weak)id <QNNetworkCheckerDelegate> delegate;
 

@@ -18,19 +18,12 @@
 
 @end
 @implementation QNNetworkCheckStatusInfo
-- (NSString *)description{
-    NSString *status = @"Unknown_";
-    if (self.status > -1 & self.status < 5) {
-        status = @[@"Unknown", @"A", @"B", @"C", @"D"][self.status];
-    }
-    return [NSString stringWithFormat:@"status:%@, checkedIP:%@, checkedHost:%@", status, self.checkedIP, self.checkedHost];
-}
 @end
 
 @interface QNNetworkCheckManager()<QNNetworkCheckerDelegate>
 
 @property(nonatomic, strong)QNNetworkChecker *networkChecker;
-@property(nonatomic, strong)NSMutableDictionary <NSString *, QNNetworkCheckStatusInfo *> *statusInfo;
+@property(nonatomic, strong)NSMutableDictionary <NSString *, QNNetworkCheckStatusInfo *> *statusInfoDictionary;
 
 @end
 @implementation QNNetworkCheckManager
@@ -46,7 +39,8 @@
 }
 
 - (void)initData{
-    self.statusInfo = [NSMutableDictionary dictionary];
+    self.isCheckOpen = true;
+    self.statusInfoDictionary = [NSMutableDictionary dictionary];
     self.networkChecker = [QNNetworkChecker networkChecker];
     self.networkChecker.delegate = self;
 }
@@ -54,7 +48,7 @@
 - (QNNetworkCheckStatus)getIPNetworkStatus:(NSString *)ip
                                       host:(NSString *)host{
     NSString *ipType = [QNUtils getIpType:ip host:host];
-    QNNetworkCheckStatusInfo *statusInfo = self.statusInfo[ipType];
+    QNNetworkCheckStatusInfo *statusInfo = self.statusInfoDictionary[ipType];
     if (statusInfo) {
         return statusInfo.status;
     } else {
@@ -70,6 +64,13 @@
     }
 }
 
+- (void)checkCachedIPListNetworkStatus{
+    for (NSString *ipType in self.statusInfoDictionary) {
+        QNNetworkCheckStatusInfo *statusInfo = self.statusInfoDictionary[ipType];
+        [self.networkChecker checkIP:statusInfo.checkedIP host:statusInfo.checkedHost];
+    }
+}
+
 
 //MARKL -- QNNetworkChecker
 - (void)checkComplete:(nonnull NSString *)ip host:(nonnull NSString *)host time:(int)time {
@@ -82,7 +83,7 @@
     statusInfo.checkedHost = host;
     statusInfo.checkedIP = ip;
     statusInfo.status = [self getNetworkCheckStatus:time];
-    self.statusInfo[ipType] = statusInfo;
+    self.statusInfoDictionary[ipType] = statusInfo;
 }
 
 - (QNNetworkCheckStatus)getNetworkCheckStatus:(int)time{
@@ -109,6 +110,65 @@
 
 - (int)maxCheckCount{
     return self.networkChecker.maxCheckCount;
+}
+
+- (void)setMaxTime:(int)maxTime{
+    self.networkChecker.maxTime = maxTime;
+}
+
+- (int)maxTime{
+    return self.networkChecker.maxTime;
+}
+
+@end
+
+
+@implementation QNTransactionManager(NetworkCheck)
+#define kQNCheckCachedIPListNetworkStatusTransactionName @"QNCheckCachedIPListNetworkStatus"
+#define kQNCheckSomeIPNetworkStatusTransactionName @"QNCheckSomeIPNetworkStatus"
+
+- (void)addCheckCachedIPListNetworkStatusTransaction{
+    
+    if ([kQNNetworkCheckManager isCheckOpen] == NO) {
+        return;
+    }
+
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        int interval = arc4random()%3600 + 1800;
+        QNTransaction *transaction = [QNTransaction timeTransaction:kQNCheckCachedIPListNetworkStatusTransactionName
+                                                              after:0
+                                                           interval:interval
+                                                             action:^{
+            [kQNNetworkCheckManager checkCachedIPListNetworkStatus];
+        }];
+        [kQNTransactionManager addTransaction:transaction];
+    });
+}
+
+- (void)addCheckSomeIPNetworkStatusTransaction:(NSArray <NSString *> *)ipArray
+                                          host:(NSString *)host{
+    
+    [self addCheckCachedIPListNetworkStatusTransaction];
+    
+    if ([kQNNetworkCheckManager isCheckOpen] == NO) {
+        return;
+    }
+    
+    @synchronized (self) {
+        NSString *transactionName = [NSString stringWithFormat:@"%@:%@", kQNCheckSomeIPNetworkStatusTransactionName, host];
+        QNTransactionManager *transactionManager = [QNTransactionManager shared];
+        QNTransaction *transaction = [transactionManager transactionsForName:transactionName].firstObject;
+        
+        if (!transaction) {
+            transaction = [QNTransaction transaction:kQNCheckSomeIPNetworkStatusTransactionName
+                                               after:0
+                                              action:^{
+                [kQNNetworkCheckManager preCheckIPNetworkStatus:ipArray host:host];
+            }];
+            [kQNTransactionManager addTransaction:transaction];
+        }
+    }
 }
 
 @end
