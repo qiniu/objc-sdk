@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param ip 检测的ip
 /// @param host ip对应的host
 /// @param time 链接建立所用时间，单位:毫秒
-- (void)checkComplete:(NSString *)ip host:(NSString *)host time:(int)time;
+- (void)checkComplete:(NSString *)ip host:(NSString *)host time:(long)time;
 
 @end
 @interface QNNetworkChecker : NSObject
