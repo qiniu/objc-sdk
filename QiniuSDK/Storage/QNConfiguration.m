@@ -10,7 +10,7 @@
 #import "QNResponseInfo.h"
 #import "QNSessionManager.h"
 #import "QNUpToken.h"
-#import "QNUploadInfoReporter.h"
+#import "QNReportConfig.h"
 #import "QNAutoZone.h"
 
 const UInt32 kQNBlockSize = 4 * 1024 * 1024;
