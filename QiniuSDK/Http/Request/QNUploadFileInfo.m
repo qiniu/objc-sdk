@@ -107,8 +107,8 @@
 }
 
 - (instancetype)initWithOffset:(long long)offset
-                     blockSize:(NSInteger)blockSize
-                      dataSize:(NSInteger)dataSize
+                     blockSize:(long long)blockSize
+                      dataSize:(long long)dataSize
                          index:(NSInteger)index {
     if (self = [super init]) {
         _offset = offset;

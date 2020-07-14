@@ -73,7 +73,7 @@
 
 
 //MARKL -- QNNetworkChecker
-- (void)checkComplete:(nonnull NSString *)ip host:(nonnull NSString *)host time:(int)time {
+- (void)checkComplete:(nonnull NSString *)ip host:(nonnull NSString *)host time:(long)time {
     NSString *ipType = [QNUtils getIpType:ip host:host];
     if (ipType == nil && ipType.length == 0) {
         return;
@@ -86,7 +86,7 @@
     self.statusInfoDictionary[ipType] = statusInfo;
 }
 
-- (QNNetworkCheckStatus)getNetworkCheckStatus:(int)time{
+- (QNNetworkCheckStatus)getNetworkCheckStatus:(long)time{
     
     QNNetworkCheckStatus status = QNNetworkCheckStatusUnknown;
     if (time < 1) {

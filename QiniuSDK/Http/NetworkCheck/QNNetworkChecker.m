@@ -12,7 +12,7 @@
 @interface QNNetworkCheckerInfo : NSObject
 
 @property(nonatomic, assign)int count; // 当前检测的次数
-@property(nonatomic, assign)int time; // 检测耗费时间
+@property(nonatomic, assign)long time; // 检测耗费时间
 @property(nonatomic,   copy)NSString *ip;
 @property(nonatomic,   copy)NSString *host;
 @property(nonatomic, strong)NSDate   *startDate; // 当前测试当前批次开始时间
@@ -169,7 +169,7 @@
     [self.checkerInfoDictionary removeObjectForKey:ip];
     
     if ([self.delegate respondsToSelector:@selector(checkComplete:host:time:)]) {
-        int time = checkerInfo.time / self.maxCheckCount;
+        long time = checkerInfo.time / self.maxCheckCount;
         [self.delegate checkComplete:ip host:checkerInfo.host time:MIN(time, self.maxTime)];
     }
 
