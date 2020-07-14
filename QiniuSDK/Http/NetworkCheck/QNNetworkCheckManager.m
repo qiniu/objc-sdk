@@ -60,7 +60,11 @@
                            host:(NSString *)host{
     
     for (NSString *ip in ipArray) {
-        [self.networkChecker checkIP:ip host:host];
+        NSString *ipType = [QNUtils getIpType:ip host:host];
+        QNNetworkCheckStatusInfo *statusInfo = self.statusInfoDictionary[ipType];
+        if (!statusInfo) {
+            [self.networkChecker checkIP:ip host:host];
+        }
     }
 }
 
