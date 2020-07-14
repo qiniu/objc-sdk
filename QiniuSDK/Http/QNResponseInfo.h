@@ -91,7 +91,7 @@ extern const int kQNMaliciousResponseError;
 /// 是否为 七牛响应
 @property (nonatomic, readonly, getter=isNotQiniu) BOOL notQiniu;
 
-//MARK:-- 构造函数
+//MARK:-- 构造函数 【内部使用】
 + (instancetype)cancelResponse;
 + (instancetype)responseInfoWithNetworkError:(NSString *)desc;
 + (instancetype)responseInfoWithInvalidArgument:(NSString *)desc;
