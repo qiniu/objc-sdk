@@ -11,11 +11,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, QNNetworkCheckStatus) {
-    QNNetworkCheckStatusUnknown,
     QNNetworkCheckStatusA,
     QNNetworkCheckStatusB,
     QNNetworkCheckStatusC,
     QNNetworkCheckStatusD,
+    QNNetworkCheckStatusUnknown,
 };
 
 #define kQNNetworkCheckManager [QNNetworkCheckManager shared]
