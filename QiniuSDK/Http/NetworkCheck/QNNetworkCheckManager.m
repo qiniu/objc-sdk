@@ -23,6 +23,7 @@
 @interface QNNetworkCheckManager()<QNNetworkCheckerDelegate>
 
 @property(nonatomic, strong)QNNetworkChecker *networkChecker;
+@property(nonatomic, strong)NSMutableDictionary <NSString *, NSString *> *checkingIPTypeInfo;
 @property(nonatomic, strong)NSMutableDictionary <NSString *, QNNetworkCheckStatusInfo *> *statusInfoDictionary;
 
 @end
@@ -40,6 +41,7 @@
 
 - (void)initData{
     self.isCheckOpen = true;
+    self.checkingIPTypeInfo = [NSMutableDictionary dictionary];
     self.statusInfoDictionary = [NSMutableDictionary dictionary];
     self.networkChecker = [QNNetworkChecker networkChecker];
     self.networkChecker.delegate = self;
@@ -61,8 +63,8 @@
     
     for (NSString *ip in ipArray) {
         NSString *ipType = [QNUtils getIpType:ip host:host];
-        QNNetworkCheckStatusInfo *statusInfo = self.statusInfoDictionary[ipType];
-        if (!statusInfo) {
+        if (ipType && !self.statusInfoDictionary[ipType] && !self.checkingIPTypeInfo[ipType]) {
+            self.checkingIPTypeInfo[ipType] = ip;
             [self.networkChecker checkIP:ip host:host];
         }
     }
@@ -88,6 +90,7 @@
     statusInfo.checkedIP = ip;
     statusInfo.status = [self getNetworkCheckStatus:time];
     self.statusInfoDictionary[ipType] = statusInfo;
+    [self.checkingIPTypeInfo removeObjectForKey:ipType];
 }
 
 - (QNNetworkCheckStatus)getNetworkCheckStatus:(long)time{

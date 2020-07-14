@@ -116,7 +116,7 @@
     [checkerInfo start];
     NSError *error = nil;
     QNAsyncSocket *socket = [self createSocket];
-    
+    NSLog(@"check: ip:%@ host:%@", ip, checkerInfo.host);
     [socket connectToHost:ip onPort:80 error:&error];
     
     if (error) {
