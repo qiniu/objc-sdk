@@ -59,15 +59,19 @@
     [manager addTransaction:transaction01];
     [manager addTransaction:transaction02];
     QNTransaction *header = [manager valueForKeyPath:@"transactionList.header"];
-    XCTAssert((header == transaction01) || (header == transaction02), @"success");
+    XCTAssert((header == transaction01) || (header == transaction02) || (header == nil), @"success");
     
     [manager removeTransaction:transaction01];
-//    XCTAssert([manager valueForKeyPath:@"transactionList.header"] == transaction02, @"success");
+    
+    header = [manager valueForKeyPath:@"transactionList.header"];
     NSLog(@"header: %@", header.name);
+    XCTAssert((header == transaction02) || (header == nil), @"success");
 
     [manager removeTransaction:transaction02];
-//    XCTAssert([manager valueForKeyPath:@"transactionList.header"] == nil, @"success");
+    
+    header = [manager valueForKeyPath:@"transactionList.header"];
     NSLog(@"header: %@", header.name);
+    XCTAssert(header == nil, @"success");
 
     QNTransaction *transaction03 = [QNTransaction transaction:@"3" after:0 action:^{
         NSLog(@"3");
@@ -85,6 +89,7 @@
     QN_TEST_CASE_WAIT_TIME(5);
     
     header = [manager valueForKeyPath:@"transactionList.header"];
+    NSLog(@"header: %@", header.name);
     XCTAssert(header == transaction04, @"success");
 }
 
