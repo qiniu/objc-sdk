@@ -158,6 +158,7 @@
     dispatch_group_notify(group, dispatch_get_main_queue(), ^{
         // 1 or 0
         NSLog(@"successPrefetchNum: %d", successPrefetchNum);
+        XCTAssert(successPrefetchNum >= 0, @"success");
     });
     
     QN_TEST_CASE_WAIT_TIME(2);
