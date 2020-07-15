@@ -13,8 +13,7 @@ Pod::Spec.new do |s|
   s.source_files = "QiniuSDK/**/*.{h,m}"
   s.requires_arc = true
   s.libraries = 'z'
-  #s.dependency 'HappyDNS', '~> 0.3.17'
-  s.dependency 'HappyDNS', '0.3.17'
+  s.dependency 'HappyDNS', '~> 0.3.17'
   s.license = { :type => "MIT", :text => <<-LICENSE
 The MIT License (MIT)
 
