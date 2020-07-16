@@ -252,8 +252,8 @@
 - (void)setMaxTime:(int)maxTime{
     if (maxTime < 1) {
         maxTime = 1;
-    } else if (maxTime > 600) {
-        maxTime = 600;
+    } else if (maxTime > 15) {
+        maxTime = 15;
     }
     _maxTime = maxTime;
 }
