@@ -170,7 +170,7 @@
     
     if ([self.delegate respondsToSelector:@selector(checkComplete:host:time:)]) {
         long time = checkerInfo.time / self.maxCheckCount;
-        [self.delegate checkComplete:ip host:checkerInfo.host time:MIN(time, self.maxTime)];
+        [self.delegate checkComplete:ip host:checkerInfo.host time:MIN(time, self.maxTime * 1000)];
     }
 
     if (self.checkerInfoDictionary.count == 0) {

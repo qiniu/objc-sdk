@@ -80,7 +80,7 @@
 - (void)getIPListNetworkStatus:(NSArray *)ipArray host:(NSString *)host{
     for (NSString *ip in ipArray) {
         QNNetworkCheckStatus status = [kQNNetworkCheckManager getIPNetworkStatus:ip host:host];
-        NSString *statusString = @[@"Unknown", @"A", @"B", @"C", @"D"][status];
+        NSString *statusString = @[@"A", @"B", @"C", @"D", @"Unknown"][status];
         NSLog(@"host:%@, ip:%@, status:%@", host, ip, statusString);
     }
 }
