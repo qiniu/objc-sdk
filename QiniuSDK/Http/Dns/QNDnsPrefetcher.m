@@ -321,7 +321,7 @@
 
 - (void)preFetchHosts:(NSArray <NSString *> *)fetchHosts{
     
-    self.httpDns.defalutTtl = kQNGlobalConfiguration.dnsCacheTime;
+    self.httpDns.defaultTtl = kQNGlobalConfiguration.dnsCacheTime;
     
     NSArray *nextFetchHosts = fetchHosts;
     
