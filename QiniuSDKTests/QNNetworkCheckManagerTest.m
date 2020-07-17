@@ -8,6 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #import "XCTestCase+QNTest.h"
+#import "QNConfiguration.h"
 #import "QNNetworkCheckManager.h"
 
 @interface QNNetworkCheckManagerTest : XCTestCase
@@ -17,7 +18,7 @@
 
 - (void)testCheckCount{
     
-    kQNNetworkCheckManager.maxCheckCount = 100;
+    kQNGlobalConfiguration.maxCheckCount = 100;
     
     NSString *host = @"up.qiniu.com";
     NSArray *ipArray = @[@"180.101.136.87", @"180.101.136.88", @"180.101.136.89", @"122.224.95.105",
@@ -36,7 +37,7 @@
 
 - (void)testIPArray{
     
-    kQNNetworkCheckManager.maxCheckCount = 10;
+    kQNGlobalConfiguration.maxCheckCount = 10;
     
     NSString *host = @"up.qiniu.com";
     NSMutableArray *ipArray = [@[@"180.101.136.87", @"180.101.136.88", @"180.101.136.89", @"122.224.95.105",
@@ -61,8 +62,8 @@
 
 - (void)testMaxTime{
     
-    kQNNetworkCheckManager.maxTime = 5;
-    kQNNetworkCheckManager.maxCheckCount = 3;
+    kQNGlobalConfiguration.maxTime = 5;
+    kQNGlobalConfiguration.maxCheckCount = 3;
     
     NSString *host = @"up.qiniu.com";
     NSMutableArray *ipArray = [@[@"183.101.136.32", @"123.224.95.103", @"123.224.95.108", @"183.101.136.86"] mutableCopy];

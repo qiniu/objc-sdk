@@ -129,7 +129,7 @@
         }
         
         // sort ipGroup List by ipGroup network status PS:bucket sorting
-        if (kQNNetworkCheckManager.isCheckOpen && ipGroupList.count > 1) {
+        if (kQNGlobalConfiguration.isCheckOpen && ipGroupList.count > 1) {
             NSMutableDictionary *bucketInfo = [NSMutableDictionary dictionary];
             for (QNUploadIpGroup *ipGroup in ipGroupList) {
                 id <QNIDnsNetworkAddress> address = ipGroup.ipList.firstObject;

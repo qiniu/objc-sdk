@@ -110,23 +110,6 @@
     return status;
 }
 
-
-- (void)setMaxCheckCount:(int)maxCheckCount{
-    self.networkChecker.maxCheckCount = maxCheckCount;
-}
-
-- (int)maxCheckCount{
-    return self.networkChecker.maxCheckCount;
-}
-
-- (void)setMaxTime:(int)maxTime{
-    self.networkChecker.maxTime = maxTime;
-}
-
-- (int)maxTime{
-    return self.networkChecker.maxTime;
-}
-
 @end
 
 
