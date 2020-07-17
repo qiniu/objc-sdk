@@ -8,6 +8,7 @@
 
 #import "QNNetworkCheckManager.h"
 #import "QNUtils.h"
+#import "QNConfiguration.h"
 #import "QNNetworkChecker.h"
 
 @interface QNNetworkCheckStatusInfo : NSObject
@@ -40,7 +41,6 @@
 }
 
 - (void)initData{
-    self.isCheckOpen = true;
     self.checkingIPTypeInfo = [NSMutableDictionary dictionary];
     self.statusInfoDictionary = [NSMutableDictionary dictionary];
     self.networkChecker = [QNNetworkChecker networkChecker];
@@ -136,7 +136,7 @@
 
 - (void)addCheckCachedIPListNetworkStatusTransaction{
     
-    if ([kQNNetworkCheckManager isCheckOpen] == NO) {
+    if ([kQNGlobalConfiguration isCheckOpen] == NO) {
         return;
     }
 
@@ -158,7 +158,7 @@
     
     [self addCheckCachedIPListNetworkStatusTransaction];
     
-    if ([kQNNetworkCheckManager isCheckOpen] == NO) {
+    if ([kQNGlobalConfiguration isCheckOpen] == NO) {
         return;
     }
     

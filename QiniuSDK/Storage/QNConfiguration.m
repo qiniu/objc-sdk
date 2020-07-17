@@ -80,7 +80,21 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     _dnscacheDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches"];
     _dnsRepreHostNum = 2;
     _dnsCacheTime = kQNDefaultDnsCacheTime;
+    
+    _isCheckOpen = true;
+    _maxTime = 9;
+    _maxCheckCount = 2;
 }
+
+- (void)setMaxTime:(int)maxTime{
+    if (maxTime < 1) {
+        maxTime = 1;
+    } else if (maxTime > 15) {
+        maxTime = 15;
+    }
+    _maxTime = maxTime;
+}
+
 @end
 
 @implementation QNConfigurationBuilder

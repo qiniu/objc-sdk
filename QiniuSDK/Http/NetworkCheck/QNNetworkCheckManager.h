@@ -21,14 +21,6 @@ typedef NS_ENUM(NSInteger, QNNetworkCheckStatus) {
 #define kQNNetworkCheckManager [QNNetworkCheckManager shared]
 @interface QNNetworkCheckManager : NSObject
 
-// 是否开启网络检测
-@property(nonatomic, assign)BOOL isCheckOpen;
-
-// 单个IP一次检测次数 默认：2次
-@property(nonatomic, assign)int maxCheckCount;
-// 单个IP检测的最长时间 maxTime >= 1 && maxTime <= 600  默认：9秒
-@property(nonatomic, assign)int maxTime;
-
 + (instancetype)shared;
 
 - (QNNetworkCheckStatus)getIPNetworkStatus:(NSString *)ip

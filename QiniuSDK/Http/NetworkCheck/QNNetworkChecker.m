@@ -7,6 +7,7 @@
 //
 
 #import "QNNetworkChecker.h"
+#import "QNConfiguration.h"
 #import "QNAsyncSocket.h"
 
 @interface QNNetworkCheckerInfo : NSObject
@@ -72,8 +73,6 @@
 }
 
 - (void)initData{
-    self.maxTime = 9;
-    self.maxCheckCount = 2;
     self.socketInfoDictionary = [NSMutableDictionary dictionary];
     self.checkerInfoDictionary = [NSMutableDictionary dictionary];
     self.checkQueue = dispatch_queue_create("com.qiniu.socket", DISPATCH_QUEUE_SERIAL);
@@ -99,7 +98,7 @@
     
     [checkerInfo stop];
     
-    if (![checkerInfo shouldCheck:self.maxCheckCount]) {
+    if (![checkerInfo shouldCheck:kQNGlobalConfiguration.maxCheckCount]) {
         [self ipCheckComplete:ip];
         return false;
     } else {
@@ -150,7 +149,7 @@
     NSDate *currentDate = [NSDate date];
     for (NSString *ip in self.checkerInfoDictionary.allKeys) {
         QNNetworkCheckerInfo *checkerInfo = self.checkerInfoDictionary[ip];
-        if ([checkerInfo isTimeout:currentDate maxTime:self.maxTime]) {
+        if ([checkerInfo isTimeout:currentDate maxTime:kQNGlobalConfiguration.maxTime]) {
             [self disconnect:ip];
             [self performCheckIFNeeded:ip];
         }
@@ -169,8 +168,8 @@
     [self.checkerInfoDictionary removeObjectForKey:ip];
     
     if ([self.delegate respondsToSelector:@selector(checkComplete:host:time:)]) {
-        long time = checkerInfo.time / self.maxCheckCount;
-        [self.delegate checkComplete:ip host:checkerInfo.host time:MIN(time, self.maxTime * 1000)];
+        long time = checkerInfo.time / kQNGlobalConfiguration.maxCheckCount;
+        [self.delegate checkComplete:ip host:checkerInfo.host time:MIN(time, kQNGlobalConfiguration.maxTime * 1000)];
     }
 
     if (self.checkerInfoDictionary.count == 0) {
@@ -245,17 +244,6 @@
 
 - (void)timerAction{
     [self checkTimeout];
-}
-
-
-//MARK:-- property
-- (void)setMaxTime:(int)maxTime{
-    if (maxTime < 1) {
-        maxTime = 1;
-    } else if (maxTime > 15) {
-        maxTime = 15;
-    }
-    _maxTime = maxTime;
 }
 
 @end
