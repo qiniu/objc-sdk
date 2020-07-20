@@ -3,10 +3,10 @@
 [![@qiniu on weibo](http://img.shields.io/badge/weibo-%40qiniutek-blue.svg)](http://weibo.com/qiniutek)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
 [![Build Status](https://travis-ci.org/qiniu/objc-sdk.svg?branch=master)](https://travis-ci.org/qiniu/objc-sdk)
+[![GitHub release](https://img.shields.io/github/v/tag/qiniu/objc-sdk.svg?label=release)](https://github.com/qiniu/objc-sdk/releases)
 [![codecov](https://codecov.io/gh/qiniu/objc-sdk/branch/master/graph/badge.svg)](https://codecov.io/gh/qiniu/objc-sdk)
 [![Latest Stable Version](http://img.shields.io/cocoapods/v/Qiniu.svg)](https://github.com/qiniu/objc-sdk/releases)
 ![Platform](http://img.shields.io/cocoapods/p/Qiniu.svg)
-
 
 ## 安装
 
