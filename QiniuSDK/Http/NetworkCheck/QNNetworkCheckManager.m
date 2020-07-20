@@ -49,6 +49,10 @@
 
 - (QNNetworkCheckStatus)getIPNetworkStatus:(NSString *)ip
                                       host:(NSString *)host{
+    if ([kQNGlobalConfiguration isCheckOpen] == NO) {
+        return QNNetworkCheckStatusUnknown;
+    }
+    
     NSString *ipType = [QNUtils getIpType:ip host:host];
     QNNetworkCheckStatusInfo *statusInfo = self.statusInfoDictionary[ipType];
     if (statusInfo) {
