@@ -82,17 +82,17 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     _dnsCacheTime = kQNDefaultDnsCacheTime;
     
     _isCheckOpen = true;
-    _maxTime = 9;
+    _maxCheckTime = 9;
     _maxCheckCount = 2;
 }
 
-- (void)setMaxTime:(int)maxTime{
-    if (maxTime < 1) {
-        maxTime = 1;
-    } else if (maxTime > 15) {
-        maxTime = 15;
+- (void)setMaxCheckTime:(int)maxCheckTime{
+    if (maxCheckTime < 1) {
+        maxCheckTime = 1;
+    } else if (maxCheckTime > 15) {
+        maxCheckTime = 15;
     }
-    _maxTime = maxTime;
+    _maxCheckCount = maxCheckTime;
 }
 
 @end

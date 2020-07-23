@@ -171,7 +171,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 /**
  * 单个IP检测的最长时间 maxTime >= 1 && maxTime <= 600  默认：9秒
  */
-@property(nonatomic, assign)int maxTime;
+@property(nonatomic, assign)int maxCheckTime;
 
 
 

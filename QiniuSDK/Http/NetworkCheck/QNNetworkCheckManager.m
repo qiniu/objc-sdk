@@ -155,7 +155,7 @@
         QNTransaction *transaction = [transactionManager transactionsForName:transactionName].firstObject;
         
         if (!transaction) {
-            transaction = [QNTransaction transaction:kQNCheckSomeIPNetworkStatusTransactionName
+            transaction = [QNTransaction transaction:transactionName
                                                after:0
                                               action:^{
                 [kQNNetworkCheckManager preCheckIPNetworkStatus:ipArray host:host];

@@ -62,7 +62,7 @@
 
 - (void)testMaxTime{
     
-    kQNGlobalConfiguration.maxTime = 5;
+    kQNGlobalConfiguration.maxCheckTime = 5;
     kQNGlobalConfiguration.maxCheckCount = 3;
     
     NSString *host = @"up.qiniu.com";

@@ -149,7 +149,7 @@
     NSDate *currentDate = [NSDate date];
     for (NSString *ip in self.checkerInfoDictionary.allKeys) {
         QNNetworkCheckerInfo *checkerInfo = self.checkerInfoDictionary[ip];
-        if ([checkerInfo isTimeout:currentDate maxTime:kQNGlobalConfiguration.maxTime]) {
+        if ([checkerInfo isTimeout:currentDate maxTime:kQNGlobalConfiguration.maxCheckTime]) {
             [self disconnect:ip];
             [self performCheckIFNeeded:ip];
         }
@@ -169,7 +169,7 @@
     
     if ([self.delegate respondsToSelector:@selector(checkComplete:host:time:)]) {
         long time = checkerInfo.time / kQNGlobalConfiguration.maxCheckCount;
-        [self.delegate checkComplete:ip host:checkerInfo.host time:MIN(time, kQNGlobalConfiguration.maxTime * 1000)];
+        [self.delegate checkComplete:ip host:checkerInfo.host time:MIN(time, kQNGlobalConfiguration.maxCheckTime * 1000)];
     }
 
     if (self.checkerInfoDictionary.count == 0) {
