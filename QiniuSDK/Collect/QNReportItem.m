@@ -132,10 +132,7 @@
 
 - (NSString *)qualityResult{
     
-    NSString *result = [self requestReportErrorType];
-    if (result) {
-        return result;
-    }
+    NSString *result = nil;
     
     if (self.statusCode > 199 && self.statusCode < 300) {
         result = @"ok";
@@ -148,9 +145,12 @@
     } else if (self.statusCode == kQNInvalidToken
             || self.statusCode == kQNInvalidArgument){
         result = @"invalid_args";
-    } else {
-        result = @"unknown_error";
     }
+    
+    if (result == nil) {
+        result = [self requestReportErrorType];
+    }
+    
     return result;
 }
 
