@@ -297,6 +297,22 @@
 }
 
 
+- (void)initPart:(NSString *)fileName
+        complete:(QNRequestTransactionCompleteHandler)complete{
+    
+}
 
+- (void)uploadPart:(NSString *)uploadId
+         partIndex:(int)partIndex
+          partData:(NSData *)partData
+          complete:(QNRequestTransactionCompleteHandler)complete{
+    
+}
+
+- (void)completeParts:(NSString *)fileName
+       partIndexArray:(NSArray <NSNumber *> *)partIndexArray
+             complete:(QNRequestTransactionCompleteHandler)complete{
+    
+}
 
 @end

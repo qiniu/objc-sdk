@@ -62,6 +62,19 @@ typedef void(^QNRequestTransactionCompleteHandler)(QNResponseInfo * _Nullable re
    blockContexts:(NSArray <NSString *> *)blockContexts
         complete:(QNRequestTransactionCompleteHandler)complete;
 
+
+- (void)initPart:(NSString *)fileName
+        complete:(QNRequestTransactionCompleteHandler)complete;
+
+- (void)uploadPart:(NSString *)uploadId
+         partIndex:(int)partIndex
+          partData:(NSData *)partData
+          complete:(QNRequestTransactionCompleteHandler)complete;
+
+- (void)completeParts:(NSString *)fileName
+       partIndexArray:(NSArray <NSNumber *> *)partIndexArray
+             complete:(QNRequestTransactionCompleteHandler)complete;
+
 @end
 
 NS_ASSUME_NONNULL_END
