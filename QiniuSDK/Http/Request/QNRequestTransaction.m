@@ -300,19 +300,136 @@
 - (void)initPart:(NSString *)fileName
         complete:(QNRequestTransactionCompleteHandler)complete{
     
+    self.requestInfo.requestType = QNUploadRequestTypeInitParts;
+    
+    NSString *token = [NSString stringWithFormat:@"UpToken %@", self.token.token];
+    NSMutableDictionary *header = [NSMutableDictionary dictionary];
+    header[@"Authorization"] = token;
+    header[@"Content-Type"] = @"application/octet-stream";
+    header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
+    
+    NSString *buckets = [[NSString alloc] initWithFormat:@"/buckets/%@", self.token.bucket];
+    NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [QNUrlSafeBase64 encodeString:fileName]];
+    NSString *action = [[NSString alloc] initWithFormat:@"%@%@/uploads", buckets, objects];
+
+    BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
+        return (BOOL)(!responseInfo.isOK);
+    };
+    
+    [self.regionRequest post:action
+                     headers:header
+                        body:nil
+                 shouldRetry:shouldRetry
+                    progress:nil
+                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+
+        complete(responseInfo, metrics, response);
+    }];
 }
 
-- (void)uploadPart:(NSString *)uploadId
+- (void)uploadPart:(NSString *)fileName
+          uploadId:(NSString *)uploadId
          partIndex:(int)partIndex
           partData:(NSData *)partData
           complete:(QNRequestTransactionCompleteHandler)complete{
     
+    self.requestInfo.requestType = QNUploadRequestTypeUploadPart;
+    
+    NSString *token = [NSString stringWithFormat:@"UpToken %@", self.token.token];
+    NSMutableDictionary *header = [NSMutableDictionary dictionary];
+    header[@"Authorization"] = token;
+    header[@"Content-Type"] = @"application/octet-stream";
+    header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
+    
+    NSString *buckets = [[NSString alloc] initWithFormat:@"/buckets/%@", self.token.bucket];
+    NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [QNUrlSafeBase64 encodeString:fileName]];
+    NSString *uploads = [[NSString alloc] initWithFormat:@"/uploads/%@", uploadId];
+    NSString *partNumber = [[NSString alloc] initWithFormat:@"/%d", partIndex];
+    NSString *action = [[NSString alloc] initWithFormat:@"%@%@%@%@", buckets, objects, uploads, partNumber];
+
+    BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
+        return (BOOL)(!responseInfo.isOK);
+    };
+    
+    [self.regionRequest post:action
+                     headers:header
+                        body:nil
+                 shouldRetry:shouldRetry
+                    progress:nil
+                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+
+        complete(responseInfo, metrics, response);
+    }];
 }
 
 - (void)completeParts:(NSString *)fileName
-       partIndexArray:(NSArray <NSNumber *> *)partIndexArray
+             uploadId:(NSString *)uploadId
+        partInfoArray:(NSArray <NSDictionary *> *)partInfoArray
              complete:(QNRequestTransactionCompleteHandler)complete{
     
+    if (!partInfoArray || partInfoArray.count == 0) {
+        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"partInfoArray"];
+        if (complete) {
+            complete(responseInfo, nil, responseInfo.responseDictionary);
+        }
+    }
+    
+    self.requestInfo.requestType = QNUploadRequestTypeCompletePart;
+    
+    NSString *token = [NSString stringWithFormat:@"UpToken %@", self.token.token];
+    NSMutableDictionary *header = [NSMutableDictionary dictionary];
+    header[@"Authorization"] = token;
+    header[@"Content-Type"] = @"application/json";
+    header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
+    
+    NSString *buckets = [[NSString alloc] initWithFormat:@"/buckets/%@", self.token.bucket];
+    NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [QNUrlSafeBase64 encodeString:fileName]];
+    NSString *uploads = [[NSString alloc] initWithFormat:@"/uploads/%@", uploadId];
+    
+    NSString *action = [[NSString alloc] initWithFormat:@"%@%@%@", buckets, objects, uploads];
+
+    NSMutableDictionary *bodyDictionary = [NSMutableDictionary dictionary];
+    if (partInfoArray) {
+        bodyDictionary[@"parts"] = partInfoArray;
+    }
+    if (fileName) {
+        bodyDictionary[@"fname"] = fileName;
+    }
+    if (self.uploadOption.mimeType) {
+        bodyDictionary[@"mimeType"] = self.uploadOption.mimeType;
+    }
+    if (self.uploadOption.metadata) {
+        bodyDictionary[@"metadata"] = self.uploadOption.metadata;
+    }
+    if (self.uploadOption.params) {
+        bodyDictionary[@"customVars"] = self.uploadOption.params;
+    }
+    
+    NSError *error = nil;
+    NSData *body = [NSJSONSerialization dataWithJSONObject:bodyDictionary
+                                                   options:NSJSONWritingPrettyPrinted
+                                                     error:&error];
+    if (error) {
+        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithLocalIOError:error.description];
+        if (complete) {
+            complete(responseInfo, nil, responseInfo.responseDictionary);
+        }
+        return;
+    }
+    
+    BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
+        return (BOOL)(!responseInfo.isOK);
+    };
+    
+    [self.regionRequest post:action
+                     headers:header
+                        body:body
+                 shouldRetry:shouldRetry
+                    progress:nil
+                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+
+        complete(responseInfo, metrics, response);
+    }];
 }
 
 @end

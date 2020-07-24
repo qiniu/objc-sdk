@@ -66,13 +66,19 @@ typedef void(^QNRequestTransactionCompleteHandler)(QNResponseInfo * _Nullable re
 - (void)initPart:(NSString *)fileName
         complete:(QNRequestTransactionCompleteHandler)complete;
 
-- (void)uploadPart:(NSString *)uploadId
+- (void)uploadPart:(NSString *)fileName
+          uploadId:(NSString *)uploadId
          partIndex:(int)partIndex
           partData:(NSData *)partData
           complete:(QNRequestTransactionCompleteHandler)complete;
 
+/**
+ * partInfoArray
+ *         |_ NSDictionary : { "etag": "<Etag>", "partNumber": <PartNumber> }
+ */
 - (void)completeParts:(NSString *)fileName
-       partIndexArray:(NSArray <NSNumber *> *)partIndexArray
+             uploadId:(NSString *)uploadId
+        partInfoArray:(NSArray <NSDictionary *> *)partInfoArray
              complete:(QNRequestTransactionCompleteHandler)complete;
 
 @end

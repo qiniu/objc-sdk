@@ -29,9 +29,14 @@ typedef BOOL (^QNUpCancellationSignal)(void);
 @interface QNUploadOption : NSObject
 
 /**
- *    用于服务器上传回调通知的自定义参数，参数的key必须以x: 开头
+ *    用于服务器上传回调通知的自定义参数，参数的key必须以x: 开头  eg: x:foo
  */
 @property (copy, nonatomic, readonly) NSDictionary *params;
+
+/**
+ *    用户自定义文件metadata信息的key和value， 可以设置多个，参数的key必须以x-qn-meta-开头 eg:x-qn-meta-key
+ */
+@property (copy, nonatomic, readonly) NSDictionary *metadata;
 
 /**
  *    指定文件的mime类型
