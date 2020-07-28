@@ -119,7 +119,7 @@
     
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
 
-    [transaction initPart:self.fileName complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+    [transaction initPart:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         [self addRegionRequestMetricsOfOneFlow:metrics];
         
         NSString *uploadId = response[@"uploadId"];
@@ -149,7 +149,12 @@
     
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
     
-    [transaction uploadPart:self.fileName uploadId:self.uploadFileInfo.uploadId partIndex:data.index partData:uploadData progress:progress complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+    [transaction uploadPart:self.uploadFileInfo.uploadId
+                  partIndex:data.index
+                   partData:uploadData
+                   progress:progress
+                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        
         [self addRegionRequestMetricsOfOneFlow:metrics];
         
         NSString *etag = response[@"etag"];

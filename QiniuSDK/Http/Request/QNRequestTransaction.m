@@ -10,6 +10,7 @@
 
 #import "QNUtils.h"
 #import "QNCrc32.h"
+#import "NSData+MD5.h"
 #import "QNUrlSafeBase64.h"
 #import "QNUpToken.h"
 #import "QNConfiguration.h"
@@ -297,8 +298,7 @@
 }
 
 
-- (void)initPart:(NSString *)fileName
-        complete:(QNRequestTransactionCompleteHandler)complete{
+- (void)initPart:(QNRequestTransactionCompleteHandler)complete{
     
     self.requestInfo.requestType = QNUploadRequestTypeInitParts;
     
@@ -327,8 +327,7 @@
     }];
 }
 
-- (void)uploadPart:(NSString *)fileName
-          uploadId:(NSString *)uploadId
+- (void)uploadPart:(NSString *)uploadId
          partIndex:(NSInteger)partIndex
           partData:(NSData *)partData
           progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
@@ -347,9 +346,10 @@
     NSString *uploads = [[NSString alloc] initWithFormat:@"/uploads/%@", uploadId];
     NSString *partNumber = [[NSString alloc] initWithFormat:@"/%ld", (long)partIndex];
     NSString *action = [[NSString alloc] initWithFormat:@"%@%@%@%@", buckets, objects, uploads, partNumber];
-
+    NSString *md5 = [[partData qn_md5] lowercaseString];
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
-        return (BOOL)(!responseInfo.isOK);
+        NSString *serverMD5 = [NSString stringWithFormat:@"%@", response[@"md5"]];
+        return (BOOL)(responseInfo.isOK == false || (responseInfo.isOK && (!serverMD5 || (self.uploadOption.checkCrc && ![serverMD5 isEqualToString:md5]))));
     };
     
     [self.regionRequest put:action
@@ -396,9 +396,6 @@
     if (fileName) {
         bodyDictionary[@"fname"] = fileName;
     }
-//    if (self.key) {
-//        bodyDictionary[@"key"] = self.key;
-//    }
     if (self.uploadOption.mimeType) {
         bodyDictionary[@"mimeType"] = self.uploadOption.mimeType;
     }

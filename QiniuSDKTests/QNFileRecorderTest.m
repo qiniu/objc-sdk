@@ -60,7 +60,7 @@
         NSLog(@"progress %f", percent);
     }
         params:nil
-        checkCrc:NO
+        checkCrc:YES
         cancellationSignal:^BOOL() {
             return flag;
         }];
