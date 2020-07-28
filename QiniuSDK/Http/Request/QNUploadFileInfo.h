@@ -12,27 +12,26 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNUploadData : NSObject
 
-// 当前data偏移量
+/// 当前data偏移量
 @property(nonatomic, assign, readonly)long long offset;
-// 当前data大小
+/// 当前data大小
 @property(nonatomic, assign, readonly)long long size;
-// data下标
+/// data下标
 @property(nonatomic, assign, readonly)NSInteger index;
-// block下标
-@property(nonatomic, assign, readonly)NSInteger blockIndex;
-// 是否已完成上传
+/// data etag
+@property(nonatomic, copy)NSString *etag;
+/// 是否已完成上传
 @property(atomic, assign)BOOL isCompleted;
-// 是否正在上传 【不进行离线缓存】
+/// 是否正在上传 【不进行离线缓存】
 @property(atomic, assign)BOOL isUploading;
-// 上传进度 【不进行离线缓存】
+/// 上传进度 【不进行离线缓存】
 @property(nonatomic, assign)float progress;
 
 //MARK:-- 构造
 + (instancetype)dataFromDictionary:(NSDictionary *)dictionary;
 - (instancetype)initWithOffset:(long long)offset
                       dataSize:(long long)dataSize
-                         index:(NSInteger)index
-                    blockIndex:(NSInteger)blockIndex;
+                         index:(NSInteger)index;
 
 //MARK:-- logic
 - (BOOL)isFirstData;
@@ -42,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-
+/*
 @interface QNUploadBlock : NSObject
 // block下标
 @property(nonatomic, assign, readonly)NSInteger index;
@@ -70,7 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSDictionary *)toDictionary;
 
 @end
-
+*/
 
 
 @interface QNUploadFileInfo : NSObject
@@ -80,14 +79,17 @@ NS_ASSUME_NONNULL_BEGIN
 // 文件修改时间
 @property(nonatomic, assign, readonly)NSInteger modifyTime;
 // 需要上传的块
-@property(nonatomic, strong, readonly)NSArray <QNUploadBlock *> *uploadBlocks;
+@property(nonatomic, strong, readonly)NSArray <QNUploadData *> *uploadDataList;
 // 上传进度 【不进行离线缓存】
 @property(nonatomic, assign, readonly)float progress;
+// 上传标识符
+@property(nonatomic,   copy)NSString *uploadId;
+// 上传标识符有效期
+@property(nonatomic, strong)NSNumber *expireAt;
 
 //MARK:-- 构造
 + (instancetype)infoFromDictionary:(NSDictionary *)dictionary;
 - (instancetype)initWithFileSize:(long long)fileSize
-                       blockSize:(long long)blockSize
                         dataSize:(long long)dataSize
                       modifyTime:(NSInteger)modifyTime;
 
@@ -96,12 +98,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (QNUploadData *)nextUploadData;
 /// 清除所有块和分片上传状态信息
 - (void)clearUploadState;
-/// 根据块index获取块信息
-- (QNUploadBlock *)blockWithIndex:(NSInteger)blockIndex;
 /// 所有的块是否都已经上传完毕
 - (BOOL)isAllUploaded;
-/// 获取所有block context
-- (NSArray <NSString *> *)allBlocksContexts;
+/// [{ "etag": "<Etag>", "partNumber": <PartNumber> }, ...],
+- (NSArray <NSDictionary *> *)getPartInfoArray;
 
 /// 转化字典
 - (NSDictionary *)toDictionary;

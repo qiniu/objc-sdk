@@ -309,7 +309,7 @@
     header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
     
     NSString *buckets = [[NSString alloc] initWithFormat:@"/buckets/%@", self.token.bucket];
-    NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [QNUrlSafeBase64 encodeString:fileName]];
+    NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [QNUrlSafeBase64 encodeString:self.key]];
     NSString *action = [[NSString alloc] initWithFormat:@"%@%@/uploads", buckets, objects];
 
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
@@ -329,8 +329,9 @@
 
 - (void)uploadPart:(NSString *)fileName
           uploadId:(NSString *)uploadId
-         partIndex:(int)partIndex
+         partIndex:(NSInteger)partIndex
           partData:(NSData *)partData
+          progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
           complete:(QNRequestTransactionCompleteHandler)complete{
     
     self.requestInfo.requestType = QNUploadRequestTypeUploadPart;
@@ -342,21 +343,21 @@
     header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
     
     NSString *buckets = [[NSString alloc] initWithFormat:@"/buckets/%@", self.token.bucket];
-    NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [QNUrlSafeBase64 encodeString:fileName]];
+    NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [QNUrlSafeBase64 encodeString:self.key]];
     NSString *uploads = [[NSString alloc] initWithFormat:@"/uploads/%@", uploadId];
-    NSString *partNumber = [[NSString alloc] initWithFormat:@"/%d", partIndex];
+    NSString *partNumber = [[NSString alloc] initWithFormat:@"/%ld", (long)partIndex];
     NSString *action = [[NSString alloc] initWithFormat:@"%@%@%@%@", buckets, objects, uploads, partNumber];
 
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
         return (BOOL)(!responseInfo.isOK);
     };
     
-    [self.regionRequest post:action
-                     headers:header
-                        body:nil
-                 shouldRetry:shouldRetry
-                    progress:nil
-                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+    [self.regionRequest put:action
+                    headers:header
+                       body:partData
+                shouldRetry:shouldRetry
+                   progress:progress
+                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
 
         complete(responseInfo, metrics, response);
     }];
@@ -383,7 +384,7 @@
     header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
     
     NSString *buckets = [[NSString alloc] initWithFormat:@"/buckets/%@", self.token.bucket];
-    NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [QNUrlSafeBase64 encodeString:fileName]];
+    NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [QNUrlSafeBase64 encodeString:self.key]];
     NSString *uploads = [[NSString alloc] initWithFormat:@"/uploads/%@", uploadId];
     
     NSString *action = [[NSString alloc] initWithFormat:@"%@%@%@", buckets, objects, uploads];
@@ -395,9 +396,13 @@
     if (fileName) {
         bodyDictionary[@"fname"] = fileName;
     }
+//    if (self.key) {
+//        bodyDictionary[@"key"] = self.key;
+//    }
     if (self.uploadOption.mimeType) {
         bodyDictionary[@"mimeType"] = self.uploadOption.mimeType;
     }
+    //todo: 待测试
     if (self.uploadOption.metadata) {
         bodyDictionary[@"metadata"] = self.uploadOption.metadata;
     }

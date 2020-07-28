@@ -87,6 +87,25 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
 }
 
 
+- (void)put:(NSString *)action
+    headers:(NSDictionary *)headers
+       body:(NSData *)body
+shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
+   progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
+   complete:(QNRegionRequestCompleteHandler)complete{
+    
+    self.requestMetrics = [[QNUploadRegionRequestMetrics alloc] initWithRegion:self.region];
+    [self performRequest:[self getNextServer:nil]
+                  action:action
+                 headers:headers
+                  method:@"PUT"
+                    body:body
+             shouldRetry:shouldRetry
+                progress:progress
+                complete:complete];
+}
+
+
 - (void)performRequest:(id <QNUploadServer>)server
                 action:(NSString *)action
                headers:(NSDictionary *)headers
@@ -132,6 +151,7 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
     [request setAllHTTPHeaderFields:headers];
     [request setTimeoutInterval:self.config.timeoutInterval];
     request.HTTPBody = body;
+    NSLog(@"signal request: \r\n url:%@ \r\n header:%@ \r\n bodyLength:%ld", request.URL, request.allHTTPHeaderFields, [body length]);
     [self.singleRequest request:request
                          server:server
                       toSkipDns:toSkipDns

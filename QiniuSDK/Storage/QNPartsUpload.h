@@ -11,16 +11,28 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class QNRequestTransaction;
 @interface QNPartsUpload : QNBaseUpload
 
-@property(nonatomic, assign, readonly, class)long long blockSize;
-// 定制chunk大小 在执行run之前赋值
-@property(nonatomic, strong)NSNumber *chunkSize;
+// 定制data大小 在执行run之前赋值
+@property(nonatomic, strong)NSNumber *dataSize;
 @property(nonatomic, strong, readonly)QNUploadFileInfo *uploadFileInfo;
 
 - (void)recordUploadInfo;
 
 - (void)removeUploadInfoRecord;
+
+
+- (void)initPartFromServer:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
+
+- (void)UploadDataFromServer:(QNUploadData *)data
+                    progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
+             completeHandler:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
+
+- (void)completePartsFromServer:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
+
+
+- (QNRequestTransaction *)createUploadRequestTransaction;
 
 @end
 

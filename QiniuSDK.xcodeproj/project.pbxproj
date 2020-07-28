@@ -161,6 +161,8 @@
 		451A36B624BD893D00754A15 /* QNReportConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 451A36B424BD893D00754A15 /* QNReportConfig.h */; };
 		451A36B724BD893D00754A15 /* QNReportConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 451A36B524BD893D00754A15 /* QNReportConfig.m */; };
 		451A36B824BD893D00754A15 /* QNReportConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 451A36B524BD893D00754A15 /* QNReportConfig.m */; };
+		4551E56324CEBA3300447285 /* QNTransactionManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4551E56224CEBA3300447285 /* QNTransactionManagerTest.m */; };
+		4551E56424CEBA3300447285 /* QNTransactionManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 4551E56224CEBA3300447285 /* QNTransactionManagerTest.m */; };
 		7CF44E0E25F6BE604AE68F92 /* libPods-QiniuSDK_iOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 422A3A07B38819979BBFE724 /* libPods-QiniuSDK_iOSTests.a */; };
 		A31ADA71DBBF1F4D8A065061 /* libPods-QiniuSDK_Mac.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 73B66D8E78B0B3A0BEEA45A6 /* libPods-QiniuSDK_Mac.a */; };
 		BA8408541BE251010093B013 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BA8408521BE250C80093B013 /* SystemConfiguration.framework */; };
@@ -350,6 +352,7 @@
 		422A3A07B38819979BBFE724 /* libPods-QiniuSDK_iOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuSDK_iOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		451A36B424BD893D00754A15 /* QNReportConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNReportConfig.h; sourceTree = "<group>"; };
 		451A36B524BD893D00754A15 /* QNReportConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNReportConfig.m; sourceTree = "<group>"; };
+		4551E56224CEBA3300447285 /* QNTransactionManagerTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNTransactionManagerTest.m; sourceTree = "<group>"; };
 		466E7AACB5F77BA0D4DE4070 /* Pods-QiniuSDK_MacTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_MacTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_MacTests/Pods-QiniuSDK_MacTests.debug.xcconfig"; sourceTree = "<group>"; };
 		6663602DA8CC701EA3B11F04 /* Pods-QiniuSDK_iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_iOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_iOS/Pods-QiniuSDK_iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		69B20FB4731F84969BC5AEBE /* Pods-QiniuSDK_Mac.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_Mac.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_Mac/Pods-QiniuSDK_Mac.debug.xcconfig"; sourceTree = "<group>"; };
@@ -770,6 +773,7 @@
 				31FD09232487506300217848 /* QNRetryTest.m */,
 				31DD31D524971BD7004BFDDE /* QNUploadFileNameTest.m */,
 				314E49FF24B71FD900310A03 /* QNNetworkCheckManagerTest.m */,
+				4551E56224CEBA3300447285 /* QNTransactionManagerTest.m */,
 			);
 			path = QiniuSDKTests;
 			sourceTree = SOURCE_ROOT;
@@ -1152,6 +1156,7 @@
 				CCF661062355C2C00018A41E /* QNConcurrentResumeUploadTest.m in Sources */,
 				DFF525391A64079B00D02BA1 /* QNSessionTest.m in Sources */,
 				FDEA88661DAC10D000D037E5 /* QNAutoZoneTest.m in Sources */,
+				4551E56324CEBA3300447285 /* QNTransactionManagerTest.m in Sources */,
 				DFA9B63F19DFD8C900A15FD1 /* QNEtagTest.m in Sources */,
 				DF2CDE7119DAE90300CE01FB /* QNBase64Test.m in Sources */,
 				3115471D243476CF00D77B8B /* QNTransactionTest.m in Sources */,
@@ -1241,6 +1246,7 @@
 				CCF661072355C4480018A41E /* QNConcurrentResumeUploadTest.m in Sources */,
 				DF0A032D1B3BAC6E00E3778C /* QNFileRecorderTest.m in Sources */,
 				FDEA88671DAC10D000D037E5 /* QNAutoZoneTest.m in Sources */,
+				4551E56424CEBA3300447285 /* QNTransactionManagerTest.m in Sources */,
 				DF0A032F1B3BAC6E00E3778C /* QNSessionTest.m in Sources */,
 				DF0A03301B3BAC6E00E3778C /* QNUpTokenTest.m in Sources */,
 				3115471E243476D600D77B8B /* QNTransactionTest.m in Sources */,

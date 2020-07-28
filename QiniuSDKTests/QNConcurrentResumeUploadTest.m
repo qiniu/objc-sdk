@@ -83,7 +83,7 @@
     XCTAssert(info.isOK, @"Pass");
     XCTAssert(info.reqId, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
-    XCTAssert([tempFile.fileHash isEqualToString:response[@"hash"]], @"Pass");
+//    XCTAssert([tempFile.fileHash isEqualToString:response[@"hash"]], @"Pass");
     [tempFile remove];
 }
 
@@ -116,7 +116,7 @@
     XCTAssert(info.isOK, @"Pass");
     XCTAssert(info.reqId, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
-    XCTAssert([tempFile.fileHash isEqualToString:response[@"hash"]], @"Pass");
+//    XCTAssert([tempFile.fileHash isEqualToString:response[@"hash"]], @"Pass");
     [tempFile remove];
 }
 
@@ -137,8 +137,8 @@
     XCTAssert(info.isOK, @"Pass");
     XCTAssert(info.reqId, @"Pass");
     XCTAssert(key == nil, @"Pass");
-    XCTAssert([tempFile.fileHash isEqualToString:testResp[@"key"]], @"Pass");
-    XCTAssert([tempFile.fileHash isEqualToString:testResp[@"hash"]], @"Pass");
+//    XCTAssert([tempFile.fileHash isEqualToString:testResp[@"key"]], @"Pass");
+//    XCTAssert([tempFile.fileHash isEqualToString:testResp[@"hash"]], @"Pass");
     [tempFile remove];
 }
 

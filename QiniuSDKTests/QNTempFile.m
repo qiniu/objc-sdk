@@ -64,7 +64,7 @@
     
     NSString *identifierP = identifier ?: @"_";
     
-    NSString *fileName = [NSString stringWithFormat:@"%@_%@", [[NSProcessInfo processInfo] globallyUniqueString], name];
+    NSString *fileName = [NSString stringWithFormat:@"/%@_%@", [[NSProcessInfo processInfo] globallyUniqueString], name];
     NSURL *fileUrl = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
     
     NSMutableData *data = [NSMutableData data];

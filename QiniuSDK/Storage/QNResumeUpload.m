@@ -15,8 +15,8 @@
 @property (nonatomic, assign) float previousPercent;
 @property(nonatomic, strong)QNRequestTransaction *uploadTransaction;
 
-@property(nonatomic, strong)QNResponseInfo *uploadChunkErrorResponseInfo;
-@property(nonatomic, strong)NSDictionary *uploadChunkErrorResponse;
+@property(nonatomic, strong)QNResponseInfo *uploadDataErrorResponseInfo;
+@property(nonatomic, strong)NSDictionary *uploadDataErrorResponse;
 
 @end
 
@@ -26,51 +26,61 @@
     [super startToUpload];
     
     self.previousPercent = 0;
-    self.uploadChunkErrorResponseInfo = nil;
-    self.uploadChunkErrorResponse = nil;
+    self.uploadDataErrorResponseInfo = nil;
+    self.uploadDataErrorResponse = nil;
     
-    [self uploadRestChunk:^{
-        
-        if ([self.uploadFileInfo isAllUploaded] == NO || self.uploadChunkErrorResponseInfo) {
+    [self initPartFromServer:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+        if (!responseInfo.isOK) {
             
-            if (self.uploadChunkErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
-                BOOL isSwitched = [self switchRegionAndUpload];
-                if (isSwitched == NO) {
-                    [self complete:self.uploadChunkErrorResponseInfo response:self.uploadChunkErrorResponse];
-                }
-            } else {
-                [self complete:self.uploadChunkErrorResponseInfo response:self.uploadChunkErrorResponse];
-            }
+            [self complete:responseInfo response:response];
             
         } else {
             
-            [self makeFile:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
-                if (responseInfo.isOK == NO) {
-                    if (responseInfo.couldRetry && [self.config allowBackupHost]) {
+            [self uploadRestData:^{
+                
+                if ([self.uploadFileInfo isAllUploaded] == NO || self.uploadDataErrorResponseInfo) {
+                    
+                    if (self.uploadDataErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
                         BOOL isSwitched = [self switchRegionAndUpload];
                         if (isSwitched == NO) {
-                            [self complete:responseInfo response:response];
+                            [self complete:self.uploadDataErrorResponseInfo response:self.uploadDataErrorResponse];
                         }
                     } else {
-                        [self complete:responseInfo response:response];
+                        [self complete:self.uploadDataErrorResponseInfo response:self.uploadDataErrorResponse];
                     }
+            
                 } else {
-                    QNAsyncRunInMain(^{
-                        self.option.progressHandler(self.key, 1.0);
-                     });
-                    [self removeUploadInfoRecord];
-                    [self complete:responseInfo response:response];
+                    
+                    [self completePartsFromServer:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+                        if (responseInfo.isOK == NO) {
+                            if (responseInfo.couldRetry && [self.config allowBackupHost]) {
+                                BOOL isSwitched = [self switchRegionAndUpload];
+                                if (isSwitched == NO) {
+                                    [self complete:responseInfo response:response];
+                                }
+                            } else {
+                                [self complete:responseInfo response:response];
+                            }
+                        } else {
+                            QNAsyncRunInMain(^{
+                                self.option.progressHandler(self.key, 1.0);
+                             });
+                            [self removeUploadInfoRecord];
+                            [self complete:responseInfo response:response];
+                        }
+                    }];
                 }
             }];
+
         }
     }];
 }
 
-- (void)uploadRestChunk:(dispatch_block_t)completeHandler{
+- (void)uploadRestData:(dispatch_block_t)completeHandler{
     if (!self.uploadFileInfo) {
-        if (!self.uploadChunkErrorResponseInfo) {
-            self.uploadChunkErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"regions error"];
-            self.uploadChunkErrorResponse = self.uploadChunkErrorResponseInfo.responseDictionary;
+        if (!self.uploadDataErrorResponseInfo) {
+            self.uploadDataErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"regions error"];
+            self.uploadDataErrorResponse = self.uploadDataErrorResponseInfo.responseDictionary;
         }
         completeHandler();
         return;
@@ -78,19 +88,18 @@
     
     id <QNUploadRegion> currentRegion = [self getCurrentRegion];
     if (!currentRegion) {
-        if (!self.uploadChunkErrorResponseInfo) {
-            self.uploadChunkErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
-            self.uploadChunkErrorResponse = self.uploadChunkErrorResponseInfo.responseDictionary;
+        if (!self.uploadDataErrorResponseInfo) {
+            self.uploadDataErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
+            self.uploadDataErrorResponse = self.uploadDataErrorResponseInfo.responseDictionary;
         }
         completeHandler();
         return;
     }
     
-    QNUploadData *chunk = [self.uploadFileInfo nextUploadData];
-    QNUploadBlock *block = chunk ? [self.uploadFileInfo blockWithIndex:chunk.blockIndex] : nil;
+    QNUploadData *data = [self.uploadFileInfo nextUploadData];
     
     void (^progress)(long long, long long) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
-        chunk.progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
+        data.progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
         float percent = self.uploadFileInfo.progress;
         if (percent > 0.95) {
             percent = 0.95;
@@ -103,113 +112,22 @@
         QNAsyncRunInMain(^{
             self.option.progressHandler(self.key, percent);
         });
-        NSLog(@"resume  progress:%lf  blockIndex:%ld chunkIndex:%ld", percent, (long)block.index, (long)chunk.index);
+        NSLog(@"resume  progress:%lf chunkIndex:%ld", percent, (long)data.index);
     };
     
-    if (!chunk) {
+    if (!data) {
         completeHandler();
-    } else if (chunk.isFirstData) {
-        [self makeBlock:block firstChunk:chunk progress:progress completeHandler:completeHandler];
     } else {
-        [self uploadChunk:block chunk:chunk progress:progress completeHandler:completeHandler];
+        [self UploadDataFromServer:data progress:progress completeHandler:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+            if (!responseInfo.isOK) {
+                self.uploadDataErrorResponseInfo = responseInfo;
+                self.uploadDataErrorResponse = response;
+                completeHandler();
+            } else {
+                [self uploadRestData:completeHandler];
+            }
+        }];
     }
-}
-
-- (void)makeBlock:(QNUploadBlock *)block
-       firstChunk:(QNUploadData *)chunk
-         progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-  completeHandler:(dispatch_block_t)completeHandler{
-    
-    NSData *chunkData = [self getDataWithChunk:chunk block:block];
-    if (chunkData == nil) {
-        self.uploadChunkErrorResponseInfo = [QNResponseInfo responseInfoWithLocalIOError:@"get chunk data error"];
-        self.uploadChunkErrorResponse = self.uploadChunkErrorResponseInfo.responseDictionary;
-        completeHandler();
-        return;
-    }
-    
-    chunk.isUploading = YES;
-    chunk.isCompleted = NO;
-    
-    QNRequestTransaction *transaction = [self createUploadRequestTransaction];
-    [transaction makeBlock:block.offset
-                 blockSize:block.size
-            firstChunkData:chunkData
-                  progress:progress
-                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-        [self addRegionRequestMetricsOfOneFlow:metrics];
-        
-        NSString *blockContext = response[@"ctx"];
-        if (responseInfo.isOK && blockContext) {
-            block.context = blockContext;
-            chunk.isUploading = NO;
-            chunk.isCompleted = YES;
-            [self recordUploadInfo];
-            [self uploadRestChunk:completeHandler];
-        } else {
-            chunk.isUploading = NO;
-            chunk.isCompleted = NO;
-            self.uploadChunkErrorResponse = response;
-            self.uploadChunkErrorResponseInfo = responseInfo;
-            completeHandler();
-        }
-    }];
-}
-
-- (void)uploadChunk:(QNUploadBlock *)block
-              chunk:(QNUploadData *)chunk
-           progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-    completeHandler:(dispatch_block_t)completeHandler{
-    
-    NSData *chunkData = [self getDataWithChunk:chunk block:block];
-    if (chunkData == nil) {
-        self.uploadChunkErrorResponseInfo = [QNResponseInfo responseInfoWithLocalIOError:@"get chunk data error"];
-        self.uploadChunkErrorResponse = self.uploadChunkErrorResponseInfo.responseDictionary;
-        completeHandler();
-        return;
-    }
-    
-    chunk.isUploading = YES;
-    chunk.isCompleted = NO;
-    
-    QNRequestTransaction *transaction = [self createUploadRequestTransaction];
-    [transaction uploadChunk:block.context
-                 blockOffset:block.offset
-                   chunkData:chunkData
-                 chunkOffset:chunk.offset
-                    progress:progress
-                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-        [self addRegionRequestMetricsOfOneFlow:metrics];
-        
-        NSString *blockContext = response[@"ctx"];
-        if (responseInfo.isOK && blockContext) {
-            block.context = blockContext;
-            chunk.isUploading = NO;
-            chunk.isCompleted = YES;
-            [self recordUploadInfo];
-            [self uploadRestChunk:completeHandler];
-        } else {
-            chunk.isUploading = NO;
-            chunk.isCompleted = NO;
-            self.uploadChunkErrorResponse = response;
-            self.uploadChunkErrorResponseInfo = responseInfo;
-            completeHandler();
-        }
-    }];
-}
-
-- (void)makeFile:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler {
-    
-    QNRequestTransaction *transaction = [self createUploadRequestTransaction];
-    
-    [transaction makeFile:self.uploadFileInfo.size
-                 fileName:self.fileName
-            blockContexts:[self.uploadFileInfo allBlocksContexts]
-                 complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-        
-        [self addRegionRequestMetricsOfOneFlow:metrics];
-        completeHandler(responseInfo, response);
-    }];
 }
 
 - (QNRequestTransaction *)createUploadRequestTransaction{
@@ -223,13 +141,5 @@
     return transaction;
 }
 
-- (NSData *)getDataWithChunk:(QNUploadData *)chunk block:(QNUploadBlock *)block{
-    if (!self.file) {
-        return nil;
-    }
-    return [self.file read:(long)(chunk.offset + block.offset)
-                      size:(long)chunk.size
-                     error:nil];
-}
 
 @end

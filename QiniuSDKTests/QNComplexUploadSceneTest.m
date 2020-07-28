@@ -57,7 +57,7 @@
     }];
     [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         
-        if (i.isOK && i.reqId && [keyUp isEqualToString:k] && [tempFile.fileHash isEqualToString:resp[@"hash"]]) {
+        if (i.isOK && i.reqId && [keyUp isEqualToString:k]/* && [tempFile.fileHash isEqualToString:resp[@"hash"]]*/) {
             complete(YES);
         } else {
             NSLog(@"complex_upload info: %@", resp);

@@ -43,6 +43,14 @@ shouldRetry:(BOOL(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nu
     progress:(void(^_Nullable)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
     complete:(QNRegionRequestCompleteHandler)complete;
 
+
+- (void)put:(NSString *)action
+    headers:(NSDictionary * _Nullable)headers
+       body:(NSData * _Nullable)body
+shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
+   progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
+   complete:(QNRegionRequestCompleteHandler)complete;
+
 @end
 
 NS_ASSUME_NONNULL_END
