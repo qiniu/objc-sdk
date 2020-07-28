@@ -11,7 +11,7 @@
 #import <AGAsyncTestHelper.h>
 
 #import "QiniuSDK.h"
-
+#import "QNTempFile.h"
 #import "QNTestConfig.h"
 
 @interface QNFormUploadTest : XCTestCase
@@ -31,13 +31,33 @@
     [super tearDown];
 }
 
-- (void)testUp {
+- (void)testSmall {
     __block QNResponseInfo *testInfo = nil;
     __block NSDictionary *testResp = nil;
     
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
     [self.upManager putData:data key:@"你好" token:token_na0 complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+        testInfo = info;
+        testResp = resp;
+    }
+                     option:opt];
+
+    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+    NSLog(@"%@", testInfo);
+    NSLog(@"%@", testResp);
+    XCTAssert(testInfo.isOK, @"Pass");
+    XCTAssert(testInfo.reqId, @"Pass");
+}
+
+- (void)testBig {
+    __block QNResponseInfo *testInfo = nil;
+    __block NSDictionary *testResp = nil;
+    
+    QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
+    QNTempFile *file = [QNTempFile createTempfileWithSize:8*1024*1024 + 1 identifier:@"form_5M"];
+    NSData *data = [NSData dataWithContentsOfFile:file.fileUrl.path];
+    [self.upManager putData:data key:@"form_5M" token:token_na0 complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         testInfo = info;
         testResp = resp;
     }
