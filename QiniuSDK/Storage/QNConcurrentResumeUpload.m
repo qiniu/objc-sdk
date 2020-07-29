@@ -41,47 +41,48 @@
     self.uploadTransactions = [NSMutableArray array];
     
     NSLog(@"concurrent resume task count: %u", (unsigned int)self.config.concurrentTaskCount);
+    
+    // 1. 启动upload
     [self initPartFromServer:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
-        if (!responseInfo.isOK) {
-            
+        if (!responseInfo.isOK || !self.uploadFileInfo.uploadId || self.uploadFileInfo.uploadId.length == 0) {
             [self complete:responseInfo response:response];
-            
-        } else {
-            [self concurrentUploadRestData:^{
-                if ([self.uploadFileInfo isAllUploaded] == NO || self.uploadDataErrorResponseInfo) {
-                    
-                    if (self.uploadDataErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
-                        BOOL isSwitched = [self switchRegionAndUpload];
-                        if (isSwitched == NO) {
-                            [self complete:self.uploadDataErrorResponseInfo response:self.uploadDataErrorResponse];
-                        }
-                    } else {
+            return;
+        }
+        
+        // 2. 上传数据
+        [self concurrentUploadRestData:^{
+            if ([self.uploadFileInfo isAllUploaded] == NO || self.uploadDataErrorResponseInfo) {
+                if (self.uploadDataErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
+                    BOOL isSwitched = [self switchRegionAndUpload];
+                    if (isSwitched == NO) {
                         [self complete:self.uploadDataErrorResponseInfo response:self.uploadDataErrorResponse];
                     }
-                    
                 } else {
-                    
-                    [self completePartsFromServer:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
-                        if (responseInfo.isOK == NO) {
-                            if (responseInfo.couldRetry && [self.config allowBackupHost]) {
-                                BOOL isSwitched = [self switchRegionAndUpload];
-                                if (isSwitched == NO) {
-                                    [self complete:responseInfo response:response];
-                                }
-                            } else {
-                                [self complete:responseInfo response:response];
-                            }
-                        } else {
-                            QNAsyncRunInMain(^{
-                                self.option.progressHandler(self.key, 1.0);
-                            });
-                            [self removeUploadInfoRecord];
+                    [self complete:self.uploadDataErrorResponseInfo response:self.uploadDataErrorResponse];
+                }
+                return;
+            }
+            
+            // 3. 组装文件
+            [self completePartsFromServer:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+                if (responseInfo.isOK == NO) {
+                    if (responseInfo.couldRetry && [self.config allowBackupHost]) {
+                        BOOL isSwitched = [self switchRegionAndUpload];
+                        if (isSwitched == NO) {
                             [self complete:responseInfo response:response];
                         }
-                    }];
+                    } else {
+                        [self complete:responseInfo response:response];
+                    }
+                } else {
+                    QNAsyncRunInMain(^{
+                        self.option.progressHandler(self.key, 1.0);
+                    });
+                    [self removeUploadInfoRecord];
+                    [self complete:responseInfo response:response];
                 }
             }];
-        }
+        }];
     }];
 }
 
@@ -102,7 +103,7 @@
 - (void)uploadRestData:(dispatch_block_t)completeHandler{
     if (!self.uploadFileInfo) {
         if (self.uploadDataErrorResponseInfo == nil) {
-            self.uploadDataErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"regions error"];
+            self.uploadDataErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
             self.uploadDataErrorResponse = self.uploadDataErrorResponseInfo.responseDictionary;
         }
         completeHandler();
@@ -141,7 +142,7 @@
         if (!data) {
             completeHandler();
         } else {
-            [self UploadDataFromServer:data progress:progress completeHandler:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+            [self uploadDataFromServer:data progress:progress completeHandler:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
                 if (!responseInfo.isOK) {
                     self.uploadDataErrorResponseInfo = responseInfo;
                     self.uploadDataErrorResponse = response;

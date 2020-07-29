@@ -307,7 +307,7 @@
     header[@"Authorization"] = token;
     header[@"Content-Type"] = @"application/octet-stream";
     header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
-    
+    //TODO: key nil
     NSString *buckets = [[NSString alloc] initWithFormat:@"/buckets/%@", self.token.bucket];
     NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [QNUrlSafeBase64 encodeString:self.key]];
     NSString *action = [[NSString alloc] initWithFormat:@"%@%@/uploads", buckets, objects];
@@ -348,8 +348,9 @@
     NSString *action = [[NSString alloc] initWithFormat:@"%@%@%@%@", buckets, objects, uploads, partNumber];
     NSString *md5 = [[partData qn_md5] lowercaseString];
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
+        NSString *etag = [NSString stringWithFormat:@"%@", response[@"etag"]];
         NSString *serverMD5 = [NSString stringWithFormat:@"%@", response[@"md5"]];
-        return (BOOL)(responseInfo.isOK == false || (responseInfo.isOK && (!serverMD5 || (self.uploadOption.checkCrc && ![serverMD5 isEqualToString:md5]))));
+        return (BOOL)(!responseInfo.isOK || !etag || (responseInfo.isOK && self.uploadOption.checkCrc && (!serverMD5 || ![serverMD5 isEqualToString:md5])));
     };
     
     [self.regionRequest put:action
@@ -368,14 +369,15 @@
         partInfoArray:(NSArray <NSDictionary *> *)partInfoArray
              complete:(QNRequestTransactionCompleteHandler)complete{
     
+    self.requestInfo.requestType = QNUploadRequestTypeCompletePart;
+    
     if (!partInfoArray || partInfoArray.count == 0) {
         QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"partInfoArray"];
         if (complete) {
             complete(responseInfo, nil, responseInfo.responseDictionary);
         }
+        return;
     }
-    
-    self.requestInfo.requestType = QNUploadRequestTypeCompletePart;
     
     NSString *token = [NSString stringWithFormat:@"UpToken %@", self.token.token];
     NSMutableDictionary *header = [NSMutableDictionary dictionary];

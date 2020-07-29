@@ -133,7 +133,7 @@
     }];
 }
 
-- (void)UploadDataFromServer:(QNUploadData *)data
+- (void)uploadDataFromServer:(QNUploadData *)data
                     progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
              completeHandler:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler{
     

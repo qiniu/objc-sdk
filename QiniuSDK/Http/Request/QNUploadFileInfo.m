@@ -247,12 +247,12 @@
     if (self = [super init]) {
         _size = fileSize;
         _modifyTime = modifyTime;
-        [self createDataSize:dataSize];
+        [self createDataList:dataSize];
     }
     return self;
 }
 
-- (void)createDataSize:(long long)dataSize{
+- (void)createDataList:(long long)dataSize{
     
     long long offSize = 0;
     NSInteger dataIndex = 1;
