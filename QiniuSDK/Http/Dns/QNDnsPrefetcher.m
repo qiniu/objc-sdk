@@ -7,7 +7,8 @@
 //
 
 #import "QNDnsPrefetcher.h"
-#import "QNDnsCacheKey.h"
+#import "QNInetAddress.h"
+#import "QNDnsCacheInfo.h"
 #import "QNConfig.h"
 #import "QNDnsCacheFile.h"
 #import "QNUpToken.h"
@@ -16,113 +17,6 @@
 #import "QNFixedZone.h"
 #import "QNAutoZone.h"
 #import <HappyDNS/HappyDNS.h>
-
-//MARK: -- 缓存模型
-@interface QNInetAddress : NSObject<QNInetAddressDelegate>
-
-@property(nonatomic,  copy)NSString *hostValue;
-@property(nonatomic,  copy)NSString *ipValue;
-@property(nonatomic, strong)NSNumber *ttlValue;
-@property(nonatomic, strong)NSNumber *timestampValue;
-
-/// 构造方法 addressData为json String / Dictionary / Data / 遵循 QNInetAddressDelegate的实例
-+ (instancetype)inetAddress:(id)addressInfo;
-
-/// 是否有效，根据时间戳判断
-- (BOOL)isValid;
-
-/// 对象转json
-- (NSString *)toJsonInfo;
-
-/// 对象转字典
-- (NSDictionary *)toDictionary;
-
-@end
-@implementation QNInetAddress
-
-+ (instancetype)inetAddress:(id)addressInfo{
-    
-    NSDictionary *addressDic = nil;
-    if ([addressInfo isKindOfClass:[NSDictionary class]]) {
-        addressDic = (NSDictionary *)addressInfo;
-    } else if ([addressInfo isKindOfClass:[NSString class]]){
-        NSData *data = [(NSString *)addressInfo dataUsingEncoding:NSUTF8StringEncoding];
-        addressDic = [NSJSONSerialization JSONObjectWithData:data
-                                                     options:NSJSONReadingMutableLeaves
-                                                       error:nil];
-    } else if ([addressInfo isKindOfClass:[NSData class]]) {
-        addressDic = [NSJSONSerialization JSONObjectWithData:(NSData *)addressInfo
-                                                     options:NSJSONReadingMutableLeaves
-                                                       error:nil];
-    } else if ([addressInfo conformsToProtocol:@protocol(QNInetAddressDelegate)]){
-        id <QNInetAddressDelegate> address = (id <QNInetAddressDelegate> )addressInfo;
-        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
-        if ([address respondsToSelector:@selector(hostValue)] && [address hostValue]) {
-            dic[@"hostValue"] = [address hostValue];
-        }
-        if ([address respondsToSelector:@selector(ipValue)] && [address ipValue]) {
-            dic[@"ipValue"] = [address ipValue];
-        }
-        if ([address respondsToSelector:@selector(ttlValue)] && [address ttlValue]) {
-            dic[@"ttlValue"] = [address ttlValue];
-        }
-        if ([address respondsToSelector:@selector(timestampValue)] && [address timestampValue]) {
-            dic[@"timestampValue"] = [address timestampValue];
-        }
-        addressDic = [dic copy];
-    }
-    
-    if (addressDic) {
-        QNInetAddress *address = [[QNInetAddress alloc] init];
-        [address setValuesForKeysWithDictionary:addressDic];
-        return address;
-    } else {
-        return nil;
-    }
-}
-
-- (BOOL)isValid{
-    if (!self.timestampValue || !self.ipValue || self.ipValue.length == 0) {
-        return NO;
-    }
-    NSTimeInterval currentTimestamp = [[NSDate date] timeIntervalSince1970];
-    if (currentTimestamp > self.timestampValue.doubleValue + self.ttlValue.doubleValue) {
-        return NO;
-    } else {
-        return YES;
-    }
-}
-
-- (NSString *)toJsonInfo{
-    NSString *defaultString = @"{}";
-    NSDictionary *infoDic = [self toDictionary];
-    if (!infoDic) {
-        return defaultString;
-    }
-    
-    NSData *infoData = [NSJSONSerialization dataWithJSONObject:infoDic
-                                                       options:NSJSONWritingPrettyPrinted
-                                                         error:nil];
-    if (!infoData) {
-        return defaultString;
-    }
-    
-    NSString *infoStr = [[NSString alloc] initWithData:infoData encoding:NSUTF8StringEncoding];
-    if (!infoStr) {
-        return defaultString;
-    } else {
-        return infoStr;
-    }
-}
-
-- (NSDictionary *)toDictionary{
-    return [self dictionaryWithValuesForKeys:@[@"ipValue", @"hostValue", @"ttlValue", @"timestampValue"]];
-}
-
-- (void)setValue:(id)value forUndefinedKey:(NSString *)key{}
-
-@end
-
 
 //MARK: -- HappyDNS 适配
 @interface QNRecord(DNS)<QNInetAddressDelegate>
@@ -156,15 +50,13 @@
 
 //MARK: -- DNS Prefetcher
 @interface QNDnsPrefetcher()
-{
-    QNDnsCacheKey *_dnsCacheKey;
-}
+
 /// 是否正在预取，正在预取会直接取消新的预取操作请求
 @property(atomic, assign)BOOL isPrefetching;
 /// 获取AutoZone时的同步锁
 @property(nonatomic, strong)dispatch_semaphore_t getAutoZoneSemaphore;
 /// DNS信息本地缓存key
-@property(nonatomic, strong)QNDnsCacheKey *dnsCacheKey;
+@property(nonatomic, strong)QNDnsCacheInfo *dnsCacheInfo;
 /// happy的dns解析对象列表，会使用多个dns解析对象 包括系统解析
 @property(nonatomic, strong)QNDnsManager * httpDns;
 /// 缓存DNS解析结果
@@ -203,18 +95,13 @@
         return YES;
     }
     
-    NSString *dnsCache = [recorder getFileName];
-    if (!dnsCache || dnsCache.length == 0) {
-        return YES;
-    }
-    
-    NSData *data = [recorder get:dnsCache];
+    NSData *data = [recorder get:[QNIP local]];
     if (!data) {
         return YES;
     }
     
-    QNDnsCacheKey *cacheKey = [QNDnsCacheKey dnsCacheKey:dnsCache];
-    if (!cacheKey) {
+    QNDnsCacheInfo *cacheInfo = [QNDnsCacheInfo dnsCacheInfo:data];
+    if (!cacheInfo) {
         return YES;
     }
     
@@ -224,13 +111,13 @@
         return YES;
     }
     
-    if (![cacheKey.localIp isEqualToString:localIp]) {
+    if (![cacheInfo.localIp isEqualToString:localIp]) {
         return YES;
     }
     
-    [self setDnsCacheKey:cacheKey];
+    [self setDnsCacheInfo:cacheInfo];
     
-    return [self recoverDnsCache:data];
+    return [self recoverDnsCache:cacheInfo.info];
 }
 /// 本地缓存读取失败后，加载本地域名，预取DNS解析信息
 - (void)localFetch{
@@ -305,8 +192,8 @@
     }
     
     NSString *localIp = [QNIP local];
-    if (localIp == nil || self.dnsCacheKey == nil
-        || ![localIp isEqualToString:self.dnsCacheKey.localIp]) {
+    if (localIp == nil ||
+        (self.dnsCacheInfo && ![localIp isEqualToString:self.dnsCacheInfo.localIp])) {
 
         [self clearPreHosts];
     }
@@ -398,13 +285,9 @@
 }
 
 //MARK: -- 加载和存储缓存信息
-- (BOOL)recoverDnsCache:(NSData *)data{
-    NSError *error;
-    NSDictionary *dataDic = [NSJSONSerialization JSONObjectWithData:data
-                                                            options:NSJSONReadingMutableLeaves
-                                                              error:&error];
-    if (error || !dataDic || ![dataDic isKindOfClass:[NSDictionary class]]) {
-        return YES;
+- (BOOL)recoverDnsCache:(NSDictionary *)dataDic{
+    if (dataDic == nil) {
+        return NO;
     }
     
     NSMutableDictionary *newAddressDictionary = [NSMutableDictionary dictionary];
@@ -438,13 +321,9 @@
     NSTimeInterval currentTime = [QNUtils currentTimestamp];
     NSString *localIp = [QNIP local];
     
-    if (localIp == nil) {
+    if (localIp == nil || localIp.length == 0) {
         return NO;
     }
-    
-    QNDnsCacheKey *dnsCacheKey = [QNDnsCacheKey dnsCacheKey:[NSString stringWithFormat:@"%.0lf",currentTime]
-                                                    localIp:localIp];
-    NSString *cacheKey = [dnsCacheKey toString];
 
     NSError *error;
     id <QNRecorderDelegate> recorder = [QNDnsCacheFile dnsCacheFile:kQNGlobalConfiguration.dnscacheDir
@@ -453,39 +332,35 @@
         return NO;
     }
     
-    [self setDnsCacheKey:dnsCacheKey];
-    return [self recorderDnsCache:recorder cacheKey:cacheKey];
-}
-
-- (BOOL)recorderDnsCache:(id <QNRecorderDelegate>)recorder cacheKey:(NSString *)cacheKey{
     NSMutableDictionary *addressInfo = [NSMutableDictionary dictionary];
     for (NSString *key in self.addressDictionary.allKeys) {
-        
+       
         NSArray *addressModelList = self.addressDictionary[key];
         NSMutableArray * addressDicList = [NSMutableArray array];
         for (QNInetAddress *ipInfo in addressModelList) {
-            
+           
             NSDictionary *addressDic = [ipInfo toDictionary];
             if (addressDic) {
                 [addressDicList addObject:addressDic];
             }
         }
-        
+       
         if (addressDicList.count > 0) {
             addressInfo[key] = addressDicList;
         }
     }
+   
+    QNDnsCacheInfo *cacheInfo = [QNDnsCacheInfo dnsCacheInfo:[NSString stringWithFormat:@"%.0lf",currentTime]
+                                                     localIp:localIp
+                                                        info:addressInfo];
     
-    NSError *error;
-    NSData *data = [NSJSONSerialization dataWithJSONObject:addressInfo
-                                                   options:NSJSONWritingPrettyPrinted
-                                                     error:&error];
-    if (error == nil && data) {
-        [recorder set:cacheKey data:data];
-        return YES;
-    } else {
+    NSData *cacheData = [cacheInfo jsonData];
+    if (!cacheData) {
         return NO;
     }
+    [self setDnsCacheInfo:cacheInfo];
+    [recorder set:localIp data:cacheData];
+    return true;
 }
 
 - (void)clearPreHosts{
@@ -582,12 +457,6 @@
     return [kQNGlobalConfiguration isDnsOpen];
 }
 
-- (QNDnsCacheKey *)dnsCacheKey{
-    if (_dnsCacheKey == nil) {
-        _dnsCacheKey = [[QNDnsCacheKey alloc] init];
-    }
-    return _dnsCacheKey;
-}
 - (NSMutableDictionary<NSString *,NSArray<QNInetAddress *> *> *)addressDictionary{
     if (_addressDictionary == nil) {
         _addressDictionary = [NSMutableDictionary dictionary];
