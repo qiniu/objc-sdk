@@ -40,10 +40,8 @@
 #import "QNResumeUpload.h"
 #import "QNConcurrentResumeUpload.h"
 
-
 #import "QNUpToken.h"
 #import "QNUploadOption.h"
-
 #import "QNReportItem.h"
 
 #import "QNDnsPrefetch.h"
