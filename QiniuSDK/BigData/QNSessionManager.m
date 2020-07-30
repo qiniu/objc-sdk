@@ -216,7 +216,7 @@ withIdentifier:(NSString *)identifier
     QNAsyncRun(^{
         NSURL *URL = [NSURL URLWithString:url];
 
-        NSString *domain = URL.host;
+//        NSString *domain = URL.host;
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
         request.qn_domain = URL.host;
         QNSessionDelegateHandler *delegate = [[QNSessionDelegateHandler alloc] init];

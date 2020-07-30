@@ -7,7 +7,6 @@
 //
 
 #import "QNDnsCacheFile.h"
-#import "QNDnsCacheKey.h"
 
 @interface QNDnsCacheFile()
 
@@ -31,14 +30,9 @@
 
 - (NSError *)set:(NSString *)key
             data:(NSData *)value {
+    
     NSError *error;
-    
     NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSArray *subFilePaths = [fileManager subpathsAtPath:self.directory];
-    for (NSString *path in subFilePaths) {
-        [fileManager removeItemAtPath:path error:nil];
-    }
-    
     NSString *filePath = [self pathOfKey:key];
     [fileManager createFileAtPath:filePath contents:value attributes:nil];
     
@@ -60,33 +54,7 @@
 }
 
 - (NSString *)getFileName{
-    
-    NSString *fileName = nil;
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSArray *subFilePaths = [fileManager subpathsAtPath:self.directory];
-    
-    if (subFilePaths && subFilePaths.count > 0) {
-        
-        if (subFilePaths.count == 1) {
-            fileName = [subFilePaths.firstObject lastPathComponent];
-        } else {
-            
-            double cacheTime = 0;
-            for (NSString *path in subFilePaths) {
-                
-                NSString *fileNameP = [path lastPathComponent];
-                QNDnsCacheKey *key = [QNDnsCacheKey dnsCacheKey:fileNameP];
-                double time = [key.currentTime doubleValue];
-                if (time > cacheTime) {
-                    [self del:fileNameP];
-                    cacheTime = time;
-                    fileName = fileNameP;
-                }
-            }
-        }
-    }
-    
-    return fileName;
+    return @"dnsCache";
 }
 
 - (NSString *)pathOfKey:(NSString *)key {
