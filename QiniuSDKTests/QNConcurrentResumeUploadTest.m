@@ -63,7 +63,7 @@
     [tempFile remove];
 }
 
-- (void) template:(int)size {
+- (void)template:(int)size {
     NSString *keyUp = [NSString stringWithFormat:@"concurrent_template_%dk", size];
     QNTempFile *tempFile = [QNTempFile createTempfileWithSize:size * 1024 identifier:keyUp];
     __block NSString *key = nil;

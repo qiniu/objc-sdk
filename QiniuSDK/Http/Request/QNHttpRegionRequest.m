@@ -151,7 +151,7 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
     [request setAllHTTPHeaderFields:headers];
     [request setTimeoutInterval:self.config.timeoutInterval];
     request.HTTPBody = body;
-    NSLog(@"signal request: \r\n url:%@ \r\n header:%@ \r\n bodyLength:%ld", request.URL, request.allHTTPHeaderFields, [body length]);
+    NSLog(@"signal request: \r\n url:%@", request.URL);
     [self.singleRequest request:request
                          server:server
                       toSkipDns:toSkipDns
