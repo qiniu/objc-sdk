@@ -18,12 +18,11 @@ typedef void (^QNPrequeryReturn)(int code, QNResponseInfo * _Nullable httpRespon
 
 @interface QNZone : NSObject
 
-/**
- *    默认上传服务器地址列表
- */
+// 根据token查询相关Zone信息【内部使用】
 - (void)preQuery:(QNUpToken * _Nullable)token
               on:(QNPrequeryReturn)ret;
 
+// 根据token获取ZonesInfo 【内部使用】
 - (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken * _Nullable)token;
 
 @end

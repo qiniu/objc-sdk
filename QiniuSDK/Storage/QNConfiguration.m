@@ -10,7 +10,7 @@
 #import "QNResponseInfo.h"
 #import "QNSessionManager.h"
 #import "QNUpToken.h"
-#import "QNUploadInfoReporter.h"
+#import "QNReportConfig.h"
 #import "QNAutoZone.h"
 
 const UInt32 kQNBlockSize = 4 * 1024 * 1024;
@@ -77,10 +77,24 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 }
 - (void)setupData{
     _isDnsOpen = YES;
-    _dnscacheDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches"];
+    _dnscacheDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches/Dns"];
     _dnsRepreHostNum = 2;
     _dnsCacheTime = kQNDefaultDnsCacheTime;
+    
+    _isCheckOpen = true;
+    _maxCheckTime = 9;
+    _maxCheckCount = 2;
 }
+
+- (void)setMaxCheckTime:(int)maxCheckTime{
+    if (maxCheckTime < 1) {
+        maxCheckTime = 1;
+    } else if (maxCheckTime > 15) {
+        maxCheckTime = 15;
+    }
+    _maxCheckCount = maxCheckTime;
+}
+
 @end
 
 @implementation QNConfigurationBuilder

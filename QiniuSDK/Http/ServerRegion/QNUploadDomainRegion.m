@@ -10,6 +10,7 @@
 #import "QNUploadServer.h"
 #import "QNZoneInfo.h"
 #import "QNUploadServerFreezeManager.h"
+#import "QNNetworkCheckManager.h"
 #import "QNDnsPrefetch.h"
 #import "QNUtils.h"
 
@@ -97,7 +98,13 @@
         }
         
         NSMutableDictionary *ipGroupInfos = [NSMutableDictionary dictionary];
+        // get address List of host
         NSArray *inetAddresses = [kQNDnsPrefetch getInetAddressByHost:self.host];
+        if (!inetAddresses || inetAddresses.count == 0) {
+            return;
+        }
+        
+        // address List to ipList of group & check ip network
         for (id <QNIDnsNetworkAddress> inetAddress in inetAddresses) {
             NSString *ipValue = inetAddress.ipValue;
             NSString *groupType = [QNUtils getIpType:ipValue host:self.host];
@@ -106,14 +113,48 @@
                 [ipList addObject:inetAddress];
                 ipGroupInfos[groupType] = ipList;
             }
+            // check ip network
+            if (ipValue) {
+                [kQNTransactionManager addCheckSomeIPNetworkStatusTransaction:@[ipValue]
+                                                                         host:inetAddress.hostValue];
+            }
         }
         
+        // ipList of group to ipGroup List
         NSMutableArray *ipGroupList = [NSMutableArray array];
         for (NSString *groupType in ipGroupInfos.allKeys) {
             NSArray *ipList = ipGroupInfos[groupType];
             QNUploadIpGroup *ipGroup = [[QNUploadIpGroup alloc] initWithGroupType:groupType ipList:ipList];
             [ipGroupList addObject:ipGroup];
         }
+        
+        // sort ipGroup List by ipGroup network status PS:bucket sorting
+        if (kQNGlobalConfiguration.isCheckOpen && ipGroupList.count > 1) {
+            NSMutableDictionary *bucketInfo = [NSMutableDictionary dictionary];
+            for (QNUploadIpGroup *ipGroup in ipGroupList) {
+                id <QNIDnsNetworkAddress> address = ipGroup.ipList.firstObject;
+                QNNetworkCheckStatus status = [kQNNetworkCheckManager getIPNetworkStatus:address.ipValue host:address.hostValue];
+                NSString *bucketKey = [NSString stringWithFormat:@"%ld", status];
+                // create bucket is not exist
+                NSMutableArray *bucket = bucketInfo[bucketKey];
+                if (!bucket) {
+                    bucketInfo[bucketKey] = bucket = [NSMutableArray array];
+                }
+                [NSMutableArray array];
+                [bucket addObject:ipGroup];
+            }
+            
+            ipGroupList = [NSMutableArray array];
+            
+            for (long status = QNNetworkCheckStatusA; status<QNNetworkCheckStatusUnknown; status++) {
+                NSString *bucketKey = [NSString stringWithFormat:@"%ld", status];
+                NSMutableArray *bucket = bucketInfo[bucketKey];
+                if (bucket) {
+                    [ipGroupList addObjectsFromArray:bucket];
+                }
+            }
+        }
+        
         self.ipGroupList = ipGroupList;
     }
 }

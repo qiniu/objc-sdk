@@ -88,7 +88,7 @@
 }
 
 - (BOOL)qn_isHttps{
-    if ([self.URL.absoluteString containsString:@"https://"]) {
+    if ([self.URL.absoluteString rangeOfString:@"https://"].location != NSNotFound) {
         return YES;
     } else {
         return NO;

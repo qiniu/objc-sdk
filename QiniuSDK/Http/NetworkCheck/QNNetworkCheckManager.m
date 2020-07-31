@@ -8,6 +8,7 @@
 
 #import "QNNetworkCheckManager.h"
 #import "QNUtils.h"
+#import "QNConfiguration.h"
 #import "QNNetworkChecker.h"
 
 @interface QNNetworkCheckStatusInfo : NSObject
@@ -23,6 +24,7 @@
 @interface QNNetworkCheckManager()<QNNetworkCheckerDelegate>
 
 @property(nonatomic, strong)QNNetworkChecker *networkChecker;
+@property(nonatomic, strong)NSMutableDictionary <NSString *, NSString *> *checkingIPTypeInfo;
 @property(nonatomic, strong)NSMutableDictionary <NSString *, QNNetworkCheckStatusInfo *> *statusInfoDictionary;
 
 @end
@@ -39,7 +41,7 @@
 }
 
 - (void)initData{
-    self.isCheckOpen = true;
+    self.checkingIPTypeInfo = [NSMutableDictionary dictionary];
     self.statusInfoDictionary = [NSMutableDictionary dictionary];
     self.networkChecker = [QNNetworkChecker networkChecker];
     self.networkChecker.delegate = self;
@@ -47,6 +49,10 @@
 
 - (QNNetworkCheckStatus)getIPNetworkStatus:(NSString *)ip
                                       host:(NSString *)host{
+    if ([kQNGlobalConfiguration isCheckOpen] == NO) {
+        return QNNetworkCheckStatusUnknown;
+    }
+    
     NSString *ipType = [QNUtils getIpType:ip host:host];
     QNNetworkCheckStatusInfo *statusInfo = self.statusInfoDictionary[ipType];
     if (statusInfo) {
@@ -61,8 +67,8 @@
     
     for (NSString *ip in ipArray) {
         NSString *ipType = [QNUtils getIpType:ip host:host];
-        QNNetworkCheckStatusInfo *statusInfo = self.statusInfoDictionary[ipType];
-        if (!statusInfo) {
+        if (ipType && !self.statusInfoDictionary[ipType] && !self.checkingIPTypeInfo[ipType]) {
+            self.checkingIPTypeInfo[ipType] = ip;
             [self.networkChecker checkIP:ip host:host];
         }
     }
@@ -76,7 +82,7 @@
 }
 
 
-//MARK: -- QNNetworkChecker
+//MARKL -- QNNetworkChecker
 - (void)checkComplete:(nonnull NSString *)ip host:(nonnull NSString *)host time:(long)time {
     NSString *ipType = [QNUtils getIpType:ip host:host];
     if (ipType == nil && ipType.length == 0) {
@@ -88,6 +94,7 @@
     statusInfo.checkedIP = ip;
     statusInfo.status = [self getNetworkCheckStatus:time];
     self.statusInfoDictionary[ipType] = statusInfo;
+    [self.checkingIPTypeInfo removeObjectForKey:ipType];
 }
 
 - (QNNetworkCheckStatus)getNetworkCheckStatus:(long)time{
@@ -107,23 +114,6 @@
     return status;
 }
 
-
-- (void)setMaxCheckCount:(int)maxCheckCount{
-    self.networkChecker.maxCheckCount = maxCheckCount;
-}
-
-- (int)maxCheckCount{
-    return self.networkChecker.maxCheckCount;
-}
-
-- (void)setMaxTime:(int)maxTime{
-    self.networkChecker.maxTime = maxTime;
-}
-
-- (int)maxTime{
-    return self.networkChecker.maxTime;
-}
-
 @end
 
 
@@ -133,7 +123,7 @@
 
 - (void)addCheckCachedIPListNetworkStatusTransaction{
     
-    if ([kQNNetworkCheckManager isCheckOpen] == NO) {
+    if ([kQNGlobalConfiguration isCheckOpen] == NO) {
         return;
     }
 
@@ -155,7 +145,7 @@
     
     [self addCheckCachedIPListNetworkStatusTransaction];
     
-    if ([kQNNetworkCheckManager isCheckOpen] == NO) {
+    if ([kQNGlobalConfiguration isCheckOpen] == NO) {
         return;
     }
     
@@ -165,7 +155,7 @@
         QNTransaction *transaction = [transactionManager transactionsForName:transactionName].firstObject;
         
         if (!transaction) {
-            transaction = [QNTransaction transaction:kQNCheckSomeIPNetworkStatusTransactionName
+            transaction = [QNTransaction transaction:transactionName
                                                after:0
                                               action:^{
                 [kQNNetworkCheckManager preCheckIPNetworkStatus:ipArray host:host];

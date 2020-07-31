@@ -16,5 +16,5 @@
 #import "QNUploadManager.h"
 #import "QNUploadOption.h"
 #import "QNUrlSafeBase64.h"
-#import "QNUploadInfoReporter.h"
+#import "QNReportConfig.h"
 #import "QNPipeline.h"

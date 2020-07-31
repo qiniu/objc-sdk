@@ -78,8 +78,8 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (nonatomic, assign, readonly) BOOL useHttps;
 
 /**
-  *   是否开启并发分片上传，默认为NO
-  */
+ *   是否开启并发分片上传，默认为NO
+ */
 @property (nonatomic, assign, readonly) BOOL useConcurrentResumeUpload;
 
 /**
@@ -87,23 +87,44 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  */
 @property (nonatomic, assign, readonly) UInt32 concurrentTaskCount;
 
+/**
+ *  日志打点配置
+ */
 @property (nonatomic, readonly) QNReportConfig *reportConfig;
 
 /**
- *    重试时是否允许使用备用上传域名，默认为YES
+ *  重试时是否允许使用备用上传域名，默认为YES
  */
 @property (nonatomic, assign) BOOL allowBackupHost;
 
+/**
+ *  持久化记录接口，可以实现将记录持久化到文件，数据库等
+ */
 @property (nonatomic, readonly) id<QNRecorderDelegate> recorder;
 
+/**
+ *  为持久化上传记录，根据上传的key以及文件名 生成持久化的记录key
+ */
 @property (nonatomic, readonly) QNRecorderKeyGenerator recorderKeyGen;
 
+/**
+ *  上传请求代理配置信息
+ */
 @property (nonatomic, readonly) NSDictionary *proxy;
 
+/**
+ *  上传URL转换，使url转换为用户需要的url
+ */
 @property (nonatomic, readonly) QNUrlConvert converter;
 
+/**
+ *  默认配置
+ */
 + (instancetype)defaultConfiguration;
 
+/**
+ *  使用 QNConfigurationBuilder 进行配置
+ */
 + (instancetype)build:(QNConfigurationBuilderBlock)block;
 
 @end
@@ -136,6 +157,23 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  *   dns解析结果本地缓存路径
  */
 @property(nonatomic,  copy, readonly)NSString *dnscacheDir;
+
+/**
+ *  是否开启网络检测
+ */
+@property(nonatomic, assign)BOOL isCheckOpen;
+
+/**
+ *  单个IP一次检测次数 默认：2次
+ */
+@property(nonatomic, assign)int maxCheckCount;
+
+/**
+ * 单个IP检测的最长时间 maxTime >= 1 && maxTime <= 600  默认：9秒
+ */
+@property(nonatomic, assign)int maxCheckTime;
+
+
 
 + (instancetype)shared;
 
@@ -194,14 +232,29 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  */
 @property (nonatomic, assign) UInt32 concurrentTaskCount;
 
+/**
+ *  持久化记录接口，可以实现将记录持久化到文件，数据库等
+ */
 @property (nonatomic, strong) id<QNRecorderDelegate> recorder;
 
+/**
+ *  为持久化上传记录，根据上传的key以及文件名 生成持久化的记录key
+ */
 @property (nonatomic, strong) QNRecorderKeyGenerator recorderKeyGen;
 
+/**
+ *  日志打点配置
+ */
 @property (nonatomic, strong) QNReportConfig *reportConfig;
 
+/**
+ *  上传请求代理配置信息
+ */
 @property (nonatomic, strong) NSDictionary *proxy;
 
+/**
+ *  上传URL转换，使url转换为用户需要的url
+ */
 @property (nonatomic, strong) QNUrlConvert converter;
 
 @end

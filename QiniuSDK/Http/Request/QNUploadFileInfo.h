@@ -62,8 +62,8 @@ NS_ASSUME_NONNULL_BEGIN
 //MARK:-- 构造
 + (instancetype)blockFromDictionary:(NSDictionary *)dictionary;
 - (instancetype)initWithOffset:(long long)offset
-                     blockSize:(NSInteger)blockSize
-                      dataSize:(NSInteger)dataSize
+                     blockSize:(long long)blockSize
+                      dataSize:(long long)dataSize
                          index:(NSInteger)index;
 
 /// 转化字典
