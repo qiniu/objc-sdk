@@ -151,7 +151,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 /**
  *   dns解析结果本地缓存路径
  */
-@property(nonatomic,  copy, readonly)NSString *dnscacheDir;
+@property(nonatomic,  copy, readonly)NSString *dnsCacheDir;
 
 + (instancetype)shared;
 
