@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol QNUploadRegion <NSObject>
 
+@property(nonatomic, assign, readonly)BOOL isValid;
 @property(nonatomic, strong, nullable, readonly)QNZoneInfo *zoneInfo;
 
 - (void)setupRegionData:(QNZoneInfo * _Nullable)zoneInfo;

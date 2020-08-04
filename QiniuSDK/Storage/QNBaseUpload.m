@@ -109,8 +109,11 @@
 }
 
 - (int)prepareToUpload{
-    [self setupRegions];
-    return 0;
+    int ret = 0;
+    if (![self setupRegions]) {
+        ret = -1;
+    }
+    return ret;
 }
 
 - (void)startToUpload{
@@ -139,16 +142,19 @@
 }
 
 //MARK:-- region
-- (void)setupRegions{
+- (BOOL)setupRegions{
     NSMutableArray *defaultRegions = [NSMutableArray array];
     NSArray *zoneInfos = [self.config.zone getZonesInfoWithToken:self.token].zonesInfo;
     for (QNZoneInfo *zoneInfo in zoneInfos) {
         QNUploadDomainRegion *region = [[QNUploadDomainRegion alloc] init];
         [region setupRegionData:zoneInfo];
-        [defaultRegions addObject:region];
+        if (region.isValid) {
+            [defaultRegions addObject:region];
+        }
     }
     self.regions = defaultRegions;
     self.metrics.regions = defaultRegions;
+    return defaultRegions.count > 0;
 }
 
 - (void)insertRegionAtFirstByZoneInfo:(QNZoneInfo *)zoneInfo{
