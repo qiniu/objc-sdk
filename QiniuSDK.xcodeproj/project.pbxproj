@@ -1202,6 +1202,7 @@
 				31A18421246BD988001D6EEE /* QNUploadRequestInfo.m in Sources */,
 				31F553CD24596C3D000B66AD /* QNHttpRegionRequest.m in Sources */,
 				31F553B72457D2FF000B66AD /* QNSystem.m in Sources */,
+				31E6B30124D8159F0097527D /* QNDnsCacheInfo.m in Sources */,
 				CC2513B8245423C3003F4C65 /* QNConcurrentResumeUpload.m in Sources */,
 				31F553C22457FFB0000B66AD /* QNPipeline.m in Sources */,
 				3149A1E12462A57400A2A15B /* QNUploadServer.m in Sources */,
