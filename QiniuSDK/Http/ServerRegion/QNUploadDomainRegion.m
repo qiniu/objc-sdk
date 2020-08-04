@@ -137,6 +137,10 @@
 @end
 @implementation QNUploadDomainRegion
 
+- (BOOL)isValid{
+    return !self.isAllFrozen && (self.domainHostList.count > 0 || self.oldDomainHostList.count > 0);
+}
+
 - (void)setupRegionData:(QNZoneInfo *)zoneInfo{
     _zoneInfo = zoneInfo;
     
