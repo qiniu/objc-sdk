@@ -88,11 +88,6 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (nonatomic, assign, readonly) UInt32 concurrentTaskCount;
 
 /**
- *  日志打点配置
- */
-@property (nonatomic, readonly) QNReportConfig *reportConfig;
-
-/**
  *  重试时是否允许使用备用上传域名，默认为YES
  */
 @property (nonatomic, assign) BOOL allowBackupHost;
@@ -156,7 +151,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 /**
  *   dns解析结果本地缓存路径
  */
-@property(nonatomic,  copy, readonly)NSString *dnscacheDir;
+@property(nonatomic,  copy, readonly)NSString *dnsCacheDir;
 
 /**
  *  是否开启网络检测
@@ -241,11 +236,6 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  *  为持久化上传记录，根据上传的key以及文件名 生成持久化的记录key
  */
 @property (nonatomic, strong) QNRecorderKeyGenerator recorderKeyGen;
-
-/**
- *  日志打点配置
- */
-@property (nonatomic, strong) QNReportConfig *reportConfig;
 
 /**
  *  上传请求代理配置信息

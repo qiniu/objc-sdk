@@ -209,7 +209,7 @@
     id <QNRecorderDelegate> recorder = nil;
     
     NSError *error;
-    recorder = [QNDnsCacheFile dnsCacheFile:kQNGlobalConfiguration.dnscacheDir
+    recorder = [QNDnsCacheFile dnsCacheFile:kQNGlobalConfiguration.dnsCacheDir
                                       error:&error];
     if (error) {
         return YES;
@@ -448,7 +448,7 @@
     }
 
     NSError *error;
-    id <QNRecorderDelegate> recorder = [QNDnsCacheFile dnsCacheFile:kQNGlobalConfiguration.dnscacheDir
+    id <QNRecorderDelegate> recorder = [QNDnsCacheFile dnsCacheFile:kQNGlobalConfiguration.dnsCacheDir
                                                              error:&error];
     if (error) {
         return NO;
