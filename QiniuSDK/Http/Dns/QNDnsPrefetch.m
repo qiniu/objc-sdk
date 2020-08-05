@@ -205,7 +205,6 @@
 //MARK: -- uploadManager初始化时，加载本地缓存到内存
 /// 同步本地预取缓存 如果存在且满足使用返回false，反之为true
 - (BOOL)recoverCache{
-    NSLog(@"== recoverCache");
     id <QNRecorderDelegate> recorder = nil;
     
     NSError *error;
@@ -241,7 +240,6 @@
         return;
     }
     
-    NSLog(@"== localFetch");
     [self preFetchHosts:[self getLocalPreHost]];
     [self recorderDnsCache];
     [self endPreFetch];
@@ -435,7 +433,6 @@
     }
     self.addressDictionary = newAddressDictionary;
     
-    NSLog(@"== recoverDnsCache");
     return NO;
 }
 
