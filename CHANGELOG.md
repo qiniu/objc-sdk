@@ -13,7 +13,7 @@
 
 如果您并未对7.x SDK 进行过深度定制，而是直接对接QNUploadManager进行上传，那么SDK版本升级只需要更换pod版本重新安装即可。
 
-详细情况请参考：iOS_Changes_from_7.4.1_to_8.0.0.md
+详细情况请参考：[iOS_Changes_from_7.x_to_8.0.0.md](./doc/iOS_Changes_from_7.x_to_8.0.0.md)
 
 ## 7.4.3 (2020-07-27)
 ## 优化
