@@ -7,11 +7,10 @@
 //
 
 #import "QNConfiguration.h"
-#import "QNHttpResponseInfo.h"
 #import "QNResponseInfo.h"
 #import "QNSessionManager.h"
 #import "QNUpToken.h"
-#import "QNUploadInfoReporter.h"
+#import "QNReportConfig.h"
 #import "QNAutoZone.h"
 
 const UInt32 kQNBlockSize = 4 * 1024 * 1024;
@@ -19,6 +18,11 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 
 
 @implementation QNConfiguration
+
++ (instancetype)defaultConfiguration{
+    QNConfigurationBuilder *builder = [[QNConfigurationBuilder alloc] init];
+    return [[QNConfiguration alloc] initWithBuilder:builder];
+}
 
 + (instancetype)build:(QNConfigurationBuilderBlock)block {
     QNConfigurationBuilder *builder = [[QNConfigurationBuilder alloc] init];
@@ -47,8 +51,6 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
         _useHttps = builder.useHttps;
 
         _allowBackupHost = builder.allowBackupHost;
-        
-        _reportConfig = builder.reportConfig;
 
         _useConcurrentResumeUpload = builder.useConcurrentResumeUpload;
         
@@ -73,7 +75,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 }
 - (void)setupData{
     _isDnsOpen = YES;
-    _dnscacheDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches/Dns"];
+    _dnsCacheDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches/Dns"];
     _dnsRepreHostNum = 2;
     _dnsCacheTime = kQNDefaultDnsCacheTime;
 }
@@ -86,10 +88,9 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
         _zone = [[QNAutoZone alloc] init];
         _chunkSize = 2 * 1024 * 1024;
         _putThreshold = 4 * 1024 * 1024;
-        _retryMax = 3;
-        _timeoutInterval = 60;
+        _retryMax = 1;
+        _timeoutInterval = 90;
         _retryInterval = 0.5;
-        _reportConfig = [QNReportConfig sharedInstance];
 
         _recorder = nil;
         _recorderKeyGen = nil;

@@ -15,7 +15,7 @@
 #endif
 
 #import "QNUserAgent.h"
-#import "QNVersion.h"
+#import "QNUtils.h"
 
 static NSString *qn_clientId(void) {
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
@@ -32,10 +32,15 @@ static NSString *qn_clientId(void) {
 }
 
 static NSString *qn_userAgent(NSString *id, NSString *ak) {
+    NSString *addition = @"";
+#if DEBUG
+    addition = @"_Debug";
+#endif
+    
 #if __IPHONE_OS_VERSION_MIN_REQUIRED
-    return [NSString stringWithFormat:@"QiniuObject-C/%@ (%@; iOS %@; %@; %@)", kQiniuVersion, [[UIDevice currentDevice] model], [[UIDevice currentDevice] systemVersion], id, ak];
+    return [NSString stringWithFormat:@"QiniuObject-C%@/%@ (%@; iOS %@; %@; %@)", addition, [QNUtils sdkVersion], [[UIDevice currentDevice] model], [[UIDevice currentDevice] systemVersion], id, ak];
 #else
-    return [NSString stringWithFormat:@"QiniuObject-C/%@ (Mac OS X %@; %@; %@)", kQiniuVersion, [[NSProcessInfo processInfo] operatingSystemVersionString], id, ak];
+    return [NSString stringWithFormat:@"QiniuObject-C%@/%@ (Mac OS X %@; %@; %@)", addition, [QNUtils sdkVersion], [[NSProcessInfo processInfo] operatingSystemVersionString], id, ak];
 #endif
 }
 

@@ -7,13 +7,13 @@
 //
 
 #import <XCTest/XCTest.h>
-#import "QNDnsPrefetcher.h"
+#import "QNDnsPrefetch.h"
 #import "QNTestConfig.h"
 #import "QNFixedZone.h"
 #import <AGAsyncTestHelper.h>
 #import "XCTestCase+QNTest.h"
 
-@interface InetAddress : NSObject <QNInetAddressDelegate>
+@interface InetAddress : NSObject <QNIDnsNetworkAddress>
 
 @property(nonatomic,   copy)NSString *hostValue;
 @property(nonatomic,   copy)NSString *ipValue;
@@ -30,7 +30,7 @@
 @end
 @implementation CustomDns
 
-- (NSArray<id<QNInetAddressDelegate>> *)lookup:(NSString *)host{
+- (NSArray<id<QNIDnsNetworkAddress>> *)lookup:(NSString *)host{
     
     InetAddress *inetAddress = [[InetAddress alloc] init];
     inetAddress.hostValue = host;
@@ -77,17 +77,17 @@
     
     QN_TEST_CASE_WAIT_TIME(5);
 
-    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetcher getInetAddressByHost:host];
+    NSArray <id <QNIDnsNetworkAddress>> *addressList = [kQNDnsPrefetch getInetAddressByHost:host];
     XCTAssert(addressList.count > 0, @"success");
 }
 
 - (void)testPreFetch {
     
-    [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:kDnsTestToken];
+    [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:[QNUpToken parse:kDnsTestToken]];
     
-    AGWW_WAIT_WHILE([kQNDnsPrefetcher getInetAddressByHost:kCustomHost] == nil, 60 * 5);
+    AGWW_WAIT_WHILE([kQNDnsPrefetch getInetAddressByHost:kCustomHost] == nil, 60 * 5);
     
-    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetcher getInetAddressByHost:kCustomHost];
+    NSArray <id <QNIDnsNetworkAddress>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
     XCTAssert(addressList.count > 0, @"success");
 }
 
@@ -96,14 +96,14 @@
     InetAddress *address = [[InetAddress alloc] init];
     address.hostValue = kCustomHost;
     address.ipValue = CustomIPValue;
-    [kQNDnsPrefetcher invalidInetAdress:address];
+    [kQNDnsPrefetch invalidInetAdress:address];
     
     kQNGlobalConfiguration.dns = [[CustomDns alloc] init];
-    [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:kDnsTestToken];
+    [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:[QNUpToken parse:kDnsTestToken]];
     
     QN_TEST_CASE_WAIT_TIME(2);
     
-    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetcher getInetAddressByHost:kCustomHost];
+    NSArray <id <QNIDnsNetworkAddress>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
     NSLog(@"addressList count: %ld", addressList.count);
     XCTAssert(addressList.count==1, @"success");
     XCTAssert([addressList.firstObject.ipValue isEqualToString:CustomIPValue], @"success");
@@ -114,7 +114,7 @@
     InetAddress *address = [[InetAddress alloc] init];
     address.hostValue = kCustomHost;
     address.ipValue = CustomIPValue;
-    [kQNDnsPrefetcher invalidInetAdress:address];
+    [kQNDnsPrefetch invalidInetAdress:address];
     QN_TEST_CASE_WAIT_TIME(1);
     
     CustomDns *dns = [[CustomDns alloc] init];
@@ -122,11 +122,11 @@
     kQNGlobalConfiguration.dns = dns;
     kQNGlobalConfiguration.dnsCacheTime = 120;
     
-    [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:kDnsTestToken];
+    [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:[QNUpToken parse:kDnsTestToken]];
     
     QN_TEST_CASE_WAIT_TIME(2);
     
-    NSArray <id <QNInetAddressDelegate>> *addressList = [kQNDnsPrefetcher getInetAddressByHost:kCustomHost];
+    NSArray <id <QNIDnsNetworkAddress>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
     
     XCTAssert(addressList.count==1, @"success");
     XCTAssert(addressList.firstObject.ttlValue.doubleValue == 120, @"success");
@@ -147,8 +147,7 @@
         dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{
             
             dispatch_group_enter(group);
-            BOOL isSuccess = [kQNTransactionManager addDnsCheckAndPrefetchTransaction:self.config.zone
-                                                                                token:kDnsTestToken];
+            BOOL isSuccess = [kQNTransactionManager addDnsCheckAndPrefetchTransaction:self.config.zone token:[QNUpToken parse:kDnsTestToken]];
             if (isSuccess) {
                 successPrefetchNum += 1;
             }
@@ -157,6 +156,7 @@
     }
     
     dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        // 1 or 0
         NSLog(@"successPrefetchNum: %d", successPrefetchNum);
         XCTAssert(successPrefetchNum >= 0, @"success");
     });

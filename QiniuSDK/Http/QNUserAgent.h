@@ -13,6 +13,7 @@
  *
  */
 
+#define kQNUserAgent [QNUserAgent sharedInstance]
 @interface QNUserAgent : NSObject
 
 /**

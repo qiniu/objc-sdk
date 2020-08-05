@@ -59,6 +59,7 @@
     [manager addTransaction:transaction01];
     [manager addTransaction:transaction02];
     QNTransaction *header = [manager valueForKeyPath:@"transactionList.header"];
+
     XCTAssert((header == transaction01) || (header == transaction02) || (header == nil), @"success");
     
     [manager removeTransaction:transaction01];

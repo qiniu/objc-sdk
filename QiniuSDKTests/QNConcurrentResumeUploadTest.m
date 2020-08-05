@@ -24,7 +24,7 @@
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.useConcurrentResumeUpload = YES;
         builder.concurrentTaskCount = 3;
-//        builder.useHttps = NO;
+        builder.useHttps = YES;
     }];
     _upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 }
@@ -44,14 +44,12 @@
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
         flag = YES;
     }
-        params:@{ @"x:七牛" : @"objc",
-                  @"x:no" : @"",
-                  @"invalid" : @"invalid" }
+        params:@{ @"x:lan" : @"objc" }
         checkCrc:YES
         cancellationSignal:^BOOL() {
             return flag;
         }];
-    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
     }
@@ -74,7 +72,7 @@
     QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler:^(NSString *key, float percent) {
         NSLog(@"progress %f", percent);
     }];
-    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
         response = resp;
@@ -102,11 +100,12 @@
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         NSArray *upList = [[NSArray alloc] initWithObjects:@"uptemp.qbox.me", nil];
         builder.useHttps = YES;
-        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:upList];
+        builder.useConcurrentResumeUpload = YES;
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
-    [upManager putFile:tempFile.fileUrl.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
         response = resp;
@@ -127,7 +126,7 @@
     __block QNResponseInfo *info = nil;
     __block NSDictionary *testResp = nil;
     __block NSString *key = nil;
-    [_upManager putFile:tempFile.fileUrl.path key:nil token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [_upManager putFile:tempFile.fileUrl.path key:nil token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
         testResp = resp;
@@ -151,7 +150,7 @@
     QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler:^(NSString *key, float percent) {
         NSLog(@"progress %f", percent);
     }];
-    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
     }
@@ -196,6 +195,63 @@
     [self template:20*1024 + 1];
 }
 
+- (void)testReupload{
+    
+    NSString *keyUp = @"concurrent_reupload_20M";
+    QNTempFile *tempFile = [QNTempFile createTempfileWithSize: 20 * 1024 * 1024 identifier:keyUp];
+    __block NSString *key = nil;
+    __block QNResponseInfo *info = nil;
+    __block BOOL flag = NO;
+    __block BOOL isReupload = NO;
+    QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil
+                                               progressHandler:^(NSString *key, float percent) {
+        if (percent > 0.8) {
+            flag = YES;
+        }
+        NSLog(@"Reupload progress %f", percent);
+    }
+                                                        params:@{ @"x:lan" : @"objc" }
+                                                      checkCrc:NO
+                                            cancellationSignal:^BOOL() {
+        if (isReupload) {
+            return NO;
+        } else {
+            return flag;
+        }
+    }];
+    
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.useConcurrentResumeUpload = YES;
+        builder.useHttps = YES;
+        builder.chunkSize = 1 * 1024 * 1024;
+        builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniu"] error:nil];
+    }];
+    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
+
+    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+        key = k;
+        info = i;
+    } option:opt];
+    
+    AGWW_WAIT_WHILE(key == nil, 60 * 30);
+    NSLog(@"Reupload ================");
+    key = nil;
+    isReupload = YES;
+    
+    QNUploadManager *upManager_re = [[QNUploadManager alloc] initWithConfiguration:config];
+    [upManager_re putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+        key = k;
+        info = i;
+    } option:opt];
+    
+    AGWW_WAIT_WHILE(key == nil, 60 * 30);
+    NSLog(@"info %@", info);
+    XCTAssert(info.isOK, @"Pass");
+    XCTAssert([keyUp isEqualToString:key], @"Pass");
+
+    [tempFile remove];
+}
+
 //- (void)testProxy {
 //    NSDictionary *proxyDict = @{
 //        @"HTTPEnable" : [NSNumber numberWithInt:1],
@@ -207,7 +263,7 @@
 //        builder.proxy = proxyDict;
 //        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com", @"upnono.qiniu.com", nil];
 //        builder.useHttps = NO;
-//        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+//        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:upList];
 //    }];
 //
 //    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
@@ -217,7 +273,7 @@
 //    NSString *keyUp = [NSString stringWithFormat:@"%dkproxy", size];
 //    __block QNResponseInfo *info = nil;
 //    __block NSString *key = nil;
-//    [upManager putFile:tempFile.fileUrl.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+//    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
 //        key = k;
 //        info = i;
 //    }
@@ -236,9 +292,9 @@
         builder.converter = ^NSString *(NSString *url) {
             return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
         };
-        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com", @"upnono.qiniu.com", nil];
+        NSArray *upList = [[NSArray alloc] initWithObjects:@"up-na0.qiniu.com", @"up-na0.qiniu.com", nil];
         builder.useHttps = NO;
-        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:upList];
     }];
 
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
@@ -248,7 +304,7 @@
     QNTempFile *tempFile = [QNTempFile createTempfileWithSize:size * 1024 identifier:keyUp];
     __block QNResponseInfo *info = nil;
     __block NSString *key = nil;
-    [upManager putFile:tempFile.fileUrl.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
     }
@@ -258,7 +314,7 @@
     NSLog(@"info %@", info);
     XCTAssert(info.isOK, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
-    XCTAssert([info.host isEqual:@"up.qiniu.com"], @"Pass");
+    XCTAssert([info.host isEqual:@"up-na0.qiniu.com"], @"Pass");
     [tempFile remove];
 }
 

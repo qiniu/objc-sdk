@@ -44,6 +44,8 @@
     }
     
     AGWW_WAIT_WHILE(completeCount != maxCount, 60 * 30);
+    
+    NSLog(@"complex_upload successCount: %d", successCount);
     XCTAssert(successCount == maxCount, @"Pass");
 }
 
@@ -53,11 +55,12 @@
     QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler:^(NSString *key, float percent) {
         NSLog(@"progress %f", percent);
     }];
-    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         
         if (i.isOK && i.reqId && [keyUp isEqualToString:k] && [tempFile.fileHash isEqualToString:resp[@"hash"]]) {
             complete(YES);
         } else {
+            NSLog(@"complex_upload info: %@", resp);
             complete(NO);
         }
         [tempFile remove];

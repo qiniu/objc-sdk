@@ -10,12 +10,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface QNInetAddress : NSObject <QNInetAddressDelegate>
+@interface QNInetAddress : NSObject <QNIDnsNetworkAddress>
 
 @property(nonatomic,  copy)NSString *hostValue;
 @property(nonatomic,  copy)NSString *ipValue;
 @property(nonatomic, strong)NSNumber *ttlValue;
 @property(nonatomic, strong)NSNumber *timestampValue;
+@property(nonatomic,   copy)NSString *sourceValue;
 
 
 /// 构造方法 addressData为json String / Dictionary / Data / 遵循 QNInetAddressDelegate的实例

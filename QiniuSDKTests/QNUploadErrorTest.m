@@ -22,7 +22,7 @@
 @implementation QNUploadErrorTestParam
 + (instancetype)param{
     QNUploadErrorTestParam *p = [[QNUploadErrorTestParam alloc] init];
-    p.token = g_token;
+    p.token = token_na0;
     p.key = @"upload_error_128K";
     p.tempFile = [QNTempFile createTempfileWithSize:128 * 1024 identifier:p.key];
     return p;
@@ -95,7 +95,7 @@
 - (void)testError_631{
     
     QNUploadErrorTestParam *param = [QNUploadErrorTestParam param];
-    param.token = @"jH983zIUFIP1OVumiBVGeAfiLYJvwrF45S-t22eu:mnkuT6Y_k3UaKMMs2qYROs6yqjs=:eyJzY29wZSI6InpvbmV0ZXN0LXNwYWNlIiwiZGVhZGxpbmUiOjE1ODkyNzU5NDN9";
+    param.token = invalidBucketToken;
     
     __block BOOL isComplete = NO;
     [self upload:param complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {

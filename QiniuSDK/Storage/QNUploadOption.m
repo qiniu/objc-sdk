@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-#import "QNUploadOption+Private.h"
+#import "QNUploadOption.h"
 #import "QNUploadManager.h"
 
 static NSString *mime(NSString *mimeType) {
@@ -33,9 +33,6 @@ static NSString *mime(NSString *mimeType) {
     return ret;
 }
 
-- (instancetype)initWithProgessHandler:(QNUpProgressHandler)progress {
-    return [self initWithMime:nil progressHandler:progress params:nil checkCrc:NO cancellationSignal:nil];
-}
 
 - (instancetype)initWithProgressHandler:(QNUpProgressHandler)progress {
     return [self initWithMime:nil progressHandler:progress params:nil checkCrc:NO cancellationSignal:nil];

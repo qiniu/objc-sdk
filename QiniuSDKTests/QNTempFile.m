@@ -18,7 +18,12 @@
 
 + (QNTempFile *)createTempfileWithSize:(int)size {
     
-    NSString *fileName = [NSString stringWithFormat:@"%@_%@", [[NSProcessInfo processInfo] globallyUniqueString], @"file.txt"];
+    return [self createTempfileWithSize:size name:@"file.txt"];
+}
+
++ (QNTempFile *)createTempfileWithSize:(int)size name:(NSString *)name {
+    
+    NSString *fileName = [NSString stringWithFormat:@"%@_%@", [[NSProcessInfo processInfo] globallyUniqueString], name];
     NSURL *fileUrl = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
     
     NSMutableData *data = [NSMutableData data];
@@ -50,11 +55,16 @@
     return file;
 }
 
+
 + (QNTempFile *)createTempfileWithSize:(int)size identifier:(NSString *)identifier{
+    return [self createTempfileWithSize:size name:@"file.txt" identifier:identifier];
+}
+
++ (QNTempFile *)createTempfileWithSize:(int)size name:(NSString *)name identifier:(NSString *)identifier {
     
     NSString *identifierP = identifier ?: @"_";
     
-    NSString *fileName = [NSString stringWithFormat:@"%@_%@", [[NSProcessInfo processInfo] globallyUniqueString], @"file.txt"];
+    NSString *fileName = [NSString stringWithFormat:@"%@_%@", [[NSProcessInfo processInfo] globallyUniqueString], name];
     NSURL *fileUrl = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
     
     NSMutableData *data = [NSMutableData data];

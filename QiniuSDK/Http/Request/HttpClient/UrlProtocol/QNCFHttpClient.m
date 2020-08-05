@@ -67,7 +67,7 @@
     [self endProgress:YES];
 }
 
-//MARK: -- rquest -> stream
+//MARK: -- request -> stream
 - (NSInputStream *)createInputStream:(NSURLRequest *)urlRequest{
     
     CFStringRef urlString = (__bridge CFStringRef) [urlRequest.URL absoluteString];

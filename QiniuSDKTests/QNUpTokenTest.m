@@ -35,7 +35,7 @@
 //}
 
 - (void)testRight {
-    QNUpToken *t = [QNUpToken parse:g_token];
+    QNUpToken *t = [QNUpToken parse:token_na0];
     // This is an example of a functional test case.
     XCTAssert(t != nil, @"Pass");
     XCTAssert(!t.hasReturnUrl, @"Pass");

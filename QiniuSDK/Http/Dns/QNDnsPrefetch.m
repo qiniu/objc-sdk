@@ -1,25 +1,134 @@
 //
-//  QNDnsPrefetcher.m
+//  QNDnsPrefetch.m
 //  QnDNS
 //
 //  Created by yangsen on 2020/3/26.
 //  Copyright © 2020 com.qiniu. All rights reserved.
 //
 
-#import "QNDnsPrefetcher.h"
+
+#import "QNDnsPrefetch.h"
 #import "QNInetAddress.h"
 #import "QNDnsCacheInfo.h"
+
 #import "QNConfig.h"
 #import "QNDnsCacheFile.h"
-#import "QNUpToken.h"
 #import "QNUtils.h"
 #import "QNAsyncRun.h"
 #import "QNFixedZone.h"
 #import "QNAutoZone.h"
 #import <HappyDNS/HappyDNS.h>
 
+
+//MARK: -- 缓存模型
+@interface QNDnsNetworkAddress : NSObject<QNIDnsNetworkAddress>
+
+@property(nonatomic,   copy)NSString *hostValue;
+@property(nonatomic,   copy)NSString *ipValue;
+@property(nonatomic, strong)NSNumber *ttlValue;
+@property(nonatomic,   copy)NSString *sourceValue;
+@property(nonatomic, strong)NSNumber *timestampValue;
+
+/// 构造方法 addressData为json String / Dictionary / Data / 遵循 QNIDnsNetworkAddress的实例
++ (instancetype)inetAddress:(id)addressInfo;
+
+/// 是否有效，根据时间戳判断
+- (BOOL)isValid;
+
+/// 对象转json
+- (NSString *)toJsonInfo;
+
+/// 对象转字典
+- (NSDictionary *)toDictionary;
+
+@end
+@implementation QNDnsNetworkAddress
+
++ (instancetype)inetAddress:(id)addressInfo{
+    
+    NSDictionary *addressDic = nil;
+    if ([addressInfo isKindOfClass:[NSDictionary class]]) {
+        addressDic = (NSDictionary *)addressInfo;
+    } else if ([addressInfo isKindOfClass:[NSString class]]){
+        NSData *data = [(NSString *)addressInfo dataUsingEncoding:NSUTF8StringEncoding];
+        addressDic = [NSJSONSerialization JSONObjectWithData:data
+                                                     options:NSJSONReadingMutableLeaves
+                                                       error:nil];
+    } else if ([addressInfo isKindOfClass:[NSData class]]) {
+        addressDic = [NSJSONSerialization JSONObjectWithData:(NSData *)addressInfo
+                                                     options:NSJSONReadingMutableLeaves
+                                                       error:nil];
+    } else if ([addressInfo conformsToProtocol:@protocol(QNIDnsNetworkAddress)]){
+        id <QNIDnsNetworkAddress> address = (id <QNIDnsNetworkAddress> )addressInfo;
+        NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+        if ([address respondsToSelector:@selector(hostValue)] && [address hostValue]) {
+            dic[@"hostValue"] = [address hostValue];
+        }
+        if ([address respondsToSelector:@selector(ipValue)] && [address ipValue]) {
+            dic[@"ipValue"] = [address ipValue];
+        }
+        if ([address respondsToSelector:@selector(ttlValue)] && [address ttlValue]) {
+            dic[@"ttlValue"] = [address ttlValue];
+        }
+        if ([address respondsToSelector:@selector(source)] && [address sourceValue]) {
+            dic[@"sourceValue"] = [address sourceValue];
+        }
+        if ([address respondsToSelector:@selector(timestampValue)] && [address timestampValue]) {
+            dic[@"timestampValue"] = [address timestampValue];
+        }
+        addressDic = [dic copy];
+    }
+    
+    if (addressDic) {
+        QNDnsNetworkAddress *address = [[QNDnsNetworkAddress alloc] init];
+        [address setValuesForKeysWithDictionary:addressDic];
+        return address;
+    } else {
+        return nil;
+    }
+}
+
+- (BOOL)isValid{
+    if (!self.timestampValue || !self.ipValue || self.ipValue.length == 0) {
+        return NO;
+    }
+    NSTimeInterval currentTimestamp = [[NSDate date] timeIntervalSince1970];
+    return currentTimestamp > self.timestampValue.doubleValue + self.ttlValue.doubleValue;
+}
+
+- (NSString *)toJsonInfo{
+    NSString *defaultString = @"{}";
+    NSDictionary *infoDic = [self toDictionary];
+    if (!infoDic) {
+        return defaultString;
+    }
+    
+    NSData *infoData = [NSJSONSerialization dataWithJSONObject:infoDic
+                                                       options:NSJSONWritingPrettyPrinted
+                                                         error:nil];
+    if (!infoData) {
+        return defaultString;
+    }
+    
+    NSString *infoStr = [[NSString alloc] initWithData:infoData encoding:NSUTF8StringEncoding];
+    if (!infoStr) {
+        return defaultString;
+    } else {
+        return infoStr;
+    }
+}
+
+- (NSDictionary *)toDictionary{
+    return [self dictionaryWithValuesForKeys:@[@"ipValue", @"hostValue", @"ttlValue", @"sourceValue", @"timestampValue"]];
+}
+
+- (void)setValue:(id)value forUndefinedKey:(NSString *)key{}
+
+@end
+
+
 //MARK: -- HappyDNS 适配
-@interface QNRecord(DNS)<QNInetAddressDelegate>
+@interface QNRecord(DNS)<QNIDnsNetworkAddress>
 @end
 @implementation QNRecord(DNS)
 - (NSString *)hostValue{
@@ -34,13 +143,22 @@
 - (NSNumber *)timestampValue{
     return @(self.timeStamp);
 }
+- (NSString *)sourceValue{
+    if (self.source == QNRecordSourceSystem) {
+        return @"system";
+    } else if (self.source == QNRecordSourceDnspodFree || self.source == QNRecordSourceDnspodEnterprise) {
+        return @"httpdns";
+    } else {
+        return @"none";
+    }
+}
 @end
 
 @interface QNDnsManager(DNS)<QNDnsDelegate>
 @end
 @implementation QNDnsManager(DNS)
 
-- (NSArray<id<QNInetAddressDelegate>> *)lookup:(NSString *)host{
+- (NSArray<id<QNIDnsNetworkAddress>> *)lookup:(NSString *)host{
 
     return [self queryRecords:host];
 }
@@ -49,8 +167,10 @@
 
 
 //MARK: -- DNS Prefetcher
-@interface QNDnsPrefetcher()
+@interface QNDnsPrefetch()
 
+// 最近一次预取错误信息
+@property(nonatomic,  copy)NSString *lastPrefetchedErrorMessage;
 /// 是否正在预取，正在预取会直接取消新的预取操作请求
 @property(atomic, assign)BOOL isPrefetching;
 /// 获取AutoZone时的同步锁
@@ -60,17 +180,17 @@
 /// happy的dns解析对象列表，会使用多个dns解析对象 包括系统解析
 @property(nonatomic, strong)QNDnsManager * httpDns;
 /// 缓存DNS解析结果
-@property(nonatomic, strong)NSMutableDictionary <NSString *, NSArray<QNInetAddress *>*> *addressDictionary;
+@property(nonatomic, strong)NSMutableDictionary <NSString *, NSArray<QNDnsNetworkAddress *>*> *addressDictionary;
 
 @end
 
-@implementation QNDnsPrefetcher
+@implementation QNDnsPrefetch
 
 + (instancetype)shared{
-    static QNDnsPrefetcher *prefetcher = nil;
+    static QNDnsPrefetch *prefetcher = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        prefetcher = [[QNDnsPrefetcher alloc] init];
+        prefetcher = [[QNDnsPrefetch alloc] init];
     });
     return prefetcher;
 }
@@ -89,7 +209,7 @@
     id <QNRecorderDelegate> recorder = nil;
     
     NSError *error;
-    recorder = [QNDnsCacheFile dnsCacheFile:kQNGlobalConfiguration.dnscacheDir
+    recorder = [QNDnsCacheFile dnsCacheFile:kQNGlobalConfiguration.dnsCacheDir
                                       error:&error];
     if (error) {
         return YES;
@@ -107,11 +227,7 @@
     
     NSString *localIp = [QNIP local];
 
-    if (!localIp || localIp.length == 0) {
-        return YES;
-    }
-    
-    if (![cacheInfo.localIp isEqualToString:localIp]) {
+    if (!localIp || localIp.length == 0 || ![cacheInfo.localIp isEqualToString:localIp]) {
         return YES;
     }
     
@@ -132,7 +248,7 @@
 }
 //MARK: -- 检测并预取
 /// 根据token检测Dns缓存信息时效，无效则预取。 完成预取操作返回YES，反之返回NO
-- (void)checkAndPrefetchDnsIfNeed:(QNZone *)currentZone token:(NSString *)token{
+- (void)checkAndPrefetchDnsIfNeed:(QNZone *)currentZone token:(QNUpToken *)token{
     if ([self prepareToPreFetch] == NO) {
         return;
     }
@@ -152,10 +268,10 @@
 
 //MARK: -- 强制无效缓存
 // 无效缓存，会根据inetAddress的host，无效host对应的ip缓存
-- (void)invalidInetAdress:(id <QNInetAddressDelegate>)inetAddress{
+- (void)invalidInetAdress:(id <QNIDnsNetworkAddress>)inetAddress{
     NSArray *inetAddressList = self.addressDictionary[inetAddress.hostValue];
     NSMutableArray *inetAddressListNew = [NSMutableArray array];
-    for (id <QNInetAddressDelegate> inetAddressP in inetAddressList) {
+    for (id <QNIDnsNetworkAddress> inetAddressP in inetAddressList) {
         if (![inetAddress.ipValue isEqualToString:inetAddressP.ipValue]) {
             [inetAddressListNew addObject:inetAddressP];
         }
@@ -165,13 +281,13 @@
 
 //MARK: -- 读取缓存的DNS信息
 /// 根据host从缓存中读取DNS信息
-- (NSArray <id <QNInetAddressDelegate> > *)getInetAddressByHost:(NSString *)host{
+- (NSArray <id <QNIDnsNetworkAddress> > *)getInetAddressByHost:(NSString *)host{
 
     if ([self isDnsOpen] == NO) {
         return nil;
     }
     
-    NSArray <QNInetAddress *> *addressList = self.addressDictionary[host];
+    NSArray <QNDnsNetworkAddress *> *addressList = self.addressDictionary[host];
     if (![addressList.firstObject isValid]) {
         QNAsyncRun(^{
             [[QNTransactionManager shared] setDnsCheckWhetherCachedValidTransactionAction];
@@ -186,6 +302,8 @@
     if ([self isDnsOpen] == NO) {
         return NO;
     }
+    
+    self.lastPrefetchedErrorMessage = nil;
     
     if (self.isPrefetching == YES) {
         return NO;
@@ -240,6 +358,7 @@
                 isSuccess = YES;
                 break;
             }
+            rePreNum += 1;
         }
         
         if (!isSuccess) {
@@ -256,17 +375,20 @@
         return NO;
     }
     
-    NSArray<QNInetAddress *>* preAddressList = self.addressDictionary[preHost];
+    NSArray<QNDnsNetworkAddress *>* preAddressList = self.addressDictionary[preHost];
     if (preAddressList && [preAddressList.firstObject isValid]) {
         return YES;
     }
     
-    NSArray <id <QNInetAddressDelegate> > * addressList = [dns lookup:preHost];
+    NSArray <id <QNIDnsNetworkAddress> > * addressList = [dns lookup:preHost];
     if (addressList && addressList.count > 0) {
         NSMutableArray *addressListP = [NSMutableArray array];
-        for (id <QNInetAddressDelegate>inetAddress in addressList) {
-            QNInetAddress *address = [QNInetAddress inetAddress:inetAddress];
+        for (id <QNIDnsNetworkAddress>inetAddress in addressList) {
+            QNDnsNetworkAddress *address = [QNDnsNetworkAddress inetAddress:inetAddress];
             if (address) {
+                if (dns == kQNGlobalConfiguration.dns) {
+                    address.sourceValue = @"customized";
+                }
                 address.hostValue = preHost;
                 if (!address.ttlValue) {
                     address.ttlValue = @(kQNDefaultDnsCacheTime);
@@ -295,11 +417,11 @@
         NSArray *ips = dataDic[key];
         if ([ips isKindOfClass:[NSArray class]]) {
             
-            NSMutableArray <QNInetAddress *> * addressList = [NSMutableArray array];
+            NSMutableArray <QNDnsNetworkAddress *> * addressList = [NSMutableArray array];
             
             for (NSDictionary *ipInfo in ips) {
                 if ([ipInfo isKindOfClass:[NSDictionary class]]) {
-                    QNInetAddress *address = [QNInetAddress inetAddress:ipInfo];
+                    QNDnsNetworkAddress *address = [QNDnsNetworkAddress inetAddress:ipInfo];
                     if (address) {
                         [addressList addObject:address];
                     }
@@ -326,7 +448,7 @@
     }
 
     NSError *error;
-    id <QNRecorderDelegate> recorder = [QNDnsCacheFile dnsCacheFile:kQNGlobalConfiguration.dnscacheDir
+    id <QNRecorderDelegate> recorder = [QNDnsCacheFile dnsCacheFile:kQNGlobalConfiguration.dnsCacheDir
                                                              error:&error];
     if (error) {
         return NO;
@@ -337,8 +459,8 @@
        
         NSArray *addressModelList = self.addressDictionary[key];
         NSMutableArray * addressDicList = [NSMutableArray array];
-        for (QNInetAddress *ipInfo in addressModelList) {
-           
+
+        for (QNDnsNetworkAddress *ipInfo in addressModelList) {
             NSDictionary *addressDic = [ipInfo toDictionary];
             if (addressDic) {
                 [addressDicList addObject:addressDic];
@@ -376,14 +498,14 @@
     NSArray *fixedHosts = [self getFixedZoneHosts];
     [localHosts addObjectsFromArray:fixedHosts];
     
-    NSString *ucHost = kQNPreQueryHost;
-    [localHosts addObject:ucHost];
+    [localHosts addObject:kQNPreQueryHost00];
+    [localHosts addObject:kQNPreQueryHost01];
     
     return [localHosts copy];
 }
 
 - (NSArray <NSString *> *)getAllPreHost:(QNZone *)currentZone
-                                  token:(NSString *)token{
+                                  token:(QNUpToken *)token{
     
     NSMutableSet *set = [NSMutableSet set];
     NSMutableArray *fetchHosts = [NSMutableArray array];
@@ -394,8 +516,8 @@
     NSArray *autoHosts = [self getCurrentZoneHosts:currentZone token:token];
     [fetchHosts addObjectsFromArray:autoHosts];
     
-    NSString *ucHost = kQNPreQueryHost;
-    [fetchHosts addObject:ucHost];
+    [fetchHosts addObject:kQNPreQueryHost00];
+    [fetchHosts addObject:kQNPreQueryHost01];
     
     NSArray *cacheHost = [self getCacheHosts];
     [fetchHosts addObjectsFromArray:cacheHost];
@@ -413,35 +535,33 @@
 }
 
 - (NSArray <NSString *> *)getCurrentZoneHosts:(QNZone *)currentZone
-                                        token:(NSString *)token{
-    if (!currentZone || !token) {
+                                        token:(QNUpToken *)token{
+    if (!currentZone || !token || !token.token) {
         return nil;
     }
-    [currentZone preQuery:[QNUpToken parse:token] on:^(int code, QNHttpResponseInfo *httpResponseInfo) {
+    [currentZone preQuery:token on:^(int code, QNResponseInfo *responseInfo, QNUploadRegionRequestMetrics *metrics) {
         dispatch_semaphore_signal(self.semaphore);
     }];
     dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
     
-    QNZonesInfo *autoZonesInfo = [currentZone getZonesInfoWithToken:[QNUpToken parse:token]];
+    QNZonesInfo *autoZonesInfo = [currentZone getZonesInfoWithToken:token];
     NSMutableArray *autoHosts = [NSMutableArray array];
     NSArray *zoneInfoList = autoZonesInfo.zonesInfo;
     for (QNZoneInfo *info in zoneInfoList) {
-        for (NSString *host in info.upDomainsList) {
-            [autoHosts addObject:host];
+        if (info.allHosts) {
+            [autoHosts addObjectsFromArray:info.allHosts];
         }
     }
     return [autoHosts copy];
 }
 
 - (NSArray <NSString *> *)getFixedZoneHosts{
-    NSArray <QNFixedZone *> *fixedZones = [QNFixedZone localsZoneInfo];
     NSMutableArray *localHosts = [NSMutableArray array];
-    for (QNFixedZone *fixZone in fixedZones) {
-        QNZonesInfo *zonesInfo = [fixZone getZonesInfoWithToken:nil];
-        for (QNZoneInfo *zoneInfo in zonesInfo.zonesInfo) {
-            for (NSString *host in zoneInfo.upDomainsList) {
-                [localHosts addObject:host];
-            }
+    QNFixedZone *fixedZone = [QNFixedZone localsZoneInfo];
+    QNZonesInfo *zonesInfo = [fixedZone getZonesInfoWithToken:nil];
+    for (QNZoneInfo *zoneInfo in zonesInfo.zonesInfo) {
+        if (zoneInfo.allHosts) {
+            [localHosts addObjectsFromArray:zoneInfo.allHosts];
         }
     }
     return [localHosts copy];
@@ -457,7 +577,13 @@
     return [kQNGlobalConfiguration isDnsOpen];
 }
 
-- (NSMutableDictionary<NSString *,NSArray<QNInetAddress *> *> *)addressDictionary{
+- (QNDnsCacheInfo *)dnsCacheInfo{
+    if (_dnsCacheInfo == nil) {
+        _dnsCacheInfo = [[QNDnsCacheInfo alloc] init];
+    }
+    return _dnsCacheInfo;
+}
+- (NSMutableDictionary<NSString *,NSArray<QNDnsNetworkAddress *> *> *)addressDictionary{
     if (_addressDictionary == nil) {
         _addressDictionary = [NSMutableDictionary dictionary];
     }
@@ -477,6 +603,11 @@
         QNDnspodFree *dnspodFree = [[QNDnspodFree alloc] init];
         QNDnsManager *httpDns = [[QNDnsManager alloc] init:@[systemDnsresolver, dnspodFree]
                                                networkInfo:nil];
+        
+        __weak typeof(self)weakSelf = self;
+        httpDns.queryErrorHandler = ^(NSError *error, NSString *host) {
+            weakSelf.lastPrefetchedErrorMessage = [error localizedDescription];
+        };
         _httpDns = httpDns;
     }
     return _httpDns;
@@ -486,45 +617,45 @@
 
 //MARK: -- DNS 事务
 @implementation QNTransactionManager(Dns)
-#define kQNLoadLocalDnstransactionName @"QNLoadLocalDnstransaction"
-#define kQNDnsCheckAndPrefetchtransactionName @"QNDnsCheckAndPrefetchtransactionName"
+#define kQNLoadLocalDnsTransactionName @"QNLoadLocalDnsTransaction"
+#define kQNDnsCheckAndPrefetchTransactionName @"QNDnsCheckAndPrefetchTransactionName"
 
 - (void)addDnsLocalLoadTransaction{
     
-    if ([kQNDnsPrefetcher isDnsOpen] == NO) {
+    if ([kQNDnsPrefetch isDnsOpen] == NO) {
         return;
     }
 
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         
-        QNTransaction *transaction = [QNTransaction transaction:kQNLoadLocalDnstransactionName after:0 action:^{
+        QNTransaction *transaction = [QNTransaction transaction:kQNLoadLocalDnsTransactionName after:0 action:^{
             
-            [kQNDnsPrefetcher recoverCache];
-            [kQNDnsPrefetcher localFetch];
+            [kQNDnsPrefetch recoverCache];
+            [kQNDnsPrefetch localFetch];
         }];
         [[QNTransactionManager shared] addTransaction:transaction];
     });
 }
 
-- (BOOL)addDnsCheckAndPrefetchTransaction:(QNZone *)currentZone token:(NSString *)token{
+- (BOOL)addDnsCheckAndPrefetchTransaction:(QNZone *)currentZone token:(QNUpToken *)token{
     if (!token) {
         return NO;
     }
     
-    if ([kQNDnsPrefetcher isDnsOpen] == NO) {
+    if ([kQNDnsPrefetch isDnsOpen] == NO) {
         return NO;
     }
     
     BOOL ret = NO;
-    @synchronized (kQNDnsPrefetcher) {
+    @synchronized (kQNDnsPrefetch) {
         
         QNTransactionManager *transactionManager = [QNTransactionManager shared];
         
-        if (![transactionManager existtransactionsForName:token]) {
-            QNTransaction *transaction = [QNTransaction transaction:token after:0 action:^{
+        if (![transactionManager existTransactionsForName:token.token]) {
+            QNTransaction *transaction = [QNTransaction transaction:token.token after:0 action:^{
                
-                [kQNDnsPrefetcher checkAndPrefetchDnsIfNeed:currentZone token:token];
+                [kQNDnsPrefetch checkAndPrefetchDnsIfNeed:currentZone token:token];
             }];
             [transactionManager addTransaction:transaction];
             
@@ -536,22 +667,22 @@
 
 - (void)setDnsCheckWhetherCachedValidTransactionAction{
 
-    if ([kQNDnsPrefetcher isDnsOpen] == NO) {
+    if ([kQNDnsPrefetch isDnsOpen] == NO) {
         return;
     }
     
-    @synchronized (kQNDnsPrefetcher) {
+    @synchronized (kQNDnsPrefetch) {
         
         QNTransactionManager *transactionManager = [QNTransactionManager shared];
-        QNTransaction *transaction = [transactionManager transactionsForName:kQNDnsCheckAndPrefetchtransactionName].firstObject;
+        QNTransaction *transaction = [transactionManager transactionsForName:kQNDnsCheckAndPrefetchTransactionName].firstObject;
         
         if (!transaction) {
             
-            QNTransaction *transaction = [QNTransaction timeTransaction:kQNDnsCheckAndPrefetchtransactionName
+            QNTransaction *transaction = [QNTransaction timeTransaction:kQNDnsCheckAndPrefetchTransactionName
                                                                   after:10
                                                                interval:120
                                                                  action:^{
-                [kQNDnsPrefetcher checkWhetherCachedDnsValid];
+                [kQNDnsPrefetch checkWhetherCachedDnsValid];
             }];
             [transactionManager addTransaction:transaction];
         } else {

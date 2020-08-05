@@ -37,7 +37,7 @@
     
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-    [self.upManager putData:data key:@"你好" token:g_token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+    [self.upManager putData:data key:@"你好" token:token_na0 complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         testInfo = info;
         testResp = resp;
     }
@@ -78,7 +78,7 @@
 
 - (void)test100UpTask:(NSString *)taskId complete:(void(^)(BOOL isSuccess))complete{
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        builder.timeoutInterval = 5;
+        
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc]initWithConfiguration:config];
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
@@ -88,7 +88,7 @@
         [contentString appendString:word];
     }
     NSData *data = [[contentString copy] dataUsingEncoding:NSUTF8StringEncoding];
-    [upManager putData:data key:taskId token:g_token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+    [upManager putData:data key:taskId token:token_na0 complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         if (info.isOK && info.reqId) {
             complete(YES);
         } else {
@@ -111,7 +111,7 @@
 //        builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
 //    }];
 //    QNUploadManager *upManager = [[QNUploadManager alloc]initWithConfiguration:config];
-//    [upManager putData:data key:@"你好" token:g_token complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//    [upManager putData:data key:@"你好" token:token_na0 complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
 //        testInfo = info;
 //        testResp = resp;
 //    } option:opt];
@@ -152,7 +152,7 @@
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == kQNInvalidArgument, @"Pass");
+    XCTAssert(testInfo.statusCode == kQNZeroDataSize, @"Pass");
 }
 
 - (void)testNoFile {
@@ -167,7 +167,7 @@
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == kQNInvalidArgument, @"Pass");
+    XCTAssert(testInfo.statusCode == kQNZeroDataSize, @"Pass");
 }
 
 - (void)testNoToken {
@@ -182,7 +182,7 @@
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == kQNInvalidArgument, @"Pass");
+    XCTAssert(testInfo.statusCode == kQNInvalidToken, @"Pass");
 
     testInfo = nil;
     testResp = nil;
@@ -194,7 +194,7 @@
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == kQNInvalidArgument, @"Pass");
+    XCTAssert(testInfo.statusCode == kQNInvalidToken, @"Pass");
 
     testInfo = nil;
     testResp = nil;
@@ -206,7 +206,7 @@
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == kQNInvalidArgument, @"Pass");
+    XCTAssert(testInfo.statusCode == kQNZeroDataSize, @"Pass");
 }
 
 - (void)testNoComplete {
@@ -228,7 +228,7 @@
     __block NSString *key = nil;
 
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-    [self.upManager putData:data key:nil token:g_token complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
+    [self.upManager putData:data key:nil token:token_na0 complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
         key = k;
         testInfo = info;
         testResp = resp;
@@ -259,13 +259,13 @@
 //        builder.proxy = proxyDict;
 //        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com", @"upnono.qiniu.com", nil];
 //        builder.useHttps = NO;
-//        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+//        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:upList];
 //    }];
 //
 //    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 //
 //    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-//    [upManager putData:data key:nil token:g_token complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
+//    [upManager putData:data key:nil token:token_na0 complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
 //        key = k;
 //        testInfo = info;
 //        testResp = resp;
@@ -290,15 +290,15 @@
         builder.converter = ^NSString *(NSString *url) {
             return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
         };
-        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono.qiniu.com", @"upnono.qiniu.com", nil];
+        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono-na0.qiniu.com", @"upnono-na0.qiniu.com", nil];
         builder.useHttps = NO;
-        builder.zone = [[QNFixedZone alloc] initWithupDomainList:upList];
+        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:upList];
     }];
 
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-    [upManager putData:data key:nil token:g_token complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
+    [upManager putData:data key:nil token:token_na0 complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
         key = k;
         testInfo = info;
         testResp = resp;
@@ -311,7 +311,7 @@
     XCTAssert(key == nil, @"Pass");
     XCTAssert(testInfo.isOK, @"Pass");
     XCTAssert(testInfo.reqId, @"Pass");
-    XCTAssert([testInfo.host isEqual:@"up.qiniu.com"], @"Pass");
+    XCTAssert([testInfo.host isEqual:@"up-na0.qiniu.com"], @"Pass");
     XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");
 }
 
@@ -332,7 +332,7 @@
 //    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
 //
 //    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-//    [upManager putData:data key:nil token:g_token complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
+//    [upManager putData:data key:nil token:token_na0 complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
 //        key = k;
 //        testInfo = info;
 //        testResp = resp;
@@ -355,7 +355,7 @@
 
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
     NSData *data = [@"" dataUsingEncoding:NSUTF8StringEncoding];
-    [self.upManager putData:data key:@"你好" token:g_token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+    [self.upManager putData:data key:@"你好" token:token_na0 complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         testInfo = info;
         testResp = resp;
     }

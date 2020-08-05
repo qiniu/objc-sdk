@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14490.70" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="ICJ-el-kyi">
-    <device id="retina6_1" orientation="portrait">
-        <adaptation id="fullscreen"/>
-    </device>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="15705" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="ICJ-el-kyi">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment version="2048" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14490.49"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="15706"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -37,8 +35,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f8h-Tl-cef">
-                                <rect key="frame" x="70" y="114" width="460" height="50"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f8h-Tl-cef">
+                                <rect key="frame" x="70" y="582" width="274" height="50"/>
                                 <color key="backgroundColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="kgT-aZ-IJU"/>
@@ -51,8 +49,8 @@
                                     <action selector="chooseAction:" destination="a0v-GO-7Qr" eventType="touchUpInside" id="tAj-mW-jxy"/>
                                 </connections>
                             </button>
-                            <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Psn-X6-kmD">
-                                <rect key="frame" x="70" y="194" width="460" height="50"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Psn-X6-kmD">
+                                <rect key="frame" x="70" y="662" width="274" height="50"/>
                                 <color key="backgroundColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="pu0-Bk-3Gw"/>
@@ -65,20 +63,28 @@
                                     <action selector="uploadAction:" destination="a0v-GO-7Qr" eventType="touchUpInside" id="QAY-9o-VbD"/>
                                 </connections>
                             </button>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="PUC-cw-bND">
-                                <rect key="frame" x="20" y="274" width="560" height="326"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="PUC-cw-bND">
+                                <rect key="frame" x="20" y="200" width="374" height="249.5"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="PUC-cw-bND" secondAttribute="height" multiplier="3:2" id="C8p-6F-bXA"/>
+                                </constraints>
                             </imageView>
+                            <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="F9t-wS-hHW">
+                                <rect key="frame" x="20" y="168" width="374" height="2"/>
+                            </progressView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="f8h-Tl-cef" firstAttribute="leading" secondItem="UJS-dn-gjX" secondAttribute="leadingMargin" constant="50" id="93T-X6-QAQ"/>
                             <constraint firstAttribute="trailingMargin" secondItem="Psn-X6-kmD" secondAttribute="trailing" constant="50" id="MQh-ht-UJM"/>
-                            <constraint firstItem="f8h-Tl-cef" firstAttribute="top" secondItem="TZn-al-ylh" secondAttribute="bottom" constant="50" id="OwI-rE-nm1"/>
+                            <constraint firstItem="F9t-wS-hHW" firstAttribute="trailing" secondItem="PUC-cw-bND" secondAttribute="trailing" id="Pma-gi-Cbz"/>
                             <constraint firstItem="PUC-cw-bND" firstAttribute="leading" secondItem="UJS-dn-gjX" secondAttribute="leadingMargin" id="VV2-Av-yVE"/>
+                            <constraint firstItem="EaF-tv-BfV" firstAttribute="top" secondItem="Psn-X6-kmD" secondAttribute="bottom" constant="150" id="WZ7-eI-2en"/>
+                            <constraint firstItem="PUC-cw-bND" firstAttribute="top" secondItem="F9t-wS-hHW" secondAttribute="bottom" constant="30" id="adz-zG-8Ce"/>
+                            <constraint firstItem="F9t-wS-hHW" firstAttribute="top" secondItem="TZn-al-ylh" secondAttribute="bottom" constant="80" id="f1f-t0-LdB"/>
+                            <constraint firstItem="F9t-wS-hHW" firstAttribute="leading" secondItem="PUC-cw-bND" secondAttribute="leading" id="jiN-B0-534"/>
                             <constraint firstAttribute="trailingMargin" secondItem="PUC-cw-bND" secondAttribute="trailing" id="k8E-N3-8Zw"/>
-                            <constraint firstItem="EaF-tv-BfV" firstAttribute="top" secondItem="PUC-cw-bND" secondAttribute="bottom" id="o0v-n2-b55"/>
                             <constraint firstItem="Psn-X6-kmD" firstAttribute="leading" secondItem="UJS-dn-gjX" secondAttribute="leadingMargin" constant="50" id="ot8-YA-bd8"/>
-                            <constraint firstItem="PUC-cw-bND" firstAttribute="top" secondItem="Psn-X6-kmD" secondAttribute="bottom" constant="30" id="rdv-4W-ASr"/>
                             <constraint firstItem="Psn-X6-kmD" firstAttribute="top" secondItem="f8h-Tl-cef" secondAttribute="bottom" constant="30" id="sEq-Qn-Fuf"/>
                             <constraint firstAttribute="trailingMargin" secondItem="f8h-Tl-cef" secondAttribute="trailing" constant="50" id="uUk-RB-biH"/>
                         </constraints>
@@ -88,6 +94,7 @@
                     <connections>
                         <outlet property="chooseBtn" destination="f8h-Tl-cef" id="1Hw-tF-Mu2"/>
                         <outlet property="preViewImage" destination="PUC-cw-bND" id="yaY-jN-JKD"/>
+                        <outlet property="progressView" destination="F9t-wS-hHW" id="e2F-F0-OSZ"/>
                         <outlet property="uploadBtn" destination="Psn-X6-kmD" id="O4A-yG-lhj"/>
                     </connections>
                 </viewController>

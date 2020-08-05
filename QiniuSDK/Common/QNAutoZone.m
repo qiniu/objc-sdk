@@ -7,10 +7,12 @@
 //
 
 #import "QNAutoZone.h"
-#import "QNSessionManager.h"
+#import "QNConfig.h"
+#import "QNRequestTransaction.h"
 #import "QNZoneInfo.h"
 #import "QNUpToken.h"
 #import "QNResponseInfo.h"
+#import "QNFixedZone.h"
 
 @interface QNAutoZoneCache : NSObject
 @property(nonatomic, strong)NSMutableDictionary *cache;
@@ -64,7 +66,7 @@
         return nil;
     }
     
-    QNZonesInfo *zonesInfo = [QNZonesInfo buildZonesInfoWithResp:zonesInfoDic];
+    QNZonesInfo *zonesInfo = [QNZonesInfo infoWithDictionary:zonesInfoDic];
     NSMutableArray *zonesInfoArray = [NSMutableArray array];
     for (QNZoneInfo *zoneInfo in zonesInfo.zonesInfo) {
         if ([zoneInfo isValid]) {
@@ -77,89 +79,95 @@
 
 @end
 
-@implementation QNAutoZone {
-    NSString *server;
-    NSMutableDictionary *cache;
-    NSLock *lock;
-    QNSessionManager *sesionManager;
-}
+@interface QNAutoZone()
+
+@property(nonatomic, strong)NSMutableDictionary *cache;
+@property(nonatomic, strong)NSLock *lock;
+@property(nonatomic, strong)NSMutableArray <QNRequestTransaction *> *transactions;
+
+@end
+@implementation QNAutoZone
 
 - (instancetype)init{
     if (self = [super init]) {
-        server = @"https://uc.qbox.me";
-        cache = [NSMutableDictionary new];
-        lock = [NSLock new];
-        sesionManager = [[QNSessionManager alloc] initWithProxy:nil timeout:10 urlConverter:nil];
+        _cache = [NSMutableDictionary new];
+        _lock = [NSLock new];
+        _transactions = [NSMutableArray array];
     }
     return self;
 }
 
-- (NSString *)up:(QNUpToken *)token
-    zoneInfoType:(QNZoneInfoType)zoneInfoType
-         isHttps:(BOOL)isHttps
-    frozenDomain:(NSString *)frozenDomain {
-
-    NSString *index = [token index];
-    [lock lock];
-    QNZonesInfo *zonesInfo = [cache objectForKey:index];
-    [lock unlock];
-    if (zonesInfo == nil) {
-        return nil;
-    }
-    return  [self upHost:[zonesInfo getZoneInfoWithType:zoneInfoType] isHttps:isHttps lastUpHost:frozenDomain];
-}
-
 - (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token {
     if (token == nil) return nil;
-    [lock lock];
-    QNZonesInfo *zonesInfo = [cache objectForKey:[token index]];
-    [lock unlock];
+    [_lock lock];
+    QNZonesInfo *zonesInfo = [_cache objectForKey:[token index]];
+    [_lock unlock];
     return zonesInfo;
 }
 
 - (void)preQuery:(QNUpToken *)token
               on:(QNPrequeryReturn)ret {
     
-    if (token == nil) {
-        ret(-1, nil);
+    if (token == nil || token.index == nil) {
+        ret(-1, nil, nil);
         return;
     }
     
-    [lock lock];
-    QNZonesInfo *zonesInfo = [cache objectForKey:[token index]];
-    [lock unlock];
+    [_lock lock];
+    QNZonesInfo *zonesInfo = [_cache objectForKey:[token index]];
+    [_lock unlock];
     
     if (zonesInfo == nil) {
         zonesInfo = [[QNAutoZoneCache share] zonesInfoForToken:token];
-        [self->lock lock];
-        [self->cache setValue:zonesInfo forKey:[token index]];
-        [self->lock unlock];
+        [self.lock lock];
+        [self.cache setValue:zonesInfo forKey:[token index]];
+        [self.lock unlock];
     }
     
     if (zonesInfo != nil) {
-        ret(0, nil);
+        ret(0, nil, nil);
         return;
     }
 
-    //https://uc.qbox.me/v3/query?ak=T3sAzrwItclPGkbuV4pwmszxK7Ki46qRXXGBBQz3&bucket=if-pbl
-    NSString *url = [NSString stringWithFormat:@"%@/v3/query?ak=%@&bucket=%@", server, token.access, token.bucket];
-    [sesionManager get:url withHeaders:nil withCompleteBlock:^(QNHttpResponseInfo *httpResponseInfo, NSDictionary *respBody) {
-        if (!httpResponseInfo.error) {
-        
-            QNZonesInfo *zonesInfo = [QNZonesInfo buildZonesInfoWithResp:respBody];
-            if (httpResponseInfo == nil) {
-                ret(kQNInvalidToken, httpResponseInfo);
-            } else {
-                [self->lock lock];
-                [self->cache setValue:zonesInfo forKey:[token index]];
-                [self->lock unlock];
-                [[QNAutoZoneCache share] cache:respBody forToken:token];
-                ret(0, httpResponseInfo);
-            }
+    QNRequestTransaction *transaction = [self createUploadRequestTransaction:token];
+    [transaction queryUploadHosts:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+
+        if (responseInfo.isOK) {
+            QNZonesInfo *zonesInfo = [QNZonesInfo infoWithDictionary:response];
+            [self.lock lock];
+            [self.cache setValue:zonesInfo forKey:[token index]];
+            [self.lock unlock];
+            [[QNAutoZoneCache share] cache:response forToken:token];
+            ret(0, responseInfo, metrics);
         } else {
-            ret(kQNNetworkError, httpResponseInfo);
+            
+            if (responseInfo.isConnectionBroken) {
+                ret(kQNNetworkError, responseInfo, metrics);
+            } else {
+                QNZonesInfo *zonesInfo = [[QNFixedZone localsZoneInfo] getZonesInfoWithToken:token];
+                [self.lock lock];
+                [self.cache setValue:zonesInfo forKey:[token index]];
+                [self.lock unlock];
+                ret(0, responseInfo, metrics);
+            }
         }
+        [self destroyUploadRequestTransaction:transaction];
     }];
+}
+
+- (QNRequestTransaction *)createUploadRequestTransaction:(QNUpToken *)token{
+    
+    QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithHosts:@[kQNPreQueryHost00, kQNPreQueryHost01]
+                                                                            ioHosts:@[QNZoneInfoSDKDefaultIOHost]
+                                                                              token:token];
+    [self.transactions addObject:transaction];
+    return transaction;
+}
+
+- (void)destroyUploadRequestTransaction:(QNRequestTransaction *)transaction{
+    if (transaction) {
+        [self.transactions removeObject:transaction];
+    }
 }
 
 @end

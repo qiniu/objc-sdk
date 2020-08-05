@@ -11,6 +11,11 @@
 
 @interface ViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
+@property (nonatomic, weak) IBOutlet UIButton* chooseBtn;
+@property (nonatomic, weak) IBOutlet UIButton* uploadBtn;
+@property (nonatomic, weak) IBOutlet UIImageView* preViewImage;
+@property (weak, nonatomic) IBOutlet UIProgressView *progressView;
+
 @property (nonatomic, strong) NSString *token;
 @property (nonatomic, strong) UIImage *pickImage;
 
@@ -30,13 +35,7 @@
 
 - (IBAction)uploadAction:(id)sender {
     if (self.pickImage == nil) {
-        UIAlertView *alert = [[UIAlertView alloc]
-                initWithTitle:@"还未选择图片"
-                      message:@""
-                     delegate:nil
-            cancelButtonTitle:@"OK!"
-            otherButtonTitles:nil];
-        [alert show];
+        [self alertMessage:@"还未选择图片"];
     } else {
         [self uploadImageToQNFilePath:[self getImagePath:self.pickImage]];
     }
@@ -44,9 +43,13 @@
 
 - (void)uploadImageToQNFilePath:(NSString *)filePath {
     self.token = @"你的token";
+    self.token = @"jH983zIUFIP1OVumiBVGeAfiLYJvwrF45S-t22eu:oIggi3DAgHEMzUmhf_MJRgHYbWc=:eyJzY29wZSI6InpvbmUwLXNwYWNlIiwiZGVhZGxpbmUiOjE1OTczNzgwNTksICJyZXR1cm5Cb2R5Ijoie1wiZm9vXCI6JCh4OmZvbyksIFwiYmFyXCI6JCh4OmJhciksIFwibWltZVR5cGVcIjokKG1pbWVUeXBlKSwgXCJoYXNoXCI6JChldGFnKSwgXCJrZXlcIjokKGtleSksIFwiZm5hbWVcIjokKGZuYW1lKX0ifQ==";
     QNUploadManager *upManager = [[QNUploadManager alloc] init];
+    
+    __weak typeof(self) weakSelf = self;
     QNUploadOption *uploadOption = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
         NSLog(@"percent == %.2f", percent);
+        weakSelf.progressView.progress = percent;
     }
                                                                  params:nil
                                                                checkCrc:NO
@@ -54,6 +57,7 @@
     [upManager putFile:filePath key:nil token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         NSLog(@"info ===== %@", info);
         NSLog(@"resp ===== %@", resp);
+        [self alertMessage:info.message];
     }
                 option:uploadOption];
 }
@@ -65,19 +69,14 @@
         picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
         [self presentViewController:picker animated:YES completion:nil];
     } else {
-        UIAlertView *alert = [[UIAlertView alloc]
-                initWithTitle:@"访问图片库错误"
-                      message:@""
-                     delegate:nil
-            cancelButtonTitle:@"OK!"
-            otherButtonTitles:nil];
-        [alert show];
+        [self alertMessage:@"访问图片库错误"];
     }
 }
 
 #pragma mark UIImagePickerControllerDelegate
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey, id> *)info {
     self.pickImage = info[UIImagePickerControllerOriginalImage];
+    self.preViewImage.image = self.pickImage;
     [picker dismissViewControllerAnimated:YES completion:^{
     }];
 }
@@ -113,34 +112,14 @@
     return filePath;
 }
 
-- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event{
-    
-//    QNTransaction *t0 = [QNTransaction transaction:@"0" after:0 action:^{
-//        NSLog(@"== 0 == %@", [NSThread currentThread]);
-//    }];
-//    QNTransaction *t1 = [QNTransaction timeTransaction:@"1" after:0 interval:2 action:^{
-//        NSLog(@"== 1 == %@", [NSThread currentThread]);
-//        NSDate *date_from = [NSDate date];
-//        NSDate *date_current = [NSDate date];
-//
-//        while ([date_current timeIntervalSinceDate:date_from] < 3) {
-//            date_current = [NSDate date];
-//        }
-//    }];
-//    QNTransactionManager *manager = [QNTransactionManager manager];
-//
-//    [manager destroyResource];
-//    [manager addTransaction:t0];
-//    [manager addTransaction:t1];
-//
-//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(20 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//        [manager destroyResource];
-//    });
-}
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)alertMessage:(NSString *)message{
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:message
+                                                    message:@""
+                                                   delegate:nil
+                                          cancelButtonTitle:@"OK!"
+                                          otherButtonTitles:nil];
+    [alert show];
 }
 
 @end

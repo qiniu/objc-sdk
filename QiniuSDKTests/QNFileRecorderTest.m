@@ -64,13 +64,13 @@
         cancellationSignal:^BOOL() {
             return flag;
         }];
-    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
     }
                  option:opt];
     AGWW_WAIT_WHILE(key == nil, 60 * 30);
-    NSLog(@"info %@", info);
+    NSLog(@"%@ info %@", keyUp, info);
     XCTAssert(info.isCancelled, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
 
@@ -87,7 +87,7 @@
                                         params:nil
                                       checkCrc:NO
                             cancellationSignal:nil];
-    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:g_token complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
+    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         key = k;
         info = i;
     }
@@ -124,7 +124,7 @@
     if (_inTravis) {
         return;
     }
-    [self template:4 * 1024 + 1 pos:0.7];
+    [self template:20 * 1024 + 1 pos:0.7];
 }
 
 //#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED

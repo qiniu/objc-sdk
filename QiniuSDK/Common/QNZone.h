@@ -7,30 +7,23 @@
 //
 
 #import "QNZoneInfo.h"
-#import "QNHttpResponseInfo.h"
+#import "QNResponseInfo.h"
+#import "QNUploadRequestMetrics.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
-@class QNUpToken, QNZonesInfo;
+@class QNUpToken, QNZonesInfo, QNUploadRegionRequestMetrics;
 
-typedef void (^QNPrequeryReturn)(int code, QNHttpResponseInfo * _Nullable httpResponseInfo);
+typedef void (^QNPrequeryReturn)(int code, QNResponseInfo * _Nullable httpResponseInfo, QNUploadRegionRequestMetrics * _Nullable metrics);
 
 @interface QNZone : NSObject
 
-- (NSString *)upHost:(QNZoneInfo *)zoneInfo
-             isHttps:(BOOL)isHttps
-          lastUpHost:(NSString *)lastUpHost;
-/**
- *    默认上传服务器地址列表
- */
+// 根据token查询相关Zone信息【内部使用】
 - (void)preQuery:(QNUpToken * _Nullable)token
               on:(QNPrequeryReturn)ret;
 
+// 根据token获取ZonesInfo 【内部使用】
 - (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken * _Nullable)token;
-
-- (NSString *)up:(QNUpToken * _Nullable)token
-    zoneInfoType:(QNZoneInfoType)zoneInfoType
-         isHttps:(BOOL)isHttps
-    frozenDomain:(NSString * _Nullable)frozenDomain;
 
 @end
 

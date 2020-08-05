@@ -70,7 +70,6 @@ typedef BOOL (^QNUpCancellationSignal)(void);
                     checkCrc:(BOOL)check
           cancellationSignal:(QNUpCancellationSignal)cancellation;
 
-- (instancetype)initWithProgessHandler:(QNUpProgressHandler)progress DEPRECATED_ATTRIBUTE;
 - (instancetype)initWithProgressHandler:(QNUpProgressHandler)progress;
 
 /**

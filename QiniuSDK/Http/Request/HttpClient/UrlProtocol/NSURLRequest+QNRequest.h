@@ -24,6 +24,10 @@ NS_ASSUME_NONNULL_BEGIN
 /// 只有通过NSMutableURLRequest设置才会有效
 @property(nonatomic, strong, nullable, readonly)NSString *qn_domain;
 
+/// 请求ip【内部使用】
+/// 只有通过NSMutableURLRequest设置才会有效
+@property(nonatomic, strong, nullable, readonly)NSString *qn_ip;
+
 /// 请求头信息 去除七牛内部标记占位
 @property(nonatomic, strong, nullable, readonly)NSDictionary *qn_allHTTPHeaderFields;
 
@@ -41,7 +45,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 请求domain【内部使用】
 @property(nonatomic, strong, nullable)NSString *qn_domain;
+/// 请求ip【内部使用】
+@property(nonatomic, strong, nullable)NSString *qn_ip;
 
 @end
 
 NS_ASSUME_NONNULL_END
+

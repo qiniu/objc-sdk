@@ -7,10 +7,8 @@
 //
 
 #import "QNResponseInfo.h"
-#import "QNHttpResponseInfo.h"
 #import "QNUserAgent.h"
-#import "QNVersion.h"
-#import "QNUploadInfoReporter.h"
+#import "QNUtils.h"
 
 const int kQNZeroDataSize = -6;
 const int kQNInvalidToken = -5;
@@ -18,172 +16,224 @@ const int kQNFileError = -4;
 const int kQNInvalidArgument = -3;
 const int kQNRequestCancelled = -2;
 const int kQNNetworkError = -1;
+const int kQNLocalIOError = -7;
+const int kQNMaliciousResponseError = -8;
 
-/**
-   https://developer.apple.com/library/ios/documentation/Cocoa/Reference/Foundation/Miscellaneous/Foundation_Constants/index.html#//apple_ref/doc/constant_group/URL_Loading_System_Error_Codes
-
-   NSURLErrorUnknown = -1,
-   NSURLErrorCancelled = -999,
-   NSURLErrorBadURL = -1000,
-   NSURLErrorTimedOut = -1001,
-   NSURLErrorUnsupportedURL = -1002,
-   NSURLErrorCannotFindHost = -1003,
-   NSURLErrorCannotConnectToHost = -1004,
-   NSURLErrorDataLengthExceedsMaximum = -1103,
-   NSURLErrorNetworkConnectionLost = -1005,
-   NSURLErrorDNSLookupFailed = -1006,
-   NSURLErrorHTTPTooManyRedirects = -1007,
-   NSURLErrorResourceUnavailable = -1008,
-   NSURLErrorNotConnectedToInternet = -1009,
-   NSURLErrorRedirectToNonExistentLocation = -1010,
-   NSURLErrorBadServerResponse = -1011,
-   NSURLErrorUserCancelledAuthentication = -1012,
-   NSURLErrorUserAuthenticationRequired = -1013,
-   NSURLErrorZeroByteResource = -1014,
-   NSURLErrorCannotDecodeRawData = -1015,
-   NSURLErrorCannotDecodeContentData = -1016,
-   NSURLErrorCannotParseResponse = -1017,
-   NSURLErrorInternationalRoamingOff = -1018,
-   NSURLErrorCallIsActive = -1019,
-   NSURLErrorDataNotAllowed = -1020,
-   NSURLErrorRequestBodyStreamExhausted = -1021,
-   NSURLErrorFileDoesNotExist = -1100,
-   NSURLErrorFileIsDirectory = -1101,
-   NSURLErrorNoPermissionsToReadFile = -1102,
-   NSURLErrorSecureConnectionFailed = -1200,
-   NSURLErrorServerCertificateHasBadDate = -1201,
-   NSURLErrorServerCertificateUntrusted = -1202,
-   NSURLErrorServerCertificateHasUnknownRoot = -1203,
-   NSURLErrorServerCertificateNotYetValid = -1204,
-   NSURLErrorClientCertificateRejected = -1205,
-   NSURLErrorClientCertificateRequired = -1206,
-   NSURLErrorCannotLoadFromNetwork = -2000,
-   NSURLErrorCannotCreateFile = -3000,
-   NSURLErrorCannotOpenFile = -3001,
-   NSURLErrorCannotCloseFile = -3002,
-   NSURLErrorCannotWriteToFile = -3003,
-   NSURLErrorCannotRemoveFile = -3004,
-   NSURLErrorCannotMoveFile = -3005,
-   NSURLErrorDownloadDecodingFailedMidStream = -3006,
-   NSURLErrorDownloadDecodingFailedToComplete = -3007
- */
-
-static NSString *domain = @"qiniu.com";
+static NSString *kQNErrorDomain = @"qiniu.com";
 
 @interface QNResponseInfo ()
+
+@property (assign) int statusCode;
+@property (nonatomic, copy) NSString *message;
+@property (nonatomic, copy) NSString *reqId;
+@property (nonatomic, copy) NSString *xlog;
+@property (nonatomic, copy) NSString *xvia;
+@property (nonatomic, copy) NSError *error;
+@property (nonatomic, copy) NSString *host;
+@property (nonatomic, copy) NSString *id;
+@property (assign) UInt64 timeStamp;
 
 @end
 
 @implementation QNResponseInfo
 
-+ (instancetype)cancelWithDuration:(double)duration {
-    return [[QNResponseInfo alloc] initWithStatus:kQNRequestCancelled errorDescription:@"cancelled by user" duration:duration];
++ (instancetype)cancelResponse {
+    return [QNResponseInfo errorResponseInfo:kQNRequestCancelled
+                                   errorDesc:@"cancelled by user"];
 }
 
-+ (instancetype)responseInfoWithInvalidArgument:(NSString *)text duration:(double)duration {
-    return [[QNResponseInfo alloc] initWithStatus:kQNInvalidArgument errorDescription:text duration:duration];
++ (instancetype)responseInfoWithNetworkError:(NSString *)desc{
+    return [QNResponseInfo errorResponseInfo:kQNNetworkError
+                                   errorDesc:desc];
 }
 
-+ (instancetype)responseInfoWithInvalidToken:(NSString *)text duration:(double)duration {
-    return [[QNResponseInfo alloc] initWithStatus:kQNInvalidToken errorDescription:text duration:duration];
++ (instancetype)responseInfoWithInvalidArgument:(NSString *)desc{
+    return [QNResponseInfo errorResponseInfo:kQNInvalidArgument
+                                   errorDesc:desc];
 }
 
-+ (instancetype)responseInfoWithFileError:(NSError *)error duration:(double)duration {
-    return [[QNResponseInfo alloc] initWithStatus:kQNFileError error:error host:nil duration:duration];
++ (instancetype)responseInfoWithInvalidToken:(NSString *)desc {
+    return [QNResponseInfo errorResponseInfo:kQNInvalidToken
+                                   errorDesc:desc];
 }
 
-+ (instancetype)responseInfoOfZeroData:(NSString *)path duration:(double)duration {
++ (instancetype)responseInfoWithFileError:(NSError *)error {
+    return [QNResponseInfo errorResponseInfo:kQNFileError
+                                   errorDesc:nil
+                                       error:error];
+}
+
++ (instancetype)responseInfoOfZeroData:(NSString *)path {
     NSString *desc;
     if (path == nil) {
         desc = @"data size is 0";
     } else {
         desc = [[NSString alloc] initWithFormat:@"file %@ size is 0", path];
     }
-    return [[QNResponseInfo alloc] initWithStatus:kQNZeroDataSize errorDescription:desc duration:duration];
+    return [QNResponseInfo errorResponseInfo:kQNZeroDataSize
+                                   errorDesc:desc];
 }
 
-+ (instancetype)responseInfoWithHttpResponseInfo:(QNHttpResponseInfo *)httpResponseInfo duration:(double)duration {
-    if (httpResponseInfo.hasHttpResponse) {
-        return [[QNResponseInfo alloc] initWithStatusCode:(int)httpResponseInfo.statusCode reqId:httpResponseInfo.reqId xlog:httpResponseInfo.xlog xvia:httpResponseInfo.xvia host:httpResponseInfo.host error:httpResponseInfo.error duration:duration];
++ (instancetype)responseInfoWithLocalIOError:(NSString *)desc{
+    return [QNResponseInfo errorResponseInfo:kQNLocalIOError
+                                   errorDesc:desc];
+}
+
++ (instancetype)errorResponseInfo:(int)errorType
+                        errorDesc:(NSString *)errorDesc{
+    return [self errorResponseInfo:errorType errorDesc:errorDesc error:nil];
+}
+
++ (instancetype)errorResponseInfo:(int)errorType
+                        errorDesc:(NSString *)errorDesc
+                            error:(NSError *)error{
+    QNResponseInfo *response = [[QNResponseInfo alloc] init];
+    response.statusCode = errorType;
+    response.message = errorDesc;
+    if (error) {
+       response.error = error;
     } else {
-        return [[QNResponseInfo alloc] initWithNetError:httpResponseInfo.error host:httpResponseInfo.host duration:duration];
+        NSError *error = [[NSError alloc] initWithDomain:kQNErrorDomain
+                                                    code:errorType
+                                                userInfo:@{ @"error" : response.message ?: @"error" }];
+        response.error = error;
     }
+    
+    return response;
 }
 
-- (instancetype)initWithStatus:(int)status
-                         errorDescription:(NSString *)text
-                      duration:(double)duration {
-    NSError *error = [[NSError alloc] initWithDomain:domain code:status userInfo:@{ @"error" : text }];
-    return [self initWithStatus:status error:error host:nil duration:duration];
-}
-
-- (instancetype)initWithStatus:(int)status
-                         error:(NSError *)error
-                          host:(NSString *)host
-                      duration:(double)duration {
-    if (self = [super init]) {
-        _statusCode = status;
-        _error = error;
+- (instancetype)initWithResponseInfoHost:(NSString *)host
+                                response:(NSHTTPURLResponse *)response
+                                    body:(NSData *)body
+                                   error:(NSError *)error {
+    
+    self = [super init];
+    if (self) {
+        
         _host = host;
-        _duration = duration;
-        _id = [QNUserAgent sharedInstance].id;
         _timeStamp = [[NSDate date] timeIntervalSince1970];
-        _xClientId = Reporter.X_Log_Client_Id;
+        
+        if (response) {
+            
+            int statusCode = (int)[response statusCode];
+            NSDictionary *headers = [response allHeaderFields];
+            _statusCode = statusCode;
+            _reqId = headers[@"x-reqid"];
+            _xlog = headers[@"x-log"];
+            _xvia = headers[@"x-via"] ?: headers[@"x-px"] ?: headers[@"fw-via"];
+            if (_statusCode == 200 && (_reqId == nil || _xlog == nil)) {
+                _statusCode = kQNMaliciousResponseError;
+                _message = @"this is a malicious response";
+                _responseDictionary = nil;
+                _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:_statusCode userInfo:@{@"error" : _message}];
+            } else if (error) {
+                _error = error;
+                _statusCode = (int)error.code;
+                _message = [NSString stringWithFormat:@"%@", error];
+                _responseDictionary = nil;
+            } else {
+                NSMutableDictionary *errorUserInfo = [@{@"errorHost" : host ?: @""} mutableCopy];
+                if (!body) {
+                    _message = @"no response data";
+                    [errorUserInfo setDictionary:@{@"error":_message}];
+                    _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
+                    _responseDictionary = nil;
+                } else {
+                    NSError *tmp = nil;
+                    NSDictionary *responseInfo = nil;
+                    responseInfo = [NSJSONSerialization JSONObjectWithData:body options:NSJSONReadingMutableLeaves error:&tmp];
+                    if (tmp){
+                        _message = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding] ?: @"";
+                        [errorUserInfo setDictionary:@{@"error" : _message}];
+                        _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
+                        _responseDictionary = nil;
+                    } else if (responseInfo && statusCode > 199 && statusCode < 300) {
+                        _error = nil;
+                        _message = @"ok";
+                        _responseDictionary = responseInfo;
+                    } else {
+                        _message = @"unknown error";
+                        [errorUserInfo setDictionary:@{@"error" : _message}];
+                        _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
+                        _responseDictionary = responseInfo;
+                    }
+                }
+            }
+        } else if (error) {
+            _error = error;
+            _statusCode = (int)error.code;
+            _message = [NSString stringWithFormat:@"%@", error];
+            _responseDictionary = nil;
+        }
     }
     return self;
-}
-
-- (instancetype)initWithNetError:(NSError *)error
-                            host:(NSString *)host
-                        duration:(double)duration {
-    int code = kQNNetworkError;
-    if (error != nil) {
-        code = (int)error.code;
-    }
-    return [[QNResponseInfo alloc] initWithStatus:code error:error host:host duration:duration];
-}
-
-- (instancetype)initWithStatusCode:(int)statusCode
-                             reqId:(NSString *)reqId
-                              xlog:(NSString *)xlog
-                              xvia:(NSString *)xvia
-                              host:(NSString *)host
-                             error:(NSError *)error
-                          duration:(double)duration  {
-    if (self = [super init]) {
-        _statusCode = statusCode;
-        _reqId = reqId;
-        _xlog = xlog;
-        _xvia = xvia;
-        _host = host;
-        _error = error;
-        _duration = duration;
-        _id = [QNUserAgent sharedInstance].id;
-        _timeStamp = [[NSDate date] timeIntervalSince1970];
-        _xClientId = Reporter.X_Log_Client_Id;
-    }
-    return self;
-}
-
-- (NSString *)description {
-    return [NSString stringWithFormat:@"<%@= id: %@, ver: %@, status: %d, requestId: %@, xClientId: %@, xlog: %@, xvia: %@, host: %@ duration: %.3f s time: %llu error: %@>", NSStringFromClass([self class]), _id, kQiniuVersion, _statusCode, _reqId, _xClientId, _xlog, _xvia, _host, _duration, _timeStamp, _error];
 }
 
 - (BOOL)isCancelled {
     return _statusCode == kQNRequestCancelled || _statusCode == -999;
 }
 
+- (BOOL)isTlsError{
+    if (_statusCode == NSURLErrorServerCertificateHasBadDate
+        || _statusCode == NSURLErrorClientCertificateRejected
+        || _statusCode == NSURLErrorClientCertificateRequired) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 - (BOOL)isNotQiniu {
     // reqId is nill means the server is not qiniu
-    return (_statusCode >= 200 && _statusCode < 500) && _reqId == nil;
+    return _reqId == nil || _xlog == nil;
 }
 
 - (BOOL)isOK {
-    return _statusCode == 200 && _error == nil && _reqId != nil;
+    return (_statusCode >= 200 && _statusCode < 300) && _error == nil && _reqId != nil && _xlog != nil;
+}
+
+- (BOOL)couldRetry {
+    if (self.isCancelled
+        || _statusCode == 100
+        || (_statusCode > 300 && _statusCode < 400)
+        || (_statusCode > 400 && _statusCode < 500)
+        || _statusCode == 501 || _statusCode == 573
+        || _statusCode == 608 || _statusCode == 612 || _statusCode == 614 || _statusCode == 616
+        || _statusCode == 619 || _statusCode == 630 || _statusCode == 631 || _statusCode == 640
+        || _statusCode == 701
+        ||(_statusCode < 0 && _statusCode > -1000)) {
+        return NO;
+    } else {
+        return YES;
+    }
+}
+
+- (BOOL)couldRegionRetry{
+    if ([self couldRetry] == NO
+        || _statusCode == 400
+        || _statusCode == 502 || _statusCode == 503 || _statusCode == 504 || _statusCode == 579 || _statusCode == 599
+        || self.isCancelled) {
+        return NO;
+    } else {
+        return YES;
+    }
+}
+
+- (BOOL)couldHostRetry{
+    if ([self couldRegionRetry] == NO
+        || (_statusCode == 502 || _statusCode == 503 || _statusCode == 571)) {
+        return NO;
+    } else {
+        return YES;
+    }
 }
 
 - (BOOL)isConnectionBroken {
-    return _statusCode == kQNNetworkError || (_statusCode < -1000 && _statusCode != -1003);
+    return _statusCode == kQNNetworkError || _statusCode == NSURLErrorNotConnectedToInternet;
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"<%@= id: %@, ver: %@, status: %d, requestId: %@, xlog: %@, xvia: %@, host: %@ time: %llu error: %@>", NSStringFromClass([self class]), _id, [QNUtils sdkVersion], _statusCode, _reqId, _xlog, _xvia, _host, _timeStamp, _error];
 }
 
 @end

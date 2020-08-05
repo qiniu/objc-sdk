@@ -25,8 +25,8 @@
         addressDic = [NSJSONSerialization JSONObjectWithData:(NSData *)addressInfo
                                                      options:NSJSONReadingMutableLeaves
                                                        error:nil];
-    } else if ([addressInfo conformsToProtocol:@protocol(QNInetAddressDelegate)]){
-        id <QNInetAddressDelegate> address = (id <QNInetAddressDelegate> )addressInfo;
+    } else if ([addressInfo conformsToProtocol:@protocol(QNIDnsNetworkAddress)]){
+        id <QNIDnsNetworkAddress> address = (id <QNIDnsNetworkAddress> )addressInfo;
         NSMutableDictionary *dic = [NSMutableDictionary dictionary];
         if ([address respondsToSelector:@selector(hostValue)] && [address hostValue]) {
             dic[@"hostValue"] = [address hostValue];
