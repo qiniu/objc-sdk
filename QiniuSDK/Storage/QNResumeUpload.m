@@ -111,7 +111,6 @@
         QNAsyncRunInMain(^{
             self.option.progressHandler(self.key, percent);
         });
-        NSLog(@"resume  progress:%lf chunkIndex:%ld", percent, (long)data.index);
     };
     
     if (!data) {

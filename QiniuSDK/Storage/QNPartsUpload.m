@@ -102,7 +102,7 @@
         [self.recorder del:self.key];
         return;
     }
-    NSLog(@"Reupload recover info: %@", info);
+
     QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:info[kQNRecordZoneInfoKey]];
     QNUploadFileInfo *fileInfo = [QNUploadFileInfo infoFromDictionary:info[kQNRecordFileInfoKey]];
     self.recoveredFrom = @(fileInfo.progress * fileInfo.size);

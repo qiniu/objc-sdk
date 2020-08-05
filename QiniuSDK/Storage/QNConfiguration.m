@@ -51,8 +51,6 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
         _useHttps = builder.useHttps;
 
         _allowBackupHost = builder.allowBackupHost;
-        
-        _reportConfig = builder.reportConfig;
 
         _useConcurrentResumeUpload = builder.useConcurrentResumeUpload;
         
@@ -77,7 +75,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 }
 - (void)setupData{
     _isDnsOpen = YES;
-    _dnscacheDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches/Dns"];
+    _dnsCacheDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches/Dns"];
     _dnsRepreHostNum = 2;
     _dnsCacheTime = kQNDefaultDnsCacheTime;
     
@@ -107,7 +105,6 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
         _retryMax = 1;
         _timeoutInterval = 90;
         _retryInterval = 0.5;
-        _reportConfig = [QNReportConfig sharedInstance];
 
         _recorder = nil;
         _recorderKeyGen = nil;

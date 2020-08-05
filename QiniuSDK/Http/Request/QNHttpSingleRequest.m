@@ -95,8 +95,6 @@
         self.client = [[QNUploadSystemClient alloc] init];
     }
     
-    NSLog(@"QN Single Request:%@ / %@", request.URL.absoluteString, request.qn_domain);
-    
     __weak typeof(self) weakSelf = self;
     BOOL (^checkCancelHandler)(void) = ^{
         BOOL isCancelled = weakSelf.requestState.isUserCancel;
