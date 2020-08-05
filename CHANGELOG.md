@@ -1,5 +1,20 @@
 #Changelog
 
+## 8.0.0 (2020-08-05)
+## 重构
+8.0.0版本相对于7.4.6版本的改进：
+- 优化上传流程
+- 优化重试方案
+
+8.0.0版本是在7.4.6版本基础上，在保证上传接口不变的条件下进行的升级，代码修改信息如下：
+- 增加的内部使用类：QNHttpRegionRequest、QNUploadRequestState等
+- 废弃类：QNHttpResponseInfo、QNUploadInfoReporter
+- 修改了一些7.x内部使用类的API
+
+如果您并未对7.x SDK 进行过深度定制，而是直接对接QNUploadManager进行上传，那么SDK版本升级只需要更换pod版本重新安装即可。
+
+详细情况请参考：[iOS_Changes_from_7.x_to_8.0.0.md](./doc/iOS_Changes_from_7.x_to_8.0.0.md)
+
 ## 7.4.3 (2020-07-27)
 ## 优化
 优化Dns预取的缓存方案

@@ -41,7 +41,6 @@
     self.uploadBlockErrorResponse = nil;
     self.uploadTransactions = [NSMutableArray array];
     
-    NSLog(@"concurrent resume task count: %u", (unsigned int)self.config.concurrentTaskCount);
     for (int i = 0; i < self.config.concurrentTaskCount; i++) {
         dispatch_group_enter(_uploadGroup);
         dispatch_group_async(_uploadGroup, _uploadQueue, ^{
