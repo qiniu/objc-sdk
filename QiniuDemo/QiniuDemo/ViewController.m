@@ -43,7 +43,6 @@
 
 - (void)uploadImageToQNFilePath:(NSString *)filePath {
     self.token = @"你的token";
-    self.token = @"jH983zIUFIP1OVumiBVGeAfiLYJvwrF45S-t22eu:oIggi3DAgHEMzUmhf_MJRgHYbWc=:eyJzY29wZSI6InpvbmUwLXNwYWNlIiwiZGVhZGxpbmUiOjE1OTczNzgwNTksICJyZXR1cm5Cb2R5Ijoie1wiZm9vXCI6JCh4OmZvbyksIFwiYmFyXCI6JCh4OmJhciksIFwibWltZVR5cGVcIjokKG1pbWVUeXBlKSwgXCJoYXNoXCI6JChldGFnKSwgXCJrZXlcIjokKGtleSksIFwiZm5hbWVcIjokKGZuYW1lKX0ifQ==";
     QNUploadManager *upManager = [[QNUploadManager alloc] init];
     
     __weak typeof(self) weakSelf = self;
