@@ -36,12 +36,12 @@
 @implementation QNRequestTransaction
 
 - (instancetype)initWithHosts:(NSArray <NSString *> *)hosts
-                      ioHosts:(NSArray <NSString *> *)ioHosts
+                     regionId:(NSString * _Nullable)regionId
                         token:(QNUpToken *)token{
     return [self initWithConfig:[QNConfiguration defaultConfiguration]
                    uploadOption:[QNUploadOption defaultOptions]
                           hosts:hosts
-                        ioHosts:ioHosts
+                       regionId:regionId
                             key:nil
                           token:token];
 }
@@ -49,12 +49,12 @@
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
                          hosts:(NSArray <NSString *> *)hosts
-                       ioHosts:(NSArray <NSString *> *)ioHosts
+                      regionId:(NSString * _Nullable)regionId
                            key:(NSString * _Nullable)key
-                         token:(QNUpToken *)token{
+                         token:(nonnull QNUpToken *)token{
     
     QNUploadDomainRegion *region = [[QNUploadDomainRegion alloc] init];
-    [region setupRegionData:[QNZoneInfo zoneInfoWithMainHosts:hosts ioHosts:ioHosts]];
+    [region setupRegionData:[QNZoneInfo zoneInfoWithMainHosts:hosts regionId:regionId]];
     return [self initWithConfig:config
                    uploadOption:uploadOption
                    targetRegion:region

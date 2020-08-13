@@ -8,41 +8,16 @@
 
 #import "QNZoneInfo.h"
 
-@interface QNUploadServerGroup()
-
-@property(nonatomic,   copy)NSString *info;
-@property(nonatomic, strong)NSArray <NSString *> *main;
-@property(nonatomic, strong)NSArray <NSString *> *backup;
-@property(nonatomic, strong)NSArray <NSString *> *allHosts;
-
-@end
-@implementation QNUploadServerGroup
-+ (QNUploadServerGroup *)buildInfoFromDictionary:(NSDictionary *)dictionary{
-    
-    NSMutableArray *allHosts = [NSMutableArray array];
-    QNUploadServerGroup *group = [[QNUploadServerGroup alloc] init];
-    group.info = dictionary[@"info"];
-    if ([dictionary[@"main"] isKindOfClass:[NSArray class]]) {
-        group.main = dictionary[@"main"];
-        [allHosts addObjectsFromArray:group.main];
-    }
-    if ([dictionary[@"backup"] isKindOfClass:[NSArray class]]) {
-        group.backup = dictionary[@"backup"];
-        [allHosts addObjectsFromArray:group.backup];
-    }
-    group.allHosts = [allHosts copy];
-    return group;
-}
-@end
-
-
 NSString * const QNZoneInfoSDKDefaultIOHost = @"sdkDefaultIOHost";
 NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
 
 @interface QNZoneInfo()
 
-@property(nonatomic, assign) long ttl;
 @property(nonatomic, strong) NSDate *buildDate;
+
+@property(nonatomic, assign) long ttl;
+@property(nonatomic, strong)NSArray<NSString *> *domains;
+@property(nonatomic, strong)NSArray<NSString *> *old_domains;
 
 @property(nonatomic, strong)NSArray <NSString *> *allHosts;
 @property(nonatomic, strong) NSDictionary *detailInfo;
@@ -50,14 +25,14 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
 @end
 @implementation QNZoneInfo
 
-+ (QNZoneInfo *)zoneInfoWithMainHosts:(NSArray *)mainHosts
-                              ioHosts:(NSArray *)ioHosts{
-    return [self zoneInfoWithMainHosts:mainHosts oldHosts:nil ioHosts:ioHosts];
++ (QNZoneInfo *)zoneInfoWithMainHosts:(NSArray <NSString *> *)mainHosts
+                             regionId:(NSString * _Nullable)regionId{
+    return [self zoneInfoWithMainHosts:mainHosts oldHosts:nil regionId:regionId];
 }
 
 + (QNZoneInfo *)zoneInfoWithMainHosts:(NSArray <NSString *> *)mainHosts
-                             oldHosts:(NSArray <NSString *> *)oldHosts
-                              ioHosts:(NSArray <NSString *> * _Nullable)ioHosts{
+                             oldHosts:(NSArray <NSString *> * _Nullable)oldHosts
+                             regionId:(NSString * _Nullable)regionId{
     
     if (!mainHosts || ![mainHosts isKindOfClass:[NSArray class]] || mainHosts.count == 0) {
         return nil;
@@ -68,9 +43,10 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
     }
     
     QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:@{@"ttl" : @(86400*1000),
-                                                                @"up" : @{@"acc" : @{@"main" : mainHosts},
-                                                                          @"old_acc" : @{@"main" : oldHosts ?: @[]}},
-                                                                @"io" : @{@"src" : @{@"main" : ioHosts ?: @[]}}}];
+                                                                @"region" : regionId ?: QNZoneInfoEmptyRegionId,
+                                                                @"up" : @{@"domains" : mainHosts ?: @[],
+                                                                          @"old" : oldHosts ?: @[]},
+                                                                }];
     return zoneInfo;
 }
 
@@ -79,45 +55,25 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
         return nil;
     }
     
-    long ttl = [[detailInfo objectForKey:@"ttl"] longValue];
-    NSDictionary *up = [detailInfo objectForKey:@"up"];
-    NSDictionary *acc = [up objectForKey:@"acc"];
-    NSDictionary *src = [up objectForKey:@"src"];
-    NSDictionary *old_acc = [up objectForKey:@"old_acc"];
-    NSDictionary *old_src = [up objectForKey:@"old_src"];
-    
-    // judge zone region via io
-    NSDictionary *io = [detailInfo objectForKey:@"io"];
-    NSDictionary *io_src = [io objectForKey:@"src"];
-    NSArray *io_main = [io_src objectForKey:@"main"];
-    NSString *io_host = io_main.count > 0 ? io_main[0] : nil;
-    
-    NSString *regionId = @"unknown";
-    if ([io_host isEqualToString:@"iovip.qbox.me"]) {
-        regionId = @"z0";
-    } else if ([io_host isEqualToString:@"iovip-z1.qbox.me"]) {
-        regionId = @"z1";
-    } else if ([io_host isEqualToString:@"iovip-z2.qbox.me"]) {
-        regionId = @"z2";
-    } else if ([io_host isEqualToString:@"iovip-na0.qbox.me"]) {
-        regionId = @"na0";
-    } else if ([io_host isEqualToString:@"iovip-as0.qbox.me"]) {
-        regionId = @"as0";
-    } else if ([io_host isEqualToString:QNZoneInfoSDKDefaultIOHost]) {
+    NSString *regionId = [detailInfo objectForKey:@"region"];
+    if (regionId == nil) {
         regionId = QNZoneInfoEmptyRegionId;
     }
-    
-    QNZoneInfo *zoneInfo = [[QNZoneInfo alloc] init:ttl regionId:regionId];
-    zoneInfo.acc = [QNUploadServerGroup buildInfoFromDictionary:acc];
-    zoneInfo.src = [QNUploadServerGroup buildInfoFromDictionary:src];
-    zoneInfo.old_acc = [QNUploadServerGroup buildInfoFromDictionary:old_acc];
-    zoneInfo.old_src = [QNUploadServerGroup buildInfoFromDictionary:old_src];
+    long ttl = [[detailInfo objectForKey:@"ttl"] longValue];
+    NSDictionary *up = [detailInfo objectForKey:@"up"];
+    NSArray *domains = [up objectForKey:@"domains"];
+    NSArray *old_domains = [up objectForKey:@"old"];
     
     NSMutableArray *allHosts = [NSMutableArray array];
-    [allHosts addObjectsFromArray:zoneInfo.acc.allHosts];
-    [allHosts addObjectsFromArray:zoneInfo.src.allHosts];
-    [allHosts addObjectsFromArray:zoneInfo.old_acc.allHosts];
-    [allHosts addObjectsFromArray:zoneInfo.old_src.allHosts];
+    QNZoneInfo *zoneInfo = [[QNZoneInfo alloc] init:ttl regionId:regionId];
+    if ([domains isKindOfClass:[NSArray class]]) {
+        zoneInfo.domains = domains;
+        [allHosts addObjectsFromArray:domains];
+    }
+    if ([old_domains isKindOfClass:[NSArray class]]) {
+        zoneInfo.old_domains = old_domains;
+        [allHosts addObjectsFromArray:old_domains];
+    }
     zoneInfo.allHosts = [allHosts copy];
     
     zoneInfo.detailInfo = detailInfo;
