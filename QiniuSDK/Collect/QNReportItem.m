@@ -74,7 +74,6 @@
         NSString *itemJsonString = [item toJson];
         if (itemJsonString && ![itemJsonString isEqualToString:@"{}"]) {
             [self report:itemJsonString token:token];
-            NSLog(@"== report log: %@", itemJsonString);
         }
     });
 }
