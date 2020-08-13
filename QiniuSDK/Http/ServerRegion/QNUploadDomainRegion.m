@@ -148,7 +148,7 @@
     NSMutableArray *serverGroups = [NSMutableArray array];
     NSMutableArray *domainHostList = [NSMutableArray array];
     if (zoneInfo.domains) {
-        [serverGroups addObject:zoneInfo.domains];
+        [serverGroups addObjectsFromArray:zoneInfo.domains];
         [domainHostList addObjectsFromArray:zoneInfo.domains];
     }
     self.domainHostList = domainHostList;
@@ -157,7 +157,7 @@
     [serverGroups removeAllObjects];
     NSMutableArray *oldDomainHostList = [NSMutableArray array];
     if (zoneInfo.old_domains) {
-        [serverGroups addObject:zoneInfo.old_domains];
+        [serverGroups addObjectsFromArray:zoneInfo.old_domains];
         [oldDomainHostList addObjectsFromArray:zoneInfo.old_domains];
     }
     self.oldDomainHostList = oldDomainHostList;
