@@ -494,11 +494,19 @@ static const NSString *reportTypeValueList[] = {@"form", @"mkblk", @"bput", @"mk
         
         // 判断recorder文件大小是否超过maxRecordFileSize
         if (file.size < _config.maxRecordFileSize) {
-            // 上传信息写入recorder文件
-            NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:_recorderFilePath];
-            [fileHandler seekToEndOfFile];
-            [fileHandler writeData:[finalRecordInfo dataUsingEncoding:NSUTF8StringEncoding]];
-            [fileHandler closeFile];
+            @try {
+                // 上传信息写入recorder文件
+                NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:_recorderFilePath];
+                [fileHandler seekToEndOfFile];
+                [fileHandler writeData: [finalRecordInfo dataUsingEncoding:NSUTF8StringEncoding]];
+                [fileHandler closeFile];
+            } @catch (NSException *exception) {
+                QNAsyncRunInMain(^{
+                    NSLog(@"NSFileHandle cannot write data: %@", exception.description);
+                });
+            } @finally {
+                return;
+            }
         }
         
         // 判断是否满足上传条件：文件大于上报临界值 && (首次上传 || 距上次上传时间大于_config.interval)
