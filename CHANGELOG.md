@@ -15,6 +15,12 @@
 
 详细情况请参考：[iOS_Changes_from_7.x_to_8.0.0.md](./doc/iOS_Changes_from_7.x_to_8.0.0.md)
 
+
+## 7.4.4 (2020-08-13)
+## 修正
+修复reporter的bug，增加NSHandle的异常捕获。
+
+
 ## 7.4.3 (2020-07-27)
 ## 优化
 优化Dns预取的缓存方案
