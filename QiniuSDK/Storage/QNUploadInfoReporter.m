@@ -433,9 +433,7 @@ static const NSString *reportTypeValueList[] = {@"form", @"mkblk", @"bput", @"mk
         NSError *error = nil;
         [_fileManager removeItemAtPath:_recorderFilePath error:&error];
         if (error) {
-            QNAsyncRunInMain(^{
-                NSLog(@"remove recorder file failed: %@", error);
-            });
+            NSLog(@"remove recorder file failed: %@", error);
             return;
         }
     }
@@ -445,9 +443,7 @@ static const NSString *reportTypeValueList[] = {@"form", @"mkblk", @"bput", @"mk
     
     if (!_config.isReportEnable) return NO;
     if (!(_config.maxRecordFileSize > _config.uploadThreshold)) {
-        QNAsyncRunInMain(^{
-            NSLog(@"maxRecordFileSize must be larger than uploadThreshold");
-        });
+        NSLog(@"maxRecordFileSize must be larger than uploadThreshold");
         return NO;
     }
     return YES;
@@ -470,9 +466,7 @@ static const NSString *reportTypeValueList[] = {@"form", @"mkblk", @"bput", @"mk
     if (![_fileManager fileExistsAtPath:_config.recordDirectory]) {
         [_fileManager createDirectoryAtPath:_config.recordDirectory withIntermediateDirectories:YES attributes:nil error:&error];
         if (error) {
-            QNAsyncRunInMain(^{
-                NSLog(@"create record directory failed, please check record directory: %@", error.localizedDescription);
-            });
+            NSLog(@"create record directory failed, please check record directory: %@", error.localizedDescription);
             return;
         }
     }
@@ -486,9 +480,7 @@ static const NSString *reportTypeValueList[] = {@"form", @"mkblk", @"bput", @"mk
         // recordFile存在，拼接文件内容、上传到服务器
         QNFile *file = [[QNFile alloc] init:_recorderFilePath error:&error];
         if (error) {
-            QNAsyncRunInMain(^{
-                NSLog(@"create QNFile with path failed: %@", error.localizedDescription);
-            });
+            NSLog(@"create QNFile with path failed: %@", error.localizedDescription);
             return;
         }
         
@@ -501,9 +493,7 @@ static const NSString *reportTypeValueList[] = {@"form", @"mkblk", @"bput", @"mk
                 [fileHandler writeData: [finalRecordInfo dataUsingEncoding:NSUTF8StringEncoding]];
                 [fileHandler closeFile];
             } @catch (NSException *exception) {
-                QNAsyncRunInMain(^{
-                    NSLog(@"NSFileHandle cannot write data: %@", exception.description);
-                });
+                NSLog(@"NSFileHandle cannot write data: %@", exception.description);
             } @finally {
                 return;
             }
@@ -532,9 +522,7 @@ static const NSString *reportTypeValueList[] = {@"form", @"mkblk", @"bput", @"mk
                     }
                     [self clean];
                 } else {
-                    QNAsyncRunInMain(^{
-                        NSLog(@"upload info report failed: %@", error.localizedDescription);
-                    });
+                    NSLog(@"upload info report failed: %@", error.localizedDescription);
                 }
                 [session finishTasksAndInvalidate];
                 dispatch_semaphore_signal(self.semaphore);
