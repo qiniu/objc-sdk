@@ -377,7 +377,7 @@
     if (self) {
         _reportEnable = YES;
         _interval = 10;
-        _serverURL = @"https://uplog.qbox.me/log/4";
+        _serverURL = @"https://uplog.qbox.me/log/4?compressed=gzip";
         _recordDirectory = [[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] stringByAppendingPathComponent:@"com.qiniu.report"];
         _maxRecordFileSize = 2 * 1024 * 1024;
         _uploadThreshold = 4 * 1024;
@@ -509,7 +509,6 @@ static const NSString *reportTypeValueList[] = {@"form", @"mkblk", @"bput", @"mk
             NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:_config.serverURL]];
             [request setValue:[NSString stringWithFormat:@"UpToken %@", token] forHTTPHeaderField:@"Authorization"];
             [request setValue:[[QNUserAgent sharedInstance] getUserAgent:[QNUpToken parse:token].access] forHTTPHeaderField:@"User-Agent"];
-            [request setValue:@"gzip" forHTTPHeaderField:@"Content-Encoding"];
             
             if (self.X_Log_Client_Id) {
                 [request setValue:self.X_Log_Client_Id forHTTPHeaderField:@"X-Log-Client-Id"];
