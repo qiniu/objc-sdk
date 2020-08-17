@@ -494,8 +494,6 @@ static const NSString *reportTypeValueList[] = {@"form", @"mkblk", @"bput", @"mk
                 [fileHandler closeFile];
             } @catch (NSException *exception) {
                 NSLog(@"NSFileHandle cannot write data: %@", exception.description);
-            } @finally {
-                return;
             }
         }
         
