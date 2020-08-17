@@ -122,9 +122,7 @@
                 [fileHandler closeFile];
             } @catch (NSException *exception) {
                 NSLog(@"NSFileHandle cannot write data: %@", exception.description);
-            } @finally {
-                return;
-            }
+            } 
         }
         
         // 判断是否满足上传条件：文件大于上报临界值 && (首次上传 || 距上次上传时间大于_config.interval)
