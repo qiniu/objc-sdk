@@ -6,6 +6,20 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		31259E4624E63B9700CF7531 /* Document */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 31259E4924E63B9700CF7531 /* Build configuration list for PBXAggregateTarget "Document" */;
+			buildPhases = (
+				31259E4A24E63BBB00CF7531 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = Document;
+			productName = Document;
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		05EFAFE5DD675C7ECAD063A4 /* libPods-QiniuSDK_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C1D8890E270C769A9E798A8E /* libPods-QiniuSDK_iOS.a */; };
 		3115471D243476CF00D77B8B /* QNTransactionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3115471C243476CF00D77B8B /* QNTransactionTest.m */; };
@@ -914,6 +928,10 @@
 				LastUpgradeCheck = 1140;
 				ORGANIZATIONNAME = Qiniu;
 				TargetAttributes = {
+					31259E4624E63B9700CF7531 = {
+						CreatedOnToolsVersion = 11.3.1;
+						ProvisioningStyle = Automatic;
+					};
 					DF2CDDFE19DAC05500CE01FB = {
 						CreatedOnToolsVersion = 6.0.1;
 					};
@@ -945,6 +963,7 @@
 				DF2CDE0919DAC05500CE01FB /* QiniuSDK_MacTests */,
 				DF2CDE1919DAC08400CE01FB /* QiniuSDK_iOS */,
 				DF2CDE2319DAC08400CE01FB /* QiniuSDK_iOSTests */,
+				31259E4624E63B9700CF7531 /* Document */,
 			);
 		};
 /* End PBXProject section */
@@ -984,6 +1003,23 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		31259E4A24E63BBB00CF7531 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "#appledoc Xcode script  \n# Start constants  \ncompany=\"qiniu\";  \ncompanyID=\"com.qiniu\";\ncompanyURL=\"https://developer.qiniu.com/\";\ntarget=\"iphoneos\";\n#target=\"macosx\";\noutputPath=\"./apiDoc\";\nignorePath=\"*.m\";\n# End constants\n/usr/local/bin/appledoc \\\n--project-name \"${PROJECT_NAME}\" \\\n--project-company \"${company}\" \\\n--company-id \"${companyID}\" \\\n--ignore \"${ignorePath}\" \\\n--docset-atom-filename \"${company}.atom\" \\\n--docset-feed-url \"${companyURL}/${company}/%DOCSETATOMFILENAME\" \\\n--docset-package-url \"${companyURL}/${company}/%DOCSETPACKAGEFILENAME\" \\\n--docset-fallback-url \"${companyURL}/${company}\" \\\n--output \"${outputPath}\" \\\n--publish-docset \\\n--docset-platform-family \"${target}\" \\\n--logformat xcode \\\n--keep-intermediate-files \\\n--no-repeat-first-par \\\n--no-warn-invalid-crossref \\\n--exit-threshold 2 \\\n./QiniuSDK/Recorder\n";
 		};
 		51663589B6278952CB36F876 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1218,6 +1254,22 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		31259E4724E63B9700CF7531 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		31259E4824E63B9700CF7531 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		DF2CDE0E19DAC05500CE01FB /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1416,6 +1468,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		31259E4924E63B9700CF7531 /* Build configuration list for PBXAggregateTarget "Document" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				31259E4724E63B9700CF7531 /* Debug */,
+				31259E4824E63B9700CF7531 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		DF2CDDFA19DAC05500CE01FB /* Build configuration list for PBXProject "QiniuSDK" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

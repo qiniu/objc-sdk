@@ -17,7 +17,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong, readonly)NSArray <NSString *> *backup;
 @property(nonatomic, strong, readonly)NSArray <NSString *> *allHosts;
 
-//内部使用
+/// 根据键值对构造对象 【内部使用】
+/// @param dictionary 键值对信息
 + (QNUploadServerGroup *)buildInfoFromDictionary:(NSDictionary *)dictionary;
 
 @end
@@ -45,7 +46,8 @@ extern NSString *const QNZoneInfoEmptyRegionId;
                              oldHosts:(NSArray <NSString *> * _Nullable)oldHosts
                               ioHosts:(NSArray <NSString *> * _Nullable)ioHosts;
 
-//内部使用
+/// 根据键值对构造对象 【内部使用】
+/// @param detailInfo 键值对信息
 + (QNZoneInfo *)zoneInfoFromDictionary:(NSDictionary *)detailInfo;
 
 - (BOOL)isValid;
@@ -56,7 +58,8 @@ extern NSString *const QNZoneInfoEmptyRegionId;
 
 @property (nonatomic, strong) NSArray<QNZoneInfo *> *zonesInfo;
 
-//内部使用
+/// 根据键值对构造对象 【内部使用】
+/// @param dictionary 键值对信息
 + (instancetype)infoWithDictionary:(NSDictionary *)dictionary;
 
 - (instancetype)initWithZonesInfo:(NSArray<QNZoneInfo *> *)zonesInfo;

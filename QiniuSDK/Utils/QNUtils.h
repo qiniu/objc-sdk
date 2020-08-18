@@ -46,9 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)sdkCacheDirectory;
 
 /// form escape
+/// @param string escape string
 + (NSString *)formEscape:(NSString *)string;
 
 /// 根据ip和host来确定IP的类型，host可为空
+/// @param ip ip
+/// @param host host
 + (NSString *)getIpType:(NSString *)ip host:(NSString *)host;
 
 @end
