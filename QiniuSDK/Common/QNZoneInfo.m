@@ -40,54 +40,38 @@ static NSString *const zoneNames[] = {@"z0", @"z1", @"z2", @"as0", @"na0", @"unk
 - (QNZoneInfo *)buildInfoFromJson:(NSDictionary *)resp {
     long ttl = [[resp objectForKey:@"ttl"] longValue];
     NSDictionary *up = [resp objectForKey:@"up"];
-    NSDictionary *acc = [up objectForKey:@"acc"];
-    NSDictionary *src = [up objectForKey:@"src"];
-    NSDictionary *old_acc = [up objectForKey:@"old_acc"];
-    NSDictionary *old_src = [up objectForKey:@"old_src"];
-    NSArray *urlDicList = [[NSArray alloc] initWithObjects:acc, src, old_acc, old_src, nil];
+    NSArray *domains = [up objectForKey:@"domains"];
+    NSArray *oldDomains = [up objectForKey:@"old"];
+    
     NSMutableArray *domainList = [[NSMutableArray alloc] init];
     NSMutableDictionary *domainDic = [[NSMutableDictionary alloc] init];
-    //main
-    for (int i = 0; i < urlDicList.count; i++) {
-        if ([[urlDicList[i] allKeys] containsObject:@"main"]) {
-            NSArray *mainDomainList = urlDicList[i][@"main"];
-            for (int i = 0; i < mainDomainList.count; i++) {
-                [domainList addObject:mainDomainList[i]];
-                [domainDic setObject:[NSDate dateWithTimeIntervalSince1970:0] forKey:mainDomainList[i]];
-            }
-        }
+    for (int i = 0; i < domains.count; i++) {
+        [domainList addObject:domains[i]];
+        [domainDic setObject:[NSDate dateWithTimeIntervalSince1970:0] forKey:domains[i]];
     }
-    
-    //backup
-    for (int i = 0; i < urlDicList.count; i++) {
-        if ([[urlDicList[i] allKeys] containsObject:@"backup"]) {
-            NSArray *mainDomainList = urlDicList[i][@"backup"];
-            for (int i = 0; i < mainDomainList.count; i++) {
-                [domainList addObject:mainDomainList[i]];
-                [domainDic setObject:[NSDate dateWithTimeIntervalSince1970:0] forKey:mainDomainList[i]];
-            }
-        }
+    for (int i = 0; i < oldDomains.count; i++) {
+        [domainList addObject:oldDomains[i]];
+        [domainDic setObject:[NSDate dateWithTimeIntervalSince1970:0] forKey:oldDomains[i]];
     }
     
     // judge zone region via io
-    NSDictionary *io = [resp objectForKey:@"io"];
-    NSDictionary *io_src = [io objectForKey:@"src"];
-    NSArray *io_main = [io_src objectForKey:@"main"];
-    NSString *io_host = io_main.count > 0 ? io_main[0] : nil;
+    NSString *regionId = [resp objectForKey:@"regionId"];
     
     QNZoneRegion zoneRegion = QNZoneRegion_unknown;
-    if ([io_host isEqualToString:@"iovip.qbox.me"]) {
-        zoneRegion = QNZoneRegion_z0;
-    } else if ([io_host isEqualToString:@"iovip-z1.qbox.me"]) {
-        zoneRegion = QNZoneRegion_z1;
-    } else if ([io_host isEqualToString:@"iovip-z2.qbox.me"]) {
-        zoneRegion = QNZoneRegion_z2;
-    } else if ([io_host isEqualToString:@"iovip-na0.qbox.me"]) {
-        zoneRegion = QNZoneRegion_na0;
-    } else if ([io_host isEqualToString:@"iovip-as0.qbox.me"]) {
-        zoneRegion = QNZoneRegion_as0;
-    } else {
-        zoneRegion = QNZoneRegion_unknown;
+    if ([regionId isKindOfClass:[NSString class]]) {
+        if ([regionId isEqualToString:@"z0"]) {
+            zoneRegion = QNZoneRegion_z0;
+        } else if ([regionId isEqualToString:@"z1"]) {
+            zoneRegion = QNZoneRegion_z1;
+        } else if ([regionId isEqualToString:@"z2"]) {
+            zoneRegion = QNZoneRegion_z2;
+        } else if ([regionId isEqualToString:@"as0"]) {
+            zoneRegion = QNZoneRegion_na0;
+        } else if ([regionId isEqualToString:@"na0"]) {
+            zoneRegion = QNZoneRegion_as0;
+        } else {
+            zoneRegion = QNZoneRegion_unknown;
+        }
     }
     
     return [[QNZoneInfo alloc] init:ttl upDomainsList:domainList upDomainsDic:domainDic zoneRegion:zoneRegion];
