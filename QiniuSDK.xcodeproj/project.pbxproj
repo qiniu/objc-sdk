@@ -68,6 +68,7 @@
 		31C2EEE5242DE86D00713A33 /* QNUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEE2242DE86300713A33 /* QNUtils.m */; };
 		31C2EEEC242DEF6A00713A33 /* QNUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEEB242DEF6A00713A33 /* QNUtilTest.m */; };
 		31C2EEED242DEF6A00713A33 /* QNUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEEB242DEF6A00713A33 /* QNUtilTest.m */; };
+		31C6E68824ECC75700633629 /* NSData+QNGZip.m in Sources */ = {isa = PBXBuildFile; fileRef = 31259E3124E3D02C00CF7531 /* NSData+QNGZip.m */; };
 		31F553932456F2F3000B66AD /* QNUrlSafeBase64.m in Sources */ = {isa = PBXBuildFile; fileRef = 31F5537D2456F2F2000B66AD /* QNUrlSafeBase64.m */; };
 		31F553942456F2F3000B66AD /* QNPHAssetResource.h in Headers */ = {isa = PBXBuildFile; fileRef = 31F5537E2456F2F2000B66AD /* QNPHAssetResource.h */; };
 		31F553952456F2F3000B66AD /* QNEtag.h in Headers */ = {isa = PBXBuildFile; fileRef = 31F5537F2456F2F2000B66AD /* QNEtag.h */; };
@@ -1013,6 +1014,7 @@
 				316A4B8A24346364007BF564 /* QNTransactionManager.m in Sources */,
 				DF609A081A58E39D00AC7297 /* QNFormUpload.m in Sources */,
 				31F553BD2457FF14000B66AD /* QNConfiguration.m in Sources */,
+				31C6E68824ECC75700633629 /* NSData+QNGZip.m in Sources */,
 				31C2EECF242CC52600713A33 /* QNDnsCacheInfo.m in Sources */,
 				CC251354244C026A003F4C65 /* QNHttpResponseInfo.m in Sources */,
 				CC0F85FA2447343C008A1ABA /* QNUploadInfoCollector.m in Sources */,
