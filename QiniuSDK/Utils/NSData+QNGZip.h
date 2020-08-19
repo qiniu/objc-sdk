@@ -12,9 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSData(QNGZip)
 
-- (NSData *)qn_gZip;
++ (NSData *)qn_gZip:(NSData *)data;
 
-- (NSData *)qn_gUnzip;
++ (NSData *)qn_gUnzip:(NSData *)data;
 
 @end
 

@@ -517,7 +517,8 @@ static const NSString *reportTypeValueList[] = {@"form", @"mkblk", @"bput", @"mk
             [request setHTTPMethod:@"POST"];
             [request setTimeoutInterval:_config.timeoutInterval];
             
-            NSData *reportData = [[NSData dataWithContentsOfFile:_recorderFilePath] qn_gZip];
+            NSData *reportData = [NSData dataWithContentsOfFile:_recorderFilePath];
+            reportData = [NSData qn_gZip:reportData];
             __block NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
             NSURLSessionUploadTask *uploadTask = [session uploadTaskWithRequest:request fromData:reportData completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;

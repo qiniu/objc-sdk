@@ -13,10 +13,10 @@
 
 @implementation NSData(QNGZip)
 
-- (NSData *)qn_gZip{
++ (NSData *)qn_gZip:(NSData *)data{
     
-    if (self.length == 0 || [self qn_isGzippedData]){
-        return self;
+    if (data.length == 0 || [self qn_isGzippedData:data]){
+        return data;
     }
 
     z_stream stream;
@@ -25,8 +25,8 @@
     stream.zfree = Z_NULL;
     stream.total_out = 0;
     stream.avail_out = 0;
-    stream.avail_in = (uint)self.length;
-    stream.next_in = (Bytef *)(void *)self.bytes;
+    stream.avail_in = (uint)data.length;
+    stream.next_in = (Bytef *)(void *)data.bytes;
 
     static const NSUInteger chunkSize = 16384;
 
@@ -49,9 +49,9 @@
     return gzippedData;
 }
 
-- (NSData *)qn_gUnzip{
-    if (self.length == 0 || ![self qn_isGzippedData]){
-        return self;
++ (NSData *)qn_gUnzip:(NSData *)data{
+    if (data.length == 0 || ![self qn_isGzippedData:data]){
+        return data;
     }
 
     z_stream stream;
@@ -59,16 +59,16 @@
     stream.zfree = Z_NULL;
     stream.total_out = 0;
     stream.avail_out = 0;
-    stream.avail_in = (uint)self.length;
-    stream.next_in = (Bytef *)self.bytes;
+    stream.avail_in = (uint)data.length;
+    stream.next_in = (Bytef *)data.bytes;
 
     NSMutableData *gunzippedData = nil;
     if (inflateInit2(&stream, 47) == Z_OK) {
         int status = Z_OK;
-        gunzippedData = [NSMutableData dataWithCapacity:self.length * 2];
+        gunzippedData = [NSMutableData dataWithCapacity:data.length * 2];
         while (status == Z_OK) {
             if (stream.total_out >= gunzippedData.length) {
-                gunzippedData.length += self.length / 2;
+                gunzippedData.length += data.length / 2;
             }
             stream.next_out = (uint8_t *)gunzippedData.mutableBytes + stream.total_out;
             stream.avail_out = (uInt)(gunzippedData.length - stream.total_out);
@@ -84,9 +84,12 @@
     return gunzippedData;
 }
 
-- (BOOL)qn_isGzippedData{
-    const UInt8 *bytes = (const UInt8 *)self.bytes;
-    return (self.length >= 2 && bytes[0] == 0x1f && bytes[1] == 0x8b);
++ (BOOL)qn_isGzippedData:(NSData *)data{
+    if (!data || data.length == 0) {
+        return false;
+    }
+    const UInt8 *bytes = (const UInt8 *)data.bytes;
+    return (data.length >= 2 && bytes[0] == 0x1f && bytes[1] == 0x8b);
 }
 
 @end

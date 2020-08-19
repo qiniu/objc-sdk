@@ -26,19 +26,19 @@
 - (void)testGZip {
     
     NSData *data = [NSData data];
-    NSData *gzip = [data qn_gZip];
-    XCTAssertTrue([gzip isEqualToData:gzip], "pass");
+    NSData *gzip = [NSData qn_gZip:data];
+    XCTAssertTrue([data isEqualToData:gzip], "pass");
     
     NSString *string = @"ABCDEFG";
     data = [string dataUsingEncoding:NSUTF8StringEncoding];
-    gzip = [data qn_gZip];
+    gzip = [NSData qn_gZip:data];
     
-    NSData *gUnzip =  [gzip qn_gUnzip];
+    NSData *gUnzip = [NSData qn_gUnzip:gzip];
     NSString *stringGUnzip =  [[NSString alloc] initWithData:gUnzip encoding:NSUTF8StringEncoding];
     XCTAssertTrue([string isEqualToString:stringGUnzip], "pass");
     
-    NSData *reGUnzip =  [gzip qn_gZip];
-    XCTAssertTrue([gzip isEqualToData:reGUnzip], "pass");
+    NSData *reGUnzip = [NSData qn_gUnzip:gUnzip];
+    XCTAssertTrue([gUnzip isEqualToData:reGUnzip], "pass");
 }
 
 
