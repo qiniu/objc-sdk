@@ -22,7 +22,8 @@
 #import "QNFileDelegate.h"
 #import "QNUploadRequestMetrics.h"
 
-typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp);;
+typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp);
+
 @interface QNBaseUpload : NSObject
 
 @property (nonatomic,   copy, readonly) NSString *key;
@@ -41,6 +42,16 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
 
 
 //MARK:-- 构造函数
+
+/// file构造函数
+/// @param file file信息
+/// @param key 上传key
+/// @param token 上传token
+/// @param option 上传option
+/// @param config 上传config
+/// @param recorder 断点续传记录信息
+/// @param recorderKey 断电上传信息保存的key值，需确保唯一性
+/// @param completionHandler 上传完成回调
 - (instancetype)initWithFile:(id<QNFileDelegate>)file
                          key:(NSString *)key
                        token:(QNUpToken *)token
@@ -50,6 +61,14 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
                  recorderKey:(NSString *)recorderKey
            completionHandler:(QNUpTaskCompletionHandler)completionHandler;
 
+/// data 构造函数
+/// @param data 上传data流
+/// @param key 上传key
+/// @param fileName 上传fileName
+/// @param token 上传token
+/// @param option 上传option
+/// @param config 上传config
+/// @param completionHandler 上传完成回调
 - (instancetype)initWithData:(NSData *)data
                          key:(NSString *)key
                     fileName:(NSString *)fileName
@@ -58,22 +77,33 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
                configuration:(QNConfiguration *)config
            completionHandler:(QNUpTaskCompletionHandler)completionHandler;
 
+/// 初始化数据
 - (void)initData;
 
 //MARK:-- 上传
+
+/// 开始上传流程
 - (void)run;
 
+/// 准备上传
 - (int)prepareToUpload;
 
+/// 开始上传
 - (void)startToUpload;
 
+/// 切换区域
 - (BOOL)switchRegionAndUpload;
 
+/// 上传结束调用回调方法，在上传结束时调用，该方法内部会调用回调，已通知上层上传结束
+/// @param info 上传返回信息
+/// @param response 上传字典信息
 - (void)complete:(QNResponseInfo *)info
         response:(NSDictionary *)response;
 
 //MARK: -- 机房管理
+
 /// 在区域列表头部插入一个区域
+/// @param zoneInfo zone信息
 - (void)insertRegionAtFirstByZoneInfo:(QNZoneInfo *)zoneInfo;
 /// 切换区域
 - (BOOL)switchRegion;
@@ -83,6 +113,7 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
 - (id <QNUploadRegion>)getCurrentRegion;
 
 //MARK: -- upLog
+
 // 一个上传流程可能会发起多个上传操作（如：上传多个分片），每个上传操作均是以一个Region的host做重试操作
 - (void)addRegionRequestMetricsOfOneFlow:(QNUploadRegionRequestMetrics *)metrics;
 
