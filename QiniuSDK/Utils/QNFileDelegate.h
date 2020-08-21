@@ -28,15 +28,13 @@
 
 /**
  *    读取所有文件内容
- *
+ *    @param error 错误信息
  *    @return 数据
- *    @error 错误信息
  */
 - (NSData *)readAllWithError:(NSError **)error;
 
 /**
  *    关闭文件
- *
  */
 - (void)close;
 

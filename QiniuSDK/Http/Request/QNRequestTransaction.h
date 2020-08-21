@@ -20,7 +20,7 @@ typedef void(^QNRequestTransactionCompleteHandler)(QNResponseInfo * _Nullable re
 
 //MARK:-- 构造方法
 - (instancetype)initWithHosts:(NSArray <NSString *> *)hosts
-                      ioHosts:(NSArray <NSString *> *)ioHosts
+                     regionId:(NSString * _Nullable)regionId
                         token:(QNUpToken *)token;
 
 //MARK:-- upload事务构造方法 选择
@@ -33,7 +33,7 @@ typedef void(^QNRequestTransactionCompleteHandler)(QNResponseInfo * _Nullable re
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
                          hosts:(NSArray <NSString *> *)hosts
-                       ioHosts:(NSArray <NSString *> *)ioHosts
+                      regionId:(NSString * _Nullable)regionId
                            key:(NSString * _Nullable)key
                          token:(QNUpToken *)token;
 

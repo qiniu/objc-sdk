@@ -1019,7 +1019,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "#appledoc Xcode script  \n# Start constants  \ncompany=\"qiniu\";  \ncompanyID=\"com.qiniu\";\ncompanyURL=\"https://developer.qiniu.com/\";\ntarget=\"iphoneos\";\n#target=\"macosx\";\noutputPath=\"./apiDoc\";\nignorePath=\"*.m\";\n# End constants\n/usr/local/bin/appledoc \\\n--project-name \"${PROJECT_NAME}\" \\\n--project-company \"${company}\" \\\n--company-id \"${companyID}\" \\\n--ignore \"${ignorePath}\" \\\n--docset-atom-filename \"${company}.atom\" \\\n--docset-feed-url \"${companyURL}/${company}/%DOCSETATOMFILENAME\" \\\n--docset-package-url \"${companyURL}/${company}/%DOCSETPACKAGEFILENAME\" \\\n--docset-fallback-url \"${companyURL}/${company}\" \\\n--output \"${outputPath}\" \\\n--publish-docset \\\n--docset-platform-family \"${target}\" \\\n--logformat xcode \\\n--keep-intermediate-files \\\n--no-repeat-first-par \\\n--no-warn-invalid-crossref \\\n--exit-threshold 2 \\\n./QiniuSDK/Recorder\n";
+			shellScript = "appledoc -o \"~/Desktop/iOSApiDoc\" \\\n--ignore \"*.m\" \\\n--ignore \"QN_GTM_Base64.h\" \\\n--project-name \"Document\" \\\n--project-company \"qiniu\" \\\n--no-create-docset \\\n--keep-undocumented-objects \\\n--keep-undocumented-members \\\n--no-warn-undocumented-object \\\n--no-warn-undocumented-member \\\n./QiniuSDK\n";
 		};
 		51663589B6278952CB36F876 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
