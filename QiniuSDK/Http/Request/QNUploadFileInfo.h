@@ -85,6 +85,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign, readonly)float progress;
 
 //MARK:-- 构造
+
 + (instancetype)infoFromDictionary:(NSDictionary *)dictionary;
 - (instancetype)initWithFileSize:(long long)fileSize
                        blockSize:(long long)blockSize
@@ -92,14 +93,20 @@ NS_ASSUME_NONNULL_BEGIN
                       modifyTime:(NSInteger)modifyTime;
 
 //MARK:-- logic
+
 /// 获取下一个需要上传的块
 - (QNUploadData *)nextUploadData;
+
 /// 清除所有块和分片上传状态信息
 - (void)clearUploadState;
+
 /// 根据块index获取块信息
+/// @param blockIndex 块下标
 - (QNUploadBlock *)blockWithIndex:(NSInteger)blockIndex;
+
 /// 所有的块是否都已经上传完毕
 - (BOOL)isAllUploaded;
+
 /// 获取所有block context
 - (NSArray <NSString *> *)allBlocksContexts;
 
