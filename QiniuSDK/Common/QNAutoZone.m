@@ -142,7 +142,7 @@
     }
 
     //https://uc.qbox.me/v3/query?ak=T3sAzrwItclPGkbuV4pwmszxK7Ki46qRXXGBBQz3&bucket=if-pbl
-    NSString *url = [NSString stringWithFormat:@"%@/v3/query?ak=%@&bucket=%@", server, token.access, token.bucket];
+    NSString *url = [NSString stringWithFormat:@"%@/v4/query?ak=%@&bucket=%@", server, token.access, token.bucket];
     [sesionManager get:url withHeaders:nil withCompleteBlock:^(QNHttpResponseInfo *httpResponseInfo, NSDictionary *respBody) {
         if (!httpResponseInfo.error) {
         
