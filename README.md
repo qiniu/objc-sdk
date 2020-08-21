@@ -13,7 +13,7 @@
 通过 CocoaPods
 
 ```ruby
-pod "Qiniu", "~> 7.4.4" 
+pod "Qiniu", "~> 7.4.5" 
 ```
 
 ## 运行环境
