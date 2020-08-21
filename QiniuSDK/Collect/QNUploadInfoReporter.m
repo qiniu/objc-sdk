@@ -14,6 +14,7 @@
 #import "QNAsyncRun.h"
 #import "QNVersion.h"
 #import "QNReportConfig.h"
+#import "NSData+QNGZip.h"
 
 @interface QNUploadInfoReporter ()
 
@@ -137,8 +138,11 @@
             }
             [request setHTTPMethod:@"POST"];
             [request setTimeoutInterval:_config.timeoutInterval];
+    
+            NSData *reportData = [NSData dataWithContentsOfFile:_recorderFilePath];
+            reportData = [NSData qn_gZip:reportData];
             __block NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-            NSURLSessionUploadTask *uploadTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:_recorderFilePath] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+            NSURLSessionUploadTask *uploadTask = [session uploadTaskWithRequest:request fromData:reportData completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
                 if (httpResponse.statusCode == 200) {
                     self.lastReportTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970];
