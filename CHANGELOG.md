@@ -15,12 +15,6 @@
 
 详细情况请参考：[iOS_Changes_from_7.x_to_8.0.0.md](./doc/iOS_Changes_from_7.x_to_8.0.0.md)
 
-
-## 7.5.0 (2020-08-21)
-## 更新
-- 压缩上报的日志内容
-- 获取AutoZone信息接口升级至v4
-
 ## 7.4.4 (2020-08-20)
 ## 修正
 增加设备磁盘空间不足情况下写本地reporter文件NSHandle异常捕获
