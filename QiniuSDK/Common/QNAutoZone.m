@@ -158,7 +158,7 @@
 - (QNRequestTransaction *)createUploadRequestTransaction:(QNUpToken *)token{
     
     QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithHosts:@[kQNPreQueryHost00, kQNPreQueryHost01]
-                                                                            ioHosts:@[QNZoneInfoSDKDefaultIOHost]
+                                                                           regionId:QNZoneInfoEmptyRegionId
                                                                               token:token];
     [self.transactions addObject:transaction];
     return transaction;

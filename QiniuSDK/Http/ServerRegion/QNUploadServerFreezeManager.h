@@ -16,9 +16,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)shared;
 
 /// 查询host是否被冻结
+/// @param host host
+/// @param type host类型
 - (BOOL)isFrozenHost:(NSString *)host type:(NSString * _Nullable)type;
 
 /// 冻结host
+/// @param host host
+/// @param type host类型
 - (void)freezeHost:(NSString *)host type:(NSString * _Nullable)type;
 
 @end

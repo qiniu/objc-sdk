@@ -119,6 +119,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 /**
  *  使用 QNConfigurationBuilder 进行配置
+ *  @param block  配置block
  */
 + (instancetype)build:(QNConfigurationBuilderBlock)block;
 

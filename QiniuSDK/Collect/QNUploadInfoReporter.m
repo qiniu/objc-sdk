@@ -14,6 +14,7 @@
 #import "QNAsyncRun.h"
 #import "QNVersion.h"
 #import "QNReportConfig.h"
+#import "NSData+QNGZip.h"
 
 @interface QNUploadInfoReporter ()
 
@@ -58,9 +59,7 @@
         NSError *error = nil;
         [_fileManager removeItemAtPath:_recorderFilePath error:&error];
         if (error) {
-            QNAsyncRunInMain(^{
-                NSLog(@"remove recorder file failed: %@", error);
-            });
+            NSLog(@"remove recorder file failed: %@", error);
             return;
         }
     }
@@ -72,9 +71,7 @@
         return NO;
     }
     if (_config.maxRecordFileSize <= _config.uploadThreshold) {
-        QNAsyncRunInMain(^{
-            NSLog(@"maxRecordFileSize must be larger than uploadThreshold");
-        });
+        NSLog(@"maxRecordFileSize must be larger than uploadThreshold");
         return NO;
     }
     return YES;
@@ -98,9 +95,7 @@
     if (![_fileManager fileExistsAtPath:_config.recordDirectory]) {
         [_fileManager createDirectoryAtPath:_config.recordDirectory withIntermediateDirectories:YES attributes:nil error:&error];
         if (error) {
-            QNAsyncRunInMain(^{
-                NSLog(@"create record directory failed, please check record directory: %@", error.localizedDescription);
-            });
+            NSLog(@"create record directory failed, please check record directory: %@", error.localizedDescription);
             return;
         }
     }
@@ -114,19 +109,21 @@
         // recordFile存在，拼接文件内容、上传到服务器
         QNFile *file = [[QNFile alloc] init:_recorderFilePath error:&error];
         if (error) {
-            QNAsyncRunInMain(^{
-                NSLog(@"create QNFile with path failed: %@", error.localizedDescription);
-            });
+            NSLog(@"create QNFile with path failed: %@", error.localizedDescription);
             return;
         }
         
         // 判断recorder文件大小是否超过maxRecordFileSize
         if (file.size < _config.maxRecordFileSize) {
-            // 上传信息写入recorder文件
-            NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:_recorderFilePath];
-            [fileHandler seekToEndOfFile];
-            [fileHandler writeData:[finalRecordInfo dataUsingEncoding:NSUTF8StringEncoding]];
-            [fileHandler closeFile];
+            @try {
+                // 上传信息写入recorder文件
+                NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:_recorderFilePath];
+                [fileHandler seekToEndOfFile];
+                [fileHandler writeData: [finalRecordInfo dataUsingEncoding:NSUTF8StringEncoding]];
+                [fileHandler closeFile];
+            } @catch (NSException *exception) {
+                NSLog(@"NSFileHandle cannot write data: %@", exception.description);
+            } 
         }
         
         // 判断是否满足上传条件：文件大于上报临界值 && (首次上传 || 距上次上传时间大于_config.interval)
@@ -141,8 +138,11 @@
             }
             [request setHTTPMethod:@"POST"];
             [request setTimeoutInterval:_config.timeoutInterval];
+    
+            NSData *reportData = [NSData dataWithContentsOfFile:_recorderFilePath];
+            reportData = [NSData qn_gZip:reportData];
             __block NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-            NSURLSessionUploadTask *uploadTask = [session uploadTaskWithRequest:request fromFile:[NSURL fileURLWithPath:_recorderFilePath] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+            NSURLSessionUploadTask *uploadTask = [session uploadTaskWithRequest:request fromData:reportData completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
                 NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
                 if (httpResponse.statusCode == 200) {
                     self.lastReportTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970];
@@ -152,9 +152,7 @@
                     }
                     [self clean];
                 } else {
-                    QNAsyncRunInMain(^{
-                        NSLog(@"upload info report failed: %@", error.localizedDescription);
-                    });
+                    NSLog(@"upload info report failed: %@", error.localizedDescription);
                 }
                 [session finishTasksAndInvalidate];
                 dispatch_semaphore_signal(self.semaphore);

@@ -188,38 +188,28 @@
     self.isAllFrozen = NO;
     NSMutableArray *serverGroups = [NSMutableArray array];
     NSMutableArray *domainHostList = [NSMutableArray array];
-    if (zoneInfo.acc) {
-        [serverGroups addObject:zoneInfo.acc];
-        [domainHostList addObjectsFromArray:zoneInfo.acc.allHosts];
-    }
-    if (zoneInfo.src) {
-        [serverGroups addObject:zoneInfo.src];
-        [domainHostList addObjectsFromArray:zoneInfo.src.allHosts];
+    if (zoneInfo.domains) {
+        [serverGroups addObjectsFromArray:zoneInfo.domains];
+        [domainHostList addObjectsFromArray:zoneInfo.domains];
     }
     self.domainHostList = domainHostList;
     self.domainDictionary = [self createDomainDictionary:serverGroups];
     
     [serverGroups removeAllObjects];
     NSMutableArray *oldDomainHostList = [NSMutableArray array];
-    if (zoneInfo.old_acc) {
-        [serverGroups addObject:zoneInfo.old_acc];
-        [oldDomainHostList addObjectsFromArray:zoneInfo.old_acc.allHosts];
-    }
-    if (zoneInfo.old_src) {
-        [serverGroups addObject:zoneInfo.old_src];
-        [oldDomainHostList addObjectsFromArray:zoneInfo.old_src.allHosts];
+    if (zoneInfo.old_domains) {
+        [serverGroups addObjectsFromArray:zoneInfo.old_domains];
+        [oldDomainHostList addObjectsFromArray:zoneInfo.old_domains];
     }
     self.oldDomainHostList = oldDomainHostList;
     self.oldDomainDictionary = [self createDomainDictionary:serverGroups];
 }
-- (NSDictionary *)createDomainDictionary:(NSArray <QNUploadServerGroup *> *)serverGroups{
+- (NSDictionary *)createDomainDictionary:(NSArray <NSString *> *)hosts{
     NSMutableDictionary *domainDictionary = [NSMutableDictionary dictionary];
     
-    for (QNUploadServerGroup *serverGroup in serverGroups) {
-        for (NSString *host in serverGroup.allHosts) {
-            QNUploadServerDomain *domain = [QNUploadServerDomain domain:host];
-            [domainDictionary setObject:domain forKey:host];
-        }
+    for (NSString *host in hosts) {
+        QNUploadServerDomain *domain = [QNUploadServerDomain domain:host];
+        [domainDictionary setObject:domain forKey:host];
     }
     return [domainDictionary copy];
 }
