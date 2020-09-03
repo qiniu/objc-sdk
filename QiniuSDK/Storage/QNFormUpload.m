@@ -36,10 +36,10 @@
             if (percent > 0.95) {
                 percent = 0.95;
             }
-            if (percent > self.previousPercent) {
-                self.previousPercent = percent;
+            if (percent > weakSelf.previousPercent) {
+                weakSelf.previousPercent = percent;
             } else {
-                percent = self.previousPercent;
+                percent = weakSelf.previousPercent;
             }
             QNAsyncRunInMain(^{
                 weakSelf.option.progressHandler(weakSelf.key, percent);
@@ -51,20 +51,20 @@
                                   fileName:self.fileName
                                   progress:progressHandler
                                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-        [self addRegionRequestMetricsOfOneFlow:metrics];
+        [weakSelf addRegionRequestMetricsOfOneFlow:metrics];
         
         if (responseInfo.isOK) {
             QNAsyncRunInMain(^{
-                self.option.progressHandler(self.key, 1.0);
+                weakSelf.option.progressHandler(weakSelf.key, 1.0);
             });
-            [self complete:responseInfo response:response];
-        } else if (responseInfo.couldRetry && self.config.allowBackupHost) {
-            BOOL isSwitched = [self switchRegionAndUpload];
+            [weakSelf complete:responseInfo response:response];
+        } else if (responseInfo.couldRetry && weakSelf.config.allowBackupHost) {
+            BOOL isSwitched = [weakSelf switchRegionAndUpload];
             if (isSwitched == NO) {
-                [self complete:responseInfo response:response];
+                [weakSelf complete:responseInfo response:response];
             }
         } else {
-            [self complete:responseInfo response:response];
+            [weakSelf complete:responseInfo response:response];
         }
     }];
 }

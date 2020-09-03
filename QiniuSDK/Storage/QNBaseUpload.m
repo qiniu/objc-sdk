@@ -92,18 +92,19 @@
 }
 
 - (void)run {
+    __weak typeof(self) weakSelf = self;
     [_config.zone preQuery:self.token on:^(int code, QNResponseInfo *responseInfo, QNUploadRegionRequestMetrics *metrics) {
         [self.metrics addMetrics:metrics];
         if (code == 0) {
-            int prepareCode = [self prepareToUpload];
+            int prepareCode = [weakSelf prepareToUpload];
             if (prepareCode == 0) {
-                [self startToUpload];
+                [weakSelf startToUpload];
             } else {
                 QNResponseInfo *responseInfoP = [QNResponseInfo errorResponseInfo:prepareCode errorDesc:nil];
-                [self complete:responseInfoP response:responseInfoP.responseDictionary];
+                [weakSelf complete:responseInfoP response:responseInfoP.responseDictionary];
             }
         } else {
-            [self complete:responseInfo response:responseInfo.responseDictionary];
+            [weakSelf complete:responseInfo response:responseInfo.responseDictionary];
         }
     }];
 }

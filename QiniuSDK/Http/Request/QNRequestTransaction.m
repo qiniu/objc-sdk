@@ -230,10 +230,11 @@
     
     NSString *chunkCrc = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:chunkData]];
     
+    __weak typeof(self) weakSelf = self;
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
         NSString *ctx = response[@"ctx"];
         NSString *crcServer = [NSString stringWithFormat:@"%@", response[@"crc32"]];
-        return (BOOL)(responseInfo.isOK == false || (responseInfo.isOK && (!ctx || (self.uploadOption.checkCrc && ![chunkCrc isEqualToString:crcServer]))));
+        return (BOOL)(responseInfo.isOK == false || (responseInfo.isOK && (!ctx || (weakSelf.uploadOption.checkCrc && ![chunkCrc isEqualToString:crcServer]))));
     };
     
     [self.regionRequest post:action

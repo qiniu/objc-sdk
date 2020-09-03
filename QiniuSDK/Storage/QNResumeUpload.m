@@ -89,19 +89,20 @@
     QNUploadData *chunk = [self.uploadFileInfo nextUploadData];
     QNUploadBlock *block = chunk ? [self.uploadFileInfo blockWithIndex:chunk.blockIndex] : nil;
     
+    __weak typeof(self) weakSelf = self;
     void (^progress)(long long, long long) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
         chunk.progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
-        float percent = self.uploadFileInfo.progress;
+        float percent = weakSelf.uploadFileInfo.progress;
         if (percent > 0.95) {
             percent = 0.95;
         }
-        if (percent > self.previousPercent) {
-            self.previousPercent = percent;
+        if (percent > weakSelf.previousPercent) {
+            weakSelf.previousPercent = percent;
         } else {
-            percent = self.previousPercent;
+            percent = weakSelf.previousPercent;
         }
         QNAsyncRunInMain(^{
-            self.option.progressHandler(self.key, percent);
+            weakSelf.option.progressHandler(weakSelf.key, percent);
         });
     };
     
@@ -130,26 +131,27 @@
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
     
+    __weak typeof(self) weakSelf = self;
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
     [transaction makeBlock:block.offset
                  blockSize:block.size
             firstChunkData:chunkData
                   progress:progress
                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-        [self addRegionRequestMetricsOfOneFlow:metrics];
+        [weakSelf addRegionRequestMetricsOfOneFlow:metrics];
         
         NSString *blockContext = response[@"ctx"];
         if (responseInfo.isOK && blockContext) {
             block.context = blockContext;
             chunk.isUploading = NO;
             chunk.isCompleted = YES;
-            [self recordUploadInfo];
-            [self uploadRestChunk:completeHandler];
+            [weakSelf recordUploadInfo];
+            [weakSelf uploadRestChunk:completeHandler];
         } else {
             chunk.isUploading = NO;
             chunk.isCompleted = NO;
-            self.uploadChunkErrorResponse = response;
-            self.uploadChunkErrorResponseInfo = responseInfo;
+            weakSelf.uploadChunkErrorResponse = response;
+            weakSelf.uploadChunkErrorResponseInfo = responseInfo;
             completeHandler();
         }
     }];
@@ -171,6 +173,7 @@
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
     
+    __weak typeof(self) weakSelf = self;
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
     [transaction uploadChunk:block.context
                  blockOffset:block.offset
@@ -178,20 +181,20 @@
                  chunkOffset:chunk.offset
                     progress:progress
                     complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-        [self addRegionRequestMetricsOfOneFlow:metrics];
+        [weakSelf addRegionRequestMetricsOfOneFlow:metrics];
         
         NSString *blockContext = response[@"ctx"];
         if (responseInfo.isOK && blockContext) {
             block.context = blockContext;
             chunk.isUploading = NO;
             chunk.isCompleted = YES;
-            [self recordUploadInfo];
-            [self uploadRestChunk:completeHandler];
+            [weakSelf recordUploadInfo];
+            [weakSelf uploadRestChunk:completeHandler];
         } else {
             chunk.isUploading = NO;
             chunk.isCompleted = NO;
-            self.uploadChunkErrorResponse = response;
-            self.uploadChunkErrorResponseInfo = responseInfo;
+            weakSelf.uploadChunkErrorResponse = response;
+            weakSelf.uploadChunkErrorResponseInfo = responseInfo;
             completeHandler();
         }
     }];
@@ -201,12 +204,13 @@
     
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
     
+    __weak typeof(self) weakSelf = self;
     [transaction makeFile:self.uploadFileInfo.size
                  fileName:self.fileName
             blockContexts:[self.uploadFileInfo allBlocksContexts]
                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         
-        [self addRegionRequestMetricsOfOneFlow:metrics];
+        [weakSelf addRegionRequestMetricsOfOneFlow:metrics];
         completeHandler(responseInfo, response);
     }];
 }

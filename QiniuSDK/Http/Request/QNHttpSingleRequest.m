@@ -116,13 +116,13 @@
     } complete:^(NSURLResponse *response, QNUploadSingleRequestMetrics *metrics, NSData * responseData, NSError * error) {
         
         if (metrics) {
-            [self.requestMetricsList addObject:metrics];
+            [weakSelf.requestMetricsList addObject:metrics];
         }
         
         QNResponseInfo *responseInfo = nil;
         if (checkCancelHandler()) {
             responseInfo = [QNResponseInfo cancelResponse];
-            [self complete:responseInfo server:server response:nil requestMetrics:metrics complete:complete];
+            [weakSelf complete:responseInfo server:server response:nil requestMetrics:metrics complete:complete];
             return;
         }
         
@@ -138,14 +138,14 @@
                                                                    body:responseData
                                                                   error:error];
         if (shouldRetry(responseInfo, responseDic)
-            && self.currentRetryTime < self.config.retryMax
+            && weakSelf.currentRetryTime < weakSelf.config.retryMax
             && responseInfo.couldHostRetry) {
-            self.currentRetryTime += 1;
-            QNAsyncRunAfter(self.config.retryInterval, kQNBackgroundQueue, ^{
-                [self retryRequest:request server:server toSkipDns:toSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
+            weakSelf.currentRetryTime += 1;
+            QNAsyncRunAfter(weakSelf.config.retryInterval, kQNBackgroundQueue, ^{
+                [weakSelf retryRequest:request server:server toSkipDns:toSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
             });
         } else {
-            [self complete:responseInfo server:server response:responseDic requestMetrics:metrics complete:complete];
+            [weakSelf complete:responseInfo server:server response:responseDic requestMetrics:metrics complete:complete];
         }
     }];
     

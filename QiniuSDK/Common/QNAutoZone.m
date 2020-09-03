@@ -129,14 +129,15 @@
         return;
     }
 
+    __weak typeof(self) weakSelf = self;
     QNRequestTransaction *transaction = [self createUploadRequestTransaction:token];
     [transaction queryUploadHosts:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
 
         if (responseInfo.isOK) {
             QNZonesInfo *zonesInfo = [QNZonesInfo infoWithDictionary:response];
-            [self.lock lock];
-            [self.cache setValue:zonesInfo forKey:[token index]];
-            [self.lock unlock];
+            [weakSelf.lock lock];
+            [weakSelf.cache setValue:zonesInfo forKey:[token index]];
+            [weakSelf.lock unlock];
             [[QNAutoZoneCache share] cache:response forToken:token];
             ret(0, responseInfo, metrics);
         } else {
@@ -145,13 +146,13 @@
                 ret(kQNNetworkError, responseInfo, metrics);
             } else {
                 QNZonesInfo *zonesInfo = [[QNFixedZone localsZoneInfo] getZonesInfoWithToken:token];
-                [self.lock lock];
-                [self.cache setValue:zonesInfo forKey:[token index]];
-                [self.lock unlock];
+                [weakSelf.lock lock];
+                [weakSelf.cache setValue:zonesInfo forKey:[token index]];
+                [weakSelf.lock unlock];
                 ret(0, responseInfo, metrics);
             }
         }
-        [self destroyUploadRequestTransaction:transaction];
+        [weakSelf destroyUploadRequestTransaction:transaction];
     }];
 }
 
