@@ -47,7 +47,9 @@
             
         } else {
             
+            kQNWeakSelf;
             [self makeFile:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+                kQNStrongSelf;
                 
                 if (responseInfo.isOK == NO) {
                     if (responseInfo.couldRetry && [self.config allowBackupHost]) {
