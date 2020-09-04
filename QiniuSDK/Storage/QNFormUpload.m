@@ -5,7 +5,7 @@
 //  Created by bailong on 15/1/4.
 //  Copyright (c) 2015年 Qiniu. All rights reserved.
 //
-
+#import "QNDefine.h"
 #import "QNFormUpload.h"
 #import "QNResponseInfo.h"
 #import "QNRequestTransaction.h"
@@ -29,20 +29,22 @@
                                                                       key:self.key
                                                                     token:self.token];
 
-    __weak typeof(self) weakSelf = self;
+    kQNWeakSelf;
     void(^progressHandler)(long long totalBytesWritten, long long totalBytesExpectedToWrite) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
-        if (weakSelf.option.progressHandler) {
+        kQNStrongSelf;
+        
+        if (self.option.progressHandler) {
             float percent = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
             if (percent > 0.95) {
                 percent = 0.95;
             }
-            if (percent > weakSelf.previousPercent) {
-                weakSelf.previousPercent = percent;
+            if (percent > self.previousPercent) {
+                self.previousPercent = percent;
             } else {
-                percent = weakSelf.previousPercent;
+                percent = self.previousPercent;
             }
             QNAsyncRunInMain(^{
-                weakSelf.option.progressHandler(weakSelf.key, percent);
+                self.option.progressHandler(self.key, percent);
             });
         }
     };
@@ -51,20 +53,22 @@
                                   fileName:self.fileName
                                   progress:progressHandler
                                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-        [weakSelf addRegionRequestMetricsOfOneFlow:metrics];
+        kQNStrongSelf;
+        
+        [self addRegionRequestMetricsOfOneFlow:metrics];
         
         if (responseInfo.isOK) {
             QNAsyncRunInMain(^{
-                weakSelf.option.progressHandler(weakSelf.key, 1.0);
+                self.option.progressHandler(self.key, 1.0);
             });
-            [weakSelf complete:responseInfo response:response];
-        } else if (responseInfo.couldRetry && weakSelf.config.allowBackupHost) {
-            BOOL isSwitched = [weakSelf switchRegionAndUpload];
+            [self complete:responseInfo response:response];
+        } else if (responseInfo.couldRetry && self.config.allowBackupHost) {
+            BOOL isSwitched = [self switchRegionAndUpload];
             if (isSwitched == NO) {
-                [weakSelf complete:responseInfo response:response];
+                [self complete:responseInfo response:response];
             }
         } else {
-            [weakSelf complete:responseInfo response:response];
+            [self complete:responseInfo response:response];
         }
     }];
 }

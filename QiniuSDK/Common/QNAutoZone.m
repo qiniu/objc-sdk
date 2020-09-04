@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNDefine.h"
 #import "QNAutoZone.h"
 #import "QNConfig.h"
 #import "QNRequestTransaction.h"
@@ -129,15 +130,19 @@
         return;
     }
 
-    __weak typeof(self) weakSelf = self;
     QNRequestTransaction *transaction = [self createUploadRequestTransaction:token];
+    
+    kQNWeakSelf;
+    kQNWeakObj(transaction);
     [transaction queryUploadHosts:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-
+        kQNStrongSelf;
+        kQNStrongObj(transaction);
+        
         if (responseInfo.isOK) {
             QNZonesInfo *zonesInfo = [QNZonesInfo infoWithDictionary:response];
-            [weakSelf.lock lock];
-            [weakSelf.cache setValue:zonesInfo forKey:[token index]];
-            [weakSelf.lock unlock];
+            [self.lock lock];
+            [self.cache setValue:zonesInfo forKey:[token index]];
+            [self.lock unlock];
             [[QNAutoZoneCache share] cache:response forToken:token];
             ret(0, responseInfo, metrics);
         } else {
@@ -146,13 +151,13 @@
                 ret(kQNNetworkError, responseInfo, metrics);
             } else {
                 QNZonesInfo *zonesInfo = [[QNFixedZone localsZoneInfo] getZonesInfoWithToken:token];
-                [weakSelf.lock lock];
-                [weakSelf.cache setValue:zonesInfo forKey:[token index]];
-                [weakSelf.lock unlock];
+                [self.lock lock];
+                [self.cache setValue:zonesInfo forKey:[token index]];
+                [self.lock unlock];
                 ret(0, responseInfo, metrics);
             }
         }
-        [weakSelf destroyUploadRequestTransaction:transaction];
+        [self destroyUploadRequestTransaction:transaction];
     }];
 }
 

@@ -8,6 +8,7 @@
 
 #import "QNRequestTransaction.h"
 
+#import "QNDefine.h"
 #import "QNUtils.h"
 #import "QNCrc32.h"
 #import "QNUrlSafeBase64.h"
@@ -104,10 +105,7 @@
     [self.regionRequest get:action
                     headers:header
                 shouldRetry:shouldRetry
-                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-
-        complete(responseInfo, metrics, response);
-    }];
+                   complete:complete];
 }
 
 //MARK: -- upload form
@@ -167,9 +165,7 @@
                         body:body
                  shouldRetry:shouldRetry
                     progress:progress
-                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-        complete(responseInfo, metrics, response);
-    }];
+                    complete:complete];
 }
 
 //MARK: -- 分块上传
@@ -192,7 +188,9 @@
     
     NSString *chunkCrc = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:firstChunkData]];
     
+    kQNWeakSelf;
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
+        kQNStrongSelf;
         
         NSString *ctx = response[@"ctx"];
         NSString *crcServer = [NSString stringWithFormat:@"%@", response[@"crc32"]];
@@ -204,10 +202,7 @@
                         body:firstChunkData
                  shouldRetry:shouldRetry
                     progress:progress
-                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-
-        complete(responseInfo, metrics, response);
-    }];
+                    complete:complete];
 }
 
 - (void)uploadChunk:(NSString *)blockContext
@@ -230,11 +225,13 @@
     
     NSString *chunkCrc = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:chunkData]];
     
-    __weak typeof(self) weakSelf = self;
+    kQNWeakSelf;
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
+        kQNStrongSelf;
+        
         NSString *ctx = response[@"ctx"];
         NSString *crcServer = [NSString stringWithFormat:@"%@", response[@"crc32"]];
-        return (BOOL)(responseInfo.isOK == false || (responseInfo.isOK && (!ctx || (weakSelf.uploadOption.checkCrc && ![chunkCrc isEqualToString:crcServer]))));
+        return (BOOL)(responseInfo.isOK == false || (responseInfo.isOK && (!ctx || (self.uploadOption.checkCrc && ![chunkCrc isEqualToString:crcServer]))));
     };
     
     [self.regionRequest post:action
@@ -242,10 +239,7 @@
                       body:chunkData
                  shouldRetry:shouldRetry
                     progress:progress
-                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-
-        complete(responseInfo, metrics, response);
-    }];
+                    complete:complete];
 }
 
 - (void)makeFile:(long long)fileSize
@@ -291,10 +285,7 @@
                         body:body
                  shouldRetry:shouldRetry
                     progress:nil
-                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-
-        complete(responseInfo, metrics, response);
-    }];
+                    complete:complete];
 }
 
 

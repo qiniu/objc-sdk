@@ -11,6 +11,7 @@
 #import "QNInetAddress.h"
 #import "QNDnsCacheInfo.h"
 
+#import "QNDefine.h"
 #import "QNConfig.h"
 #import "QNDnsCacheFile.h"
 #import "QNUtils.h"
@@ -601,9 +602,11 @@
         QNDnsManager *httpDns = [[QNDnsManager alloc] init:@[systemDnsresolver, dnspodFree]
                                                networkInfo:nil];
         
-        __weak typeof(self)weakSelf = self;
+        kQNWeakSelf;
         httpDns.queryErrorHandler = ^(NSError *error, NSString *host) {
-            weakSelf.lastPrefetchedErrorMessage = [error localizedDescription];
+            kQNStrongSelf;
+            
+            self.lastPrefetchedErrorMessage = [error localizedDescription];
         };
         _httpDns = httpDns;
     }

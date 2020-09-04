@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNDefine.h"
 #import "QNAsyncRun.h"
 #import "QNVersion.h"
 #import "QNUtils.h"
@@ -95,34 +96,38 @@
         self.client = [[QNUploadSystemClient alloc] init];
     }
     
-    __weak typeof(self) weakSelf = self;
+    kQNWeakSelf;
     BOOL (^checkCancelHandler)(void) = ^{
-        BOOL isCancelled = weakSelf.requestState.isUserCancel;
-        if (!isCancelled && weakSelf.uploadOption.cancellationSignal) {
-            isCancelled = weakSelf.uploadOption.cancellationSignal();
+        kQNStrongSelf;
+        
+        BOOL isCancelled = self.requestState.isUserCancel;
+        if (!isCancelled && self.uploadOption.cancellationSignal) {
+            isCancelled = self.uploadOption.cancellationSignal();
         }
         return isCancelled;
     };
     
     [self.client request:request connectionProxy:self.config.proxy progress:^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+        kQNStrongSelf;
         
         if (checkCancelHandler()) {
-            weakSelf.requestState.isUserCancel = YES;
-            [weakSelf.client cancel];
+            self.requestState.isUserCancel = YES;
+            [self.client cancel];
         } else if (progress) {
             progress(totalBytesWritten, totalBytesExpectedToWrite);
         }
         
     } complete:^(NSURLResponse *response, QNUploadSingleRequestMetrics *metrics, NSData * responseData, NSError * error) {
+        kQNStrongSelf;
         
         if (metrics) {
-            [weakSelf.requestMetricsList addObject:metrics];
+            [self.requestMetricsList addObject:metrics];
         }
         
         QNResponseInfo *responseInfo = nil;
         if (checkCancelHandler()) {
             responseInfo = [QNResponseInfo cancelResponse];
-            [weakSelf complete:responseInfo server:server response:nil requestMetrics:metrics complete:complete];
+            [self complete:responseInfo server:server response:nil requestMetrics:metrics complete:complete];
             return;
         }
         
@@ -138,14 +143,14 @@
                                                                    body:responseData
                                                                   error:error];
         if (shouldRetry(responseInfo, responseDic)
-            && weakSelf.currentRetryTime < weakSelf.config.retryMax
+            && self.currentRetryTime < self.config.retryMax
             && responseInfo.couldHostRetry) {
-            weakSelf.currentRetryTime += 1;
-            QNAsyncRunAfter(weakSelf.config.retryInterval, kQNBackgroundQueue, ^{
-                [weakSelf retryRequest:request server:server toSkipDns:toSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
+            self.currentRetryTime += 1;
+            QNAsyncRunAfter(self.config.retryInterval, kQNBackgroundQueue, ^{
+                [self retryRequest:request server:server toSkipDns:toSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
             });
         } else {
-            [weakSelf complete:responseInfo server:server response:responseDic requestMetrics:metrics complete:complete];
+            [self complete:responseInfo server:server response:responseDic requestMetrics:metrics complete:complete];
         }
     }];
     

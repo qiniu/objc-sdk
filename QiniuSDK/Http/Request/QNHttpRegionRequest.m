@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNDefine.h"
 #import "QNAsyncRun.h"
 #import "QNHttpRegionRequest.h"
 #import "QNConfiguration.h"
@@ -133,37 +134,38 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
     [request setTimeoutInterval:self.config.timeoutInterval];
     request.HTTPBody = body;
     
-    __weak typeof(self) weakSelf = self;
+    kQNWeakSelf;
     [self.singleRequest request:request
                          server:server
                       toSkipDns:toSkipDns
                     shouldRetry:shouldRetry
                        progress:progress
                        complete:^(QNResponseInfo * _Nullable responseInfo, NSArray<QNUploadSingleRequestMetrics *> * _Nullable metrics, NSDictionary * _Nullable response) {
+        kQNStrongSelf;
         
-        [weakSelf.requestMetrics addMetricsList:metrics];
+        [self.requestMetrics addMetricsList:metrics];
         
         if (shouldRetry(responseInfo, response)
-            && weakSelf.config.allowBackupHost
+            && self.config.allowBackupHost
             && responseInfo.couldRegionRetry) {
             
-            id <QNUploadServer> newServer = [weakSelf getNextServer:responseInfo];
+            id <QNUploadServer> newServer = [self getNextServer:responseInfo];
             if (newServer) {
-                QNAsyncRunAfter(weakSelf.config.retryInterval, kQNBackgroundQueue, ^{
-                    [weakSelf performRequest:newServer
-                                      action:action
-                                     headers:headers
-                                      method:method
-                                        body:body
-                                 shouldRetry:shouldRetry
-                                    progress:progress
-                                    complete:complete];
+                QNAsyncRunAfter(self.config.retryInterval, kQNBackgroundQueue, ^{
+                    [self performRequest:newServer
+                                  action:action
+                                 headers:headers
+                                  method:method
+                                    body:body
+                             shouldRetry:shouldRetry
+                                progress:progress
+                                complete:complete];
                 });
             } else if (complete) {
-                [weakSelf complete:responseInfo response:response complete:complete];
+                [self complete:responseInfo response:response complete:complete];
             }
         } else if (complete) {
-            [weakSelf complete:responseInfo response:response complete:complete];
+            [self complete:responseInfo response:response complete:complete];
         }
     }];
 }

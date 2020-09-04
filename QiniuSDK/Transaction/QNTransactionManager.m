@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNDefine.h"
 #import "QNTransactionManager.h"
 
 //MARK: -- 事务对象
@@ -288,8 +289,8 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
 - (void)createThread{
     @synchronized (self) {
         if (self.thread == nil) {
-            __weak typeof(self) weakSelf = self;
-            self.thread = [[NSThread alloc] initWithTarget:weakSelf
+            kQNWeakSelf;
+            self.thread = [[NSThread alloc] initWithTarget:weak_self
                                                   selector:@selector(threadAction)
                                                      object:nil];
             self.thread.name = @"com.qiniu.transaction";
@@ -314,9 +315,9 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
 
 //MARK: -- timer
 - (void)createTimer{
-    __weak typeof(self) weakSelf = self;
+    kQNWeakSelf;
     NSTimer *timer = [NSTimer timerWithTimeInterval:1
-                                             target:weakSelf
+                                             target:weak_self
                                            selector:@selector(timerAction)
                                            userInfo:nil
                                             repeats:YES];

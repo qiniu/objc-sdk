@@ -6,10 +6,13 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNDefine.h"
 #import "QNBaseUpload.h"
 #import "QNUploadDomainRegion.h"
 
 @interface QNBaseUpload ()
+
+@property (nonatomic, strong) QNBaseUpload *strongSelf;
 
 @property (nonatomic,   copy) NSString *key;
 @property (nonatomic,   copy) NSString *fileName;
@@ -87,24 +90,26 @@
 }
 
 - (void)initData{
+    _strongSelf = self;
     _currentRegionIndex = 0;
     _metrics = [QNUploadTaskMetrics emptyMetrics];
 }
 
 - (void)run {
-    __weak typeof(self) weakSelf = self;
+    kQNWeakSelf;
     [_config.zone preQuery:self.token on:^(int code, QNResponseInfo *responseInfo, QNUploadRegionRequestMetrics *metrics) {
+        kQNStrongSelf;
         [self.metrics addMetrics:metrics];
         if (code == 0) {
-            int prepareCode = [weakSelf prepareToUpload];
+            int prepareCode = [self prepareToUpload];
             if (prepareCode == 0) {
-                [weakSelf startToUpload];
+                [self startToUpload];
             } else {
                 QNResponseInfo *responseInfoP = [QNResponseInfo errorResponseInfo:prepareCode errorDesc:nil];
-                [weakSelf complete:responseInfoP response:responseInfoP.responseDictionary];
+                [self complete:responseInfoP response:responseInfoP.responseDictionary];
             }
         } else {
-            [weakSelf complete:responseInfo response:responseInfo.responseDictionary];
+            [self complete:responseInfo response:responseInfo.responseDictionary];
         }
     }];
 }
@@ -140,6 +145,7 @@
     if (self.completionHandler) {
         self.completionHandler(info, _key, _metrics, response);
     }
+    self.strongSelf = nil;
 }
 
 //MARK:-- region
@@ -205,4 +211,7 @@
     }
 }
 
+- (void)dealloc{
+    NSLog(@"============ %@:dealloc =============", self);
+}
 @end
