@@ -10,6 +10,7 @@
 #import "QNResponseInfo.h"
 #import "QNAsyncRun.h"
 #import "QNRequestTransaction.h"
+#import "QNDefine.h"
 
 @interface QNConcurrentResumeUpload()
 
@@ -63,7 +64,10 @@
             
         } else {
             
+            kQNWeakSelf;
             [self makeFileRequest:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+                kQNStrongSelf;
+                
                 if (responseInfo.isOK == NO) {
                     if (responseInfo.couldRetry && [self.config allowBackupHost]) {
                         BOOL isSwitched = [self switchRegionAndUpload];
@@ -109,7 +113,10 @@
         QNUploadData *chunk = [self.uploadFileInfo nextUploadData];
         QNUploadBlock *block = chunk ? [self.uploadFileInfo blockWithIndex:chunk.blockIndex] : nil;
         
+        kQNWeakSelf;
         void (^progress)(long long, long long) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
+            kQNStrongSelf;
+            
             chunk.progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
             float percent = self.uploadFileInfo.progress;
             if (percent > 0.95) {
@@ -150,11 +157,17 @@
     
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
+    
+    kQNWeakSelf;
+    kQNWeakObj(transaction);
     [transaction makeBlock:block.offset
                  blockSize:block.size
             firstChunkData:chunkData
                   progress:progress
                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        kQNStrongSelf;
+        kQNStrongObj(transaction);
+        
         [self addRegionRequestMetricsOfOneFlow:metrics];
         
         NSString *blockContext = response[@"ctx"];
@@ -179,10 +192,14 @@
     
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
     
+    kQNWeakSelf;
+    kQNWeakObj(transaction);
     [transaction makeFile:self.uploadFileInfo.size
                  fileName:self.fileName
             blockContexts:[self.uploadFileInfo allBlocksContexts]
                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        kQNStrongSelf;
+        kQNStrongObj(transaction);
         
         [self addRegionRequestMetricsOfOneFlow:metrics];
         [self destroyUploadRequestTransaction:transaction];

@@ -43,7 +43,10 @@
 
 - (void)uploadImageToQNFilePath:(NSString *)filePath {
     self.token = @"你的token";
-    QNUploadManager *upManager = [[QNUploadManager alloc] init];
+    QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.useConcurrentResumeUpload = true;
+    }];
+    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:configuration];
     
     __weak typeof(self) weakSelf = self;
     QNUploadOption *uploadOption = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {

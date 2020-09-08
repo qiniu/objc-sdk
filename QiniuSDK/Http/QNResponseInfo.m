@@ -211,7 +211,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 - (BOOL)couldRegionRetry{
     if ([self couldRetry] == NO
         || _statusCode == 400
-        || _statusCode == 502 || _statusCode == 503 || _statusCode == 504 || _statusCode == 579 || _statusCode == 599
+        || _statusCode == 502 || _statusCode == 503 || _statusCode == 579 || _statusCode == 599
         || self.isCancelled) {
         return NO;
     } else {
@@ -220,8 +220,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 }
 
 - (BOOL)couldHostRetry{
-    if ([self couldRegionRetry] == NO
-        || (_statusCode == 502 || _statusCode == 503 || _statusCode == 571)) {
+    if ([self couldRegionRetry] == NO || _statusCode == 571) {
         return NO;
     } else {
         return YES;
