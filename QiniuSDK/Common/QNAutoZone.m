@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNDefine.h"
 #import "QNAutoZone.h"
 #import "QNConfig.h"
 #import "QNRequestTransaction.h"
@@ -130,8 +131,13 @@
     }
 
     QNRequestTransaction *transaction = [self createUploadRequestTransaction:token];
+    
+    kQNWeakSelf;
+    kQNWeakObj(transaction);
     [transaction queryUploadHosts:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-
+        kQNStrongSelf;
+        kQNStrongObj(transaction);
+        
         if (responseInfo.isOK) {
             QNZonesInfo *zonesInfo = [QNZonesInfo infoWithDictionary:response];
             [self.lock lock];

@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNDefine.h"
 #import "QNAsyncRun.h"
 #import "QNHttpRegionRequest.h"
 #import "QNConfiguration.h"
@@ -132,12 +133,15 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
     [request setAllHTTPHeaderFields:headers];
     [request setTimeoutInterval:self.config.timeoutInterval];
     request.HTTPBody = body;
+    
+    kQNWeakSelf;
     [self.singleRequest request:request
                          server:server
                       toSkipDns:toSkipDns
                     shouldRetry:shouldRetry
                        progress:progress
                        complete:^(QNResponseInfo * _Nullable responseInfo, NSArray<QNUploadSingleRequestMetrics *> * _Nullable metrics, NSDictionary * _Nullable response) {
+        kQNStrongSelf;
         
         [self.requestMetrics addMetricsList:metrics];
         

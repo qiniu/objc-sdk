@@ -6,6 +6,7 @@
 //  Copyright © 2020 com.qiniu. All rights reserved.
 //
 
+#import "QNDefine.h"
 #import "QNCFHttpClient.h"
 #import "NSURLRequest+QNRequest.h"
 
@@ -332,9 +333,9 @@
         [self invalidateTimer];
     }
     
-    __weak typeof(self) weakSelf = self;
+    kQNWeakSelf;
     NSTimer *timer = [NSTimer timerWithTimeInterval:0.5
-                                             target:weakSelf
+                                             target:weak_self
                                            selector:@selector(timerAction)
                                            userInfo:nil
                                             repeats:YES];
