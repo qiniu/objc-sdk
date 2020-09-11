@@ -46,12 +46,8 @@
 - (BOOL)shouldCheck:(int)count{
     return count > self.count;
 }
-- (BOOL)isTimeout:(NSDate *)date maxTime:(int)maxTime{
-    if (!self.startDate || !date || maxTime < 1) {
-        return true;
-    }
-    int time = [date timeIntervalSinceDate:self.startDate];
-    return time >= maxTime;
+- (void)addErrorTime:(long)time{
+    self.time += time * 1000;
 }
 @end
 
@@ -100,13 +96,21 @@
     
     if (![checkerInfo shouldCheck:kQNGlobalConfiguration.maxCheckCount]) {
         [self ipCheckComplete:ip];
+        [self.checkerInfoDictionary removeObjectForKey:ip];
+        [self.socketInfoDictionary removeObjectForKey:ip];
         return false;
     } else {
-        return [self connect:ip];
+        QNAsyncSocket *socket = [self connect:ip];
+        if (socket) {
+            self.socketInfoDictionary[ip] = socket;
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 
-- (BOOL)connect:(NSString *)ip{
+- (QNAsyncSocket *)connect:(NSString *)ip{
     QNNetworkCheckerInfo *checkerInfo = self.checkerInfoDictionary[ip];
     if (checkerInfo == nil) {
         return false;
@@ -116,15 +120,9 @@
     NSError *error = nil;
     QNAsyncSocket *socket = [self createSocket];
     NSLog(@"check: ip:%@ host:%@", ip, checkerInfo.host);
-    [socket connectToHost:ip onPort:80 error:&error];
+    [socket connectToHost:ip onPort:80 withTimeout:kQNGlobalConfiguration.maxCheckTime error:&error];
     
-    if (error) {
-        return false;
-    } else {
-        [self createTimer];
-        self.socketInfoDictionary[ip] = socket;
-        return true;
-    }
+    return error ? nil : socket;
 }
 
 - (void)disconnect:(NSString *)ip{
@@ -144,18 +142,6 @@
     return socket;
 }
 
-- (void)checkTimeout{
-    
-    NSDate *currentDate = [NSDate date];
-    for (NSString *ip in self.checkerInfoDictionary.allKeys) {
-        QNNetworkCheckerInfo *checkerInfo = self.checkerInfoDictionary[ip];
-        if ([checkerInfo isTimeout:currentDate maxTime:kQNGlobalConfiguration.maxCheckTime]) {
-            [self disconnect:ip];
-            [self performCheckIFNeeded:ip];
-        }
-    }
-}
-
 - (void)ipCheckComplete:(NSString *)ip{
     
     if (self.checkerInfoDictionary[ip] == nil) {
@@ -165,16 +151,9 @@
     QNNetworkCheckerInfo *checkerInfo = self.checkerInfoDictionary[ip];
     [checkerInfo stop];
     
-    [self.checkerInfoDictionary removeObjectForKey:ip];
-    
     if ([self.delegate respondsToSelector:@selector(checkComplete:host:time:)]) {
         long time = checkerInfo.time / kQNGlobalConfiguration.maxCheckCount;
         [self.delegate checkComplete:ip host:checkerInfo.host time:MIN(time, kQNGlobalConfiguration.maxCheckTime * 1000)];
-    }
-
-    if (self.checkerInfoDictionary.count == 0) {
-        [self invalidateTimer];
-        return;
     }
 }
 
@@ -200,7 +179,11 @@
     for (NSString *ip in self.socketInfoDictionary.allKeys) {
         QNAsyncSocket *socket = self.socketInfoDictionary[ip];
         if (socket == sock) {
-            [self.socketInfoDictionary removeObjectForKey:ip];
+            QNNetworkCheckerInfo *checkerInfo = self.checkerInfoDictionary[ip];
+            if (checkerInfo && err) {
+                [checkerInfo addErrorTime:kQNGlobalConfiguration.maxCheckTime];
+            }
+            [self performCheckIFNeeded:ip];
         }
     }
 }
@@ -215,35 +198,5 @@
 //- (void)socket:(QNAsyncSocket *)sock didWritePartialDataOfLength:(NSUInteger)partialLength tag:(long)tag{}
 //- (void)socketDidCloseReadStream:(QNAsyncSocket *)sock{}
 //- (void)socketDidSecure:(QNAsyncSocket *)sock{}
-
-//MARK: -- timeout
-- (void)createTimer{
-    @synchronized (self) {
-        if (self.timer) {
-            return;
-        }
-    }
-    
-    __weak typeof(self) weakSelf = self;
-    NSTimer *timer = [NSTimer timerWithTimeInterval:0.1
-                                             target:weakSelf
-                                           selector:@selector(timerAction)
-                                           userInfo:nil
-                                            repeats:YES];
-    [[NSRunLoop currentRunLoop] addTimer:timer
-                                 forMode:NSDefaultRunLoopMode];
-    
-    [self timerAction];
-    _timer = timer;
-}
-
-- (void)invalidateTimer{
-    [self.timer invalidate];
-    self.timer = nil;
-}
-
-- (void)timerAction{
-    [self checkTimeout];
-}
 
 @end

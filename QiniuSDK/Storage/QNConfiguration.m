@@ -90,7 +90,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     } else if (maxCheckTime > 15) {
         maxCheckTime = 15;
     }
-    _maxCheckCount = maxCheckTime;
+    _maxCheckTime = maxCheckTime;
 }
 
 @end
