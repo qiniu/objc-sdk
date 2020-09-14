@@ -126,9 +126,9 @@
             } 
         }
         
-        // 判断是否满足上传条件：文件大于上报临界值 && (首次上传 || 距上次上传时间大于_config.interval)
+        // 判断是否满足上传条件：文件大于上报临界值 || (首次上传 || 距上次上传时间大于_config.interval)
         NSTimeInterval currentTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970];
-        if (file.size > _config.uploadThreshold && (_lastReportTime == 0 || currentTime - _lastReportTime > _config.interval * 60)) {
+        if (file.size > _config.uploadThreshold || (_lastReportTime == 0 || currentTime - _lastReportTime > _config.interval * 60)) {
             
             NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:_config.serverURL]];
             [request setValue:[NSString stringWithFormat:@"UpToken %@", token] forHTTPHeaderField:@"Authorization"];
