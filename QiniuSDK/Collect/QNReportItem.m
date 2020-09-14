@@ -83,11 +83,7 @@
 @implementation QNResponseInfo(Report)
 
 - (NSNumber *)requestReportStatusCode{
-    if (self.statusCode > -10 && self.statusCode < 0) {
-        return @(self.statusCode);
-    } else {
-        return nil;
-    }
+    return @(self.statusCode);
 }
 
 - (NSString *)requestReportErrorType{
@@ -172,7 +168,7 @@ NSString * const QNReportRequestKeyRemoteIp = @"remote_ip";
 NSString * const QNReportRequestKeyPort = @"port";
 NSString * const QNReportRequestKeyTargetBucket = @"target_bucket";
 NSString * const QNReportRequestKeyTargetKey = @"target_key";
-NSString * const QNReportRequestKeyTotalElapsedTime = @"total_elaspsed_time";
+NSString * const QNReportRequestKeyTotalElapsedTime = @"total_elapsed_time";
 NSString * const QNReportRequestKeyDnsElapsedTime = @"dns_elapsed_time";
 NSString * const QNReportRequestKeyConnectElapsedTime = @"connect_elapsed_time";
 NSString * const QNReportRequestKeyTLSConnectElapsedTime = @"tls_connect_elapsed_time";
@@ -205,7 +201,7 @@ NSString * const QNReportBlockKeyLogType = @"log_type";
 NSString *const QNReportBlockKeyUpTime = @"up_time";
 NSString * const QNReportBlockKeyTargetRegionId = @"target_region_id";
 NSString * const QNReportBlockKeyCurrentRegionId = @"current_region_id";
-NSString * const QNReportBlockKeyTotalElapsedTime = @"total_elaspsed_time";
+NSString * const QNReportBlockKeyTotalElapsedTime = @"total_elapsed_time";
 NSString * const QNReportBlockKeyBytesSent = @"bytes_sent";
 NSString * const QNReportBlockKeyRecoveredFrom = @"recovered_from";
 NSString * const QNReportBlockKeyFileSize = @"file_size";
@@ -219,7 +215,7 @@ NSString * const QNReportBlockKeyClientTime = @"client_time";
 NSString * const QNReportQualityKeyLogType = @"log_type";
 NSString *const QNReportQualityKeyUpTime = @"up_time";
 NSString * const QNReportQualityKeyResult = @"result";
-NSString * const QNReportQualityKeyTotalElapsedTime = @"total_elaspsed_time";
+NSString * const QNReportQualityKeyTotalElapsedTime = @"total_elapsed_time";
 NSString * const QNReportQualityKeyRequestsCount = @"requests_count";
 NSString * const QNReportQualityKeyRegionsCount = @"regions_count";
 NSString * const QNReportQualityKeyBytesSent = @"bytes_sent";
