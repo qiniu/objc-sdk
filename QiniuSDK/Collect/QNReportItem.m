@@ -131,7 +131,10 @@
     
     if (self.statusCode > 199 && self.statusCode < 300) {
         result = @"ok";
-    } else if (self.statusCode > 399 && self.statusCode < 500) {
+    } else if (self.statusCode > 399 &&
+               (self.statusCode < 500 || self.statusCode == 573 || self.statusCode == 579 ||
+                self.statusCode == 608 || self.statusCode == 612 || self.statusCode == 614 || self.statusCode == 630 || self.statusCode == 631 ||
+                self.statusCode == 701)) {
         result = @"bad_request";
     } else if (self.statusCode == kQNZeroDataSize){
         result = @"zero_size_file";
