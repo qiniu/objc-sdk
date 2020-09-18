@@ -216,8 +216,10 @@ NSString * const QNReportBlockKeyClientTime = @"client_time";
 
 //MARK:-- 上传质量统计
 NSString * const QNReportQualityKeyLogType = @"log_type";
-NSString *const QNReportQualityKeyUpTime = @"up_time";
+NSString * const QNReportQualityKeyUpTime = @"up_time";
 NSString * const QNReportQualityKeyResult = @"result";
+NSString * const QNReportQualityKeyTargetBucket = @"target_bucket";
+NSString * const QNReportQualityKeyTargetKey = @"target_key";
 NSString * const QNReportQualityKeyTotalElapsedTime = @"total_elapsed_time";
 NSString * const QNReportQualityKeyRequestsCount = @"requests_count";
 NSString * const QNReportQualityKeyRegionsCount = @"regions_count";
