@@ -114,7 +114,7 @@
         errorType = @"ssl_error";
     } else if (self.statusCode == -1015 || self.statusCode == -1016 || self.statusCode == -1017){
         errorType = @"parse_error";
-    } else if (self.statusCode == -1007 || self.statusCode == -1010 || kQNMaliciousResponseError){
+    } else if (self.statusCode == -1007 || self.statusCode == -1010 || self.statusCode == kQNMaliciousResponseError){
         errorType = @"malicious_response";
     } else if (self.statusCode == kQNRequestCancelled
             || self.statusCode == NSURLErrorCancelled){
