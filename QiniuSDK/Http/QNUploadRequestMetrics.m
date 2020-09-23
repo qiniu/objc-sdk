@@ -35,8 +35,8 @@
 
 - (void)setRequest:(NSURLRequest *)request{
     NSMutableURLRequest *newRequest = [NSMutableURLRequest requestWithURL:request.URL
-                                                           cachePolicy:request.cachePolicy
-                                                       timeoutInterval:request.timeoutInterval];
+                                                              cachePolicy:request.cachePolicy
+                                                          timeoutInterval:request.timeoutInterval];
     newRequest.allHTTPHeaderFields = request.allHTTPHeaderFields;
     
     NSInteger headerLength = [NSString stringWithFormat:@"%@", self.request.allHTTPHeaderFields].length;
