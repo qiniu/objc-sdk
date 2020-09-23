@@ -62,12 +62,8 @@ connectionProxy:(NSDictionary *)connectionProxy
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(nullable NSError *)error {
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:task.currentRequest.URL
-                                                           cachePolicy:task.currentRequest.cachePolicy
-                                                       timeoutInterval:task.currentRequest.timeoutInterval];
-    request.allHTTPHeaderFields = task.currentRequest.allHTTPHeaderFields;
     self.requestMetrics.endDate = [NSDate date];
-    self.requestMetrics.request = [request copy];
+    self.requestMetrics.request = task.currentRequest;
     self.requestMetrics.response = task.response;
     self.requestMetrics.countOfResponseBodyBytesReceived = task.response.expectedContentLength;
     self.requestMetrics.countOfRequestHeaderBytesSent = [NSString stringWithFormat:@"%@", task.currentRequest.allHTTPHeaderFields].length;
