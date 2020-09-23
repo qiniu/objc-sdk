@@ -62,7 +62,6 @@ connectionProxy:(NSDictionary *)connectionProxy
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(nullable NSError *)error {
-    
     self.requestMetrics.endDate = [NSDate date];
     self.requestMetrics.request = task.currentRequest;
     self.requestMetrics.response = task.response;

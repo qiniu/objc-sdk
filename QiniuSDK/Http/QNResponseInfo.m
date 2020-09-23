@@ -164,6 +164,9 @@ static NSString *kQNErrorDomain = @"qiniu.com";
             _statusCode = (int)error.code;
             _message = [NSString stringWithFormat:@"%@", error];
             _responseDictionary = nil;
+        } else {
+            _statusCode = -9;
+            _message = @"no response";
         }
     }
     return self;
