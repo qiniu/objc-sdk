@@ -114,7 +114,7 @@
         errorType = @"ssl_error";
     } else if (self.statusCode == -1015 || self.statusCode == -1016 || self.statusCode == -1017){
         errorType = @"parse_error";
-    } else if (self.statusCode == -1007 || self.statusCode == -1010 || kQNMaliciousResponseError){
+    } else if (self.statusCode == -1007 || self.statusCode == -1010 || self.statusCode == kQNMaliciousResponseError){
         errorType = @"malicious_response";
     } else if (self.statusCode == kQNRequestCancelled
             || self.statusCode == NSURLErrorCancelled){
@@ -216,8 +216,10 @@ NSString * const QNReportBlockKeyClientTime = @"client_time";
 
 //MARK:-- 上传质量统计
 NSString * const QNReportQualityKeyLogType = @"log_type";
-NSString *const QNReportQualityKeyUpTime = @"up_time";
+NSString * const QNReportQualityKeyUpTime = @"up_time";
 NSString * const QNReportQualityKeyResult = @"result";
+NSString * const QNReportQualityKeyTargetBucket = @"target_bucket";
+NSString * const QNReportQualityKeyTargetKey = @"target_key";
 NSString * const QNReportQualityKeyTotalElapsedTime = @"total_elapsed_time";
 NSString * const QNReportQualityKeyRequestsCount = @"requests_count";
 NSString * const QNReportQualityKeyRegionsCount = @"regions_count";

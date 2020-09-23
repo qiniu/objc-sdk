@@ -108,6 +108,8 @@ extern NSString *const QNReportBlockKeyClientTime;
 extern NSString *const QNReportQualityKeyLogType;
 extern NSString *const QNReportQualityKeyUpTime;
 extern NSString *const QNReportQualityKeyResult;
+extern NSString *const QNReportQualityKeyTargetBucket;
+extern NSString *const QNReportQualityKeyTargetKey;
 extern NSString *const QNReportQualityKeyTotalElapsedTime;
 extern NSString *const QNReportQualityKeyRequestsCount;
 extern NSString *const QNReportQualityKeyRegionsCount;

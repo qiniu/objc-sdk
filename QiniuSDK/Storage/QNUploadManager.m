@@ -393,7 +393,7 @@
      taskMetrics:(QNUploadTaskMetrics *)taskMetrics
         complete:(QNUpCompletionHandler)completionHandler {
 
-    [QNUploadManager reportQuality:responseInfo taskMetrics:taskMetrics token:token];
+    [QNUploadManager reportQuality:key responseInfo:responseInfo taskMetrics:taskMetrics token:token];
     
     QNAsyncRunInMain(^{
         if (completionHandler) {
@@ -404,16 +404,21 @@
 
 
 //MARK:-- 统计quality日志
-+ (void)reportQuality:(QNResponseInfo *)info
++ (void)reportQuality:(NSString *)key
+         responseInfo:(QNResponseInfo *)responseInfo
           taskMetrics:(QNUploadTaskMetrics *)taskMetrics
                 token:(NSString *)token{
     
+    QNUpToken *upToken = [QNUpToken parse:token];
     QNUploadTaskMetrics *taskMetricsP = taskMetrics ?: [QNUploadTaskMetrics emptyMetrics];
     
     QNReportItem *item = [QNReportItem item];
     [item setReportValue:QNReportLogTypeQuality forKey:QNReportQualityKeyLogType];
     [item setReportValue:@([[NSDate date] timeIntervalSince1970]) forKey:QNReportQualityKeyUpTime];
-    [item setReportValue:info.qualityResult forKey:QNReportQualityKeyResult];
+    [item setReportValue:responseInfo.qualityResult forKey:QNReportQualityKeyResult];
+    [item setReportValue:upToken.bucket forKey:QNReportQualityKeyTargetBucket];
+    [item setReportValue:key forKey:QNReportQualityKeyTargetKey];
+    [item setReportValue:taskMetricsP.totalElapsedTime forKey:QNReportQualityKeyTotalElapsedTime];
     [item setReportValue:taskMetricsP.totalElapsedTime forKey:QNReportQualityKeyTotalElapsedTime];
     [item setReportValue:taskMetricsP.requestCount forKey:QNReportQualityKeyRequestsCount];
     [item setReportValue:taskMetricsP.regionCount forKey:QNReportQualityKeyRegionsCount];

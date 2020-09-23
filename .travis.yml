@@ -5,7 +5,7 @@ sudo: true
 before_install:
   - rvm install 2.6.4
   - rvm use 2.6.4
-  - brew update
+#  - brew update
   - gem install cocoapods --pre
   - pod --version
   - rm -rf ~/.cocoapods
