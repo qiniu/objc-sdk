@@ -9,6 +9,7 @@
 #import "QNDefine.h"
 #import "QNCFHttpClient.h"
 #import "NSURLRequest+QNRequest.h"
+#import <sys/errno.h>
 
 @interface QNCFHttpClient()<NSStreamDelegate>
 
@@ -286,8 +287,8 @@
                 break;
             case NSStreamEventErrorOccurred:{
                 [self endProgress: YES];
+                [self delegate_onError:[self translateCFNetworkErrorIntoUrlError:[self.inputStream streamError]]];
                 [self closeInputStream];
-                [self delegate_onError:[self.inputStream streamError]];
             }
                 break;
             case NSStreamEventEndEncountered:{
@@ -359,6 +360,224 @@
                         totalBytesSent:self.totalBytesSent
               totalBytesExpectedToSend:self.totalBytesExpectedToSend];
     }
+}
+
+- (NSError *)translateCFNetworkErrorIntoUrlError:(NSError *)cfError{
+    if (cfError == nil) {
+        return nil;
+    }
+    
+    NSInteger errorCode = NSURLErrorUnknown;
+    NSString *errorInfo = cfError.localizedDescription;
+    switch (cfError.code) {
+        case ENOENT: /* No such file or directory */
+            errorCode = NSURLErrorCannotOpenFile;
+            break;
+        case EIO: /* Input/output error */
+            break;
+        case E2BIG: /* Argument list too long */
+            break;
+        case ENOEXEC: /* Exec format error */
+            break;
+        case EBADF: /* Bad file descriptor */
+            break;
+        case ECHILD: /* No child processes */
+            break;
+        case EDEADLK: /* Resource deadlock avoided */
+            break;
+        case ENOMEM: /* Cannot allocate memory */
+            break;
+        case EACCES: /* Permission denied */
+            break;
+        case EFAULT: /* Bad address */
+            errorCode = NSURLErrorBadURL;
+            break;
+        case EBUSY: /* Device / Resource busy */
+            break;
+        case EEXIST: /* File exists */
+            break;
+        case ENODEV: /* Operation not supported by device */
+            break;
+        case EISDIR: /* Is a directory */
+            errorCode = NSURLErrorFileIsDirectory;
+            break;
+        case ENOTDIR: /* Not a directory */
+            break;
+        case EINVAL: /* Invalid argument */
+            break;
+        case ENFILE: /* Too many open files in system */
+            break;
+        case EMFILE: /* Too many open files */
+            break;
+        case EFBIG: /* File too large */
+            break;
+        case ENOSPC: /* No space left on device */
+            break;
+        case ESPIPE: /* Illegal seek */
+            break;
+        case EMLINK: /* Too many links */
+            break;
+        case EPIPE: /* Broken pipe */
+            break;
+        case EDOM: /* Numerical argument out of domain */
+            break;
+        case ERANGE: /* Result too large */
+            break;
+        case EAGAIN: /* Resource temporarily unavailable */
+            break;
+        case ENOTSOCK: /* Socket operation on non-socket */
+            break;
+        case EDESTADDRREQ: /* Destination address required */
+            errorCode = NSURLErrorBadURL;
+            break;
+        case EMSGSIZE: /* Message too long */
+            break;
+        case EPROTOTYPE: /* Protocol wrong type for socket */
+            break;
+        case ENOPROTOOPT: /* Protocol not available */
+            break;
+        case EPROTONOSUPPORT: /* Protocol not supported */
+            break;
+        case ENOTSUP: /* Operation not supported */
+            break;
+        case EPFNOSUPPORT: /* Protocol family not supported */
+            break;
+        case EAFNOSUPPORT: /* Address family not supported by protocol family */
+            break;
+        case EADDRINUSE: /* Address already in use */
+            break;
+        case EADDRNOTAVAIL: /* Can't assign requested address */
+            break;
+        case ENETDOWN: /* Network is down */
+            errorCode = NSURLErrorCannotConnectToHost;
+            break;
+        case ENETUNREACH: /* Network is unreachable */
+            errorCode = NSURLErrorNetworkConnectionLost;
+            break;
+        case ENETRESET: /* Network dropped connection on reset */
+            errorCode = NSURLErrorNetworkConnectionLost;
+            break;
+        case ECONNABORTED: /* Software caused connection abort */
+            errorCode = NSURLErrorNetworkConnectionLost;
+            break;
+        case ECONNRESET: /* Connection reset by peer */
+            errorCode = NSURLErrorNetworkConnectionLost;
+            break;
+        case ENOBUFS: /* No buffer space available */
+            break;
+        case EISCONN: /* Socket is already connected */
+            break;
+        case ENOTCONN: /* Socket is not connected */
+            errorCode = NSURLErrorCannotConnectToHost;
+            break;
+        case ESHUTDOWN: /* Can't send after socket shutdown */
+            break;
+        case ETOOMANYREFS: /* Too many references: can't splice */
+            break;
+        case ETIMEDOUT: /* Operation timed out */
+            errorCode = NSURLErrorTimedOut;
+            break;
+        case ECONNREFUSED: /* Connection refused */
+            errorCode = NSURLErrorCannotConnectToHost;
+            break;
+        case ELOOP: /* Too many levels of symbolic links */
+            break;
+        case ENAMETOOLONG: /* File name too long */
+            break;
+        case EHOSTDOWN: /* Host is down */
+            break;
+        case EHOSTUNREACH: /* No route to host */
+            break;
+        case ENOTEMPTY: /* Directory not empty */
+            break;
+        case EPROCLIM: /* Too many processes */
+            break;
+        case EUSERS: /* Too many users */
+            break;
+        case EDQUOT: /* Disc quota exceeded */
+            break;
+        case ESTALE: /* Stale NFS file handle */
+            break;
+        case EREMOTE: /* Too many levels of remote in path */
+            break;
+        case EBADRPC: /* RPC struct is bad */
+            break;
+        case ERPCMISMATCH: /* RPC version wrong */
+            break;
+        case EPROGUNAVAIL: /* RPC prog. not avail */
+            break;
+        case EPROGMISMATCH: /* Program version wrong */
+            break;
+        case EPROCUNAVAIL: /* Bad procedure for program */
+            break;
+        case ENOLCK: /* No locks available */
+            break;
+        case ENOSYS: /* Function not implemented */
+            break;
+        case EFTYPE: /* Inappropriate file type or format */
+            break;
+        case EAUTH: /* Authentication error */
+            break;
+        case ENEEDAUTH: /* Need authenticator */
+            break;
+        case EPWROFF: /* Device power is off */
+            break;
+        case EDEVERR: /* Device error, e.g. paper out */
+            break;
+        case EOVERFLOW: /* Value too large to be stored in data type */
+            break;
+        case EBADEXEC: /* Bad executable */
+            break;
+        case EBADARCH: /* Bad CPU type in executable */
+            break;
+        case ESHLIBVERS: /* Shared library version mismatch */
+            break;
+        case EBADMACHO: /* Malformed Macho file */
+            break;
+        case ECANCELED: /* Operation canceled */
+            errorCode = NSURLErrorCancelled;
+            break;
+        case EIDRM: /* Identifier removed */
+            break;
+        case ENOMSG: /* No message of desired type */
+            break;
+        case EILSEQ: /* Illegal byte sequence */
+            break;
+        case ENOATTR: /* Attribute not found */
+            break;
+        case EBADMSG: /* Bad message */
+            break;
+        case EMULTIHOP: /* Reserved */
+            break;
+        case ENODATA: /* No message available on STREAM */
+            break;
+        case ENOLINK: /* Reserved */
+            break;
+        case ENOSR: /* No STREAM resources */
+            break;
+        case ENOSTR: /* Not a STREAM */
+            break;
+        case EPROTO: /* Protocol error */
+            break;
+        case ETIME: /* STREAM ioctl timeout */
+            errorCode = NSURLErrorTimedOut;
+            break;
+        case EOPNOTSUPP: /* Operation not supported on socket */
+            break;
+        case ENOPOLICY: /* No such policy registered */
+            break;
+        case ENOTRECOVERABLE: /* State not recoverable */
+            break;
+        case EOWNERDEAD: /* Previous owner died */
+            break;
+        case EQFULL: /* Interface output queue is full */
+            break;
+
+        default:
+            break;
+    }
+    
+    return [NSError errorWithDomain:NSURLErrorDomain code:errorCode userInfo:@{@"UserInfo" : errorInfo ?: @""}];
 }
 
 
