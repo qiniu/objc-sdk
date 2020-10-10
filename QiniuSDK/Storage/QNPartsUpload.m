@@ -110,7 +110,7 @@
     QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:info[kQNRecordZoneInfoKey]];
     QNUploadFileInfo *fileInfo = [QNUploadFileInfo infoFromDictionary:info[kQNRecordFileInfoKey]];
     self.recoveredFrom = @(fileInfo.progress * fileInfo.size);
-    if (zoneInfo && fileInfo && fileInfo.uploadBlocks.firstObject.size != [self getUploadChunkSize]) {
+    if (zoneInfo && fileInfo && fileInfo.uploadBlocks.firstObject.uploadDataList.firstObject.size == [self getUploadChunkSize]) {
         [self insertRegionAtFirstByZoneInfo:zoneInfo];
         self.uploadFileInfo = fileInfo;
     } else {
