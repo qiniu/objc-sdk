@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// 根据ip和host来确定IP的类型，host可为空
 /// @param ip ip
 /// @param host host
-+ (NSString *)getIpType:(NSString *)ip host:(NSString *)host;
++ (NSString *)getIpType:(NSString * _Nullable)ip host:(NSString * _Nullable)host;
 
 @end
 

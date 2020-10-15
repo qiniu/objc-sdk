@@ -47,7 +47,7 @@
     domain.isAllFrozen = false;
     return domain;
 }
-- (QNUploadServer *)getServer{
+- (QNUploadServer *)getServer:(NSDictionary <NSString *, id<QNUploadServer>> *)blackServerInfo{
     if (self.isAllFrozen || !self.host || self.host.length == 0) {
         return nil;
     }
@@ -59,7 +59,7 @@
     if (self.ipGroupList && self.ipGroupList.count > 0) {
         QNUploadServer *server = nil;
         for (QNUploadIpGroup *ipGroup in self.ipGroupList) {
-            if (![kQNUploadServerFreezeManager isFrozenHost:self.host type:ipGroup.groupType]) {
+            if (ipGroup.groupType && !blackServerInfo[ipGroup.groupType] && ![kQNUploadServerFreezeManager isFrozenHost:self.host type:ipGroup.groupType]) {
                 id <QNIDnsNetworkAddress> inetAddress = [ipGroup getServerIP];
                 server = [QNUploadServer server:self.host host:self.host ip:inetAddress.ipValue source:inetAddress.sourceValue ipPrefetchedTime:inetAddress.timestampValue];
                 break;
@@ -69,7 +69,10 @@
             self.isAllFrozen = true;
         }
         return server;
-    } else if (![kQNUploadServerFreezeManager isFrozenHost:self.host type:nil]){
+    }
+    
+    NSString *groupType = [QNUtils getIpType:nil host:self.host];
+    if ((groupType && !blackServerInfo[groupType]) && ![kQNUploadServerFreezeManager isFrozenHost:self.host type:nil]){
         return [QNUploadServer server:self.host host:self.host ip:nil source:nil ipPrefetchedTime:nil];
     } else {
         self.isAllFrozen = true;
@@ -128,6 +131,8 @@
 // 是否获取过，PS：当第一次获取Domain，而区域所有Domain又全部冻结时，返回一个domain尝试一次
 @property(atomic   , assign)BOOL hasGot;
 @property(atomic   , assign)BOOL isAllFrozen;
+// server黑名单，保证使用过的server不再使用，防止无限重试
+@property(nonatomic, strong)NSMutableDictionary <NSString *, id<QNUploadServer>> *blackServerInfo;
 @property(nonatomic, strong)NSArray <NSString *> *domainHostList;
 @property(nonatomic, strong)NSDictionary <NSString *, QNUploadServerDomain *> *domainDictionary;
 @property(nonatomic, strong)NSArray <NSString *> *oldDomainHostList;
@@ -145,6 +150,8 @@
     _zoneInfo = zoneInfo;
     
     self.isAllFrozen = NO;
+    self.blackServerInfo = [NSMutableDictionary dictionary];
+    
     NSMutableArray *serverGroups = [NSMutableArray array];
     NSMutableArray *domainHostList = [NSMutableArray array];
     if (zoneInfo.domains) {
@@ -173,22 +180,32 @@
     return [domainDictionary copy];
 }
 
-- (id<QNUploadServer>)getNextServer:(BOOL)isOldServer
-                       freezeServer:(id<QNUploadServer>)freezeServer{
+- (id<QNUploadServer> _Nullable)getNextServer:(BOOL)isOldServer
+                                  frozenLevel:(QNServerFrozenLevel)frozenLevel
+                                 freezeServer:(id <QNUploadServer> _Nullable)freezeServer{
     if (self.isAllFrozen) {
         return nil;
     }
     
     if (freezeServer.serverId) {
-        [_domainDictionary[freezeServer.serverId] freeze:freezeServer.ip];
-        [_oldDomainDictionary[freezeServer.serverId] freeze:freezeServer.ip];
+        if ((frozenLevel & QNServerFrozenLevelRegionFrozen) == QNServerFrozenLevelRegionFrozen) {
+            NSString *ipType = [QNUtils getIpType:freezeServer.ip host:freezeServer.host];
+            if (ipType && ipType.length > 0) {
+                self.blackServerInfo[ipType] = freezeServer;
+            }
+        }
+        
+        if ((frozenLevel & QNServerFrozenLevelGlobalFrozen) == QNServerFrozenLevelGlobalFrozen) {
+            [_domainDictionary[freezeServer.serverId] freeze:freezeServer.ip];
+            [_oldDomainDictionary[freezeServer.serverId] freeze:freezeServer.ip];
+        }
     }
     
     NSArray *hostList = isOldServer ? self.oldDomainHostList : self.domainHostList;
     NSDictionary *domainInfo = isOldServer ? self.oldDomainDictionary : self.domainDictionary;
     QNUploadServer *server = nil;
     for (NSString *host in hostList) {
-        server = [domainInfo[host] getServer];
+        server = [domainInfo[host] getServer:self.blackServerInfo];
         if (server) {
            break;
         }

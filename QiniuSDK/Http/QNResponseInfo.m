@@ -230,6 +230,23 @@ static NSString *kQNErrorDomain = @"qiniu.com";
     }
 }
 
+- (BOOL)canConnectToHost{
+    if (_statusCode > 99 || self.isCancelled) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+- (BOOL)isHostUnavailable{
+    // 基本不可恢复，注：会影响下次请求，范围太大可能会造成大量的timeout
+    if ((_statusCode >= -2000 && _statusCode <= -1200) || _statusCode != 503) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 - (BOOL)isConnectionBroken {
     return _statusCode == kQNNetworkError || _statusCode == NSURLErrorNotConnectedToInternet;
 }

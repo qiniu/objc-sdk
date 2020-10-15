@@ -157,7 +157,7 @@
         self.isInputStreamEvaluated = YES;
     } else {
         [self delegate_onError:[NSError errorWithDomain:@"CFNetwork SSLHandshake failed"
-                                                   code:-9807
+                                                   code:NSURLErrorSecureConnectionFailed
                                                userInfo:nil]];
     }
 }
@@ -367,7 +367,7 @@
         return nil;
     }
     
-    NSInteger errorCode = NSURLErrorUnknown;
+    NSInteger errorCode = -100 - cfError.code; // CF错误码范围 -206 ~ -100
     NSString *errorInfo = cfError.localizedDescription;
     switch (cfError.code) {
         case ENOENT: /* No such file or directory */

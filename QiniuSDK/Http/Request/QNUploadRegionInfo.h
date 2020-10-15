@@ -8,6 +8,12 @@
 
 #import "QNIUploadServer.h"
 
+typedef NS_ENUM(NSInteger, QNServerFrozenLevel){
+    QNServerFrozenLevelNone = 1 << 0, // 不冻结
+    QNServerFrozenLevelRegionFrozen = 1 << 1, // 当前Region冻结，仅影响当前Region
+    QNServerFrozenLevelGlobalFrozen = 1 << 2, // 全局冻结
+};
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class QNZoneInfo;
@@ -20,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setupRegionData:(QNZoneInfo * _Nullable)zoneInfo;
 
 - (id<QNUploadServer> _Nullable)getNextServer:(BOOL)isOldServer
+                                  frozenLevel:(QNServerFrozenLevel)frozenLevel
                                  freezeServer:(id <QNUploadServer> _Nullable)freezeServer;
 
 @end

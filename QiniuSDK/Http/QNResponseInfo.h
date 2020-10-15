@@ -88,6 +88,10 @@ extern const int kQNMaliciousResponseError;
 @property (nonatomic, readonly) BOOL couldHostRetry;
 /// 单个Region是否可以再次重试
 @property (nonatomic, readonly) BOOL couldRegionRetry;
+/// 当前host是否可达
+@property (nonatomic, readonly) BOOL canConnectToHost;
+/// 当前host是否可用
+@property (nonatomic, readonly) BOOL isHostUnavailable;
 /// 是否为 七牛响应
 @property (nonatomic, readonly, getter=isNotQiniu) BOOL notQiniu;
 

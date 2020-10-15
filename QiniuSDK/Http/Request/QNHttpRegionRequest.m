@@ -182,14 +182,20 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
 //MARK: --
 - (id <QNUploadServer>)getNextServer:(QNResponseInfo *)responseInfo{
 
-    if (responseInfo == nil) {
-        return [self.region getNextServer:NO freezeServer:nil];
-    }
-    
-    if (responseInfo.isTlsError == YES) {
+    if (responseInfo.isTlsError) {
         self.isUseOldServer = YES;
     }
-    return [self.region getNextServer:self.isUseOldServer freezeServer:self.currentServer];
+    
+    QNServerFrozenLevel frozenLevel = QNServerFrozenLevelNone;
+    if (responseInfo && !responseInfo.canConnectToHost) {
+        frozenLevel |= QNServerFrozenLevelRegionFrozen;
+        
+        if (!responseInfo.isConnectionBroken) {
+            frozenLevel |= QNServerFrozenLevelGlobalFrozen;
+        }
+    }
+    
+    return [self.region getNextServer:self.isUseOldServer frozenLevel:frozenLevel freezeServer:self.currentServer];
 }
 
 @end
