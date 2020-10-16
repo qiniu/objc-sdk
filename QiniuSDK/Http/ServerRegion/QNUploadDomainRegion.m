@@ -188,7 +188,7 @@
     }
     
     if (freezeServer.serverId) {
-        if ((frozenLevel & QNServerFrozenLevelRegionFrozen) == QNServerFrozenLevelRegionFrozen) {
+        if ((frozenLevel & QNServerFrozenLevelPartFrozen) == QNServerFrozenLevelPartFrozen) {
             NSString *ipType = [QNUtils getIpType:freezeServer.ip host:freezeServer.host];
             if (ipType && ipType.length > 0) {
                 self.blackServerInfo[ipType] = freezeServer;

@@ -188,7 +188,7 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
     
     QNServerFrozenLevel frozenLevel = QNServerFrozenLevelNone;
     if (responseInfo && !responseInfo.canConnectToHost) {
-        frozenLevel |= QNServerFrozenLevelRegionFrozen;
+        frozenLevel |= QNServerFrozenLevelPartFrozen;
         
         if (!responseInfo.isHostUnavailable) {
             frozenLevel |= QNServerFrozenLevelGlobalFrozen;

@@ -10,7 +10,7 @@
 
 typedef NS_ENUM(NSInteger, QNServerFrozenLevel){
     QNServerFrozenLevelNone = 1 << 0, // 不冻结
-    QNServerFrozenLevelRegionFrozen = 1 << 1, // 当前Region冻结，仅影响当前Region
+    QNServerFrozenLevelPartFrozen = 1 << 1, // 当前Region冻结，仅影响当前Region
     QNServerFrozenLevelGlobalFrozen = 1 << 2, // 全局冻结
 };
 
