@@ -204,7 +204,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
         || _statusCode == 608 || _statusCode == 612 || _statusCode == 614 || _statusCode == 616
         || _statusCode == 619 || _statusCode == 630 || _statusCode == 631 || _statusCode == 640
         || _statusCode == 701
-        ||(_statusCode < 0 && _statusCode > -1000)) {
+        || (_statusCode < -1 && _statusCode > -1000)) {
         return NO;
     } else {
         return YES;

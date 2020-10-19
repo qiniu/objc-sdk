@@ -367,8 +367,8 @@
         return nil;
     }
     
-    NSInteger errorCode = -100 - cfError.code; // CF错误码范围 -206 ~ -100
-    NSString *errorInfo = cfError.localizedDescription;
+    NSInteger errorCode = -1;
+    NSString *errorInfo = [NSString stringWithFormat:@"cf client:[%ld] %@", (long)errorCode, cfError.localizedDescription];
     switch (cfError.code) {
         case ENOENT: /* No such file or directory */
             errorCode = NSURLErrorCannotOpenFile;
