@@ -7,6 +7,7 @@
 //
 
 #import "QNUploadDomainRegion.h"
+#import "QNResponseInfo.h"
 #import "QNUploadServer.h"
 #import "QNZoneInfo.h"
 #import "QNUploadServerFreezeManager.h"
@@ -47,7 +48,7 @@
     domain.isAllFrozen = false;
     return domain;
 }
-- (QNUploadServer *)getServer:(NSDictionary <NSString *, id<QNUploadServer>> *)blackServerInfo{
+- (QNUploadServer *)getServer:(NSArray <QNUploadServerFreezeManager *> *)freezeManagerList{
     if (self.isAllFrozen || !self.host || self.host.length == 0) {
         return nil;
     }
@@ -56,12 +57,17 @@
         [self createIpGroupList];
     }
     
+    // Host解析出IP时:
     if (self.ipGroupList && self.ipGroupList.count > 0) {
         QNUploadServer *server = nil;
         for (QNUploadIpGroup *ipGroup in self.ipGroupList) {
-            if (ipGroup.groupType && !blackServerInfo[ipGroup.groupType] && ![kQNUploadServerFreezeManager isFrozenHost:self.host type:ipGroup.groupType]) {
+            if (![self isGroup:ipGroup.groupType frozenByFreezeManagers:freezeManagerList]) {
                 id <QNIDnsNetworkAddress> inetAddress = [ipGroup getServerIP];
-                server = [QNUploadServer server:self.host host:self.host ip:inetAddress.ipValue source:inetAddress.sourceValue ipPrefetchedTime:inetAddress.timestampValue];
+                server = [QNUploadServer server:self.host
+                                           host:self.host
+                                             ip:inetAddress.ipValue
+                                         source:inetAddress.sourceValue
+                               ipPrefetchedTime:inetAddress.timestampValue];
                 break;
             }
         }
@@ -71,14 +77,31 @@
         return server;
     }
     
+    // Host未解析出IP时:
     NSString *groupType = [QNUtils getIpType:nil host:self.host];
-    if ((groupType && !blackServerInfo[groupType]) && ![kQNUploadServerFreezeManager isFrozenHost:self.host type:nil]){
+    if (![self isGroup:groupType frozenByFreezeManagers:freezeManagerList]){
         return [QNUploadServer server:self.host host:self.host ip:nil source:nil ipPrefetchedTime:nil];
     } else {
         self.isAllFrozen = true;
         return nil;
     }
 }
+
+- (BOOL)isGroup:(NSString *)groupType frozenByFreezeManagers:(NSArray <QNUploadServerFreezeManager *> *)freezeManagerList{
+    if (!groupType && freezeManagerList.count == 0) {
+        return YES;
+    }
+    
+    BOOL isFrozen = NO;
+    for (QNUploadServerFreezeManager *freezeManager in freezeManagerList) {
+        isFrozen = [freezeManager isFrozenHost:self.host type:groupType];
+        if (isFrozen) {
+            break;
+        }
+    }
+    return isFrozen;
+}
+
 - (QNUploadServer *)getOneServer{
     if (!self.host || self.host.length == 0) {
         return nil;
@@ -120,8 +143,8 @@
         self.ipGroupList = ipGroupList;
     }
 }
-- (void)freeze:(NSString *)ip{
-    [kQNUploadServerFreezeManager freezeHost:self.host type:[QNUtils getIpType:ip host:self.host]];
+- (void)freeze:(NSString *)ip freezeManager:(QNUploadServerFreezeManager *)freezeManager frozenTime:(NSInteger)frozenTime{
+    [freezeManager freezeHost:self.host type:[QNUtils getIpType:ip host:self.host] frozenTime:frozenTime];
 }
 
 @end
@@ -131,8 +154,8 @@
 // 是否获取过，PS：当第一次获取Domain，而区域所有Domain又全部冻结时，返回一个domain尝试一次
 @property(atomic   , assign)BOOL hasGot;
 @property(atomic   , assign)BOOL isAllFrozen;
-// server黑名单，保证使用过的server不再使用，防止无限重试
-@property(nonatomic, strong)NSMutableDictionary <NSString *, id<QNUploadServer>> *blackServerInfo;
+// 局部冻结管理对象
+@property(nonatomic, strong)QNUploadServerFreezeManager *partFreezeManager;
 @property(nonatomic, strong)NSArray <NSString *> *domainHostList;
 @property(nonatomic, strong)NSDictionary <NSString *, QNUploadServerDomain *> *domainDictionary;
 @property(nonatomic, strong)NSArray <NSString *> *oldDomainHostList;
@@ -150,7 +173,6 @@
     _zoneInfo = zoneInfo;
     
     self.isAllFrozen = NO;
-    self.blackServerInfo = [NSMutableDictionary dictionary];
     
     NSMutableArray *serverGroups = [NSMutableArray array];
     NSMutableArray *domainHostList = [NSMutableArray array];
@@ -181,31 +203,41 @@
 }
 
 - (id<QNUploadServer> _Nullable)getNextServer:(BOOL)isOldServer
-                                  frozenLevel:(QNServerFrozenLevel)frozenLevel
+                                 responseInfo:(QNResponseInfo *)responseInfo
                                  freezeServer:(id <QNUploadServer> _Nullable)freezeServer{
     if (self.isAllFrozen) {
         return nil;
     }
     
     if (freezeServer.serverId) {
-        if ((frozenLevel & QNServerFrozenLevelPartFrozen) == QNServerFrozenLevelPartFrozen) {
-            NSString *ipType = [QNUtils getIpType:freezeServer.ip host:freezeServer.host];
-            if (ipType && ipType.length > 0) {
-                self.blackServerInfo[ipType] = freezeServer;
-            }
+        // 无法连接到Host || Host不可用， 局部冻结
+        if (!responseInfo.canConnectToHost || responseInfo.isHostUnavailable) {
+            [_domainDictionary[freezeServer.serverId] freeze:freezeServer.ip
+                                               freezeManager:self.partFreezeManager
+                                                  frozenTime:kQNGlobalConfiguration.partialHostFrozenTime];
+            [_oldDomainDictionary[freezeServer.serverId] freeze:freezeServer.ip
+                                                  freezeManager:self.partFreezeManager
+                                                     frozenTime:kQNGlobalConfiguration.partialHostFrozenTime];
         }
         
-        if ((frozenLevel & QNServerFrozenLevelGlobalFrozen) == QNServerFrozenLevelGlobalFrozen) {
-            [_domainDictionary[freezeServer.serverId] freeze:freezeServer.ip];
-            [_oldDomainDictionary[freezeServer.serverId] freeze:freezeServer.ip];
+        // Host不可用，全局冻结
+        if (responseInfo.isHostUnavailable) {
+            [_domainDictionary[freezeServer.serverId] freeze:freezeServer.ip
+                                               freezeManager:kQNUploadServerFreezeManager
+                                                  frozenTime:kQNGlobalConfiguration.globalHostFrozenTime];
+            [_oldDomainDictionary[freezeServer.serverId] freeze:freezeServer.ip
+                                                  freezeManager:kQNUploadServerFreezeManager
+                                                     frozenTime:kQNGlobalConfiguration.globalHostFrozenTime];
         }
     }
+    
+    
     
     NSArray *hostList = isOldServer ? self.oldDomainHostList : self.domainHostList;
     NSDictionary *domainInfo = isOldServer ? self.oldDomainDictionary : self.domainDictionary;
     QNUploadServer *server = nil;
     for (NSString *host in hostList) {
-        server = [domainInfo[host] getServer:self.blackServerInfo];
+        server = [domainInfo[host] getServer:@[self.partFreezeManager, kQNUploadServerFreezeManager]];
         if (server) {
            break;
         }
@@ -221,4 +253,12 @@
     }
     return server;
 }
+
+- (QNUploadServerFreezeManager *)partFreezeManager{
+    if (!_partFreezeManager) {
+        _partFreezeManager = [[QNUploadServerFreezeManager alloc] init];
+    }
+    return _partFreezeManager;
+}
+
 @end

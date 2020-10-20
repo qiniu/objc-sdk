@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNConfiguration.h"
 #import "QNUploadServerFreezeManager.h"
 
 @interface QNUploadServerFreezeItem : NSObject
@@ -29,9 +30,9 @@
     }
     return isFrozen;
 }
-- (void)freeze{
+- (void)freeze:(NSInteger)frozenTime{
     @synchronized (self) {
-        self.freezeDate = [NSDate dateWithTimeIntervalSinceNow:10*60];
+        self.freezeDate = [NSDate dateWithTimeIntervalSinceNow:frozenTime];
     }
 }
 @end
@@ -73,6 +74,12 @@
 }
 
 - (void)freezeHost:(NSString *)host type:(NSString *)type{
+    [self freezeHost:host type:type frozenTime:kQNGlobalConfiguration.globalHostFrozenTime];
+}
+
+- (void)freezeHost:(NSString *)host
+              type:(NSString * _Nullable)type
+        frozenTime:(NSInteger)frozenTime{
     if (!host || host.length == 0) {
         return;
     }
@@ -82,7 +89,7 @@
         item = [QNUploadServerFreezeItem item:host type:type];
         self.freezeInfo[infoKey] = item;
     }
-    [item freeze];
+    [item freeze:frozenTime];
 }
 
 - (NSString *)getItemInfoKey:(NSString *)host type:(NSString *)type{

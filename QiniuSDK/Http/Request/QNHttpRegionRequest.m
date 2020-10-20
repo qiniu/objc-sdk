@@ -186,16 +186,7 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
         self.isUseOldServer = YES;
     }
     
-    QNServerFrozenLevel frozenLevel = QNServerFrozenLevelNone;
-    if (responseInfo && !responseInfo.canConnectToHost) {
-        frozenLevel |= QNServerFrozenLevelPartFrozen;
-        
-        if (!responseInfo.isHostUnavailable) {
-            frozenLevel |= QNServerFrozenLevelGlobalFrozen;
-        }
-    }
-    
-    return [self.region getNextServer:self.isUseOldServer frozenLevel:frozenLevel freezeServer:self.currentServer];
+    return [self.region getNextServer:self.isUseOldServer responseInfo:responseInfo freezeServer:self.currentServer];
 }
 
 @end
