@@ -88,7 +88,7 @@
 }
 
 - (BOOL)isGroup:(NSString *)groupType frozenByFreezeManagers:(NSArray <QNUploadServerFreezeManager *> *)freezeManagerList{
-    if (!groupType && freezeManagerList.count == 0) {
+    if (!groupType || freezeManagerList.count == 0) {
         return YES;
     }
     
