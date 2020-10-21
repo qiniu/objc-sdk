@@ -155,7 +155,7 @@
 @property(atomic   , assign)BOOL hasGot;
 @property(atomic   , assign)BOOL isAllFrozen;
 // 局部冻结管理对象
-@property(nonatomic, strong)QNUploadServerFreezeManager *partFreezeManager;
+@property(nonatomic, strong)QNUploadServerFreezeManager *partialFreezeManager;
 @property(nonatomic, strong)NSArray <NSString *> *domainHostList;
 @property(nonatomic, strong)NSDictionary <NSString *, QNUploadServerDomain *> *domainDictionary;
 @property(nonatomic, strong)NSArray <NSString *> *oldDomainHostList;
@@ -213,10 +213,10 @@
         // 无法连接到Host || Host不可用， 局部冻结
         if (!responseInfo.canConnectToHost || responseInfo.isHostUnavailable) {
             [_domainDictionary[freezeServer.serverId] freeze:freezeServer.ip
-                                               freezeManager:self.partFreezeManager
+                                               freezeManager:self.partialFreezeManager
                                                   frozenTime:kQNGlobalConfiguration.partialHostFrozenTime];
             [_oldDomainDictionary[freezeServer.serverId] freeze:freezeServer.ip
-                                                  freezeManager:self.partFreezeManager
+                                                  freezeManager:self.partialFreezeManager
                                                      frozenTime:kQNGlobalConfiguration.partialHostFrozenTime];
         }
         
@@ -237,7 +237,7 @@
     NSDictionary *domainInfo = isOldServer ? self.oldDomainDictionary : self.domainDictionary;
     QNUploadServer *server = nil;
     for (NSString *host in hostList) {
-        server = [domainInfo[host] getServer:@[self.partFreezeManager, kQNUploadServerFreezeManager]];
+        server = [domainInfo[host] getServer:@[self.partialFreezeManager, kQNUploadServerFreezeManager]];
         if (server) {
            break;
         }
@@ -254,11 +254,11 @@
     return server;
 }
 
-- (QNUploadServerFreezeManager *)partFreezeManager{
-    if (!_partFreezeManager) {
-        _partFreezeManager = [[QNUploadServerFreezeManager alloc] init];
+- (QNUploadServerFreezeManager *)partialFreezeManager{
+    if (!_partialFreezeManager) {
+        _partialFreezeManager = [[QNUploadServerFreezeManager alloc] init];
     }
-    return _partFreezeManager;
+    return _partialFreezeManager;
 }
 
 @end
