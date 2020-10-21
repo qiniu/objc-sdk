@@ -10,15 +10,6 @@
 #import "QNUserAgent.h"
 #import "QNUtils.h"
 
-const int kQNZeroDataSize = -6;
-const int kQNInvalidToken = -5;
-const int kQNFileError = -4;
-const int kQNInvalidArgument = -3;
-const int kQNRequestCancelled = -2;
-const int kQNNetworkError = -1;
-const int kQNLocalIOError = -7;
-const int kQNMaliciousResponseError = -8;
-
 static NSString *kQNErrorDomain = @"qiniu.com";
 
 @interface QNResponseInfo ()

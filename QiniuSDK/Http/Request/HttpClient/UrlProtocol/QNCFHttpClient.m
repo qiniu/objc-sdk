@@ -6,6 +6,7 @@
 //  Copyright © 2020 com.qiniu. All rights reserved.
 //
 
+#import "QNErrorCode.h"
 #import "QNDefine.h"
 #import "QNCFHttpClient.h"
 #import "NSURLRequest+QNRequest.h"
@@ -367,22 +368,22 @@
         return nil;
     }
     
-    NSInteger errorCode = -1;
+    NSInteger errorCode = kQNNetworkError;
     NSString *errorInfo = [NSString stringWithFormat:@"cf client:[%ld] %@", (long)errorCode, cfError.localizedDescription];
     switch (cfError.code) {
         case ENOENT: /* No such file or directory */
             errorCode = NSFileNoSuchFileError;
             break;
         case EIO: /* Input/output error */
-            errorCode = -7;
+            errorCode = kQNLocalIOError;
             break;
         case E2BIG: /* Argument list too long */
             break;
         case ENOEXEC: /* Exec format error */
-            errorCode = -7;
+            errorCode = kQNLocalIOError;
             break;
         case EBADF: /* Bad file descriptor */
-            errorCode = -7;
+            errorCode = kQNLocalIOError;
             break;
         case ECHILD: /* No child processes */
             break;
