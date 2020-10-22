@@ -47,3 +47,8 @@ extern const int kQNLocalIOError;
  *    ⽤户劫持错误 错误
  */
 extern const int kQNMaliciousResponseError;
+
+/**
+ *    非预期的系统调用 错误
+ */
+extern const int kQNUnexpectedSysCallError;

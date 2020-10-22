@@ -16,3 +16,4 @@ const int kQNRequestCancelled = -2;
 const int kQNNetworkError = -1;
 const int kQNLocalIOError = -7;
 const int kQNMaliciousResponseError = -8;
+const int kQNUnexpectedSysCallError = -10;

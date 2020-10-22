@@ -386,46 +386,64 @@
             errorCode = kQNLocalIOError;
             break;
         case ECHILD: /* No child processes */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EDEADLK: /* Resource deadlock avoided */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case ENOMEM: /* Cannot allocate memory */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EACCES: /* Permission denied */
+            errorCode = NSURLErrorNoPermissionsToReadFile;
             break;
         case EFAULT: /* Bad address */
             errorCode = NSURLErrorBadURL;
             break;
         case EBUSY: /* Device / Resource busy */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EEXIST: /* File exists */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case ENODEV: /* Operation not supported by device */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EISDIR: /* Is a directory */
             errorCode = NSURLErrorFileIsDirectory;
             break;
         case ENOTDIR: /* Not a directory */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EINVAL: /* Invalid argument */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case ENFILE: /* Too many open files in system */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EMFILE: /* Too many open files */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EFBIG: /* File too large */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case ENOSPC: /* No space left on device */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case ESPIPE: /* Illegal seek */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EMLINK: /* Too many links */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EPIPE: /* Broken pipe */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EDOM: /* Numerical argument out of domain */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case ERANGE: /* Result too large */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EAGAIN: /* Resource temporarily unavailable */
             break;
@@ -468,6 +486,7 @@
             errorCode = NSURLErrorNetworkConnectionLost;
             break;
         case ENOBUFS: /* No buffer space available */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EISCONN: /* Socket is already connected */
             break;
@@ -485,6 +504,7 @@
             errorCode = NSURLErrorCannotConnectToHost;
             break;
         case ELOOP: /* Too many levels of symbolic links */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case ENAMETOOLONG: /* File name too long */
             break;
@@ -495,28 +515,39 @@
         case ENOTEMPTY: /* Directory not empty */
             break;
         case EPROCLIM: /* Too many processes */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EUSERS: /* Too many users */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EDQUOT: /* Disc quota exceeded */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case ESTALE: /* Stale NFS file handle */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EREMOTE: /* Too many levels of remote in path */
             break;
         case EBADRPC: /* RPC struct is bad */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case ERPCMISMATCH: /* RPC version wrong */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EPROGUNAVAIL: /* RPC prog. not avail */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EPROGMISMATCH: /* Program version wrong */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EPROCUNAVAIL: /* Bad procedure for program */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case ENOLCK: /* No locks available */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case ENOSYS: /* Function not implemented */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EFTYPE: /* Inappropriate file type or format */
             break;
@@ -525,18 +556,25 @@
         case ENEEDAUTH: /* Need authenticator */
             break;
         case EPWROFF: /* Device power is off */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EDEVERR: /* Device error, e.g. paper out */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EOVERFLOW: /* Value too large to be stored in data type */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EBADEXEC: /* Bad executable */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EBADARCH: /* Bad CPU type in executable */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case ESHLIBVERS: /* Shared library version mismatch */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EBADMACHO: /* Malformed Macho file */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case ECANCELED: /* Operation canceled */
             errorCode = NSURLErrorCancelled;
@@ -573,6 +611,7 @@
         case ENOTRECOVERABLE: /* State not recoverable */
             break;
         case EOWNERDEAD: /* Previous owner died */
+            errorCode = kQNUnexpectedSysCallError;
             break;
         case EQFULL: /* Interface output queue is full */
             break;
