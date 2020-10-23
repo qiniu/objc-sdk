@@ -212,8 +212,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 
 - (BOOL)couldHostRetry{
     if ([self couldRegionRetry] == NO
-        || _statusCode == 502 || _statusCode == 503 || _statusCode == 504 || _statusCode == 571
-        || _statusCode == 599) {
+        || _statusCode == 502 || _statusCode == 503 || _statusCode == 571 || _statusCode == 599) {
         return NO;
     } else {
         return YES;
