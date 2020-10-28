@@ -20,10 +20,16 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param type host类型
 - (BOOL)isFrozenHost:(NSString *)host type:(NSString * _Nullable)type;
 
+/// 冻结host 冻结时间：kQNGlobalConfiguration.globalHostFrozenTime
+/// @param host host
+/// @param type host类型
+- (void)freezeHostA:(NSString *)host type:(NSString * _Nullable)type;
+
 /// 冻结host
 /// @param host host
 /// @param type host类型
-- (void)freezeHost:(NSString *)host type:(NSString * _Nullable)type;
+/// @param frozenTime 冻结时间
+- (void)freezeHost:(NSString *)host type:(NSString * _Nullable)type frozenTime:(NSInteger)frozenTime;
 
 @end
 
