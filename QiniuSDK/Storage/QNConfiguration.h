@@ -68,7 +68,8 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (readonly) NSTimeInterval retryInterval;
 
 /**
- *    超时时间 单位 秒
+ *    单个请求超时时间 单位 秒
+ *    注：每个文件上传肯能存在多个操作，当每个操作失败时，可能存在多个请求重试。
  */
 @property (readonly) UInt32 timeoutInterval;
 
@@ -78,7 +79,9 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (nonatomic, assign, readonly) BOOL useHttps;
 
 /**
- *   是否开启并发分片上传，默认为NO
+ *   单个文件是否开启并发分片上传，默认为NO
+ *   单个文件大小大于4M时，会采用分片上传，每个分片会已单独的请求进行上传操作，多个上传操作可以使用并发，
+ *   也可以采用串行，采用并发时，可以设置并发的个数(对concurrentTaskCount进行设置)。
  */
 @property (nonatomic, assign, readonly) BOOL useConcurrentResumeUpload;
 
@@ -163,7 +166,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 /**
  *   Host局部冻结时间，只会影响当前长传操作  单位：秒   默认：5*60  推荐范围：[60 ~ 10*60]
- *   当某个Host的上传失败后并且可能短时间无法恢复，会冻结该Host，globalHostFrozenTime为全局冻结时间
+ *   当某个Host的上传失败后并且可能短时间可能会恢复，会冻结该Host，partialHostFrozenTime为全局冻结时间
  */
 @property(nonatomic, assign)UInt32 partialHostFrozenTime;
 
