@@ -182,14 +182,11 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
 //MARK: --
 - (id <QNUploadServer>)getNextServer:(QNResponseInfo *)responseInfo{
 
-    if (responseInfo == nil) {
-        return [self.region getNextServer:NO freezeServer:nil];
-    }
-    
-    if (responseInfo.isTlsError == YES) {
+    if (responseInfo.isTlsError) {
         self.isUseOldServer = YES;
     }
-    return [self.region getNextServer:self.isUseOldServer freezeServer:self.currentServer];
+    
+    return [self.region getNextServer:self.isUseOldServer responseInfo:responseInfo freezeServer:self.currentServer];
 }
 
 @end

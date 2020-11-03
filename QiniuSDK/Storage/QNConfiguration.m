@@ -78,6 +78,9 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     _dnsCacheDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches/Dns"];
     _dnsRepreHostNum = 2;
     _dnsCacheTime = kQNDefaultDnsCacheTime;
+    
+    _globalHostFrozenTime = 30;
+    _partialHostFrozenTime = 5*60;
 }
 @end
 

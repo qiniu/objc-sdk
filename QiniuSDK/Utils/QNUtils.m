@@ -90,7 +90,7 @@
 
 + (NSString *)getIpType:(NSString *)ip host:(NSString *)host{
     
-    NSString *type = nil;
+    NSString *type = host;
     if (!ip || ip.length == 0) {
         return type;
     }

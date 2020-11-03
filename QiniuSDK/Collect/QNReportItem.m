@@ -116,8 +116,10 @@
         errorType = @"parse_error";
     } else if (self.statusCode == -1007 || self.statusCode == -1010 || self.statusCode == kQNMaliciousResponseError){
         errorType = @"malicious_response";
+    } else if (self.statusCode > -1130 && self.statusCode <= -1100){
+        errorType = @"unexpected_syscall_error";
     } else if (self.statusCode == kQNRequestCancelled
-            || self.statusCode == NSURLErrorCancelled){
+               || self.statusCode == NSURLErrorCancelled){
         errorType = @"user_canceled";
     } else {
         errorType = @"unknown_error";
