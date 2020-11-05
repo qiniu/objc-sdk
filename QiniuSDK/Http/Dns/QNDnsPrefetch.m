@@ -10,6 +10,7 @@
 #import "QNDnsPrefetch.h"
 #import "QNInetAddress.h"
 #import "QNDnsCacheInfo.h"
+#import "QNZoneInfo.h"
 
 #import "QNDefine.h"
 #import "QNConfig.h"

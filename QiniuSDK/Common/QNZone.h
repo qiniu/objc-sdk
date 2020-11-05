@@ -6,13 +6,11 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
-#import "QNZoneInfo.h"
-#import "QNResponseInfo.h"
-#import "QNUploadRequestMetrics.h"
+#import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class QNUpToken, QNZonesInfo, QNUploadRegionRequestMetrics;
+@class QNResponseInfo, QNUpToken, QNZonesInfo, QNUploadRegionRequestMetrics;
 
 typedef void (^QNPrequeryReturn)(int code, QNResponseInfo * _Nullable httpResponseInfo, QNUploadRegionRequestMetrics * _Nullable metrics);
 

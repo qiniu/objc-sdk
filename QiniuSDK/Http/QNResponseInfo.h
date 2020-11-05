@@ -6,7 +6,6 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-#import "QNUploadRequestMetrics.h"
 #import "QNErrorCode.h"
 
 /**
