@@ -180,8 +180,13 @@
         } else {
             chunk.isUploading = NO;
             chunk.isCompleted = NO;
-            self.uploadBlockErrorResponse = response;
-            self.uploadBlockErrorResponseInfo = responseInfo;
+            // 依据第一个错误为准
+            if (!self.uploadBlockErrorResponse) {
+                self.uploadBlockErrorResponse = response;
+            }
+            if (!self.uploadBlockErrorResponseInfo) {
+                self.uploadBlockErrorResponseInfo = responseInfo;
+            }
             completeHandler();
         }
         [self destroyUploadRequestTransaction:transaction];
