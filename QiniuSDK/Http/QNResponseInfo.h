@@ -62,6 +62,9 @@
 + (instancetype)responseInfoWithFileError:(NSError *)error;
 + (instancetype)responseInfoOfZeroData:(NSString *)path;
 + (instancetype)responseInfoWithLocalIOError:(NSString *)desc;
++ (instancetype)responseInfoWithMaliciousResponseError:(NSString *)desc;
++ (instancetype)responseInfoWithNoUsableHostError:(NSString *)desc;
++ (instancetype)responseInfoWithUnexpectedSysCallError:(NSString *)desc;
 
 + (instancetype)errorResponseInfo:(int)errorType
                         errorDesc:(NSString *)errorDesc;

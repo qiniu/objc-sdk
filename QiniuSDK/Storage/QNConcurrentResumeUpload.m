@@ -91,20 +91,14 @@
 
 - (void)uploadRestBlock:(dispatch_block_t)completeHandler{
     if (!self.uploadFileInfo) {
-        if (self.uploadBlockErrorResponseInfo == nil) {
-            self.uploadBlockErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"regions error"];
-            self.uploadBlockErrorResponse = self.uploadBlockErrorResponseInfo.responseDictionary;
-        }
+        [self setErrorResponseInfo:[QNResponseInfo responseInfoWithInvalidArgument:@"file error"] errorResponse:nil];
         completeHandler();
         return;
     }
     
     id <QNUploadRegion> currentRegion = [self getCurrentRegion];
     if (!currentRegion) {
-        if (self.uploadBlockErrorResponseInfo == nil) {
-            self.uploadBlockErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
-            self.uploadBlockErrorResponse = self.uploadBlockErrorResponseInfo.responseDictionary;
-        }
+        [self setErrorResponseInfo:[QNResponseInfo responseInfoWithNoUsableHostError:@"regions server error"] errorResponse:nil];
         completeHandler();
         return;
     }
@@ -147,8 +141,7 @@
     
     NSData *chunkData = [self getDataWithChunk:chunk block:block];
     if (chunkData == nil) {
-        self.uploadBlockErrorResponseInfo = [QNResponseInfo responseInfoWithLocalIOError:@"get chunk data error"];
-        self.uploadBlockErrorResponse = self.uploadBlockErrorResponseInfo.responseDictionary;
+        [self setErrorResponseInfo:[QNResponseInfo responseInfoWithLocalIOError:@"get chunk data error"] errorResponse:nil];
         completeHandler();
         return;
     }
@@ -180,13 +173,7 @@
         } else {
             chunk.isUploading = NO;
             chunk.isCompleted = NO;
-            // 依据第一个错误为准
-            if (!self.uploadBlockErrorResponse) {
-                self.uploadBlockErrorResponse = response;
-            }
-            if (!self.uploadBlockErrorResponseInfo) {
-                self.uploadBlockErrorResponseInfo = responseInfo;
-            }
+            [self setErrorResponseInfo:responseInfo errorResponse:response];
             completeHandler();
         }
         [self destroyUploadRequestTransaction:transaction];
@@ -210,6 +197,14 @@
         [self destroyUploadRequestTransaction:transaction];
         completeHandler(responseInfo, response);
     }];
+}
+
+- (void)setErrorResponseInfo:(QNResponseInfo *)responseInfo errorResponse:(NSDictionary *)response{
+    if (!self.uploadBlockErrorResponseInfo
+        || (responseInfo.statusCode == kQNNoUsableHostError)) {
+        self.uploadBlockErrorResponseInfo = responseInfo;
+        self.uploadBlockErrorResponse = response ?: responseInfo.responseDictionary;
+    }
 }
 
 - (QNRequestTransaction *)createUploadRequestTransaction{
