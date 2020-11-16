@@ -21,8 +21,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 //MARK: -- 构造方法
 /// 根据json构造对象
+/// @param jsonData json数据
 + (instancetype)dnsCacheInfo:(NSData *)jsonData;
 
+/// 根据属性构造对象
+/// @param currentTime 缓存时间戳
+/// @param localIp 缓存时本地IP
+/// @param info 缓存信息
 + (instancetype)dnsCacheInfo:(NSString *)currentTime
                      localIp:(NSString *)localIp
                         info:(NSDictionary *)info;

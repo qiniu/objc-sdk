@@ -23,7 +23,7 @@
     dispatch_once(&onceToken, ^{
         z0 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload.qiniup.com", @"up.qiniup.com"]
                                              oldUpList:@[@"upload.qbox.me", @"up.qbox.me"]
-                                            ioHostList:@[@"iovip.qbox.me"]];
+                                              regionId:@"z0"];
     });
     return z0;
 }
@@ -34,7 +34,7 @@
     dispatch_once(&onceToken, ^{
         z1 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload-z1.qiniup.com", @"up-z1.qiniup.com"]
                                              oldUpList:@[@"upload-z1.qbox.me", @"up-z1.qbox.me"]
-                                            ioHostList:@[@"iovip-z1.qbox.me"]];
+                                              regionId:@"z1"];
     });
     return z1;
 }
@@ -45,7 +45,7 @@
     dispatch_once(&onceToken, ^{
         z2 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload-z2.qiniup.com", @"up-z2.qiniup.com"]
                                              oldUpList:@[@"upload-z2.qbox.me", @"up-z2.qbox.me"]
-                                            ioHostList:@[@"iovip-z2.qbox.me"]];
+                                              regionId:@"z2"];
     });
     return z2;
 }
@@ -56,7 +56,7 @@
     dispatch_once(&onceToken, ^{
         zNa0 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload-na0.qiniup.com", @"up-na0.qiniup.com"]
                                                oldUpList:@[@"upload-na0.qbox.me", @"up-na0.qbox.me"]
-                                              ioHostList:@[@"iovip-na0.qbox.me"]];
+                                                regionId:@"na0"];
     });
     return zNa0;
 }
@@ -67,7 +67,7 @@
     dispatch_once(&onceToken, ^{
         zAs0 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload-as0.qiniup.com", @"up-as0.qiniup.com"]
                                                oldUpList:@[@"upload-as0.qbox.me", @"up-as0.qbox.me"]
-                                              ioHostList:@[@"iovip-as0.qbox.me"]];;
+                                                regionId:@"as0"];;
     });
     return zAs0;
 }
@@ -93,44 +93,44 @@
 }
 
 + (instancetype)createWithHost:(NSArray<NSString *> *)upList {
-    return [[QNFixedZone alloc] initWithUpDomainList:upList oldUpList:nil ioHostList:nil];
+    return [[QNFixedZone alloc] initWithUpDomainList:upList oldUpList:nil regionId:nil];
 }
 
 - (QNZonesInfo *)createZonesInfo:(NSArray <NSString *> *)upDomains
-                         ioHosts:(NSArray <NSString *> *)ioHosts {
-    return [self createZonesInfo:upDomains oldUpDomains:nil ioHosts:ioHosts];
+                        regionId:(NSString *)regionId {
+    return [self createZonesInfo:upDomains oldUpDomains:nil regionId:regionId];
 }
 
 - (QNZonesInfo *)createZonesInfo:(NSArray <NSString *> *)upDomains
                     oldUpDomains:(NSArray <NSString *> *)oldUpDomains
-                         ioHosts:(NSArray <NSString *> *)ioHosts {
+                        regionId:(NSString *)regionId {
     if (!upDomains && upDomains.count == 0) {
         return nil;
     }
 
-    QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoWithMainHosts:upDomains oldHosts:oldUpDomains ioHosts:ioHosts];
+    QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoWithMainHosts:upDomains oldHosts:oldUpDomains regionId:regionId];
     QNZonesInfo *zonesInfo = [[QNZonesInfo alloc] initWithZonesInfo:@[zoneInfo]];
     return zonesInfo;
 }
 
 - (instancetype)initWithUpDomainList:(NSArray<NSString *> *)upList {
     if (self = [super init]) {
-        self.zonesInfo = [self createZonesInfo:upList ioHosts:nil];
+        self.zonesInfo = [self createZonesInfo:upList regionId:nil];
     }
     return self;
 }
 - (instancetype)initWithUpDomainList:(NSArray<NSString *> *)upList
-                          ioHostList:(NSArray<NSString *> *)ioHostList {
+                            regionId:(NSString *)regionId {
     if (self = [super init]) {
-        self.zonesInfo = [self createZonesInfo:upList ioHosts:ioHostList];
+        self.zonesInfo = [self createZonesInfo:upList regionId:regionId];
     }
     return self;
 }
 - (instancetype)initWithUpDomainList:(NSArray<NSString *> *)upList
                            oldUpList:(NSArray<NSString *> *)oldUpList
-                          ioHostList:(NSArray<NSString *> *)ioHostList {
+                            regionId:(NSString *)regionId {
     if (self = [super init]) {
-        self.zonesInfo = [self createZonesInfo:upList oldUpDomains:oldUpList ioHosts:ioHostList];
+        self.zonesInfo = [self createZonesInfo:upList oldUpDomains:oldUpList regionId:regionId];
     }
     return self;
 }

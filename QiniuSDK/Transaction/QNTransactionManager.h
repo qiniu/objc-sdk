@@ -47,18 +47,23 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)shared;
 
 /// 根据name查找事务
+/// @param name 事务名称
 - (NSArray <QNTransaction *> *)transactionsForName:(NSString *)name;
 
 /// 是否存在某个名称的事务
+/// @param name 事务名称
 - (BOOL)existTransactionsForName:(NSString *)name;
 
 /// 添加一个事务
+/// @param transaction 事务
 - (void)addTransaction:(QNTransaction *)transaction;
 
 /// 移除一个事务
+/// @param transaction 事务
 - (void)removeTransaction:(QNTransaction *)transaction;
 
 /// 在下一次循环执行事务, 该事务如果未被添加到事务列表，会自动添加
+/// @param transaction 事务
 - (void)performTransaction:(QNTransaction *)transaction;
 
 /// 销毁资源 清空事务链表 销毁常驻线程

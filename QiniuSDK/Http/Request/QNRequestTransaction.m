@@ -8,6 +8,7 @@
 
 #import "QNRequestTransaction.h"
 
+#import "QNDefine.h"
 #import "QNUtils.h"
 #import "QNCrc32.h"
 #import "NSData+MD5.h"
@@ -37,12 +38,12 @@
 @implementation QNRequestTransaction
 
 - (instancetype)initWithHosts:(NSArray <NSString *> *)hosts
-                      ioHosts:(NSArray <NSString *> *)ioHosts
+                     regionId:(NSString * _Nullable)regionId
                         token:(QNUpToken *)token{
     return [self initWithConfig:[QNConfiguration defaultConfiguration]
                    uploadOption:[QNUploadOption defaultOptions]
                           hosts:hosts
-                        ioHosts:ioHosts
+                       regionId:regionId
                             key:nil
                           token:token];
 }
@@ -50,12 +51,12 @@
 - (instancetype)initWithConfig:(QNConfiguration *)config
                   uploadOption:(QNUploadOption *)uploadOption
                          hosts:(NSArray <NSString *> *)hosts
-                       ioHosts:(NSArray <NSString *> *)ioHosts
+                      regionId:(NSString * _Nullable)regionId
                            key:(NSString * _Nullable)key
-                         token:(QNUpToken *)token{
+                         token:(nonnull QNUpToken *)token{
     
     QNUploadDomainRegion *region = [[QNUploadDomainRegion alloc] init];
-    [region setupRegionData:[QNZoneInfo zoneInfoWithMainHosts:hosts ioHosts:ioHosts]];
+    [region setupRegionData:[QNZoneInfo zoneInfoWithMainHosts:hosts regionId:regionId]];
     return [self initWithConfig:config
                    uploadOption:uploadOption
                    targetRegion:region
@@ -101,14 +102,11 @@
     };
     
     NSDictionary *header = @{@"User-Agent" : [kQNUserAgent getUserAgent:self.token.token]};
-    NSString *action = [NSString stringWithFormat:@"/v3/query?ak=%@&bucket=%@", self.token.access, self.token.bucket];
+    NSString *action = [NSString stringWithFormat:@"/v4/query?ak=%@&bucket=%@", self.token.access, self.token.bucket];
     [self.regionRequest get:action
                     headers:header
                 shouldRetry:shouldRetry
-                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-
-        complete(responseInfo, metrics, response);
-    }];
+                   complete:complete];
 }
 
 //MARK: -- upload form
@@ -168,9 +166,7 @@
                         body:body
                  shouldRetry:shouldRetry
                     progress:progress
-                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-        complete(responseInfo, metrics, response);
-    }];
+                    complete:complete];
 }
 
 //MARK: -- 分块上传
@@ -193,7 +189,9 @@
     
     NSString *chunkCrc = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:firstChunkData]];
     
+    kQNWeakSelf;
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
+        kQNStrongSelf;
         
         NSString *ctx = response[@"ctx"];
         NSString *crcServer = [NSString stringWithFormat:@"%@", response[@"crc32"]];
@@ -205,10 +203,7 @@
                         body:firstChunkData
                  shouldRetry:shouldRetry
                     progress:progress
-                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-
-        complete(responseInfo, metrics, response);
-    }];
+                    complete:complete];
 }
 
 - (void)uploadChunk:(NSString *)blockContext
@@ -231,7 +226,10 @@
     
     NSString *chunkCrc = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:chunkData]];
     
+    kQNWeakSelf;
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
+        kQNStrongSelf;
+        
         NSString *ctx = response[@"ctx"];
         NSString *crcServer = [NSString stringWithFormat:@"%@", response[@"crc32"]];
         return (BOOL)(responseInfo.isOK == false || (responseInfo.isOK && (!ctx || (self.uploadOption.checkCrc && ![chunkCrc isEqualToString:crcServer]))));
@@ -242,10 +240,7 @@
                       body:chunkData
                  shouldRetry:shouldRetry
                     progress:progress
-                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-
-        complete(responseInfo, metrics, response);
-    }];
+                    complete:complete];
 }
 
 - (void)makeFile:(long long)fileSize
@@ -291,10 +286,7 @@
                         body:body
                  shouldRetry:shouldRetry
                     progress:nil
-                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
-
-        complete(responseInfo, metrics, response);
-    }];
+                    complete:complete];
 }
 
 

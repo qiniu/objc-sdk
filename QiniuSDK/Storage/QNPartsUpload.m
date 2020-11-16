@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNDefine.h"
 #import "QNUtils.h"
 #import "QNPartsUpload.h"
 #import "QNZoneInfo.h"
@@ -115,11 +116,14 @@
 }
 
 //MARK:-- concurrent upload model API
-- (void)initPartFromServer:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler{
+- (void)initPartToServer:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler{
     
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
 
+    kQNWeakSelf;
     [transaction initPart:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        kQNStrongSelf;
+        
         [self addRegionRequestMetricsOfOneFlow:metrics];
         
         NSString *uploadId = response[@"uploadId"];
@@ -133,7 +137,7 @@
     }];
 }
 
-- (void)uploadDataFromServer:(QNUploadData *)data
+- (void)uploadDataToServer:(QNUploadData *)data
                     progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
              completeHandler:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler{
     
@@ -149,12 +153,17 @@
     
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
     
+    kQNWeakSelf;
+    kQNWeakObj(transaction);
     [transaction uploadPart:self.uploadFileInfo.uploadId
                   partIndex:data.index
                    partData:uploadData
                    progress:progress
                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        kQNStrongSelf;
+        kQNStrongObj(transaction);
         
+        [self destroyUploadRequestTransaction:transaction];
         [self addRegionRequestMetricsOfOneFlow:metrics];
         
         NSString *etag = response[@"etag"];
@@ -172,7 +181,7 @@
     }];
 }
 
-- (void)completePartsFromServer:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler{
+- (void)completePartsToServer:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler{
     
     NSArray *partInfoArray = [self.uploadFileInfo getPartInfoArray];
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
@@ -187,6 +196,8 @@
 
 - (QNRequestTransaction *)createUploadRequestTransaction{
     return nil;
+}
+- (void)destroyUploadRequestTransaction:(QNRequestTransaction *)transaction{
 }
 
 - (NSData *)getUploadData:(QNUploadData *)data{

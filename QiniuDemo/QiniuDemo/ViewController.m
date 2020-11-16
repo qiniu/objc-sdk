@@ -6,8 +6,16 @@
 //  Copyright © 2016年 Aaron. All rights reserved.
 //
 
+#import "Configure.h" // 测试参数配置，暂时只有token，可删除
+
 #import "ViewController.h"
 #import "QNTransactionManager.h"
+
+typedef NS_ENUM(NSInteger, UploadState){
+    UploadStatePrepare,
+    UploadStateUploading,
+    UploadStateCancelling
+};
 
 @interface ViewController () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 
@@ -16,6 +24,7 @@
 @property (nonatomic, weak) IBOutlet UIImageView* preViewImage;
 @property (weak, nonatomic) IBOutlet UIProgressView *progressView;
 
+@property (nonatomic, assign) UploadState uploadState;
 @property (nonatomic, strong) NSString *token;
 @property (nonatomic, strong) UIImage *pickImage;
 
@@ -26,6 +35,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    [self changeUploadState:UploadStatePrepare];
     self.title = @"七牛云上传";
 }
 
@@ -33,17 +43,50 @@
     [self gotoImageLibrary];
 }
 
-- (IBAction)uploadAction:(id)sender {
-    if (self.pickImage == nil) {
-        [self alertMessage:@"还未选择图片"];
+- (IBAction)uploadAction:(UIButton *)sender {
+    if (self.uploadState == UploadStatePrepare) {
+    
+#ifdef YourToken
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource.dmg" ofType:nil];
+        [self uploadImageToQNFilePath:path];
+        [self changeUploadState:UploadStateUploading];
+#else
+        if (self.pickImage == nil) {
+            [self alertMessage:@"还未选择图片"];
+        } else {
+            [self uploadImageToQNFilePath:[self getImagePath:self.pickImage]];
+            [self changeUploadState:UploadStateUploading];
+        }
+#endif
+        
     } else {
-        [self uploadImageToQNFilePath:[self getImagePath:self.pickImage]];
+        [self changeUploadState:UploadStateCancelling];
+    }
+}
+
+- (void)changeUploadState:(UploadState)uploadState{
+    
+    self.uploadState = uploadState;
+    if (uploadState == UploadStatePrepare) {
+        [self.uploadBtn setTitle:@"上传" forState:UIControlStateNormal];
+        self.uploadBtn.enabled = true;
+    } else if (uploadState == UploadStateUploading) {
+        [self.uploadBtn setTitle:@"取消上传" forState:UIControlStateNormal];
+        self.uploadBtn.enabled = true;
+    } else {
+        [self.uploadBtn setTitle:@"取消上传" forState:UIControlStateNormal];
+        self.uploadBtn.enabled = false;
     }
 }
 
 - (void)uploadImageToQNFilePath:(NSString *)filePath {
-    self.token = @"你的token";
-    QNUploadManager *upManager = [[QNUploadManager alloc] init];
+    
+    self.token = YourToken;
+    QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.useConcurrentResumeUpload = true;
+        builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] error:nil];
+    }];
+    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:configuration];
     
     __weak typeof(self) weakSelf = self;
     QNUploadOption *uploadOption = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
@@ -52,11 +95,16 @@
     }
                                                                  params:nil
                                                                checkCrc:NO
-                                                     cancellationSignal:nil];
-    [upManager putFile:filePath key:nil token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+                                                     cancellationSignal:^BOOL{
+        return weakSelf.uploadState == UploadStateCancelling;
+    }];
+    
+    [upManager putFile:filePath key:@"DemoResource" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         NSLog(@"info ===== %@", info);
         NSLog(@"resp ===== %@", resp);
-        [self alertMessage:info.message];
+        
+        [weakSelf changeUploadState:UploadStatePrepare];
+        [weakSelf alertMessage:info.message];
     }
                 option:uploadOption];
 }

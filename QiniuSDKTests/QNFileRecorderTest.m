@@ -113,11 +113,11 @@
 //    [self template:700 pos:0.1];
 //}
 
-- (void)test3M {
+- (void)test5M {
     if (_inTravis) {
         return;
     }
-    [self template:3 * 1024 + 1 pos:0.7];
+    [self template:5 * 1024 + 1 pos:0.7];
 }
 
 - (void)test20M {

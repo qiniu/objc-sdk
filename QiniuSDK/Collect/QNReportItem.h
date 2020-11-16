@@ -16,8 +16,12 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)item;
 
 /// 设置打点日志字段
+/// @param value log value
+/// @param key log key
 - (void)setReportValue:(id _Nullable)value forKey:(NSString * _Nullable)key;
+
 /// 移除打点日志字段
+/// @param key log key
 - (void)removeReportValueForKey:(NSString * _Nullable)key;
 
 @end
@@ -104,6 +108,8 @@ extern NSString *const QNReportBlockKeyClientTime;
 extern NSString *const QNReportQualityKeyLogType;
 extern NSString *const QNReportQualityKeyUpTime;
 extern NSString *const QNReportQualityKeyResult;
+extern NSString *const QNReportQualityKeyTargetBucket;
+extern NSString *const QNReportQualityKeyTargetKey;
 extern NSString *const QNReportQualityKeyTotalElapsedTime;
 extern NSString *const QNReportQualityKeyRequestsCount;
 extern NSString *const QNReportQualityKeyRegionsCount;

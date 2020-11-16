@@ -10,6 +10,7 @@
 #import "QNResponseInfo.h"
 #import "QNAsyncRun.h"
 #import "QNRequestTransaction.h"
+#import "QNDefine.h"
 
 @interface QNConcurrentResumeUpload()
 
@@ -42,8 +43,11 @@
     
     NSLog(@"concurrent resume task count: %u", (unsigned int)self.config.concurrentTaskCount);
     
+    kQNWeakSelf;
     // 1. 启动upload
-    [self initPartFromServer:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+    [self initPartToServer:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+        kQNStrongSelf;
+        
         if (!responseInfo.isOK || !self.uploadFileInfo.uploadId || self.uploadFileInfo.uploadId.length == 0) {
             [self complete:responseInfo response:response];
             return;
@@ -64,7 +68,7 @@
             }
             
             // 3. 组装文件
-            [self completePartsFromServer:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+            [self completePartsToServer:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
                 if (responseInfo.isOK == NO) {
                     if (responseInfo.couldRetry && [self.config allowBackupHost]) {
                         BOOL isSwitched = [self switchRegionAndUpload];
@@ -102,20 +106,14 @@
 
 - (void)uploadRestData:(dispatch_block_t)completeHandler{
     if (!self.uploadFileInfo) {
-        if (self.uploadDataErrorResponseInfo == nil) {
-            self.uploadDataErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
-            self.uploadDataErrorResponse = self.uploadDataErrorResponseInfo.responseDictionary;
-        }
+        [self setErrorResponseInfo:[QNResponseInfo responseInfoWithInvalidArgument:@"file error"] errorResponse:nil];
         completeHandler();
         return;
     }
     
     id <QNUploadRegion> currentRegion = [self getCurrentRegion];
     if (!currentRegion) {
-        if (self.uploadDataErrorResponseInfo == nil) {
-            self.uploadDataErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
-            self.uploadDataErrorResponse = self.uploadDataErrorResponseInfo.responseDictionary;
-        }
+        [self setErrorResponseInfo:[QNResponseInfo responseInfoWithNoUsableHostError:@"regions server error"] errorResponse:nil];
         completeHandler();
         return;
     }
@@ -123,8 +121,12 @@
     @synchronized (self) {
         QNUploadData *data = [self.uploadFileInfo nextUploadData];
         
+        kQNWeakSelf;
         void (^progress)(long long, long long) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
+            kQNStrongSelf;
+            
             data.progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
+            
             float percent = self.uploadFileInfo.progress;
             if (percent > 0.95) {
                 percent = 0.95;
@@ -142,7 +144,7 @@
         if (!data) {
             completeHandler();
         } else {
-            [self uploadDataFromServer:data progress:progress completeHandler:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+            [self uploadDataToServer:data progress:progress completeHandler:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
                 if (!responseInfo.isOK) {
                     self.uploadDataErrorResponseInfo = responseInfo;
                     self.uploadDataErrorResponse = response;
@@ -155,6 +157,14 @@
     }
 }
 
+- (void)setErrorResponseInfo:(QNResponseInfo *)responseInfo errorResponse:(NSDictionary *)response{
+    if (!self.uploadDataErrorResponseInfo
+        || (responseInfo.statusCode == kQNNoUsableHostError)) {
+        self.uploadDataErrorResponseInfo = responseInfo;
+        self.uploadDataErrorResponse = response ?: responseInfo.responseDictionary;
+    }
+}
+
 - (QNRequestTransaction *)createUploadRequestTransaction{
     QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithConfig:self.config
                                                                         uploadOption:self.option
@@ -164,6 +174,9 @@
                                                                                token:self.token];
     [self.uploadTransactions addObject:transaction];
     return transaction;
+}
+- (void)removeUploadRequestTransaction:(QNRequestTransaction *)transaction{
+    [self.uploadTransactions removeObject:transaction];
 }
 
 - (void)destroyUploadRequestTransaction:(QNRequestTransaction *)transaction{

@@ -82,6 +82,9 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     _isCheckOpen = true;
     _maxCheckTime = 9;
     _maxCheckCount = 2;
+
+    _globalHostFrozenTime = 30;
+    _partialHostFrozenTime = 5*60;
 }
 
 - (void)setMaxCheckTime:(int)maxCheckTime{

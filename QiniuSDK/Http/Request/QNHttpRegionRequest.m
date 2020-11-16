@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNDefine.h"
 #import "QNAsyncRun.h"
 #import "QNHttpRegionRequest.h"
 #import "QNConfiguration.h"
@@ -116,7 +117,7 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
               complete:(QNRegionRequestCompleteHandler)complete{
     
     if (!server.host || server.host.length == 0) {
-        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
+        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithNoUsableHostError:@"server error"];
         [self complete:responseInfo response:nil complete:complete];
         return;
     }
@@ -151,13 +152,17 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
     [request setAllHTTPHeaderFields:headers];
     [request setTimeoutInterval:self.config.timeoutInterval];
     request.HTTPBody = body;
+
     NSLog(@"signal request: \r\n url:%@", request.URL);
+    
+    kQNWeakSelf;
     [self.singleRequest request:request
                          server:server
                       toSkipDns:toSkipDns
                     shouldRetry:shouldRetry
                        progress:progress
                        complete:^(QNResponseInfo * _Nullable responseInfo, NSArray<QNUploadSingleRequestMetrics *> * _Nullable metrics, NSDictionary * _Nullable response) {
+        kQNStrongSelf;
         
         [self.requestMetrics addMetricsList:metrics];
         
@@ -184,12 +189,14 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
             [self complete:responseInfo response:response complete:complete];
         }
     }];
+    
 }
 
 - (void)complete:(QNResponseInfo *)responseInfo
         response:(NSDictionary *)response
         complete:(QNRegionRequestCompleteHandler)completionHandler {
 
+    self.singleRequest = nil;
     if (completionHandler) {
         completionHandler(responseInfo, self.requestMetrics, response);
     }
@@ -198,14 +205,11 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
 //MARK: --
 - (id <QNUploadServer>)getNextServer:(QNResponseInfo *)responseInfo{
 
-    if (responseInfo == nil) {
-        return [self.region getNextServer:NO freezeServer:nil];
-    }
-    
-    if (responseInfo.isTlsError == YES) {
+    if (responseInfo.isTlsError) {
         self.isUseOldServer = YES;
     }
-    return [self.region getNextServer:self.isUseOldServer freezeServer:self.currentServer];
+    
+    return [self.region getNextServer:self.isUseOldServer responseInfo:responseInfo freezeServer:self.currentServer];
 }
 
 @end

@@ -33,6 +33,18 @@
     _countOfResponseBodyBytesReceived = 0;
 }
 
+- (void)setRequest:(NSURLRequest *)request{
+    NSMutableURLRequest *newRequest = [NSMutableURLRequest requestWithURL:request.URL
+                                                              cachePolicy:request.cachePolicy
+                                                          timeoutInterval:request.timeoutInterval];
+    newRequest.allHTTPHeaderFields = request.allHTTPHeaderFields;
+    
+    NSInteger headerLength = [NSString stringWithFormat:@"%@", self.request.allHTTPHeaderFields].length;
+    NSInteger bodyLength = [self.request.qn_getHttpBody length];
+    _totalBytes = @(headerLength + bodyLength);
+    _request = [newRequest copy];
+}
+
 - (NSNumber *)totalElapsedTime{
     return [self timeFromStartDate:self.startDate
                          toEndDate:self.endDate];
@@ -66,12 +78,6 @@
 - (NSNumber *)totalResponseTime{
     return [self timeFromStartDate:self.responseStartDate
                          toEndDate:self.responseEndDate];
-}
-
-- (NSNumber *)totalBytes{
-    NSInteger headerLength = [NSString stringWithFormat:@"%@", self.request.allHTTPHeaderFields].length;
-    NSInteger bodyLength = [self.request.qn_getHttpBody length];
-    return @(headerLength + bodyLength);
 }
 
 - (NSNumber *)bytesSend{

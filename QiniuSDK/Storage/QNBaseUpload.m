@@ -6,10 +6,15 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNZoneInfo.h"
+#import "QNResponseInfo.h"
+#import "QNDefine.h"
 #import "QNBaseUpload.h"
 #import "QNUploadDomainRegion.h"
 
 @interface QNBaseUpload ()
+
+@property (nonatomic, strong) QNBaseUpload *strongSelf;
 
 @property (nonatomic,   copy) NSString *key;
 @property (nonatomic,   copy) NSString *fileName;
@@ -87,12 +92,15 @@
 }
 
 - (void)initData{
+    _strongSelf = self;
     _currentRegionIndex = 0;
     _metrics = [QNUploadTaskMetrics emptyMetrics];
 }
 
 - (void)run {
+    kQNWeakSelf;
     [_config.zone preQuery:self.token on:^(int code, QNResponseInfo *responseInfo, QNUploadRegionRequestMetrics *metrics) {
+        kQNStrongSelf;
         [self.metrics addMetrics:metrics];
         if (code == 0) {
             int prepareCode = [self prepareToUpload];
@@ -139,6 +147,7 @@
     if (self.completionHandler) {
         self.completionHandler(info, _key, _metrics, response);
     }
+    self.strongSelf = nil;
 }
 
 //MARK:-- region

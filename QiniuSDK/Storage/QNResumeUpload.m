@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNDefine.h"
 #import "QNResumeUpload.h"
 #import "QNResponseInfo.h"
 #import "QNRequestTransaction.h"
@@ -29,9 +30,11 @@
     self.uploadDataErrorResponseInfo = nil;
     self.uploadDataErrorResponse = nil;
     
+
+    kQNWeakSelf;
     // 1. 启动upload
-    [self initPartFromServer:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
-        
+    [self initPartToServer:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+        kQNStrongSelf;
         if (!responseInfo.isOK || !self.uploadFileInfo.uploadId || self.uploadFileInfo.uploadId.length == 0) {
             [self complete:responseInfo response:response];
             return;
@@ -53,7 +56,8 @@
             }
             
             // 3. 组装文件
-            [self completePartsFromServer:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+            [self completePartsToServer:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+
                 if (responseInfo.isOK == NO) {
                     if (responseInfo.couldRetry && [self.config allowBackupHost]) {
                         BOOL isSwitched = [self switchRegionAndUpload];
@@ -97,8 +101,12 @@
     
     QNUploadData *data = [self.uploadFileInfo nextUploadData];
     
+    kQNWeakSelf;
     void (^progress)(long long, long long) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
+        kQNStrongSelf;
+        
         data.progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
+
         float percent = self.uploadFileInfo.progress;
         if (percent > 0.95) {
             percent = 0.95;
@@ -116,7 +124,7 @@
     if (!data) {
         completeHandler();
     } else {
-        [self uploadDataFromServer:data progress:progress completeHandler:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+        [self uploadDataToServer:data progress:progress completeHandler:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
             if (!responseInfo.isOK) {
                 self.uploadDataErrorResponseInfo = responseInfo;
                 self.uploadDataErrorResponse = response;

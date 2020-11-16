@@ -88,20 +88,28 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong)NSNumber *expireAt;
 
 //MARK:-- 构造
+
 + (instancetype)infoFromDictionary:(NSDictionary *)dictionary;
 - (instancetype)initWithFileSize:(long long)fileSize
                         dataSize:(long long)dataSize
                       modifyTime:(NSInteger)modifyTime;
 
 //MARK:-- logic
+
 /// 获取下一个需要上传的块
 - (QNUploadData *)nextUploadData;
+
 /// 清除所有块和分片上传状态信息
 - (void)clearUploadState;
-/// 所有的块是否都已经上传完毕
-- (BOOL)isAllUploaded;
+
 /// [{ "etag": "<Etag>", "partNumber": <PartNumber> }, ...],
 - (NSArray <NSDictionary *> *)getPartInfoArray;
+
+/// 所有的块是否都已经上传完毕
+- (BOOL)isAllUploaded;
+
+/// 获取所有block context
+- (NSArray <NSString *> *)allBlocksContexts;
 
 /// 转化字典
 - (NSDictionary *)toDictionary;

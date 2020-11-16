@@ -33,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol QNDnsDelegate <NSObject>
 
 /// 根据host获取解析结果
+/// @param host 域名
 - (NSArray < id <QNIDnsNetworkAddress> > *)lookup:(NSString *)host;
 
 @end

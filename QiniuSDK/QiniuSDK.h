@@ -8,9 +8,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import "QNErrorCode.h"
+#import "QNDns.h"
+#import "QNZone.h"
 #import "QNFixedZone.h"
 #import "QNAutoZone.h"
 #import "QNConfiguration.h"
+#import "QNRecorderDelegate.h"
 #import "QNFileRecorder.h"
 #import "QNResponseInfo.h"
 #import "QNUploadManager.h"

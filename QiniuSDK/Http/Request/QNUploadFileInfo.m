@@ -29,6 +29,8 @@
     data.isCompleted = [dictionary[@"isCompleted"] boolValue];
     if (data.isCompleted) {
         data.progress = 1;
+    } else {
+        data.progress = 0;
     }
     return data;
 }
@@ -40,6 +42,9 @@
         _offset = offset;
         _size = dataSize;
         _index = index;
+        _etag = nil;
+        _isCompleted = NO;
+        _progress = 0;
     }
     return self;
 }

@@ -5,7 +5,7 @@
 //  Created by bailong on 15/1/4.
 //  Copyright (c) 2015年 Qiniu. All rights reserved.
 //
-
+#import "QNDefine.h"
 #import "QNFormUpload.h"
 #import "QNResponseInfo.h"
 #import "QNRequestTransaction.h"
@@ -29,9 +29,11 @@
                                                                       key:self.key
                                                                     token:self.token];
 
-    __weak typeof(self) weakSelf = self;
+    kQNWeakSelf;
     void(^progressHandler)(long long totalBytesWritten, long long totalBytesExpectedToWrite) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
-        if (weakSelf.option.progressHandler) {
+        kQNStrongSelf;
+        
+        if (self.option.progressHandler) {
             float percent = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
             if (percent > 0.95) {
                 percent = 0.95;
@@ -42,7 +44,7 @@
                 percent = self.previousPercent;
             }
             QNAsyncRunInMain(^{
-                weakSelf.option.progressHandler(weakSelf.key, percent);
+                self.option.progressHandler(self.key, percent);
             });
         }
     };
@@ -51,6 +53,8 @@
                                   fileName:self.fileName
                                   progress:progressHandler
                                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        kQNStrongSelf;
+        
         [self addRegionRequestMetricsOfOneFlow:metrics];
         
         if (responseInfo.isOK) {

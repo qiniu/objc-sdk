@@ -10,15 +10,6 @@
 #import "QNUserAgent.h"
 #import "QNUtils.h"
 
-const int kQNZeroDataSize = -6;
-const int kQNInvalidToken = -5;
-const int kQNFileError = -4;
-const int kQNInvalidArgument = -3;
-const int kQNRequestCancelled = -2;
-const int kQNNetworkError = -1;
-const int kQNLocalIOError = -7;
-const int kQNMaliciousResponseError = -8;
-
 static NSString *kQNErrorDomain = @"qiniu.com";
 
 @interface QNResponseInfo ()
@@ -76,6 +67,21 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 
 + (instancetype)responseInfoWithLocalIOError:(NSString *)desc{
     return [QNResponseInfo errorResponseInfo:kQNLocalIOError
+                                   errorDesc:desc];
+}
+
++ (instancetype)responseInfoWithMaliciousResponseError:(NSString *)desc{
+    return [QNResponseInfo errorResponseInfo:kQNMaliciousResponseError
+                                   errorDesc:desc];
+}
+
++ (instancetype)responseInfoWithNoUsableHostError:(NSString *)desc{
+    return [QNResponseInfo errorResponseInfo:kQNNoUsableHostError
+                                   errorDesc:desc];
+}
+
++ (instancetype)responseInfoWithUnexpectedSysCallError:(NSString *)desc{
+    return [QNResponseInfo errorResponseInfo:kQNUnexpectedSysCallError
                                    errorDesc:desc];
 }
 
@@ -164,6 +170,9 @@ static NSString *kQNErrorDomain = @"qiniu.com";
             _statusCode = (int)error.code;
             _message = [NSString stringWithFormat:@"%@", error];
             _responseDictionary = nil;
+        } else {
+            _statusCode = -9;
+            _message = @"no response";
         }
     }
     return self;
@@ -201,7 +210,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
         || _statusCode == 608 || _statusCode == 612 || _statusCode == 614 || _statusCode == 616
         || _statusCode == 619 || _statusCode == 630 || _statusCode == 631 || _statusCode == 640
         || _statusCode == 701
-        ||(_statusCode < 0 && _statusCode > -1000)) {
+        || (_statusCode < -1 && _statusCode > -1000)) {
         return NO;
     } else {
         return YES;
@@ -209,10 +218,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 }
 
 - (BOOL)couldRegionRetry{
-    if ([self couldRetry] == NO
-        || _statusCode == 400
-        || _statusCode == 502 || _statusCode == 503 || _statusCode == 504 || _statusCode == 579 || _statusCode == 599
-        || self.isCancelled) {
+    if ([self couldRetry] == NO || _statusCode == 400 || _statusCode == 579 ) {
         return NO;
     } else {
         return YES;
@@ -221,10 +227,28 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 
 - (BOOL)couldHostRetry{
     if ([self couldRegionRetry] == NO
-        || (_statusCode == 502 || _statusCode == 503 || _statusCode == 571)) {
+        || _statusCode == 502 || _statusCode == 503 || _statusCode == 571 || _statusCode == 599) {
         return NO;
     } else {
         return YES;
+    }
+}
+
+- (BOOL)canConnectToHost{
+    if (_statusCode > 99 || self.isCancelled) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+- (BOOL)isHostUnavailable{
+    // 基本不可恢复，注：会影响下次请求，范围太大可能会造成大量的timeout
+    if ((_statusCode >= -2000 && _statusCode <= -1200)
+        || _statusCode == 502 || _statusCode == 503 || _statusCode == 504 || _statusCode == 599) {
+        return true;
+    } else {
+        return false;
     }
 }
 

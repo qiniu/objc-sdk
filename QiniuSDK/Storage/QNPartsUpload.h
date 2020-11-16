@@ -16,6 +16,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 // 定制data大小 在执行run之前赋值
 @property(nonatomic, strong)NSNumber *dataSize;
+/// 块大小 分块和并发分块大小可能不通
+@property(nonatomic, assign, readonly, class)long long blockSize;
+/// 定制chunk大小 在执行run之前赋值
+@property(nonatomic, strong)NSNumber *chunkSize;
+/// 上传信息
 @property(nonatomic, strong, readonly)QNUploadFileInfo *uploadFileInfo;
 
 - (void)recordUploadInfo;
@@ -23,16 +28,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeUploadInfoRecord;
 
 
-- (void)initPartFromServer:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
+- (void)initPartToServer:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
 
-- (void)uploadDataFromServer:(QNUploadData *)data
-                    progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-             completeHandler:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
+- (void)uploadDataToServer:(QNUploadData *)data
+                  progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
+           completeHandler:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
 
-- (void)completePartsFromServer:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
+- (void)completePartsToServer:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
 
 
 - (QNRequestTransaction *)createUploadRequestTransaction;
+- (void)destroyUploadRequestTransaction:(QNRequestTransaction *)transaction;
 
 @end
 

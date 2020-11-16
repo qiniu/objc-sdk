@@ -6,7 +6,7 @@
 #import "QNUploadInfoReporter.h" 
 ```
 
-#### 1.1 8.0.0 新增
+#### 1.2 8.0.0 新增
 ```
 #import "QNReportConfig.h"  
 ```

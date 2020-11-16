@@ -3,6 +3,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 target "QiniuDemo" do
   platform :ios, "7.0"
 
+#  pod 'Qiniu'
   pod 'Qiniu',:path => '../'
 end
 

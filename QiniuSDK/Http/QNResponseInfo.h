@@ -6,48 +6,7 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-#import "QNUploadRequestMetrics.h"
-
-/**
- *    中途取消的状态码
- */
-extern const int kQNRequestCancelled;
-
-/**
- *    网络错误状态码
- */
-extern const int kQNNetworkError;
-
-/**
- *    错误参数状态码
- */
-extern const int kQNInvalidArgument;
-
-/**
- *    0 字节文件或数据
- */
-extern const int kQNZeroDataSize;
-
-/**
- *    错误token状态码
- */
-extern const int kQNInvalidToken;
-
-/**
- *    读取文件错误状态码
- */
-extern const int kQNFileError;
-
-/**
- *    本地 I/O 错误
- */
-extern const int kQNLocalIOError;
-
-/**
- *    ⽤户劫持错误 错误
- */
-extern const int kQNMaliciousResponseError;
-
+#import "QNErrorCode.h"
 
 /**
  *    上传完成后返回的状态信息
@@ -88,6 +47,10 @@ extern const int kQNMaliciousResponseError;
 @property (nonatomic, readonly) BOOL couldHostRetry;
 /// 单个Region是否可以再次重试
 @property (nonatomic, readonly) BOOL couldRegionRetry;
+/// 当前host是否可达
+@property (nonatomic, readonly) BOOL canConnectToHost;
+/// 当前host是否可用
+@property (nonatomic, readonly) BOOL isHostUnavailable;
 /// 是否为 七牛响应
 @property (nonatomic, readonly, getter=isNotQiniu) BOOL notQiniu;
 
@@ -99,6 +62,9 @@ extern const int kQNMaliciousResponseError;
 + (instancetype)responseInfoWithFileError:(NSError *)error;
 + (instancetype)responseInfoOfZeroData:(NSString *)path;
 + (instancetype)responseInfoWithLocalIOError:(NSString *)desc;
++ (instancetype)responseInfoWithMaliciousResponseError:(NSString *)desc;
++ (instancetype)responseInfoWithNoUsableHostError:(NSString *)desc;
++ (instancetype)responseInfoWithUnexpectedSysCallError:(NSString *)desc;
 
 + (instancetype)errorResponseInfo:(int)errorType
                         errorDesc:(NSString *)errorDesc;
