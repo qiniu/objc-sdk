@@ -27,6 +27,14 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 @end
 
 @implementation QNResponseInfo
++ (instancetype)successResponse{
+    QNResponseInfo *responseInfo = [[QNResponseInfo alloc] init];
+    responseInfo.statusCode = 200;
+    responseInfo.message = @"inter:ok";
+    responseInfo.xlog = @"inter:xlog";
+    responseInfo.reqId = @"inter:reqid";
+    return responseInfo;
+}
 
 + (instancetype)cancelResponse {
     return [QNResponseInfo errorResponseInfo:kQNRequestCancelled

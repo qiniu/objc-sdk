@@ -69,10 +69,9 @@
             
             // 3. 组装文件
             [self completePartsToServer:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
-                if (responseInfo.isOK == NO) {
+                if (!responseInfo.isOK) {
                     if (responseInfo.couldRetry && [self.config allowBackupHost]) {
-                        BOOL isSwitched = [self switchRegionAndUpload];
-                        if (isSwitched == NO) {
+                        if (![self switchRegionAndUpload]) {
                             [self complete:responseInfo response:response];
                         }
                     } else {

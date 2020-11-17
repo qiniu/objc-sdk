@@ -6,10 +6,12 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNDefine.h"
 #import "QNUtils.h"
 #import "QNPartsUpload.h"
 #import "QNZoneInfo.h"
 #import "QNReportItem.h"
+#import "QNRequestTransaction.h"
 
 #define kQNRecordFileInfoKey @"recordFileInfo"
 #define kQNRecordZoneInfoKey @"recordZoneInfo"
@@ -36,7 +38,6 @@
     [self recoverUploadInfoFromRecord:self.file];
     if (self.uploadFileInfo == nil) {
         self.uploadFileInfo = [[QNUploadFileInfo alloc] initWithFileSize:[self.file size]
-                                                               blockSize:[QNPartsUpload blockSize]
                                                                 dataSize:[self getUploadChunkSize]
                                                               modifyTime:(NSInteger)[self.file modifyTime]];
     }
@@ -110,9 +111,7 @@
     QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:info[kQNRecordZoneInfoKey]];
     QNUploadFileInfo *fileInfo = [QNUploadFileInfo infoFromDictionary:info[kQNRecordFileInfoKey]];
     self.recoveredFrom = @(fileInfo.progress * fileInfo.size);
-    if (zoneInfo && fileInfo
-        && fileInfo.size == file.size && fileInfo.modifyTime == fileInfo.modifyTime
-        && fileInfo.uploadBlocks.firstObject.uploadDataList.firstObject.size == [self getUploadChunkSize]) {
+    if (zoneInfo && fileInfo && (fileInfo.size == [file size]) && (file.modifyTime == fileInfo.modifyTime)) {
         [self insertRegionAtFirstByZoneInfo:zoneInfo];
         self.uploadFileInfo = fileInfo;
     } else {
@@ -121,11 +120,111 @@
 }
 
 - (long long)getUploadChunkSize{
-    if (self.chunkSize) {
-        return self.chunkSize.longLongValue;
+    if (self.dataSize) {
+        return self.dataSize.longLongValue;
     } else {
         return self.config.chunkSize;
     }
+}
+
+//MARK:-- concurrent upload model API
+- (void)initPartToServer:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler{
+    if (self.uploadFileInfo.uploadId
+        && (self.uploadFileInfo.expireAt.integerValue - [[NSDate date] timeIntervalSince1970]) > 600) {
+        QNResponseInfo *responseInfo = [QNResponseInfo successResponse];
+        completeHandler(responseInfo, nil);
+        return;
+    }
+    
+    QNRequestTransaction *transaction = [self createUploadRequestTransaction];
+
+    kQNWeakSelf;
+    [transaction initPart:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        kQNStrongSelf;
+        
+        [self addRegionRequestMetricsOfOneFlow:metrics];
+        
+        NSString *uploadId = response[@"uploadId"];
+        NSNumber *expireAt = response[@"expireAt"];
+        if (responseInfo.isOK && uploadId && expireAt) {
+            self.uploadFileInfo.uploadId = uploadId;
+            self.uploadFileInfo.expireAt = expireAt;
+            [self recordUploadInfo];
+        }
+        completeHandler(responseInfo, response);
+    }];
+}
+
+- (void)uploadDataToServer:(QNUploadData *)data
+                    progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
+             completeHandler:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler{
+    
+    NSData *uploadData = [self getUploadData:data];
+    if (data == nil) {
+        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithLocalIOError:@"get data error"];
+        completeHandler(responseInfo, responseInfo.responseDictionary);
+        return;
+    }
+    
+    data.isUploading = YES;
+    data.isCompleted = NO;
+    
+    QNRequestTransaction *transaction = [self createUploadRequestTransaction];
+    
+    kQNWeakSelf;
+    kQNWeakObj(transaction);
+    [transaction uploadPart:self.uploadFileInfo.uploadId
+                  partIndex:data.index
+                   partData:uploadData
+                   progress:progress
+                   complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        kQNStrongSelf;
+        kQNStrongObj(transaction);
+        
+        [self destroyUploadRequestTransaction:transaction];
+        [self addRegionRequestMetricsOfOneFlow:metrics];
+        
+        NSString *etag = response[@"etag"];
+        NSString *md5 = response[@"md5"];
+        if (responseInfo.isOK && etag && md5) {
+            data.etag = etag;
+            data.isUploading = NO;
+            data.isCompleted = YES;
+            [self recordUploadInfo];
+        } else {
+            data.isUploading = NO;
+            data.isCompleted = NO;
+        }
+        completeHandler(responseInfo, response);
+    }];
+}
+
+- (void)completePartsToServer:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler{
+    
+    NSArray *partInfoArray = [self.uploadFileInfo getPartInfoArray];
+    QNRequestTransaction *transaction = [self createUploadRequestTransaction];
+    
+    [transaction completeParts:self.fileName uploadId:self.uploadFileInfo.uploadId partInfoArray:partInfoArray complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        
+        [self addRegionRequestMetricsOfOneFlow:metrics];
+        completeHandler(responseInfo, response);
+    }];
+    
+}
+
+- (QNRequestTransaction *)createUploadRequestTransaction{
+    return nil;
+}
+- (void)destroyUploadRequestTransaction:(QNRequestTransaction *)transaction{
+}
+
+- (NSData *)getUploadData:(QNUploadData *)data{
+    if (!self.file) {
+        return nil;
+    }
+    return [self.file read:(long)data.offset
+                      size:(long)data.size
+                     error:nil];
 }
 
 //MARK:-- 统计block日志
