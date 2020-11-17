@@ -6,6 +6,7 @@
 //  Copyright © 2020 com.qiniu. All rights reserved.
 //
 
+#import "QNUploadRequestState.h"
 #import "QNUploadDomainRegion.h"
 #import "QNResponseInfo.h"
 #import "QNUploadServer.h"
@@ -49,7 +50,8 @@
     domain.isAllFrozen = false;
     return domain;
 }
-- (QNUploadServer *)getServer:(NSArray <QNUploadServerFreezeManager *> *)freezeManagerList{
+- (QNUploadServer *)getServer:(NSArray <QNUploadServerFreezeManager *> *)freezeManagerList
+                 requestState:(QNUploadRequestState *)requestState{
     if (self.isAllFrozen || !self.host || self.host.length == 0) {
         return nil;
     }
@@ -60,7 +62,9 @@
     
     // Host解析出IP时:
     if (self.ipGroupList && self.ipGroupList.count > 0) {
+        // 同时查找最优 http 和 最优HTTP3，当使用http返回server, 当使用HTTP3，返回http3Server，如果http3Server不存在，返回server
         QNUploadServer *server = nil;
+        QNUploadServer *http3Server = nil;
         // 选择未被冻结，且网速最好的ip/host
         for (QNUploadIpGroup *ipGroup in self.ipGroupList) {
             if (![self isGroup:ipGroup.groupType frozenByFreezeManagers:freezeManagerList]) {
@@ -71,10 +75,16 @@
                                                             source:inetAddress.sourceValue
                                                   ipPrefetchedTime:inetAddress.timestampValue];
                 server = [QNUploadServerNetworkStatus getBetterNetworkServer:server serverB:newServer];
+                if ([QNUploadServerNetworkStatus isServerSupportHTTP3:newServer]) {
+                    http3Server = [QNUploadServerNetworkStatus getBetterNetworkServer:http3Server serverB:newServer];
+                }
             }
         }
         if (server == nil) {
             self.isAllFrozen = true;
+        }
+        if (requestState.isHTTP3 && http3Server) {
+            server = http3Server;
         }
         return server;
     }
@@ -82,6 +92,7 @@
     // Host未解析出IP时:
     NSString *groupType = [QNUtils getIpType:nil host:self.host];
     if (![self isGroup:groupType frozenByFreezeManagers:freezeManagerList]){
+        // 未解析时，没有可比性，直接返回自身，自身即为最优
         return [QNUploadServer server:self.host host:self.host ip:nil source:nil ipPrefetchedTime:nil];
     } else {
         self.isAllFrozen = true;
@@ -207,7 +218,7 @@
     return [domainDictionary copy];
 }
 
-- (id<QNUploadServer> _Nullable)getNextServer:(BOOL)isOldServer
+- (id<QNUploadServer> _Nullable)getNextServer:(QNUploadRequestState *)requestState
                                  responseInfo:(QNResponseInfo *)responseInfo
                                  freezeServer:(id <QNUploadServer> _Nullable)freezeServer{
     if (self.isAllFrozen) {
@@ -236,14 +247,23 @@
         }
     }
     
-    
-    
-    NSArray *hostList = isOldServer ? self.oldDomainHostList : self.domainHostList;
-    NSDictionary *domainInfo = isOldServer ? self.oldDomainDictionary : self.domainDictionary;
+    NSArray *hostList = requestState.isUseOldServer ? self.oldDomainHostList : self.domainHostList;
+    NSDictionary *domainInfo = requestState.isUseOldServer ? self.oldDomainDictionary : self.domainDictionary;
     QNUploadServer *server = nil;
+    QNUploadServer *http3Server = nil;
+    // 在host列表中同时查找最优 http 和 最优HTTP3，当使用http返回server, 当使用HTTP3，使用http3Server，如果http3Server不存在，使用server
     for (NSString *host in hostList) {
-        QNUploadServer *newServer = [domainInfo[host] getServer:@[self.partialFreezeManager, kQNUploadServerFreezeManager]];
+        // http3最优(需要使用http3) / http最优(没有支持http3 host时)， 都不支持时返回的均为http最优
+        QNUploadServer *newServer = [domainInfo[host] getServer:@[self.partialFreezeManager, kQNUploadServerFreezeManager] requestState:requestState];
         server = [QNUploadServerNetworkStatus getBetterNetworkServer:server serverB:newServer];
+        if ([QNUploadServerNetworkStatus isServerSupportHTTP3:newServer]) {
+            http3Server = [QNUploadServerNetworkStatus getBetterNetworkServer:http3Server serverB:newServer];
+        }
+    }
+    if (requestState.isHTTP3 && http3Server) {
+        server = http3Server;
+    } else {
+        requestState.isHTTP3 = false;
     }
     if (server == nil && !self.hasGot && hostList.count > 0) {
         NSInteger index = arc4random()%hostList.count;

@@ -16,13 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void(^QNSingleRequestCompleteHandler)(QNResponseInfo * _Nullable responseInfo, NSArray <QNUploadSingleRequestMetrics *> * _Nullable metrics, NSDictionary * _Nullable response);
 
-@interface QNUploadRequestState : NSObject
-
-@property(atomic, assign)BOOL isUserCancel;
-
-@end
-
-
 @interface QNHttpSingleRequest : NSObject
 
 - (instancetype)initWithConfig:(QNConfiguration *)config

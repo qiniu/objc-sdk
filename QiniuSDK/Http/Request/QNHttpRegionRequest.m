@@ -8,6 +8,7 @@
 
 #import "QNDefine.h"
 #import "QNAsyncRun.h"
+#import "QNUploadRequestState.h"
 #import "QNHttpRegionRequest.h"
 #import "QNConfiguration.h"
 #import "QNUploadOption.h"
@@ -25,8 +26,6 @@
 @property(nonatomic, strong)QNUploadRegionRequestMetrics *requestMetrics;
 @property(nonatomic, strong)QNHttpSingleRequest *singleRequest;
 
-// old server 不验证tls sni
-@property(nonatomic, assign)BOOL isUseOldServer;
 @property(nonatomic, strong)id <QNUploadServer> currentServer;
 @property(nonatomic, strong)id <QNUploadRegion> region;
 
@@ -183,10 +182,10 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
 - (id <QNUploadServer>)getNextServer:(QNResponseInfo *)responseInfo{
 
     if (responseInfo.isTlsError) {
-        self.isUseOldServer = YES;
+        self.requestState.isUseOldServer = YES;
     }
     
-    return [self.region getNextServer:self.isUseOldServer responseInfo:responseInfo freezeServer:self.currentServer];
+    return [self.region getNextServer:self.requestState responseInfo:responseInfo freezeServer:self.currentServer];
 }
 
 @end

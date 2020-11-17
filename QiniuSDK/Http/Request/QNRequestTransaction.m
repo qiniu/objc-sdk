@@ -18,6 +18,7 @@
 #import "QNZoneInfo.h"
 #import "QNUserAgent.h"
 #import "QNResponseInfo.h"
+#import "QNUploadRequestState.h"
 
 #import "QNUploadDomainRegion.h"
 #import "QNHttpRegionRequest.h"

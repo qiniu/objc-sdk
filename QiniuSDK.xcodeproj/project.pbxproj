@@ -37,6 +37,8 @@
 		31304CB42563B898001034D2 /* QNUploadServerNetworkStatus.h in Headers */ = {isa = PBXBuildFile; fileRef = 31304CB12563B897001034D2 /* QNUploadServerNetworkStatus.h */; };
 		31304CB52563B898001034D2 /* QNUploadServerNetworkStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 31304CB22563B897001034D2 /* QNUploadServerNetworkStatus.m */; };
 		31304CB62563B898001034D2 /* QNUploadServerNetworkStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 31304CB22563B897001034D2 /* QNUploadServerNetworkStatus.m */; };
+		31304CB92563DA03001034D2 /* QNUploadRequestState.h in Headers */ = {isa = PBXBuildFile; fileRef = 31304CB72563DA03001034D2 /* QNUploadRequestState.h */; };
+		31304CBA2563DA03001034D2 /* QNUploadRequestState.m in Sources */ = {isa = PBXBuildFile; fileRef = 31304CB82563DA03001034D2 /* QNUploadRequestState.m */; };
 		3142419E2449553F00BD9A21 /* QNCFHttpClientTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3142419B2449547B00BD9A21 /* QNCFHttpClientTest.m */; };
 		3142419F2449554200BD9A21 /* QNCFHttpClientTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3142419B2449547B00BD9A21 /* QNCFHttpClientTest.m */; };
 		314944522446FED700386F16 /* NSObject+QNSwizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = 314944502446FED700386F16 /* NSObject+QNSwizzle.h */; };
@@ -333,6 +335,8 @@
 		31304CAC2563AABA001034D2 /* QNNetworkStatusManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNNetworkStatusManager.m; sourceTree = "<group>"; };
 		31304CB12563B897001034D2 /* QNUploadServerNetworkStatus.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNUploadServerNetworkStatus.h; sourceTree = "<group>"; };
 		31304CB22563B897001034D2 /* QNUploadServerNetworkStatus.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUploadServerNetworkStatus.m; sourceTree = "<group>"; };
+		31304CB72563DA03001034D2 /* QNUploadRequestState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNUploadRequestState.h; sourceTree = "<group>"; };
+		31304CB82563DA03001034D2 /* QNUploadRequestState.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUploadRequestState.m; sourceTree = "<group>"; };
 		3142419B2449547B00BD9A21 /* QNCFHttpClientTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNCFHttpClientTest.m; sourceTree = "<group>"; };
 		314944502446FED700386F16 /* NSObject+QNSwizzle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+QNSwizzle.h"; sourceTree = "<group>"; };
 		314944512446FED700386F16 /* NSObject+QNSwizzle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+QNSwizzle.m"; sourceTree = "<group>"; };
@@ -743,6 +747,8 @@
 				DF0D23CE19DCE6E500D6B68F /* QNResponseInfo.m */,
 				31A18418246A8C77001D6EEE /* QNUploadRequestMetrics.h */,
 				31A18419246A8C77001D6EEE /* QNUploadRequestMetrics.m */,
+				31304CB72563DA03001034D2 /* QNUploadRequestState.h */,
+				31304CB82563DA03001034D2 /* QNUploadRequestState.m */,
 			);
 			path = Http;
 			sourceTree = "<group>";
@@ -969,6 +975,7 @@
 				314944572446FF4700386F16 /* QNCFHttpClient.h in Headers */,
 				31304CB32563B898001034D2 /* QNUploadServerNetworkStatus.h in Headers */,
 				31259E3424E3D02C00CF7531 /* NSData+QNGZip.h in Headers */,
+				31304CB92563DA03001034D2 /* QNUploadRequestState.h in Headers */,
 				31C2EEE3242DE86300713A33 /* QNUtils.h in Headers */,
 				31A1841F246BD980001D6EEE /* QNUploadRequestInfo.h in Headers */,
 				31BAA27C243DB83700B7E883 /* QNURLProtocol.h in Headers */,
@@ -1279,6 +1286,7 @@
 				DF293C9F19DBC2AE00799011 /* QNUserAgent.m in Sources */,
 				31F553A52456F2F3000B66AD /* QNCrc32.m in Sources */,
 				DFA9B65919E0B53700A15FD1 /* QNFileRecorder.m in Sources */,
+				31304CBA2563DA03001034D2 /* QNUploadRequestState.m in Sources */,
 				31C2EECD242CC52600713A33 /* QNDnsCacheInfo.m in Sources */,
 				31A1841B246A8C77001D6EEE /* QNUploadRequestMetrics.m in Sources */,
 				451A36B724BD893D00754A15 /* QNReportConfig.m in Sources */,

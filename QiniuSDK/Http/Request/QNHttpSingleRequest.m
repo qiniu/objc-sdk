@@ -17,6 +17,7 @@
 #import "QNResponseInfo.h"
 #import "QNNetworkStatusManager.h"
 #import "QNRequestClient.h"
+#import "QNUploadRequestState.h"
 
 #import "QNDnsPrefetch.h"
 
@@ -24,19 +25,6 @@
 
 #import "QNUploadSystemClient.h"
 #import "NSURLRequest+QNRequest.h"
-
-
-@implementation QNUploadRequestState
-- (instancetype)init{
-    if (self = [super init]) {
-        [self initData];
-    }
-    return self;
-}
-- (void)initData{
-    _isUserCancel = NO;
-}
-@end
 
 
 
