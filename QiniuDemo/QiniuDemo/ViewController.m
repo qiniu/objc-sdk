@@ -47,7 +47,8 @@ typedef NS_ENUM(NSInteger, UploadState){
     if (self.uploadState == UploadStatePrepare) {
     
 #ifdef YourToken
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource.dmg" ofType:nil];
+//        NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource.dmg" ofType:nil];
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
         [self uploadImageToQNFilePath:path];
         [self changeUploadState:UploadStateUploading];
 #else
