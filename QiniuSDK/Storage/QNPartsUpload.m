@@ -86,7 +86,7 @@
     [self.recorder del:self.recorderKey];
 }
 
-- (void)recoverUploadInfoFromRecord{
+- (void)recoverUploadInfoFromRecord:(id <QNFileDelegate>)file{
     NSString *key = self.recorderKey;
     if (self.recorder == nil || key == nil || [key isEqualToString:@""]) {
         return;
@@ -107,7 +107,7 @@
     QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:info[kQNRecordZoneInfoKey]];
     QNUploadFileInfo *fileInfo = [QNUploadFileInfo infoFromDictionary:info[kQNRecordFileInfoKey]];
     self.recoveredFrom = @(fileInfo.progress * fileInfo.size);
-    if (zoneInfo && fileInfo) {
+    if (zoneInfo && fileInfo && (fileInfo.size == [file size]) && (file.modifyTime == fileInfo.modifyTime)) {
         [self insertRegionAtFirstByZoneInfo:zoneInfo];
         self.uploadFileInfo = fileInfo;
     } else {
