@@ -15,6 +15,7 @@
 #import "QNUploadOption.h"
 #import "QNUpToken.h"
 #import "QNResponseInfo.h"
+#import "QNNetworkStatusManager.h"
 #import "QNRequestClient.h"
 
 #import "QNDnsPrefetch.h"
@@ -162,9 +163,25 @@
   requestMetrics:(QNUploadSingleRequestMetrics *)requestMetrics
         complete:(QNSingleRequestCompleteHandler)complete {
     
+    [self getHostNetworkStatus:responseInfo server:server requestMetrics:requestMetrics];
     [self reportRequest:responseInfo server:server requestMetrics:requestMetrics];
     if (complete) {
         complete(responseInfo, [self.requestMetricsList copy], response);
+    }
+}
+
+//MARK:-- 统计网络状态
+- (void)getHostNetworkStatus:(QNResponseInfo *)responseInfo
+                      server:(id <QNUploadServer>)server
+              requestMetrics:(QNUploadSingleRequestMetrics *)requestMetrics{
+    long long byte = requestMetrics.bytesSend.longLongValue;
+    if (requestMetrics.startDate && requestMetrics.endDate && byte > 1024 * 1024) {
+        double second = [requestMetrics.endDate timeIntervalSinceDate:requestMetrics.startDate];
+        if (second > 0) {
+            int speed = (int)(byte / (second * 1024));
+            NSString *type = [QNUtils getIpType:server.ip host:server.host];
+            [kQNNetworkStatusManager updateNetworkStatus:type speed:speed];
+        }
     }
 }
 

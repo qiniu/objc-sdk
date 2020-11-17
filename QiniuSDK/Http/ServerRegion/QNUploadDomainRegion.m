@@ -13,6 +13,7 @@
 #import "QNUploadServerFreezeManager.h"
 #import "QNDnsPrefetch.h"
 #import "QNUtils.h"
+#import "QNUploadServerNetworkStatus.h"
 
 @interface QNUploadIpGroup : NSObject
 @property(nonatomic,   copy, readonly)NSString *groupType;
@@ -60,15 +61,16 @@
     // Host解析出IP时:
     if (self.ipGroupList && self.ipGroupList.count > 0) {
         QNUploadServer *server = nil;
+        // 选择未被冻结，且网速最好的ip/host
         for (QNUploadIpGroup *ipGroup in self.ipGroupList) {
             if (![self isGroup:ipGroup.groupType frozenByFreezeManagers:freezeManagerList]) {
                 id <QNIDnsNetworkAddress> inetAddress = [ipGroup getServerIP];
-                server = [QNUploadServer server:self.host
-                                           host:self.host
-                                             ip:inetAddress.ipValue
-                                         source:inetAddress.sourceValue
-                               ipPrefetchedTime:inetAddress.timestampValue];
-                break;
+                QNUploadServer *newServer = [QNUploadServer server:self.host
+                                                              host:self.host
+                                                                ip:inetAddress.ipValue
+                                                            source:inetAddress.sourceValue
+                                                  ipPrefetchedTime:inetAddress.timestampValue];
+                server = [QNUploadServerNetworkStatus getBetterNetworkServer:server serverB:newServer];
             }
         }
         if (server == nil) {
@@ -240,10 +242,8 @@
     NSDictionary *domainInfo = isOldServer ? self.oldDomainDictionary : self.domainDictionary;
     QNUploadServer *server = nil;
     for (NSString *host in hostList) {
-        server = [domainInfo[host] getServer:@[self.partialFreezeManager, kQNUploadServerFreezeManager]];
-        if (server) {
-           break;
-        }
+        QNUploadServer *newServer = [domainInfo[host] getServer:@[self.partialFreezeManager, kQNUploadServerFreezeManager]];
+        server = [QNUploadServerNetworkStatus getBetterNetworkServer:server serverB:newServer];
     }
     if (server == nil && !self.hasGot && hostList.count > 0) {
         NSInteger index = arc4random()%hostList.count;
