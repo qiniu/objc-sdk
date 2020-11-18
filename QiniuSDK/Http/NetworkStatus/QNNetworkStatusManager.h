@@ -13,9 +13,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface QNNetworkStatus : NSObject
 
 /// 网速 单位：kb/s   默认：200kb/s
-@property(nonatomic, assign)int speed;
+@property(nonatomic, assign, readonly)int speed;
 /// 是否支持HTTP3 默认不支持
-@property(nonatomic, assign)BOOL supportHTTP3;
+@property(nonatomic, assign, readonly)BOOL supportHTTP3;
 
 @end
 

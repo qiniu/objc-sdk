@@ -21,6 +21,7 @@
 
 @property(nonatomic, strong)QNConfiguration *config;
 @property(nonatomic, strong)QNUploadOption *uploadOption;
+@property(nonatomic, strong)QNUploadRequestInfo *requestInfo;
 @property(nonatomic, strong)QNUploadRequestState *requestState;
 
 @property(nonatomic, strong)QNUploadRegionRequestMetrics *requestMetrics;
@@ -42,6 +43,7 @@
         _config = config;
         _uploadOption = uploadOption;
         _region = region;
+        _requestInfo = requestInfo;
         _requestState = requestState;
         _singleRequest = [[QNHttpSingleRequest alloc] initWithConfig:config
                                                       uploadOption:uploadOption
