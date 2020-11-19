@@ -73,10 +73,6 @@
     return isFrozen;
 }
 
-- (void)freezeHost:(NSString *)host type:(NSString *)type{
-    [self freezeHost:host type:type frozenTime:kQNGlobalConfiguration.globalHostFrozenTime];
-}
-
 - (void)freezeHost:(NSString *)host
               type:(NSString * _Nullable)type
         frozenTime:(NSInteger)frozenTime{
@@ -90,6 +86,16 @@
         self.freezeInfo[infoKey] = item;
     }
     [item freeze:frozenTime];
+}
+
+- (void)freezeHost:(NSString *)host type:(NSString * _Nullable)type{
+    if (!host || host.length == 0) {
+        return;
+    }
+    NSString *infoKey = [self getItemInfoKey:host type:type];
+    if (infoKey != nil){
+        [self.freezeInfo removeObjectForKey:infoKey];
+    }
 }
 
 - (NSString *)getItemInfoKey:(NSString *)host type:(NSString *)type{
