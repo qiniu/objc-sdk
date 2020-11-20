@@ -66,7 +66,11 @@
     }
     BOOL isFrozen = true;
     NSString *infoKey = [self getItemInfoKey:host type:type];
-    QNUploadServerFreezeItem *item = self.freezeInfo[infoKey];
+    
+    QNUploadServerFreezeItem *item = nil;
+    @synchronized (self) {
+        item = self.freezeInfo[infoKey];
+    }
     if (!item || ![item isFrozenByDate:[NSDate date]]) {
         isFrozen = false;
     }
@@ -80,7 +84,10 @@
         return;
     }
     NSString *infoKey = [self getItemInfoKey:host type:type];
-    QNUploadServerFreezeItem *item = self.freezeInfo[infoKey];
+    QNUploadServerFreezeItem *item = nil;
+    @synchronized (self) {
+        item = self.freezeInfo[infoKey];
+    }
     if (!item) {
         item = [QNUploadServerFreezeItem item:host type:type];
         self.freezeInfo[infoKey] = item;
@@ -88,13 +95,15 @@
     [item freeze:frozenTime];
 }
 
-- (void)freezeHost:(NSString *)host type:(NSString * _Nullable)type{
+- (void)unfreezeHost:(NSString *)host type:(NSString *)type {
     if (!host || host.length == 0) {
         return;
     }
     NSString *infoKey = [self getItemInfoKey:host type:type];
     if (infoKey != nil){
-        [self.freezeInfo removeObjectForKey:infoKey];
+        @synchronized (self) {
+            [self.freezeInfo removeObjectForKey:infoKey];
+        }
     }
 }
 
