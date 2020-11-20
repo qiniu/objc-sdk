@@ -390,8 +390,9 @@
                 [addressListP addObject:address];
             }
         }
+        addressListP = [addressListP copy];
         @synchronized (self) {
-            self.addressDictionary[preHost] = [addressListP copy];
+            self.addressDictionary[preHost] = addressListP;
         }
         return YES;
     } else {
