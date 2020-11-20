@@ -39,6 +39,12 @@
 		31304CB62563B898001034D2 /* QNUploadServerNetworkStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 31304CB22563B897001034D2 /* QNUploadServerNetworkStatus.m */; };
 		31304CB92563DA03001034D2 /* QNUploadRequestState.h in Headers */ = {isa = PBXBuildFile; fileRef = 31304CB72563DA03001034D2 /* QNUploadRequestState.h */; };
 		31304CBA2563DA03001034D2 /* QNUploadRequestState.m in Sources */ = {isa = PBXBuildFile; fileRef = 31304CB82563DA03001034D2 /* QNUploadRequestState.m */; };
+		31304CBC256767F0001034D2 /* QNUploadServerFreezeManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31304CBB256767F0001034D2 /* QNUploadServerFreezeManagerTest.m */; };
+		31304CBD256767F0001034D2 /* QNUploadServerFreezeManagerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31304CBB256767F0001034D2 /* QNUploadServerFreezeManagerTest.m */; };
+		31304CBF25676921001034D2 /* QNUploadDomainRegionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31304CBE25676921001034D2 /* QNUploadDomainRegionTest.m */; };
+		31304CC025676921001034D2 /* QNUploadDomainRegionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31304CBE25676921001034D2 /* QNUploadDomainRegionTest.m */; };
+		31304CC12567A0A7001034D2 /* QNUploadRequestState.h in Headers */ = {isa = PBXBuildFile; fileRef = 31304CB72563DA03001034D2 /* QNUploadRequestState.h */; };
+		31304CC22567A0AA001034D2 /* QNUploadRequestState.m in Sources */ = {isa = PBXBuildFile; fileRef = 31304CB82563DA03001034D2 /* QNUploadRequestState.m */; };
 		3142419E2449553F00BD9A21 /* QNCFHttpClientTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3142419B2449547B00BD9A21 /* QNCFHttpClientTest.m */; };
 		3142419F2449554200BD9A21 /* QNCFHttpClientTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3142419B2449547B00BD9A21 /* QNCFHttpClientTest.m */; };
 		314944522446FED700386F16 /* NSObject+QNSwizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = 314944502446FED700386F16 /* NSObject+QNSwizzle.h */; };
@@ -337,6 +343,8 @@
 		31304CB22563B897001034D2 /* QNUploadServerNetworkStatus.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUploadServerNetworkStatus.m; sourceTree = "<group>"; };
 		31304CB72563DA03001034D2 /* QNUploadRequestState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNUploadRequestState.h; sourceTree = "<group>"; };
 		31304CB82563DA03001034D2 /* QNUploadRequestState.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUploadRequestState.m; sourceTree = "<group>"; };
+		31304CBB256767F0001034D2 /* QNUploadServerFreezeManagerTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUploadServerFreezeManagerTest.m; sourceTree = "<group>"; };
+		31304CBE25676921001034D2 /* QNUploadDomainRegionTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUploadDomainRegionTest.m; sourceTree = "<group>"; };
 		3142419B2449547B00BD9A21 /* QNCFHttpClientTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNCFHttpClientTest.m; sourceTree = "<group>"; };
 		314944502446FED700386F16 /* NSObject+QNSwizzle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+QNSwizzle.h"; sourceTree = "<group>"; };
 		314944512446FED700386F16 /* NSObject+QNSwizzle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+QNSwizzle.m"; sourceTree = "<group>"; };
@@ -864,6 +872,8 @@
 				31FD09232487506300217848 /* QNRetryTest.m */,
 				31DD31D524971BD7004BFDDE /* QNUploadFileNameTest.m */,
 				31259E3524E3D32700CF7531 /* QNGZipTest.m */,
+				31304CBB256767F0001034D2 /* QNUploadServerFreezeManagerTest.m */,
+				31304CBE25676921001034D2 /* QNUploadDomainRegionTest.m */,
 			);
 			path = QiniuSDKTests;
 			sourceTree = SOURCE_ROOT;
@@ -941,6 +951,7 @@
 				318E2EF62552ADDF004EDE8C /* QNReportConfig.h in Headers */,
 				318E2F382552AE8F004EDE8C /* QiniuSDK.h in Headers */,
 				31304CAE2563AABA001034D2 /* QNNetworkStatusManager.h in Headers */,
+				31304CC12567A0A7001034D2 /* QNUploadRequestState.h in Headers */,
 				318E2F342552AE39004EDE8C /* QNResumeUpload.h in Headers */,
 				318E2F002552AE05004EDE8C /* QNFileDelegate.h in Headers */,
 				318E2EFF2552AE05004EDE8C /* QNFile.h in Headers */,
@@ -1332,6 +1343,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				31304CBF25676921001034D2 /* QNUploadDomainRegionTest.m in Sources */,
 				316A4B832431C8BA007BF564 /* QNDnsPrefetcherTest.m in Sources */,
 				31C2EEEC242DEF6A00713A33 /* QNUtilTest.m in Sources */,
 				3142419E2449553F00BD9A21 /* QNCFHttpClientTest.m in Sources */,
@@ -1343,6 +1355,7 @@
 				DF3C504A19DD7D9F000F548F /* QNResumeUploadTest.m in Sources */,
 				31FD09242487506300217848 /* QNRetryTest.m in Sources */,
 				CC251375244EE717003F4C65 /* QNPipelineTest.m in Sources */,
+				31304CBC256767F0001034D2 /* QNUploadServerFreezeManagerTest.m in Sources */,
 				DF293C9719DB865800799011 /* QNCrc32Test.m in Sources */,
 				31A1841124694A3C001D6EEE /* QNUploadErrorTest.m in Sources */,
 				CCF661062355C2C00018A41E /* QNConcurrentResumeUploadTest.m in Sources */,
@@ -1415,6 +1428,7 @@
 				DF2CDE6B19DAC6A400CE01FB /* QNUploadManager.m in Sources */,
 				3149A1DE2462A57400A2A15B /* QNUploadDomainRegion.m in Sources */,
 				31C2EEE5242DE86D00713A33 /* QNUtils.m in Sources */,
+				31304CC22567A0AA001034D2 /* QNUploadRequestState.m in Sources */,
 				4543D70224D29B21006E28B1 /* QNDnsPrefetch.m in Sources */,
 				31FD0921248662F900217848 /* QNUploadServerFreezeManager.m in Sources */,
 			);
@@ -1424,6 +1438,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				31304CC025676921001034D2 /* QNUploadDomainRegionTest.m in Sources */,
 				316A4B842431C8D2007BF564 /* QNDnsPrefetcherTest.m in Sources */,
 				31C2EEED242DEF6A00713A33 /* QNUtilTest.m in Sources */,
 				3142419F2449554200BD9A21 /* QNCFHttpClientTest.m in Sources */,
@@ -1435,6 +1450,7 @@
 				DF0A03291B3BAC6E00E3778C /* QNResumeUploadTest.m in Sources */,
 				31FD09252487506300217848 /* QNRetryTest.m in Sources */,
 				CC251376244EE717003F4C65 /* QNPipelineTest.m in Sources */,
+				31304CBD256767F0001034D2 /* QNUploadServerFreezeManagerTest.m in Sources */,
 				DF0A032B1B3BAC6E00E3778C /* QNEtagTest.m in Sources */,
 				31A1841224694A3C001D6EEE /* QNUploadErrorTest.m in Sources */,
 				CCF661072355C4480018A41E /* QNConcurrentResumeUploadTest.m in Sources */,

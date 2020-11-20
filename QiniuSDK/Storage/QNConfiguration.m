@@ -79,7 +79,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     _dnsRepreHostNum = 2;
     _dnsCacheTime = kQNDefaultDnsCacheTime;
     
-    _globalHostFrozenTime = 30;
+    _globalHostFrozenTime = 10;
     _partialHostFrozenTime = 5*60;
 }
 @end

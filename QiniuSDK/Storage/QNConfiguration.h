@@ -157,16 +157,15 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  */
 @property(nonatomic,  copy, readonly)NSString *dnsCacheDir;
 
-
 /**
- *   Host全局冻结时间  单位：秒   默认：30  推荐范围：[10 ~ 60]
- *   当某个Host的上传失败后并且可能短时间无法恢复，会冻结该Host，globalHostFrozenTime为全局冻结时间
+ *   Host全局冻结时间  单位：秒   默认：10  推荐范围：[5 ~ 30]
+ *   当某个Host的上传失败后并且可能短时间无法恢复，会冻结该Host
  */
 @property(nonatomic, assign)UInt32 globalHostFrozenTime;
 
 /**
- *   Host局部冻结时间，只会影响当前长传操作  单位：秒   默认：5*60  推荐范围：[60 ~ 10*60]
- *   当某个Host的上传失败后并且可能短时间可能会恢复，会冻结该Host，partialHostFrozenTime为全局冻结时间
+ *   Host局部冻结时间，只会影响当前上传操作  单位：秒   默认：5*60  推荐范围：[60 ~ 10*60]
+ *   当某个Host的上传失败后并且短时间可能会恢复，会局部冻结该Host
  */
 @property(nonatomic, assign)UInt32 partialHostFrozenTime;
 

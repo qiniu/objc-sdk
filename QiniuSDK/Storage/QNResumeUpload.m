@@ -74,20 +74,14 @@
 
 - (void)uploadRestChunk:(dispatch_block_t)completeHandler{
     if (!self.uploadFileInfo) {
-        if (!self.uploadChunkErrorResponseInfo) {
-            self.uploadChunkErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"regions error"];
-            self.uploadChunkErrorResponse = self.uploadChunkErrorResponseInfo.responseDictionary;
-        }
+        [self setErrorResponseInfo:[QNResponseInfo responseInfoWithInvalidArgument:@"regions error"] errorResponse:nil];
         completeHandler();
         return;
     }
     
     id <QNUploadRegion> currentRegion = [self getCurrentRegion];
     if (!currentRegion) {
-        if (!self.uploadChunkErrorResponseInfo) {
-            self.uploadChunkErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
-            self.uploadChunkErrorResponse = self.uploadChunkErrorResponseInfo.responseDictionary;
-        }
+        [self setErrorResponseInfo:[QNResponseInfo responseInfoWithNoUsableHostError:@"server error"] errorResponse:nil];
         completeHandler();
         return;
     }
@@ -130,8 +124,7 @@
     
     NSData *chunkData = [self getDataWithChunk:chunk block:block];
     if (chunkData == nil) {
-        self.uploadChunkErrorResponseInfo = [QNResponseInfo responseInfoWithLocalIOError:@"get chunk data error"];
-        self.uploadChunkErrorResponse = self.uploadChunkErrorResponseInfo.responseDictionary;
+        [self setErrorResponseInfo:[QNResponseInfo responseInfoWithLocalIOError:@"get chunk data error"] errorResponse:nil];
         completeHandler();
         return;
     }
@@ -160,8 +153,7 @@
         } else {
             chunk.isUploading = NO;
             chunk.isCompleted = NO;
-            self.uploadChunkErrorResponse = response;
-            self.uploadChunkErrorResponseInfo = responseInfo;
+            [self setErrorResponseInfo:responseInfo errorResponse:response];
             completeHandler();
         }
     }];
@@ -174,8 +166,7 @@
     
     NSData *chunkData = [self getDataWithChunk:chunk block:block];
     if (chunkData == nil) {
-        self.uploadChunkErrorResponseInfo = [QNResponseInfo responseInfoWithLocalIOError:@"get chunk data error"];
-        self.uploadChunkErrorResponse = self.uploadChunkErrorResponseInfo.responseDictionary;
+        [self setErrorResponseInfo:[QNResponseInfo responseInfoWithLocalIOError:@"get chunk data error"] errorResponse:nil];
         completeHandler();
         return;
     }
@@ -205,8 +196,7 @@
         } else {
             chunk.isUploading = NO;
             chunk.isCompleted = NO;
-            self.uploadChunkErrorResponse = response;
-            self.uploadChunkErrorResponseInfo = responseInfo;
+            [self setErrorResponseInfo:responseInfo errorResponse:response];
             completeHandler();
         }
     }];
@@ -226,6 +216,14 @@
         [self addRegionRequestMetricsOfOneFlow:metrics];
         completeHandler(responseInfo, response);
     }];
+}
+
+- (void)setErrorResponseInfo:(QNResponseInfo *)responseInfo errorResponse:(NSDictionary *)response{
+    if (!self.uploadChunkErrorResponseInfo
+        || (responseInfo.statusCode == kQNNoUsableHostError)) {
+        self.uploadChunkErrorResponseInfo = responseInfo;
+        self.uploadChunkErrorResponse = response ?: responseInfo.responseDictionary;
+    }
 }
 
 - (QNRequestTransaction *)createUploadRequestTransaction{
