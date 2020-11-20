@@ -8,6 +8,7 @@
 
 #import "QNUtils.h"
 #import "QNAsyncRun.h"
+#import "QNFileRecorder.h"
 #import "QNRecorderDelegate.h"
 #import "QNNetworkStatusManager.h"
 
@@ -67,11 +68,12 @@
 - (void)initData{
     self.isHandlingNetworkInfoOfDisk = NO;
     self.networkStatusInfo = [NSMutableDictionary dictionary];
+    self.recorder = [QNFileRecorder fileRecorderWithFolder:[[QNUtils sdkCacheDirectory] stringByAppendingString:@"/NetworkStatus"] error:nil];
     [self asyncRecordNetworkStatusInfo];
 }
 
 - (QNNetworkStatus *)getNetworkStatus:(NSString *)type{
-    if (type == nil && type.length > 0) {
+    if (type == nil || type.length == 0) {
         return nil;
     }
     QNNetworkStatus *status = self.networkStatusInfo[type];
@@ -83,7 +85,7 @@
 
 - (void)updateNetworkStatus:(NSString *)type
                       speed:(int)speed{
-    if (type == nil && type.length > 0) {
+    if (type == nil || type.length == 0) {
         return;
     }
     
@@ -124,7 +126,7 @@
         self.isHandlingNetworkInfoOfDisk = YES;
     }
     QNAsyncRun(^{
-        [self recoverNetworkStatusFromDisk];
+        [self recordNetworkStatusInfo];
         self.isHandlingNetworkInfoOfDisk = NO;
     });
 }
