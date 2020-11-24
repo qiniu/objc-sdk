@@ -66,15 +66,15 @@
     }
     BOOL isFrozen = true;
     NSString *infoKey = [self getItemInfoKey:host type:type];
-    QNUploadServerFreezeItem *item = self.freezeInfo[infoKey];
+    
+    QNUploadServerFreezeItem *item = nil;
+    @synchronized (self) {
+        item = self.freezeInfo[infoKey];
+    }
     if (!item || ![item isFrozenByDate:[NSDate date]]) {
         isFrozen = false;
     }
     return isFrozen;
-}
-
-- (void)freezeHost:(NSString *)host type:(NSString *)type{
-    [self freezeHost:host type:type frozenTime:kQNGlobalConfiguration.globalHostFrozenTime];
 }
 
 - (void)freezeHost:(NSString *)host
@@ -84,12 +84,27 @@
         return;
     }
     NSString *infoKey = [self getItemInfoKey:host type:type];
-    QNUploadServerFreezeItem *item = self.freezeInfo[infoKey];
+    QNUploadServerFreezeItem *item = nil;
+    @synchronized (self) {
+        item = self.freezeInfo[infoKey];
+    }
     if (!item) {
         item = [QNUploadServerFreezeItem item:host type:type];
         self.freezeInfo[infoKey] = item;
     }
     [item freeze:frozenTime];
+}
+
+- (void)unfreezeHost:(NSString *)host type:(NSString *)type {
+    if (!host || host.length == 0) {
+        return;
+    }
+    NSString *infoKey = [self getItemInfoKey:host type:type];
+    if (infoKey != nil){
+        @synchronized (self) {
+            [self.freezeInfo removeObjectForKey:infoKey];
+        }
+    }
 }
 
 - (NSString *)getItemInfoKey:(NSString *)host type:(NSString *)type{

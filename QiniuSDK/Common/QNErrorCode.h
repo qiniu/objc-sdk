@@ -49,6 +49,11 @@ extern const int kQNLocalIOError;
 extern const int kQNMaliciousResponseError;
 
 /**
+ *    没有可用的Host 错误
+ */
+extern const int kQNNoUsableHostError;
+
+/**
  *    非预期的系统调用 错误
  */
 extern const int kQNUnexpectedSysCallError;

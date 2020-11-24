@@ -6,7 +6,6 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-#import "QNUploadRequestMetrics.h"
 #import "QNErrorCode.h"
 
 /**
@@ -63,6 +62,9 @@
 + (instancetype)responseInfoWithFileError:(NSError *)error;
 + (instancetype)responseInfoOfZeroData:(NSString *)path;
 + (instancetype)responseInfoWithLocalIOError:(NSString *)desc;
++ (instancetype)responseInfoWithMaliciousResponseError:(NSString *)desc;
++ (instancetype)responseInfoWithNoUsableHostError:(NSString *)desc;
++ (instancetype)responseInfoWithUnexpectedSysCallError:(NSString *)desc;
 
 + (instancetype)errorResponseInfo:(int)errorType
                         errorDesc:(NSString *)errorDesc;
