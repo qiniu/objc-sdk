@@ -34,7 +34,7 @@
     [self uploadRestChunk:^{
         kQNStrongSelf;
         
-        if ([self.uploadFileInfo isAllUploaded] == NO || self.uploadChunkErrorResponseInfo) {
+        if (![self.uploadFileInfo isAllUploaded]) {
             
             if (self.uploadChunkErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
                 BOOL isSwitched = [self switchRegionAndUpload];
