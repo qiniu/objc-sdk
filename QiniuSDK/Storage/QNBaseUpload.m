@@ -6,6 +6,8 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNZoneInfo.h"
+#import "QNResponseInfo.h"
 #import "QNDefine.h"
 #import "QNBaseUpload.h"
 #import "QNUploadDomainRegion.h"

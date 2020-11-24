@@ -22,6 +22,7 @@
 
 @end
 @implementation InetAddress
+
 @end
 
 #define CustomIPValue @"192.168.1.1"
@@ -92,11 +93,6 @@
 }
 
 - (void)notestCustomDns {
-
-    InetAddress *address = [[InetAddress alloc] init];
-    address.hostValue = kCustomHost;
-    address.ipValue = CustomIPValue;
-    [kQNDnsPrefetch invalidInetAdress:address];
     
     kQNGlobalConfiguration.dns = [[CustomDns alloc] init];
     [kQNTransactionManager addDnsCheckAndPrefetchTransaction:_config.zone token:[QNUpToken parse:kDnsTestToken]];
@@ -111,10 +107,6 @@
 
 - (void)notestDefaultTTL {
 
-    InetAddress *address = [[InetAddress alloc] init];
-    address.hostValue = kCustomHost;
-    address.ipValue = CustomIPValue;
-    [kQNDnsPrefetch invalidInetAdress:address];
     QN_TEST_CASE_WAIT_TIME(1);
     
     CustomDns *dns = [[CustomDns alloc] init];

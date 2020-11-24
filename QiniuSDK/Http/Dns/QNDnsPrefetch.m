@@ -10,6 +10,7 @@
 #import "QNDnsPrefetch.h"
 #import "QNInetAddress.h"
 #import "QNDnsCacheInfo.h"
+#import "QNZoneInfo.h"
 
 #import "QNDefine.h"
 #import "QNConfig.h"
@@ -181,6 +182,7 @@
 /// happy的dns解析对象列表，会使用多个dns解析对象 包括系统解析
 @property(nonatomic, strong)QNDnsManager * httpDns;
 /// 缓存DNS解析结果
+/// 线程安全：内部方法均是在同一线程执行，读写不必加锁，对外开放接口读操作 需要和内部写操作枷锁
 @property(nonatomic, strong)NSMutableDictionary <NSString *, NSArray<QNDnsNetworkAddress *>*> *addressDictionary;
 
 @end
@@ -265,19 +267,6 @@
     [self endPreFetch];
 }
 
-//MARK: -- 强制无效缓存
-// 无效缓存，会根据inetAddress的host，无效host对应的ip缓存
-- (void)invalidInetAdress:(id <QNIDnsNetworkAddress>)inetAddress{
-    NSArray *inetAddressList = self.addressDictionary[inetAddress.hostValue];
-    NSMutableArray *inetAddressListNew = [NSMutableArray array];
-    for (id <QNIDnsNetworkAddress> inetAddressP in inetAddressList) {
-        if (![inetAddress.ipValue isEqualToString:inetAddressP.ipValue]) {
-            [inetAddressListNew addObject:inetAddressP];
-        }
-    }
-    [self.addressDictionary setObject:[inetAddressListNew copy] forKey:inetAddress.hostValue];
-}
-
 //MARK: -- 读取缓存的DNS信息
 /// 根据host从缓存中读取DNS信息
 - (NSArray <id <QNIDnsNetworkAddress> > *)getInetAddressByHost:(NSString *)host{
@@ -286,7 +275,10 @@
         return nil;
     }
     
-    NSArray <QNDnsNetworkAddress *> *addressList = self.addressDictionary[host];
+    NSArray <QNDnsNetworkAddress *> *addressList = nil;
+    @synchronized (self) {
+        addressList = self.addressDictionary[host];
+    }
     if (![addressList.firstObject isValid]) {
         QNAsyncRun(^{
             [[QNTransactionManager shared] setDnsCheckWhetherCachedValidTransactionAction];
@@ -398,7 +390,10 @@
                 [addressListP addObject:address];
             }
         }
-        self.addressDictionary[preHost] = [addressListP copy];
+        addressListP = [addressListP copy];
+        @synchronized (self) {
+            self.addressDictionary[preHost] = addressListP;
+        }
         return YES;
     } else {
         return NO;
@@ -432,8 +427,9 @@
             }
         }
     }
-    self.addressDictionary = newAddressDictionary;
-    
+    @synchronized (self) {
+        self.addressDictionary = newAddressDictionary;
+    }
     return NO;
 }
 
@@ -484,7 +480,9 @@
 }
 
 - (void)clearPreHosts{
-    [self.addressDictionary removeAllObjects];
+    @synchronized (self) {
+        [self.addressDictionary removeAllObjects];
+    }
 }
 
 

@@ -70,6 +70,21 @@ static NSString *kQNErrorDomain = @"qiniu.com";
                                    errorDesc:desc];
 }
 
++ (instancetype)responseInfoWithMaliciousResponseError:(NSString *)desc{
+    return [QNResponseInfo errorResponseInfo:kQNMaliciousResponseError
+                                   errorDesc:desc];
+}
+
++ (instancetype)responseInfoWithNoUsableHostError:(NSString *)desc{
+    return [QNResponseInfo errorResponseInfo:kQNNoUsableHostError
+                                   errorDesc:desc];
+}
+
++ (instancetype)responseInfoWithUnexpectedSysCallError:(NSString *)desc{
+    return [QNResponseInfo errorResponseInfo:kQNUnexpectedSysCallError
+                                   errorDesc:desc];
+}
+
 + (instancetype)errorResponseInfo:(int)errorType
                         errorDesc:(NSString *)errorDesc{
     return [self errorResponseInfo:errorType errorDesc:errorDesc error:nil];
