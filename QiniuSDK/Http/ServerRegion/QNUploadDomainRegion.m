@@ -56,8 +56,10 @@
         return nil;
     }
     
-    if (!self.ipGroupList || self.ipGroupList.count == 0) {
-        [self createIpGroupList];
+    @synchronized (self) {
+        if (!self.ipGroupList || self.ipGroupList.count == 0) {
+            [self createIpGroupList];
+        }
     }
     
     // Host解析出IP时:
@@ -133,31 +135,29 @@
     }
 }
 - (void)createIpGroupList{
-    @synchronized (self) {
-        if (self.ipGroupList && self.ipGroupList.count > 0) {
-            return;
-        }
-        
-        NSMutableDictionary *ipGroupInfos = [NSMutableDictionary dictionary];
-        NSArray *inetAddresses = [kQNDnsPrefetch getInetAddressByHost:self.host];
-        for (id <QNIDnsNetworkAddress> inetAddress in inetAddresses) {
-            NSString *ipValue = inetAddress.ipValue;
-            NSString *groupType = [QNUtils getIpType:ipValue host:self.host];
-            if (groupType) {
-                NSMutableArray *ipList = ipGroupInfos[groupType] ?: [NSMutableArray array];
-                [ipList addObject:inetAddress];
-                ipGroupInfos[groupType] = ipList;
-            }
-        }
-        
-        NSMutableArray *ipGroupList = [NSMutableArray array];
-        for (NSString *groupType in ipGroupInfos.allKeys) {
-            NSArray *ipList = ipGroupInfos[groupType];
-            QNUploadIpGroup *ipGroup = [[QNUploadIpGroup alloc] initWithGroupType:groupType ipList:ipList];
-            [ipGroupList addObject:ipGroup];
-        }
-        self.ipGroupList = ipGroupList;
+    if (self.ipGroupList && self.ipGroupList.count > 0) {
+        return;
     }
+    
+    NSMutableDictionary *ipGroupInfos = [NSMutableDictionary dictionary];
+    NSArray *inetAddresses = [kQNDnsPrefetch getInetAddressByHost:self.host];
+    for (id <QNIDnsNetworkAddress> inetAddress in inetAddresses) {
+        NSString *ipValue = inetAddress.ipValue;
+        NSString *groupType = [QNUtils getIpType:ipValue host:self.host];
+        if (groupType) {
+            NSMutableArray *ipList = ipGroupInfos[groupType] ?: [NSMutableArray array];
+            [ipList addObject:inetAddress];
+            ipGroupInfos[groupType] = ipList;
+        }
+    }
+    
+    NSMutableArray *ipGroupList = [NSMutableArray array];
+    for (NSString *groupType in ipGroupInfos.allKeys) {
+        NSArray *ipList = ipGroupInfos[groupType];
+        QNUploadIpGroup *ipGroup = [[QNUploadIpGroup alloc] initWithGroupType:groupType ipList:ipList];
+        [ipGroupList addObject:ipGroup];
+    }
+    self.ipGroupList = ipGroupList;
 }
 - (void)freeze:(NSString *)ip freezeManager:(QNUploadServerFreezeManager *)freezeManager frozenTime:(NSInteger)frozenTime{
     [freezeManager freezeHost:self.host type:[QNUtils getIpType:ip host:self.host] frozenTime:frozenTime];
@@ -235,13 +235,23 @@
     
     NSArray *hostList = requestState.isUseOldServer ? self.oldDomainHostList : self.domainHostList;
     NSDictionary *domainInfo = requestState.isUseOldServer ? self.oldDomainDictionary : self.domainDictionary;
+    // 同时查找最优 http 和 最优HTTP3，当使用http返回server, 当使用HTTP3，返回http3Server，如果http3Server不存在，返回server
     QNUploadServer *server = nil;
+    QNUploadServer *http3Server = nil;
+    // 选择未被冻结，且网速最好的ip/host
     for (NSString *host in hostList) {
-        server = [domainInfo[host] getServer:@[self.partialFreezeManager, kQNUploadServerFreezeManager] requestState:requestState];
-        if (server) {
-           break;
+        QNUploadServer *newServer = [domainInfo[host] getServer:@[self.partialFreezeManager, kQNUploadServerFreezeManager] requestState:requestState];
+        server = [QNUploadServerNetworkStatus getBetterNetworkServer:server serverB:newServer];
+        if ([QNUploadServerNetworkStatus isServerSupportHTTP3:newServer]) {
+            http3Server = [QNUploadServerNetworkStatus getBetterNetworkServer:http3Server serverB:newServer];
         }
     }
+    
+    // 使用http3 && 存在有效的http3 server
+    if (requestState.isHTTP3 && http3Server != nil) {
+        server = http3Server;
+    }
+    
     if (server == nil && !self.hasGot && hostList.count > 0) {
         NSInteger index = arc4random()%hostList.count;
         NSString *host = hostList[index];

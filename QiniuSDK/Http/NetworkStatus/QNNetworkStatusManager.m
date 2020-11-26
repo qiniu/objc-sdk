@@ -76,8 +76,11 @@
     if (type == nil || type.length == 0) {
         return nil;
     }
-    QNNetworkStatus *status = self.networkStatusInfo[type];
-    if (status == nil){
+    QNNetworkStatus *status = nil;
+    @synchronized (self) {
+        status = self.networkStatusInfo[type];
+    }
+    if (status == nil) {
         status = [[QNNetworkStatus alloc] init];
     }
     return status;
@@ -89,12 +92,14 @@
         return;
     }
     
-    QNNetworkStatus *status = self.networkStatusInfo[type];
-    if (status == nil) {
-        status = [[QNNetworkStatus alloc] init];
-        self.networkStatusInfo[type] = status;
+    @synchronized (self) {
+        QNNetworkStatus *status = self.networkStatusInfo[type];
+        if (status == nil) {
+            status = [[QNNetworkStatus alloc] init];
+            self.networkStatusInfo[type] = status;
+        }
+        status.speed = speed;
     }
-    status.speed = speed;
     
     [self asyncRecordNetworkStatusInfo];
 }
@@ -105,12 +110,14 @@
         return;
     }
     
-    QNNetworkStatus *status = self.networkStatusInfo[type];
-    if (status == nil) {
-        status = [[QNNetworkStatus alloc] init];
-        self.networkStatusInfo[type] = status;
+    @synchronized (self) {
+        QNNetworkStatus *status = self.networkStatusInfo[type];
+        if (status == nil) {
+            status = [[QNNetworkStatus alloc] init];
+            self.networkStatusInfo[type] = status;
+        }
+        status.supportHTTP3 = supportHTTP3;
     }
-    status.supportHTTP3 = supportHTTP3;
     
     [self asyncRecordNetworkStatusInfo];
 }
