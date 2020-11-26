@@ -51,7 +51,7 @@
         });
     }
     dispatch_group_notify(_uploadGroup, _uploadQueue, ^{
-        if ([self.uploadFileInfo isAllUploaded] == NO || self.uploadBlockErrorResponseInfo) {
+        if (![self.uploadFileInfo isAllUploaded]) {
             
             if (self.uploadBlockErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
                 BOOL isSwitched = [self switchRegionAndUpload];
