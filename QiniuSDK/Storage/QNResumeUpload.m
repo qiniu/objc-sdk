@@ -42,8 +42,7 @@
         
         // 2. 上传数据
         [self uploadRestData:^{
-            
-            if ([self.uploadFileInfo isAllUploaded] == NO || self.uploadDataErrorResponseInfo) {
+            if (![self.uploadFileInfo isAllUploaded]) {
                 if (self.uploadDataErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
                     BOOL isSwitched = [self switchRegionAndUpload];
                     if (isSwitched == NO) {
@@ -81,20 +80,14 @@
 
 - (void)uploadRestData:(dispatch_block_t)completeHandler{
     if (!self.uploadFileInfo) {
-        if (!self.uploadDataErrorResponseInfo) {
-            self.uploadDataErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"file error"];
-            self.uploadDataErrorResponse = self.uploadDataErrorResponseInfo.responseDictionary;
-        }
+        [self setErrorResponseInfo:[QNResponseInfo responseInfoWithInvalidArgument:@"file error"] errorResponse:nil];
         completeHandler();
         return;
     }
     
     id <QNUploadRegion> currentRegion = [self getCurrentRegion];
     if (!currentRegion) {
-        if (!self.uploadDataErrorResponseInfo) {
-            self.uploadDataErrorResponseInfo = [QNResponseInfo responseInfoWithInvalidArgument:@"server error"];
-            self.uploadDataErrorResponse = self.uploadDataErrorResponseInfo.responseDictionary;
-        }
+        [self setErrorResponseInfo:[QNResponseInfo responseInfoWithNoUsableHostError:@"server error"] errorResponse:nil];
         completeHandler();
         return;
     }
@@ -133,6 +126,14 @@
                 [self uploadRestData:completeHandler];
             }
         }];
+    }
+}
+
+- (void)setErrorResponseInfo:(QNResponseInfo *)responseInfo errorResponse:(NSDictionary *)response{
+    if (!self.uploadDataErrorResponseInfo
+        || (responseInfo.statusCode == kQNNoUsableHostError)) {
+        self.uploadDataErrorResponseInfo = responseInfo;
+        self.uploadDataErrorResponse = response ?: responseInfo.responseDictionary;
     }
 }
 

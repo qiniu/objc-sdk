@@ -55,7 +55,7 @@
         
         // 2. 上传数据
         [self concurrentUploadRestData:^{
-            if ([self.uploadFileInfo isAllUploaded] == NO || self.uploadDataErrorResponseInfo) {
+            if (![self.uploadFileInfo isAllUploaded]) {
                 if (self.uploadDataErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
                     BOOL isSwitched = [self switchRegionAndUpload];
                     if (isSwitched == NO) {
