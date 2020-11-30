@@ -423,6 +423,11 @@
     [item setReportValue:taskMetricsP.requestCount forKey:QNReportQualityKeyRequestsCount];
     [item setReportValue:taskMetricsP.regionCount forKey:QNReportQualityKeyRegionsCount];
     [item setReportValue:taskMetricsP.bytesSend forKey:QNReportQualityKeyBytesSent];
+    
+    [item setReportValue:responseInfo.requestReportErrorType forKey:QNReportQualityKeyErrorType];
+    NSString *errorDesc = responseInfo.requestReportErrorType ? responseInfo.message : nil;
+    [item setReportValue:errorDesc forKey:QNReportQualityKeyErrorDescription];
+    
     [kQNReporter reportItem:item token:token];
 }
 
