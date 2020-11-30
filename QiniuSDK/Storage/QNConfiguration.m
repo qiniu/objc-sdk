@@ -78,22 +78,9 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     _dnsCacheDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches/Dns"];
     _dnsRepreHostNum = 2;
     _dnsCacheTime = kQNDefaultDnsCacheTime;
-    
-    _isCheckOpen = true;
-    _maxCheckTime = 9;
-    _maxCheckCount = 2;
 
     _globalHostFrozenTime = 10;
     _partialHostFrozenTime = 5*60;
-}
-
-- (void)setMaxCheckTime:(int)maxCheckTime{
-    if (maxCheckTime < 1) {
-        maxCheckTime = 1;
-    } else if (maxCheckTime > 15) {
-        maxCheckTime = 15;
-    }
-    _maxCheckCount = maxCheckTime;
 }
 
 @end

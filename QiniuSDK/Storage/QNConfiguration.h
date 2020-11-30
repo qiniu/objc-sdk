@@ -158,21 +158,6 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property(nonatomic,  copy, readonly)NSString *dnsCacheDir;
 
 /**
- *  是否开启网络检测
- */
-@property(nonatomic, assign)BOOL isCheckOpen;
-
-/**
- *  单个IP一次检测次数 默认：2次
- */
-@property(nonatomic, assign)int maxCheckCount;
-
-/**
- * 单个IP检测的最长时间 maxTime >= 1 && maxTime <= 600  默认：9秒
- */
-@property(nonatomic, assign)int maxCheckTime;
-
-/**
  *   Host全局冻结时间  单位：秒   默认：10  推荐范围：[5 ~ 30]
  *   当某个Host的上传失败后并且可能短时间无法恢复，会冻结该Host
  */
