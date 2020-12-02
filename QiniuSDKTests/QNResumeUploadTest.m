@@ -46,7 +46,7 @@
     }];
     NSArray *sizeArray = @[@1000, @3000, @4000, @5000, @8000, @10000, @20000];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"concurrent_cancel_v1_%@k", size];
+        NSString *key = [NSString stringWithFormat:@"resume_cancel_v1_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self cancelTest:cancelPercent tempFile:tempFile key:key config:config option:nil];
     }
@@ -60,7 +60,7 @@
     }];
     NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"concurrent_http_v1_%@k", size];
+        NSString *key = [NSString stringWithFormat:@"resume_http_v1_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self uploadFileAndAssertSuccessResult:tempFile key:key config:config option:nil];
     }
@@ -75,7 +75,7 @@
     }];
     NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"concurrent_https_v1_%@k", size];
+        NSString *key = [NSString stringWithFormat:@"resume_https_v1_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self uploadFileAndAssertSuccessResult:tempFile key:key config:config option:nil];
     }
@@ -94,7 +94,7 @@
     
     NSArray *sizeArray = @[@1000, @3000, @4000, @5000, @8000, @10000, @20000];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"concurrent_reupload_v1_%@k", size];
+        NSString *key = [NSString stringWithFormat:@"resume_reupload_v1_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self resumeUploadTest:0.5 tempFile:tempFile key:key config:config option:nil];
     }
@@ -107,7 +107,7 @@
         builder.useHttps = NO;
     }];
     
-    NSString *keyUp = [NSString stringWithFormat:@"concurrent_NoKey_v1_%dk", 600];
+    NSString *keyUp = [NSString stringWithFormat:@"resume_NoKey_v1_%dk", 600];
     QNTempFile *tempFile = [QNTempFile createTempFileWithSize:600 * 1024 identifier:keyUp];
     tempFile.canRemove = NO;
     [self uploadFileAndAssertSuccessResult:tempFile key:nil config:configHttp option:nil];
@@ -128,7 +128,7 @@
         builder.useHttps = NO;
     }];
     
-    NSString *key = @"concurrent_v1_0k";
+    NSString *key = @"resume_v1_0k";
     QNTempFile *tempFile = [QNTempFile createTempFileWithSize:0 identifier:key];
     tempFile.canRemove = NO;
     [self uploadFileAndAssertResult:kQNZeroDataSize tempFile:tempFile key:key config:configHttp option:nil];
@@ -157,7 +157,7 @@
     }];
 
     int size = 600;
-    NSString *keyUp = [NSString stringWithFormat:@"concurrent_convert_%dk", size];
+    NSString *keyUp = [NSString stringWithFormat:@"resume_convert_%dk", size];
     QNTempFile *tempFile = [QNTempFile createTempFileWithSize:size * 1024 identifier:keyUp];
     [self uploadFileAndAssertSuccessResult:tempFile key:keyUp config:config option:nil];
 }
@@ -175,7 +175,7 @@
     }];
     NSArray *sizeArray = @[@1000, @3000, @4000, @5000, @8000, @10000, @20000];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"concurrent_cancel_v2_%@k", size];
+        NSString *key = [NSString stringWithFormat:@"resume_cancel_v2_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self cancelTest:cancelPercent tempFile:tempFile key:key config:config option:nil];
     }
@@ -189,7 +189,7 @@
     }];
     NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"concurrent_http_v2_%@k", size];
+        NSString *key = [NSString stringWithFormat:@"resume_http_v2_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self uploadFileAndAssertSuccessResult:tempFile key:key config:config option:nil];
     }
@@ -204,7 +204,7 @@
     }];
     NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"concurrent_https_v2_%@k", size];
+        NSString *key = [NSString stringWithFormat:@"resume_https_v2_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self uploadFileAndAssertSuccessResult:tempFile key:key config:config option:nil];
     }
@@ -223,7 +223,7 @@
     
     NSArray *sizeArray = @[@1000, @3000, @4000, @5000, @8000, @10000, @20000];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"concurrent_reupload_v2_%@k", size];
+        NSString *key = [NSString stringWithFormat:@"resume_reupload_v2_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self resumeUploadTest:0.5 tempFile:tempFile key:key config:config option:nil];
     }
@@ -232,12 +232,12 @@
 - (void)testNoKeyV2 {
     QNConfiguration *configHttp = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.resumeUploadVersion = QNResumeUploadVersionV2;
-        builder.useConcurrentResumeUpload = YES;
+        builder.useConcurrentResumeUpload = NO;
         builder.concurrentTaskCount = 3;
         builder.useHttps = NO;
     }];
     
-    NSString *keyUp = [NSString stringWithFormat:@"concurrent_NoKey_v2_%dk", 600];
+    NSString *keyUp = [NSString stringWithFormat:@"resume_NoKey_v2_%dk", 600];
     QNTempFile *tempFile = [QNTempFile createTempFileWithSize:600 * 1024 identifier:keyUp];
     tempFile.canRemove = NO;
     [self uploadFileAndAssertSuccessResult:tempFile key:nil config:configHttp option:nil];
@@ -258,14 +258,14 @@
         builder.useHttps = NO;
     }];
     
-    NSString *key = @"concurrent_v2_0k";
+    NSString *key = @"resume_v2_0k";
     QNTempFile *tempFile = [QNTempFile createTempFileWithSize:0 identifier:key];
     tempFile.canRemove = NO;
     [self uploadFileAndAssertResult:kQNZeroDataSize tempFile:tempFile key:key config:configHttp option:nil];
 
     tempFile.canRemove = YES;
     QNConfiguration *configHttps = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-           builder.useConcurrentResumeUpload = YES;
+           builder.useConcurrentResumeUpload = NO;
            builder.concurrentTaskCount = 3;
            builder.useHttps = YES;
        }];
