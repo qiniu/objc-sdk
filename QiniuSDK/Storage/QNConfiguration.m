@@ -53,7 +53,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
         _allowBackupHost = builder.allowBackupHost;
 
         _useConcurrentResumeUpload = builder.useConcurrentResumeUpload;
-        
+        _resumeUploadVersion = builder.resumeUploadVersion;
         _concurrentTaskCount = builder.concurrentTaskCount;
     }
     return self;
@@ -105,6 +105,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
         _useHttps = YES;
         _allowBackupHost = YES;
         _useConcurrentResumeUpload = NO;
+        _resumeUploadVersion = QNResumeUploadVersionV1;
         _concurrentTaskCount = 3;
     }
     return self;

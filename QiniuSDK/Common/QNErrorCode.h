@@ -54,6 +54,11 @@ extern const int kQNMaliciousResponseError;
 extern const int kQNNoUsableHostError;
 
 /**
+ *    SDK 内部错误
+ */
+extern const int kQNSDKInteriorError;
+
+/**
  *    非预期的系统调用 错误
  */
 extern const int kQNUnexpectedSysCallError;

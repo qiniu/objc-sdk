@@ -10,6 +10,7 @@
 
 const int kQNUnexpectedSysCallError = -10;
 const int kQNNoUsableHostError = -9;
+const int kQNSDKInteriorError = -9;
 const int kQNMaliciousResponseError = -8;
 const int kQNLocalIOError = -7;
 const int kQNZeroDataSize = -6;

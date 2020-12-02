@@ -65,6 +65,7 @@
 + (instancetype)responseInfoWithLocalIOError:(NSString *)desc;
 + (instancetype)responseInfoWithMaliciousResponseError:(NSString *)desc;
 + (instancetype)responseInfoWithNoUsableHostError:(NSString *)desc;
++ (instancetype)responseInfoWithSDKInteriorError:(NSString *)desc;
 + (instancetype)responseInfoWithUnexpectedSysCallError:(NSString *)desc;
 
 + (instancetype)errorResponseInfo:(int)errorType

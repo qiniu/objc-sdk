@@ -33,16 +33,16 @@
 
     kQNWeakSelf;
     // 1. 启动upload
-    [self initPartToServer:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+    [self serverInit:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
         kQNStrongSelf;
-        if (!responseInfo.isOK || !self.uploadFileInfo.uploadId || self.uploadFileInfo.uploadId.length == 0) {
+        if (!responseInfo.isOK) {
             [self complete:responseInfo response:response];
             return;
         }
         
         // 2. 上传数据
         [self uploadRestData:^{
-            if (![self.uploadFileInfo isAllUploaded]) {
+            if (![self isAllUploaded]) {
                 if (self.uploadDataErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
                     BOOL isSwitched = [self switchRegionAndUpload];
                     if (isSwitched == NO) {
@@ -55,7 +55,7 @@
             }
             
             // 3. 组装文件
-            [self completePartsToServer:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+            [self completeUpload:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
 
                 if (responseInfo.isOK == NO) {
                     if (responseInfo.couldRetry && [self.config allowBackupHost]) {
@@ -70,7 +70,6 @@
                     QNAsyncRunInMain(^{
                         self.option.progressHandler(self.key, 1.0);
                      });
-                    [self removeUploadInfoRecord];
                     [self complete:responseInfo response:response];
                 }
             }];
@@ -79,54 +78,16 @@
 }
 
 - (void)uploadRestData:(dispatch_block_t)completeHandler{
-    if (!self.uploadFileInfo) {
-        [self setErrorResponseInfo:[QNResponseInfo responseInfoWithInvalidArgument:@"file error"] errorResponse:nil];
-        completeHandler();
-        return;
-    }
-    
-    id <QNUploadRegion> currentRegion = [self getCurrentRegion];
-    if (!currentRegion) {
-        [self setErrorResponseInfo:[QNResponseInfo responseInfoWithNoUsableHostError:@"server error"] errorResponse:nil];
-        completeHandler();
-        return;
-    }
-    
-    QNUploadData *data = [self.uploadFileInfo nextUploadData];
-    
-    kQNWeakSelf;
-    void (^progress)(long long, long long) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
-        kQNStrongSelf;
-        
-        data.progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
 
-        float percent = self.uploadFileInfo.progress;
-        if (percent > 0.95) {
-            percent = 0.95;
-        }
-        if (percent > self.previousPercent) {
-            self.previousPercent = percent;
+    [self uploadNextDataCompleteHandler:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+        if (!responseInfo.isOK) {
+            self.uploadDataErrorResponseInfo = responseInfo;
+            self.uploadDataErrorResponse = response;
+            completeHandler();
         } else {
-            percent = self.previousPercent;
+            [self uploadRestData:completeHandler];
         }
-        QNAsyncRunInMain(^{
-            self.option.progressHandler(self.key, percent);
-        });
-    };
-    
-    if (!data) {
-        completeHandler();
-    } else {
-        [self uploadDataToServer:data progress:progress completeHandler:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
-            if (!responseInfo.isOK) {
-                self.uploadDataErrorResponseInfo = responseInfo;
-                self.uploadDataErrorResponse = response;
-                completeHandler();
-            } else {
-                [self uploadRestData:completeHandler];
-            }
-        }];
-    }
+    }];
 }
 
 - (void)setErrorResponseInfo:(QNResponseInfo *)responseInfo errorResponse:(NSDictionary *)response{

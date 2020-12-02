@@ -29,6 +29,11 @@ extern const UInt32 kQNDefaultDnsCacheTime;
  */
 typedef NSString * (^QNUrlConvert)(NSString *url);
 
+typedef NS_ENUM(NSInteger, QNResumeUploadVersion){
+    QNResumeUploadVersionV1, // 分片v1
+    QNResumeUploadVersionV2  // 分片v2
+};
+
 @class QNConfigurationBuilder;
 @class QNZone;
 @class QNReportConfig;
@@ -84,6 +89,11 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  *   也可以采用串行，采用并发时，可以设置并发的个数(对concurrentTaskCount进行设置)。
  */
 @property (nonatomic, assign, readonly) BOOL useConcurrentResumeUpload;
+
+/**
+ *   分片上传版本
+ */
+@property (nonatomic, assign, readonly) QNResumeUploadVersion resumeUploadVersion;
 
 /**
  *   并发分片上传的并发任务个数，在concurrentResumeUpload为YES时有效，默认为3个
@@ -221,6 +231,11 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  *   是否开启并发分片上传，默认为NO
  */
 @property (nonatomic, assign) BOOL useConcurrentResumeUpload;
+
+/**
+ *   分片上传版本
+ */
+@property (nonatomic, assign) QNResumeUploadVersion resumeUploadVersion;
 
 /**
  *   并发分片上传的并发任务个数，在concurrentResumeUpload为YES时有效，默认为3个

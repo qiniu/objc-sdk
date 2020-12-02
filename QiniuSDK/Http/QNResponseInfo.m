@@ -88,6 +88,11 @@ static NSString *kQNErrorDomain = @"qiniu.com";
                                    errorDesc:desc];
 }
 
++ (instancetype)responseInfoWithSDKInteriorError:(NSString *)desc{
+    return [QNResponseInfo errorResponseInfo:kQNSDKInteriorError
+                                   errorDesc:desc];
+}
+
 + (instancetype)responseInfoWithUnexpectedSysCallError:(NSString *)desc{
     return [QNResponseInfo errorResponseInfo:kQNUnexpectedSysCallError
                                    errorDesc:desc];

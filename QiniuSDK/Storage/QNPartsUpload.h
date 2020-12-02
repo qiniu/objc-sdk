@@ -14,27 +14,13 @@ NS_ASSUME_NONNULL_BEGIN
 @class QNRequestTransaction;
 @interface QNPartsUpload : QNBaseUpload
 
-// 定制data大小 在执行run之前赋值
-@property(nonatomic, strong)NSNumber *dataSize;
-/// 上传信息
-@property(nonatomic, strong, readonly)QNUploadFileInfo *uploadFileInfo;
+- (BOOL)isAllUploaded;
 
-- (void)recordUploadInfo;
+- (void)serverInit:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
 
-- (void)removeUploadInfoRecord;
+- (void)uploadNextDataCompleteHandler:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
 
-
-- (void)initPartToServer:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
-
-- (void)uploadDataToServer:(QNUploadData *)data
-                  progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-           completeHandler:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
-
-- (void)completePartsToServer:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
-
-
-- (QNRequestTransaction *)createUploadRequestTransaction;
-- (void)destroyUploadRequestTransaction:(QNRequestTransaction *)transaction;
+- (void)completeUpload:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
 
 @end
 
