@@ -33,6 +33,7 @@
     }];
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
+    NSLog(@"responseInfo:%@", responseInfo);
     XCTAssert(responseInfo.isCancelled, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
 }
@@ -61,6 +62,7 @@
     }];
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
+    NSLog(@"responseInfo:%@", responseInfo);
     XCTAssert(responseInfo.isCancelled, @"Pass");
     XCTAssert(responseInfo.reqId, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");
@@ -134,6 +136,7 @@
     }];
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
+    NSLog(@"responseInfo:%@", responseInfo);
     XCTAssert(responseInfo.isOK, @"Pass");
     XCTAssert(responseInfo.reqId, @"Pass");
     XCTAssert([keyUp isEqualToString:key], @"Pass");

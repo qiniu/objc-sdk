@@ -26,11 +26,26 @@ NS_ASSUME_NONNULL_BEGIN
                            config:(QNConfiguration * _Nullable)config
                            option:(QNUploadOption * _Nullable)option;
 
+- (void)uploadFileAndAssertResult:(int)statusCode
+                         tempFile:(QNTempFile * _Nullable)tempFile
+                            token:(NSString * _Nullable)token
+                              key:(NSString * _Nullable)key
+                           config:(QNConfiguration * _Nullable)config
+                           option:(QNUploadOption * _Nullable)option;
+
 - (void)uploadFile:(QNTempFile * _Nullable)tempFile
                key:(NSString * _Nullable)key
             config:(QNConfiguration * _Nullable)config
             option:(QNUploadOption * _Nullable)option
           complete:(void(^)(QNResponseInfo *responseInfo, NSString *key))complete;
+
+- (void)uploadFile:(QNTempFile * _Nullable)tempFile
+             token:(NSString * _Nullable)token
+               key:(NSString * _Nullable)key
+            config:(QNConfiguration * _Nullable)config
+            option:(QNUploadOption * _Nullable)option
+          complete:(void(^)(QNResponseInfo *responseInfo, NSString *key))complete;
+
 
 - (void)uploadDataAndAssertSuccessResult:(NSData * _Nullable)data
                                      key:(NSString * _Nullable)key
@@ -38,12 +53,26 @@ NS_ASSUME_NONNULL_BEGIN
                                   option:(QNUploadOption * _Nullable)option;
 
 - (void)uploadDataAndAssertResult:(int)statusCode
-                             data:(NSData *)data
-                              key:(NSString *)key
-                           config:(QNConfiguration *)config
-                           option:(QNUploadOption *)option;
+                             data:(NSData * _Nullable)data
+                              key:(NSString * _Nullable)key
+                           config:(QNConfiguration * _Nullable)config
+                           option:(QNUploadOption * _Nullable)option;
+
+- (void)uploadDataAndAssertResult:(int)statusCode
+                             data:(NSData * _Nullable)data
+                            token:(NSString * _Nullable)token
+                              key:(NSString * _Nullable)key
+                           config:(QNConfiguration * _Nullable)config
+                           option:(QNUploadOption * _Nullable)option;
 
 - (void)uploadData:(NSData * _Nullable)data
+               key:(NSString * _Nullable)key
+            config:(QNConfiguration * _Nullable)config
+            option:(QNUploadOption * _Nullable)option
+          complete:(void(^)(QNResponseInfo *responseInfo, NSString *key))complete;
+
+- (void)uploadData:(NSData * _Nullable)data
+             token:(NSString * _Nullable)token
                key:(NSString * _Nullable)key
             config:(QNConfiguration * _Nullable)config
             option:(QNUploadOption * _Nullable)option

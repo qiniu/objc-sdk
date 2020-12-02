@@ -141,28 +141,6 @@
 }
 
 
-
-
-- (void)testUrlConvert {
-    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        builder.converter = ^NSString *(NSString *url) {
-            return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
-        };
-        NSArray *upList = [[NSArray alloc] initWithObjects:@"up-na0.qiniu.com", @"up-na0.qiniu.com", nil];
-        builder.useHttps = NO;
-        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:upList];
-    }];
-
-    int size = 600;
-    NSString *keyUp = [NSString stringWithFormat:@"concurrent_convert_%dk", size];
-    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:size * 1024 identifier:keyUp];
-    [self uploadFileAndAssertSuccessResult:tempFile key:keyUp config:config option:nil];
-    
-}
-
-
-
-
 - (void)testCancelV2 {
     float cancelPercent = 0.5;
     

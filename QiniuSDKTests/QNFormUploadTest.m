@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-#import <XCTest/XCTest.h>
+#import "QNUploadFlowTest.h"
 
 #import <AGAsyncTestHelper.h>
 
@@ -14,7 +14,7 @@
 #import "QNTempFile.h"
 #import "QNTestConfig.h"
 
-@interface QNFormUploadTest : XCTestCase
+@interface QNFormUploadTest : QNUploadFlowTest
 
 @property QNUploadManager *upManager;
 
@@ -31,208 +31,117 @@
     [super tearDown];
 }
 
-- (void)testSmall {
-    __block QNResponseInfo *testInfo = nil;
-    __block NSDictionary *testResp = nil;
+- (void)testCancel {
+    float cancelPercent = 0.5;
     
-    QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
-    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-    [self.upManager putData:data key:@"你好" token:token_na0 complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        testInfo = info;
-        testResp = resp;
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.useHttps = YES;
+    }];
+    NSArray *sizeArray = @[@1000, @3000, @4000, @5000, @8000];
+    for (NSNumber *size in sizeArray) {
+        NSString *key = [NSString stringWithFormat:@"form_cancel_%@k", size];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+        [self cancelTest:cancelPercent tempFile:tempFile key:key config:config option:nil];
     }
-                     option:opt];
-
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    NSLog(@"%@", testResp);
-    XCTAssert(testInfo.isOK, @"Pass");
-    XCTAssert(testInfo.reqId, @"Pass");
 }
 
-- (void)testBig {
-    __block QNResponseInfo *testInfo = nil;
-    __block NSDictionary *testResp = nil;
-    
-    QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
-    QNTempFile *file = [QNTempFile createTempFileWithSize:8*1024*1024 + 1 identifier:@"form_5M"];
-    NSData *data = [NSData dataWithContentsOfFile:file.fileUrl.path];
-    [self.upManager putData:data key:@"form_5M" token:token_na0 complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        testInfo = info;
-        testResp = resp;
+- (void)testHttp {
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.useHttps = NO;
+    }];
+    NSArray *sizeArray = @[@10, @50, @100, @200, @300, @500, @1000, @3000, @4000, @5000, @8000];
+    @autoreleasepool {
+        for (NSNumber *size in sizeArray) {
+            NSString *key = [NSString stringWithFormat:@"form_http_%@k", size];
+            QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+            NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
+            [self uploadDataAndAssertSuccessResult:data key:key config:config option:nil];
+        }
+        
+        for (NSNumber *size in sizeArray) {
+            NSString *key = [NSString stringWithFormat:@"form_http_%@k", size];
+            QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+            NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
+            [self uploadDataAndAssertSuccessResult:data key:key config:config option:nil];
+        }
     }
-                     option:opt];
+}
 
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    NSLog(@"%@", testResp);
-    XCTAssert(testInfo.isOK, @"Pass");
-    XCTAssert(testInfo.reqId, @"Pass");
+- (void)testHttpsV1 {
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.useHttps = YES;
+    }];
+    NSArray *sizeArray = @[@10, @50, @100, @200, @300, @500, @1000, @3000, @4000, @5000, @8000];
+    @autoreleasepool {
+        for (NSNumber *size in sizeArray) {
+            NSString *key = [NSString stringWithFormat:@"form_https_%@k", size];
+            QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+            NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
+            [self uploadDataAndAssertSuccessResult:data key:key config:config option:nil];
+        }
+        
+        for (NSNumber *size in sizeArray) {
+            NSString *key = [NSString stringWithFormat:@"form_https_%@k", size];
+            QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+            NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
+            [self uploadDataAndAssertSuccessResult:data key:key config:config option:nil];
+        }
+    }
+}
+
+- (void)testSmall {
+
+    QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
+    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
+    [self uploadDataAndAssertSuccessResult:data key:@"你好" config:nil option:opt];
 }
 
 // upload 100 file and calculate upload success rate
 - (void)test100Up {
     NSInteger count = 100;
-    __block NSInteger completeCount = 0;
-    __block NSInteger successCount = 0;
     for (int i=0; i<count; i++) {
-        NSString *taskId = [NSString stringWithFormat:@"test100Up_%d", i];
-        [self test100UpTask:taskId complete:^(BOOL isSuccess) {
-            @synchronized (self) {
-                if (isSuccess) {
-                    successCount += 1;
-                }
-                completeCount += 1;
-                NSLog(@"upload file: test100Up_%d", i);
-            }
-        }];
+        NSString *key = [NSString stringWithFormat:@"form_100_up_%dk", i];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1024 identifier:key];
+        NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
+        [self uploadDataAndAssertSuccessResult:data key:key config:nil option:nil];
     }
-    
-    AGWW_WAIT_WHILE(completeCount != count, 100.0);
-    
-    CGFloat successRate = successCount * 1.0 / count;
-    NSLog(@"successCount: %td", successCount);
-    NSLog(@"successRate: %lf", successRate);
-    XCTAssert(completeCount == count, @"Pass");
 }
 
-- (void)test100UpTask:(NSString *)taskId complete:(void(^)(BOOL isSuccess))complete{
-    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        
-    }];
-    QNUploadManager *upManager = [[QNUploadManager alloc]initWithConfiguration:config];
-    QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
-    NSMutableString *contentString = [NSMutableString string];
-    NSString *word = @"Hello, World!";
-    while (contentString.length < 1024) {
-        [contentString appendString:word];
-    }
-    NSData *data = [[contentString copy] dataUsingEncoding:NSUTF8StringEncoding];
-    [upManager putData:data key:taskId token:token_na0 complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        if (info.isOK && info.reqId) {
-            complete(YES);
-        } else {
-            NSLog(@"upload failed. response info is: %@",info);
-            complete(NO);
-        }
-    } option:opt];
-}
-
-
-// travis ci iOS simulator 8.1 failed，其他环境（mac, iOS 9.0）正常，待详细排查
-//- (void)testHttpsUp {
-//    __block QNResponseInfo *testInfo = nil;
-//    __block NSDictionary *testResp = nil;
-//
-//    QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo":@"bar" } checkCrc:YES cancellationSignal:nil];
-//    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-//    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-//        QNServiceAddress *s = [[QNServiceAddress alloc] init:@"https://uptemp.qbox.me" ips:nil];
-//        builder.zone = [[QNZone alloc] initWithUp:s upBackup:nil];
-//    }];
-//    QNUploadManager *upManager = [[QNUploadManager alloc]initWithConfiguration:config];
-//    [upManager putData:data key:@"你好" token:token_na0 complete: ^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-//        testInfo = info;
-//        testResp = resp;
-//    } option:opt];
-//
-//    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-//    NSLog(@"%@", testInfo);
-//    NSLog(@"%@", testResp);
-//    XCTAssert(testInfo.isOK, @"Pass");
-//    XCTAssert(testInfo.reqId, @"Pass");
-//}
 
 - (void)testUpUnAuth {
-    __block QNResponseInfo *testInfo = nil;
-    __block NSDictionary *testResp = nil;
-    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-    NSString *token = @"noauth";
-    [self.upManager putData:data key:@"hello" token:token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        testInfo = info;
-        testResp = resp;
-    }
-                     option:nil];
 
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == kQNInvalidToken, @"Pass");
-    XCTAssert(testInfo.reqId == nil, @"Pass");
+    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *token = @"noAuth";
+    [self uploadDataAndAssertResult:kQNInvalidToken data:data token:token key:@"form_no_auth" config:nil option:nil];
 }
 
 - (void)testNoData {
-    __block QNResponseInfo *testInfo = nil;
-    __block NSDictionary *testResp = nil;
-    NSString *token = @"noauth";
-    [self.upManager putData:nil key:@"hello" token:token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        testInfo = info;
-        testResp = resp;
-    }
-                     option:nil];
-
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == kQNZeroDataSize, @"Pass");
+    
+    [self uploadDataAndAssertResult:kQNZeroDataSize data:nil key:@"form_no_data" config:nil option:nil];
 }
 
 - (void)testNoFile {
-    __block QNResponseInfo *testInfo = nil;
-    __block NSDictionary *testResp = nil;
-    NSString *token = @"noauth";
-    [self.upManager putFile:nil key:@"hello" token:token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        testInfo = info;
-        testResp = resp;
-    }
-                     option:nil];
-
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == kQNZeroDataSize, @"Pass");
+    
+    [self uploadFileAndAssertResult:kQNZeroDataSize tempFile:nil key:@"form_no_file" config:nil option:nil];
 }
 
 - (void)testNoToken {
-    __block QNResponseInfo *testInfo = nil;
-    __block NSDictionary *testResp = nil;
-    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-    [self.upManager putData:data key:@"hello" token:nil complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        testInfo = info;
-        testResp = resp;
-    }
-                     option:nil];
+    NSString *key = @"form_no_token";
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1024 identifier:key];
+    NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
+    
+    [self uploadFileAndAssertResult:kQNInvalidToken tempFile:tempFile token:nil key:key config:nil option:nil];
+    [self uploadDataAndAssertResult:kQNInvalidToken data:data token:nil key:key config:nil option:nil];
 
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == kQNInvalidToken, @"Pass");
-
-    testInfo = nil;
-    testResp = nil;
-    [self.upManager putData:data key:@"hello" token:@"" complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        testInfo = info;
-        testResp = resp;
-    }
-                     option:nil];
-
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == kQNInvalidToken, @"Pass");
-
-    testInfo = nil;
-    testResp = nil;
-    [self.upManager putData:nil key:@"hello" token:nil complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        testInfo = info;
-        testResp = resp;
-    }
-                     option:nil];
-
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.statusCode == kQNZeroDataSize, @"Pass");
+    [self uploadFileAndAssertResult:kQNInvalidToken tempFile:tempFile token:@"" key:key config:nil option:nil];
+    [self uploadDataAndAssertResult:kQNInvalidToken data:data token:@"" key:key config:nil option:nil];
 }
 
 - (void)testNoComplete {
     NSException *e;
     @try {
-        [self.upManager putFile:nil key:nil token:nil complete:nil option:nil];
+        QNUploadManager *upManager = [QNUploadManager sharedInstanceWithConfiguration:nil];
+        [upManager putFile:nil key:nil token:nil complete:nil option:nil];
     }
     @catch (NSException *exception) {
         e = exception;
@@ -243,25 +152,13 @@
 }
 
 - (void)testNoKey {
-    __block QNResponseInfo *testInfo = nil;
-    __block NSDictionary *testResp = nil;
-    __block NSString *key = nil;
-
-    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-    [self.upManager putData:data key:nil token:token_na0 complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
-        key = k;
-        testInfo = info;
-        testResp = resp;
-    }
-                     option:nil];
-
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    NSLog(@"%@", testResp);
-    XCTAssert(key == nil, @"Pass");
-    XCTAssert(testInfo.isOK, @"Pass");
-    XCTAssert(testInfo.reqId, @"Pass");
-    XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");
+    
+    NSString *key = @"form_no_key";
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1024 identifier:key];
+    NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
+    
+    [self uploadFileAndAssertSuccessResult:tempFile key:nil config:nil option:nil];
+    [self uploadDataAndAssertSuccessResult:data key:nil config:nil option:nil];
 }
 
 //- (void)testProxy {
@@ -302,37 +199,21 @@
 //}
 
 - (void)testUrlConvert {
-    __block QNResponseInfo *testInfo = nil;
-    __block NSDictionary *testResp = nil;
-    __block NSString *key = nil;
-
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.converter = ^NSString *(NSString *url) {
             return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
         };
-        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono-na0.qiniu.com", @"upnono-na0.qiniu.com", nil];
+        NSArray *upList = [[NSArray alloc] initWithObjects:@"up-na0.qiniu.com", @"up-na0.qiniu.com", nil];
         builder.useHttps = NO;
         builder.zone = [[QNFixedZone alloc] initWithUpDomainList:upList];
     }];
 
-    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
-
-    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-    [upManager putData:data key:nil token:token_na0 complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
-        key = k;
-        testInfo = info;
-        testResp = resp;
-    }
-                option:nil];
-
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    NSLog(@"%@", testResp);
-    XCTAssert(key == nil, @"Pass");
-    XCTAssert(testInfo.isOK, @"Pass");
-    XCTAssert(testInfo.reqId, @"Pass");
-    XCTAssert([testInfo.host isEqual:@"up-na0.qiniu.com"], @"Pass");
-    XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");
+    int size = 600;
+    NSString *keyUp = [NSString stringWithFormat:@"form_convert_%dk", size];
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:size * 1024 identifier:keyUp];
+    NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
+    [self uploadFileAndAssertSuccessResult:tempFile key:keyUp config:config option:nil];
+    [self uploadDataAndAssertSuccessResult:data key:keyUp config:config option:nil];
 }
 
 //- (void)testDnsHosts {
@@ -370,21 +251,11 @@
 //}
 
 - (void)test0sizeData {
-    __block QNResponseInfo *testInfo = nil;
-    __block NSDictionary *testResp = nil;
-
-    QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
-    NSData *data = [@"" dataUsingEncoding:NSUTF8StringEncoding];
-    [self.upManager putData:data key:@"你好" token:token_na0 complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        testInfo = info;
-        testResp = resp;
-    }
-                     option:opt];
-
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-    NSLog(@"%@", testResp);
-    XCTAssert(testInfo.statusCode == kQNZeroDataSize, @"Pass");
+    NSString *key = @"form_0_size";
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:0 identifier:key];
+    NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
+    [self uploadFileAndAssertResult:kQNZeroDataSize tempFile:tempFile key:nil config:nil option:nil];
+    [self uploadDataAndAssertResult:kQNZeroDataSize data:data key:nil config:nil option:nil];
 }
 
 @end
