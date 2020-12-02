@@ -184,7 +184,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
             _message = [NSString stringWithFormat:@"%@", error];
             _responseDictionary = nil;
         } else {
-            _statusCode = -9;
+            _statusCode = kQNSDKInteriorError;
             _message = @"no response";
         }
     }

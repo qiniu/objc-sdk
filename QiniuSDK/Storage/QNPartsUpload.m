@@ -64,7 +64,10 @@
     }
     
     self.uploadPerformer.targetRegion = [self getTargetRegion];
-    [self.uploadPerformer switchRegion:[self getCurrentRegion]];
+    // currentRegion有的值为断点续传 就不用切
+    if (!self.uploadPerformer.currentRegion) {
+        [self.uploadPerformer switchRegion:[self getCurrentRegion]];
+    }
     
     if (self.file == nil) {
         code = kQNLocalIOError;

@@ -78,6 +78,7 @@
     [self.fileInfo clearUploadState];
     [self removeUploadInfoRecord];
     self.currentRegion = region;
+    self.recoveredFrom = nil;
 }
 
 - (void)notifyProgress {
