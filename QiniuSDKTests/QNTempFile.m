@@ -16,12 +16,19 @@
 @end
 @implementation QNTempFile
 
-+ (QNTempFile *)createTempfileWithSize:(int)size {
-    
-    return [self createTempfileWithSize:size name:@"file.txt"];
+- (instancetype)init{
+    if (self = [super init]) {
+        _canRemove = YES;
+    }
+    return self;
 }
 
-+ (QNTempFile *)createTempfileWithSize:(int)size name:(NSString *)name {
++ (QNTempFile *)createTempFileWithSize:(int)size {
+    
+    return [self createTempFileWithSize:size name:@"file.txt"];
+}
+
++ (QNTempFile *)createTempFileWithSize:(int)size name:(NSString *)name {
     
     NSString *fileName = [NSString stringWithFormat:@"%@_%@", [[NSProcessInfo processInfo] globallyUniqueString], name];
     NSURL *fileUrl = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
@@ -51,16 +58,16 @@
     QNTempFile *file = [[QNTempFile alloc] init];
     file.fileUrl = fileUrl;
     file.fileHash = [QNEtag data:data];
-    
+    file.size = size;
     return file;
 }
 
 
-+ (QNTempFile *)createTempfileWithSize:(int)size identifier:(NSString *)identifier{
-    return [self createTempfileWithSize:size name:@"file.txt" identifier:identifier];
++ (QNTempFile *)createTempFileWithSize:(int)size identifier:(NSString *)identifier{
+    return [self createTempFileWithSize:size name:@"file.txt" identifier:identifier];
 }
 
-+ (QNTempFile *)createTempfileWithSize:(int)size name:(NSString *)name identifier:(NSString *)identifier {
++ (QNTempFile *)createTempFileWithSize:(int)size name:(NSString *)name identifier:(NSString *)identifier {
     
     NSString *identifierP = identifier ?: @"_";
     
@@ -93,12 +100,15 @@
     QNTempFile *file = [[QNTempFile alloc] init];
     file.fileUrl = fileUrl;
     file.fileHash = [QNEtag file:fileUrl.path error:nil];
+    file.size = size;
     return file;
 }
 
 - (void)remove{
-    NSError *error = nil;
-    [[NSFileManager defaultManager] removeItemAtURL:self.fileUrl error:&error];
+    if (self.canRemove) {
+        NSError *error = nil;
+        [[NSFileManager defaultManager] removeItemAtURL:self.fileUrl error:&error];
+    }
 }
 
 

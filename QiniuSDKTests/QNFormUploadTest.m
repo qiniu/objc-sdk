@@ -55,7 +55,7 @@
     __block NSDictionary *testResp = nil;
     
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
-    QNTempFile *file = [QNTempFile createTempfileWithSize:8*1024*1024 + 1 identifier:@"form_5M"];
+    QNTempFile *file = [QNTempFile createTempFileWithSize:8*1024*1024 + 1 identifier:@"form_5M"];
     NSData *data = [NSData dataWithContentsOfFile:file.fileUrl.path];
     [self.upManager putData:data key:@"form_5M" token:token_na0 complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         testInfo = info;

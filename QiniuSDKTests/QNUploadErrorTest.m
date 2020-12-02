@@ -24,7 +24,7 @@
     QNUploadErrorTestParam *p = [[QNUploadErrorTestParam alloc] init];
     p.token = token_na0;
     p.key = @"upload_error_128K";
-    p.tempFile = [QNTempFile createTempfileWithSize:128 * 1024 identifier:p.key];
+    p.tempFile = [QNTempFile createTempFileWithSize:128 * 1024 identifier:p.key];
     return p;
 }
 @end
@@ -80,7 +80,7 @@
 
 - (void)testError_614{
     QNUploadErrorTestParam *param = [QNUploadErrorTestParam param];
-    param.tempFile = [QNTempFile createTempfileWithSize:128];
+    param.tempFile = [QNTempFile createTempFileWithSize:128];
     
     __block BOOL isComplete = NO;
     [self upload:param complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {

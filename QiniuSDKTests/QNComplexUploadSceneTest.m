@@ -51,7 +51,7 @@
 
 - (void)template:(int)size complete:(void(^)(BOOL isSuccess))complete{
     NSString *keyUp = [NSString stringWithFormat:@"complex_upload_%dk", size];
-    QNTempFile *tempFile = [QNTempFile createTempfileWithSize:size * 1024 identifier:keyUp];
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:size * 1024 identifier:keyUp];
     QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler:^(NSString *key, float percent) {
         NSLog(@"progress %f", percent);
     }];

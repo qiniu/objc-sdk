@@ -44,7 +44,7 @@
     NSString *paramValue = @"\"this is a test\"";
     
     NSString *keyUp = [NSString stringWithFormat:@"fileName_%@", name];
-    QNTempFile *tempFile = [QNTempFile createTempfileWithSize:1024 * size name:name identifier:keyUp];
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1024 * size name:name identifier:keyUp];
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
         
     } params:@{paramKey : paramValue} checkCrc:true cancellationSignal:nil];

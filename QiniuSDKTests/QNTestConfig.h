@@ -5,6 +5,7 @@
 //  Created by bailong on 14/10/7.
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
+#import <Foundation/Foundation.h>
 
 // 华东上传凭证
 static NSString *const token_z0 = @"dxVQk8gyk3WswArbNhdKIwmwibJ9nFsQhMNUmtIM:VAPVh6la-ZFlDRUHHqYEQjAZQl0=:eyJzY29wZSI6ImtvZG8tcGhvbmUtem9uZTAtc3BhY2UiLCJkZWFkbGluZSI6MTYxMjA2MDQ4MSwgInJldHVybkJvZHkiOiJ7XCJjYWxsYmFja1VybFwiOlwiaHR0cDpcL1wvY2FsbGJhY2suZGV2LnFpbml1LmlvXCIsIFwiZm9vXCI6JCh4OmZvbyksIFwiYmFyXCI6JCh4OmJhciksIFwibWltZVR5cGVcIjokKG1pbWVUeXBlKSwgXCJoYXNoXCI6JChldGFnKSwgXCJrZXlcIjokKGtleSksIFwiZm5hbWVcIjokKGZuYW1lKX0ifQ==";
