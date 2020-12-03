@@ -34,11 +34,6 @@ typedef BOOL (^QNUpCancellationSignal)(void);
 @property (copy, nonatomic, readonly) NSDictionary *params;
 
 /**
- *    用户自定义文件metadata信息的key和value， 可以设置多个，参数的key必须以x-qn-meta-开头 eg:x-qn-meta-key
- */
-@property (copy, nonatomic, readonly) NSDictionary *metadata;
-
-/**
  *    指定文件的mime类型
  */
 @property (copy, nonatomic, readonly) NSString *mimeType;

@@ -393,10 +393,6 @@
     if (self.uploadOption.mimeType) {
         bodyDictionary[@"mimeType"] = self.uploadOption.mimeType;
     }
-    //todo: 待测试
-    if (self.uploadOption.metadata) {
-        bodyDictionary[@"metadata"] = self.uploadOption.metadata;
-    }
     if (self.uploadOption.params) {
         bodyDictionary[@"customVars"] = self.uploadOption.params;
     }
