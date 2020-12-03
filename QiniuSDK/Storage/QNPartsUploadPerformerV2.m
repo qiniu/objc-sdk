@@ -25,7 +25,9 @@
                                                  modifyTime:(NSInteger)[self.file modifyTime]];
 }
 
-- (void)serverInit:(void(^)(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response))completeHandler {
+- (void)serverInit:(void(^)(QNResponseInfo * _Nullable responseInfo,
+                            QNUploadRegionRequestMetrics * _Nullable metrics,
+                            NSDictionary * _Nullable response))completeHandler {
     QNUploadFileInfoPartV2 *fileInfo = (QNUploadFileInfoPartV2 *)self.fileInfo;
     if (fileInfo.uploadId && (fileInfo.expireAt.integerValue - [[NSDate date] timeIntervalSince1970]) > 600) {
         QNResponseInfo *responseInfo = [QNResponseInfo successResponse];
@@ -54,15 +56,32 @@
     }];
 }
 
-- (void)uploadNextDataCompleteHandler:(void(^)(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response))completeHandler {
-    
+- (void)uploadNextDataCompleteHandler:(void(^)(BOOL stop,
+                                               QNResponseInfo * _Nullable responseInfo,
+                                               QNUploadRegionRequestMetrics * _Nullable metrics,
+                                               NSDictionary * _Nullable response))completeHandler {
     QNUploadFileInfoPartV2 *fileInfo = (QNUploadFileInfoPartV2 *)self.fileInfo;
-    QNUploadData *data = [fileInfo nextUploadData];
-    
-    NSData *uploadData = [self getUploadData:data];
+    QNUploadData *data = nil;
+    @synchronized (fileInfo) {
+        data = [fileInfo nextUploadData];
+        data.isUploading = YES;
+        data.isCompleted = NO;
+    }
+    // 上传完毕
     if (data == nil) {
+        completeHandler(YES, nil, nil, nil);
+        return;
+    }
+    
+    // 本地读异常
+    NSData *uploadData = [self getUploadData:data];
+    if (uploadData == nil) {
+        @synchronized (fileInfo) {
+            data.isUploading = NO;
+            data.isCompleted = NO;
+        }
         QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithLocalIOError:@"get data error"];
-        completeHandler(responseInfo, nil, responseInfo.responseDictionary);
+        completeHandler(YES, responseInfo, nil, responseInfo.responseDictionary);
         return;
     }
     
@@ -73,9 +92,6 @@
         data.progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
         [self notifyProgress];
     };
-    
-    data.isUploading = YES;
-    data.isCompleted = NO;
     
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
     
@@ -101,11 +117,13 @@
             data.isUploading = NO;
             data.isCompleted = NO;
         }
-        completeHandler(responseInfo, metrics, response);
+        completeHandler(NO, responseInfo, metrics, response);
     }];
 }
 
-- (void)completeUpload:(void(^)(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response))completeHandler {
+- (void)completeUpload:(void(^)(QNResponseInfo * _Nullable responseInfo,
+                                QNUploadRegionRequestMetrics * _Nullable metrics,
+                                NSDictionary * _Nullable response))completeHandler {
     
     QNUploadFileInfoPartV2 *fileInfo = (QNUploadFileInfoPartV2 *)self.fileInfo;
     

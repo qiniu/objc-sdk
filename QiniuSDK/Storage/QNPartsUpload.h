@@ -14,13 +14,23 @@ NS_ASSUME_NONNULL_BEGIN
 @class QNRequestTransaction;
 @interface QNPartsUpload : QNBaseUpload
 
+@property(nonatomic, strong, readonly)QNResponseInfo *uploadDataErrorResponseInfo;
+@property(nonatomic, strong, readonly)NSDictionary *uploadDataErrorResponse;
+
+- (void)setErrorResponseInfo:(QNResponseInfo *)responseInfo
+               errorResponse:(NSDictionary *)response;
+
 - (BOOL)isAllUploaded;
 
-- (void)serverInit:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
+- (void)serverInit:(void(^)(QNResponseInfo * _Nullable responseInfo,
+                            NSDictionary * _Nullable response))completeHandler;
 
-- (void)uploadNextDataCompleteHandler:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
+- (void)uploadNextDataCompleteHandler:(void(^)(BOOL stop,
+                                               QNResponseInfo * _Nullable responseInfo,
+                                               NSDictionary * _Nullable response))completeHandler;
 
-- (void)completeUpload:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler;
+- (void)completeUpload:(void(^)(QNResponseInfo * _Nullable responseInfo,
+                                NSDictionary * _Nullable response))completeHandler;
 
 @end
 

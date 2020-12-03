@@ -235,15 +235,6 @@
     }
 }
 
-- (QNUploadBlock *)blockWithIndex:(NSInteger)blockIndex{
-    
-    QNUploadBlock *block = nil;
-    if (blockIndex < self.uploadBlocks.count) {
-        block = self.uploadBlocks[blockIndex];
-    }
-    return block;
-}
-
 - (BOOL)isAllUploaded{
     BOOL isAllUploaded = YES;
     for (QNUploadBlock *block in self.uploadBlocks) {

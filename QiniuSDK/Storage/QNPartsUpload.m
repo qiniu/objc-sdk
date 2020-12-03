@@ -25,6 +25,9 @@
 @property(nonatomic, strong)NSNumber *recoveredFrom; // 断点续传时，起始上传偏移
 @property(nonatomic, strong)QNUploadFileInfo *uploadFileInfo;
 
+@property(nonatomic, strong)QNResponseInfo *uploadDataErrorResponseInfo;
+@property(nonatomic, strong)NSDictionary *uploadDataErrorResponse;
+
 @end
 @implementation QNPartsUpload
 
@@ -59,6 +62,9 @@
         return code;
     }
     
+    self.uploadDataErrorResponseInfo = nil;
+    self.uploadDataErrorResponse = nil;
+    
     if (self.uploadPerformer.currentRegion) {
         [self insertRegionAtFirst:self.uploadPerformer.currentRegion];
     }
@@ -90,6 +96,17 @@
     return [self.uploadPerformer.fileInfo isAllUploaded];
 }
 
+- (void)setErrorResponseInfo:(QNResponseInfo *)responseInfo errorResponse:(NSDictionary *)response{
+    if (!responseInfo) {
+        return;
+    }
+    if (!self.uploadDataErrorResponseInfo
+        || (responseInfo.statusCode == kQNNoUsableHostError)) {
+        self.uploadDataErrorResponseInfo = responseInfo;
+        self.uploadDataErrorResponse = response ?: responseInfo.responseDictionary;
+    }
+}
+
 //MARK:-- concurrent upload model API
 - (void)serverInit:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler {
     
@@ -103,13 +120,13 @@
     [self.uploadPerformer serverInit:completeHandlerP];
 }
 
-- (void)uploadNextDataCompleteHandler:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler {
+- (void)uploadNextDataCompleteHandler:(void(^)(BOOL stop, QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler {
     
     kQNWeakSelf;
-    void(^completeHandlerP)(QNResponseInfo *, QNUploadRegionRequestMetrics *, NSDictionary *) = ^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response){
+    void(^completeHandlerP)(BOOL, QNResponseInfo *, QNUploadRegionRequestMetrics *, NSDictionary *) = ^(BOOL stop, QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response){
         kQNStrongSelf;
         [self addRegionRequestMetricsOfOneFlow:metrics];
-        completeHandler(responseInfo, response);
+        completeHandler(stop, responseInfo, response);
     };
     
     [self.uploadPerformer uploadNextDataCompleteHandler:completeHandlerP];

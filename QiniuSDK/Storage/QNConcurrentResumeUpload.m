@@ -104,62 +104,19 @@
 }
 
 - (void)uploadRestData:(dispatch_block_t)completeHandler{
-//    if (!self.uploadFileInfo) {
-//        [self setErrorResponseInfo:[QNResponseInfo responseInfoWithInvalidArgument:@"file error"] errorResponse:nil];
-//        completeHandler();
-//        return;
-//    }
-//
-//    id <QNUploadRegion> currentRegion = [self getCurrentRegion];
-//    if (!currentRegion) {
-//        [self setErrorResponseInfo:[QNResponseInfo responseInfoWithNoUsableHostError:@"regions server error"] errorResponse:nil];
-//        completeHandler();
-//        return;
-//    }
-    
-//    @synchronized (self) {
-//        QNUploadData *data = [self.uploadFileInfo nextUploadData];
-//
-//        kQNWeakSelf;
-//        void (^progress)(long long, long long) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
-//            kQNStrongSelf;
-//
-//            data.progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
-//
-//            float percent = self.uploadFileInfo.progress;
-//            if (percent > 0.95) {
-//                percent = 0.95;
-//            }
-//            if (percent > self.previousPercent) {
-//                self.previousPercent = percent;
-//            } else {
-//                percent = self.previousPercent;
-//            }
-//            QNAsyncRunInMain(^{
-//                self.option.progressHandler(self.key, percent);
-//            });
-//        };
-        
-//        if (!data) {
-//            completeHandler();
-//        } else {
-    
     if ([self isAllUploaded]) {
         completeHandler();
         return;
     }
     
-    [self uploadNextDataCompleteHandler:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
-        if (!responseInfo.isOK) {
-            self.uploadDataErrorResponseInfo = responseInfo;
-            self.uploadDataErrorResponse = response;
+    [self uploadNextDataCompleteHandler:^(BOOL stop, QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+        if (stop || !responseInfo.isOK) {
+            [self setErrorResponseInfo:responseInfo errorResponse:response];
             completeHandler();
         } else {
             [self uploadRestData:completeHandler];
         }
     }];
-//        }
-//    }
 }
 
 - (void)setErrorResponseInfo:(QNResponseInfo *)responseInfo errorResponse:(NSDictionary *)response{

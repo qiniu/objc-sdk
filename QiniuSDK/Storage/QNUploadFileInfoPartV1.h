@@ -55,10 +55,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// 获取下一个需要上传的chunk所在的block
 - (QNUploadBlock *)nextUploadBlock;
 
-/// 根据块index获取块信息
-/// @param blockIndex 块下标
-- (QNUploadBlock *)blockWithIndex:(NSInteger)blockIndex;
-
 /// 获取所有block context
 - (NSArray <NSString *> *)allBlocksContexts;
 

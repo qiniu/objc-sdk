@@ -187,10 +187,17 @@
     return nil;
 }
 
-- (void)serverInit:(void (^)(QNResponseInfo * _Nullable, QNUploadRegionRequestMetrics * _Nullable, NSDictionary * _Nullable))completeHandler {}
+- (void)serverInit:(void (^)(QNResponseInfo * _Nullable,
+                             QNUploadRegionRequestMetrics * _Nullable,
+                             NSDictionary * _Nullable))completeHandler {}
 
-- (void)uploadNextDataCompleteHandler:(void (^)(QNResponseInfo * _Nullable, QNUploadRegionRequestMetrics * _Nullable, NSDictionary * _Nullable))completeHandler {}
+- (void)uploadNextDataCompleteHandler:(void (^)(BOOL stop,
+                                                QNResponseInfo * _Nullable,
+                                                QNUploadRegionRequestMetrics * _Nullable,
+                                                NSDictionary * _Nullable))completeHandler {}
 
-- (void)completeUpload:(void (^)(QNResponseInfo * _Nullable, QNUploadRegionRequestMetrics * _Nullable, NSDictionary * _Nullable))completeHandler {}
+- (void)completeUpload:(void (^)(QNResponseInfo * _Nullable,
+                                 QNUploadRegionRequestMetrics * _Nullable,
+                                 NSDictionary * _Nullable))completeHandler {}
 
 @end

@@ -29,26 +29,40 @@
                                                  modifyTime:[self.file modifyTime]];
 }
 
-- (void)serverInit:(void(^)(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response))completeHandler {
+- (void)serverInit:(void(^)(QNResponseInfo * _Nullable responseInfo,
+                            QNUploadRegionRequestMetrics * _Nullable metrics,
+                            NSDictionary * _Nullable response))completeHandler {
     QNResponseInfo *responseInfo = [QNResponseInfo successResponse];
     completeHandler(responseInfo, nil, nil);
 }
 
-- (void)uploadNextDataCompleteHandler:(void(^)(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response))completeHandler {
+- (void)uploadNextDataCompleteHandler:(void(^)(BOOL stop,
+                                               QNResponseInfo * _Nullable responseInfo,
+                                               QNUploadRegionRequestMetrics * _Nullable metrics,
+                                               NSDictionary * _Nullable response))completeHandler {
     QNUploadFileInfoPartV1 *fileInfo = (QNUploadFileInfoPartV1 *)self.fileInfo;
     
     QNUploadBlock *block = [fileInfo nextUploadBlock];
-    QNUploadData *chunk = [block nextUploadData];
+    QNUploadData *chunk = nil;
+    @synchronized (fileInfo) {
+        chunk = [block nextUploadData];
+        chunk.isUploading = YES;
+        chunk.isCompleted = NO;
+    }
+
     if (block == nil || chunk == nil) {
-        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithSDKInteriorError:@"empty block or chunk"];
-        completeHandler(responseInfo, nil, nil);
+        completeHandler(YES, nil, nil, nil);
         return;
     }
     
     NSData *chunkData = [self getDataWithChunk:chunk block:block];
     if (chunkData == nil) {
+        @synchronized (fileInfo) {
+            chunk.isUploading = NO;
+            chunk.isCompleted = NO;
+        }
         QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithLocalIOError:@"get chunk data error"];
-        completeHandler(responseInfo, nil, nil);
+        completeHandler(YES, responseInfo, nil, nil);
         return;
     }
     
@@ -66,7 +80,9 @@
     }
 }
 
-- (void)completeUpload:(void(^)(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response))completeHandler {
+- (void)completeUpload:(void(^)(QNResponseInfo * _Nullable responseInfo,
+                                QNUploadRegionRequestMetrics * _Nullable metrics,
+                                NSDictionary * _Nullable response))completeHandler {
     QNUploadFileInfoPartV1 *fileInfo = (QNUploadFileInfoPartV1 *)self.fileInfo;
     
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
@@ -89,8 +105,12 @@
 - (void)makeBlock:(QNUploadBlock *)block
        firstChunk:(QNUploadData *)chunk
         chunkData:(NSData *)chunkData
-         progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-  completeHandler:(void(^)(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response))completeHandler {
+         progress:(void(^)(long long totalBytesWritten,
+                           long long totalBytesExpectedToWrite))progress
+  completeHandler:(void(^)(BOOL stop,
+                           QNResponseInfo * _Nullable responseInfo,
+                           QNUploadRegionRequestMetrics * _Nullable metrics,
+                           NSDictionary * _Nullable response))completeHandler {
     
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
@@ -114,11 +134,11 @@
             chunk.isUploading = NO;
             chunk.isCompleted = YES;
             [self recordUploadInfo];
-           completeHandler(responseInfo, metrics, response);
+            completeHandler(NO, responseInfo, metrics, response);
         } else {
             chunk.isUploading = NO;
             chunk.isCompleted = NO;
-            completeHandler(responseInfo, metrics, response);
+            completeHandler(NO, responseInfo, metrics, response);
         }
     }];
 }
@@ -127,8 +147,12 @@
 - (void)uploadChunk:(QNUploadBlock *)block
               chunk:(QNUploadData *)chunk
           chunkData:(NSData *)chunkData
-           progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-    completeHandler:(void(^)(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response))completeHandler {
+           progress:(void(^)(long long totalBytesWritten,
+                             long long totalBytesExpectedToWrite))progress
+    completeHandler:(void(^)(BOOL stop,
+                             QNResponseInfo * _Nullable responseInfo,
+                             QNUploadRegionRequestMetrics * _Nullable metrics,
+                             NSDictionary * _Nullable response))completeHandler {
     
     chunk.isUploading = YES;
     chunk.isCompleted = NO;
@@ -153,11 +177,11 @@
             chunk.isUploading = NO;
             chunk.isCompleted = YES;
             [self recordUploadInfo];
-            completeHandler(responseInfo, metrics, response);
+            completeHandler(NO, responseInfo, metrics, response);
         } else {
             chunk.isUploading = NO;
             chunk.isCompleted = NO;
-            completeHandler(responseInfo, metrics, response);
+            completeHandler(NO, responseInfo, metrics, response);
         }
     }];
 }

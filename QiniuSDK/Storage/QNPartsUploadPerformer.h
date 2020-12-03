@@ -64,11 +64,18 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)destroyUploadRequestTransaction:(QNRequestTransaction *)transaction;
 
 /// 上传前，服务端配置工作 【子类实现】
-- (void)serverInit:(void(^)(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response))completeHandler;
+- (void)serverInit:(void(^)(QNResponseInfo * _Nullable responseInfo,
+                            QNUploadRegionRequestMetrics * _Nullable metrics,
+                            NSDictionary * _Nullable response))completeHandler;
 /// 上传文件分片 【子类实现】
-- (void)uploadNextDataCompleteHandler:(void(^)(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response))completeHandler;
+- (void)uploadNextDataCompleteHandler:(void(^)(BOOL stop,
+                                               QNResponseInfo * _Nullable responseInfo,
+                                               QNUploadRegionRequestMetrics * _Nullable metrics,
+                                               NSDictionary * _Nullable response))completeHandler;
 /// 完成上传，服务端组织文件信息 【子类实现】
-- (void)completeUpload:(void(^)(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response))completeHandler;
+- (void)completeUpload:(void(^)(QNResponseInfo * _Nullable responseInfo,
+                                QNUploadRegionRequestMetrics * _Nullable metrics,
+                                NSDictionary * _Nullable response))completeHandler;
 
 @end
 

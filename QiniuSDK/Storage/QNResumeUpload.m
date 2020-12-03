@@ -12,24 +12,12 @@
 #import "QNRequestTransaction.h"
 
 @interface QNResumeUpload ()
-
-@property (nonatomic, assign) float previousPercent;
-@property(nonatomic, strong)QNRequestTransaction *uploadTransaction;
-
-@property(nonatomic, strong)QNResponseInfo *uploadDataErrorResponseInfo;
-@property(nonatomic, strong)NSDictionary *uploadDataErrorResponse;
-
 @end
 
 @implementation QNResumeUpload
 
 - (void)startToUpload{
     [super startToUpload];
-    
-    self.previousPercent = 0;
-    self.uploadDataErrorResponseInfo = nil;
-    self.uploadDataErrorResponse = nil;
-    
 
     kQNWeakSelf;
     // 1. 启动upload
@@ -79,35 +67,14 @@
 
 - (void)uploadRestData:(dispatch_block_t)completeHandler{
 
-    [self uploadNextDataCompleteHandler:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
-        if (!responseInfo.isOK) {
-            self.uploadDataErrorResponseInfo = responseInfo;
-            self.uploadDataErrorResponse = response;
+    [self uploadNextDataCompleteHandler:^(BOOL stop, QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+        if (stop || !responseInfo.isOK) {
+            [self setErrorResponseInfo:responseInfo errorResponse:response];
             completeHandler();
         } else {
             [self uploadRestData:completeHandler];
         }
     }];
 }
-
-- (void)setErrorResponseInfo:(QNResponseInfo *)responseInfo errorResponse:(NSDictionary *)response{
-    if (!self.uploadDataErrorResponseInfo
-        || (responseInfo.statusCode == kQNNoUsableHostError)) {
-        self.uploadDataErrorResponseInfo = responseInfo;
-        self.uploadDataErrorResponse = response ?: responseInfo.responseDictionary;
-    }
-}
-
-- (QNRequestTransaction *)createUploadRequestTransaction{
-    QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithConfig:self.config
-                                                                        uploadOption:self.option
-                                                                        targetRegion:[self getTargetRegion]
-                                                                       currentRegion:[self getCurrentRegion]
-                                                                                 key:self.key
-                                                                               token:self.token];
-    self.uploadTransaction = transaction;
-    return transaction;
-}
-
 
 @end
