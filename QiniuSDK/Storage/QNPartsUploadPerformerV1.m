@@ -44,7 +44,7 @@
     
     QNUploadBlock *block = [fileInfo nextUploadBlock];
     QNUploadData *chunk = nil;
-    @synchronized (fileInfo) {
+    @synchronized (self) {
         chunk = [block nextUploadData];
         chunk.isUploading = YES;
         chunk.isCompleted = NO;

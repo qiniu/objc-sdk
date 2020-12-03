@@ -62,7 +62,7 @@
                                                NSDictionary * _Nullable response))completeHandler {
     QNUploadFileInfoPartV2 *fileInfo = (QNUploadFileInfoPartV2 *)self.fileInfo;
     QNUploadData *data = nil;
-    @synchronized (fileInfo) {
+    @synchronized (self) {
         data = [fileInfo nextUploadData];
         data.isUploading = YES;
         data.isCompleted = NO;
