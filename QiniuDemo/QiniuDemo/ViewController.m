@@ -47,8 +47,8 @@ typedef NS_ENUM(NSInteger, UploadState){
     if (self.uploadState == UploadStatePrepare) {
     
 #ifdef YourToken
-//        NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource.dmg" ofType:nil];
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource.dmg" ofType:nil];
+//        NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
         [self uploadImageToQNFilePath:path];
         [self changeUploadState:UploadStateUploading];
 #else
@@ -84,7 +84,8 @@ typedef NS_ENUM(NSInteger, UploadState){
     
     self.token = YourToken;
     QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        builder.useConcurrentResumeUpload = true;
+        builder.useConcurrentResumeUpload = NO;
+        builder.resumeUploadVersion = QNResumeUploadVersionV2;
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] error:nil];
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:configuration];

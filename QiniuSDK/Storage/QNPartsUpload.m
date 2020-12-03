@@ -22,8 +22,6 @@
 @interface QNPartsUpload()
 
 @property(nonatomic, strong)QNPartsUploadPerformer *uploadPerformer;
-@property(nonatomic, strong)NSNumber *recoveredFrom; // 断点续传时，起始上传偏移
-@property(nonatomic, strong)QNUploadFileInfo *uploadFileInfo;
 
 @property(nonatomic, strong)QNResponseInfo *uploadDataErrorResponseInfo;
 @property(nonatomic, strong)NSDictionary *uploadDataErrorResponse;
@@ -55,16 +53,6 @@
                                                                 configuration:self.config
                                                                   recorderKey:self.recorderKey];
     }
-}
-
-- (BOOL)switchRegionAndUpload{
-    [self reportBlock];
-    
-    BOOL isSwitched = [super switchRegionAndUpload];
-    if (isSwitched) {
-        [self.uploadPerformer switchRegion:self.getCurrentRegion];
-    }
-    return isSwitched;
 }
 
 - (BOOL)isAllUploaded {
@@ -106,6 +94,16 @@
         code = kQNLocalIOError;
     }
     return code;
+}
+
+- (BOOL)switchRegionAndUpload{
+    [self reportBlock];
+    
+    BOOL isSwitched = [super switchRegionAndUpload];
+    if (isSwitched) {
+        [self.uploadPerformer switchRegion:self.getCurrentRegion];
+    }
+    return isSwitched;
 }
 
 - (void)startToUpload{
@@ -150,6 +148,7 @@
                     QNAsyncRunInMain(^{
                         self.option.progressHandler(self.key, 1.0);
                      });
+                    [self.uploadPerformer removeUploadInfoRecord];
                     [self complete:responseInfo response:response];
                 }
             }];
@@ -233,7 +232,7 @@
     [item setReportValue:[self getCurrentRegion].zoneInfo.regionId forKey:QNReportBlockKeyCurrentRegionId];
     [item setReportValue:metrics.totalElapsedTime forKey:QNReportBlockKeyTotalElapsedTime];
     [item setReportValue:metrics.bytesSend forKey:QNReportBlockKeyBytesSent];
-    [item setReportValue:self.recoveredFrom forKey:QNReportBlockKeyRecoveredFrom];
+    [item setReportValue:self.uploadPerformer.recoveredFrom forKey:QNReportBlockKeyRecoveredFrom];
     [item setReportValue:@(self.file.size) forKey:QNReportBlockKeyFileSize];
     [item setReportValue:@([QNUtils getCurrentProcessID]) forKey:QNReportBlockKeyPid];
     [item setReportValue:@([QNUtils getCurrentThreadID]) forKey:QNReportBlockKeyTid];

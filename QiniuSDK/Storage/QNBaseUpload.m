@@ -175,7 +175,7 @@
 - (void)insertRegionAtFirst:(id <QNUploadRegion>)region{
     BOOL hasRegion = NO;
     for (id <QNUploadRegion> regionP in self.regions) {
-        if ([regionP.zoneInfo.regionId isEqualTo:region.zoneInfo.regionId]) {
+        if ([regionP.zoneInfo.regionId isEqualToString:region.zoneInfo.regionId]) {
             hasRegion = YES;
         }
     }
