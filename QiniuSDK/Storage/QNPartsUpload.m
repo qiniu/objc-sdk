@@ -37,6 +37,7 @@
 
 - (void)initData {
     [super initData];
+    // 根据文件从本地恢复上传信息，如果没有则重新构建上传信息
     if (self.config.resumeUploadVersion == QNResumeUploadVersionV2) {
         self.uploadPerformer = [[QNPartsUploadPerformerV2 alloc] initWithFile:self.file
                                                                      fileName:self.fileName
@@ -55,32 +56,6 @@
                                                                   recorderKey:self.recorderKey];
     }
 }
-
-- (int)prepareToUpload{
-    int code = [super prepareToUpload];
-    if (code != 0) {
-        return code;
-    }
-    
-    self.uploadDataErrorResponseInfo = nil;
-    self.uploadDataErrorResponse = nil;
-    
-    if (self.uploadPerformer.currentRegion) {
-        [self insertRegionAtFirst:self.uploadPerformer.currentRegion];
-    }
-    
-    self.uploadPerformer.targetRegion = [self getTargetRegion];
-    // currentRegion有的值为断点续传 就不用切
-    if (!self.uploadPerformer.currentRegion) {
-        [self.uploadPerformer switchRegion:[self getCurrentRegion]];
-    }
-    
-    if (self.file == nil) {
-        code = kQNLocalIOError;
-    }
-    return code;
-}
-
 
 - (BOOL)switchRegionAndUpload{
     [self reportBlock];
@@ -105,6 +80,102 @@
         self.uploadDataErrorResponseInfo = responseInfo;
         self.uploadDataErrorResponse = response ?: responseInfo.responseDictionary;
     }
+}
+
+- (int)prepareToUpload{
+    int code = [super prepareToUpload];
+    if (code != 0) {
+        return code;
+    }
+    // 重置错误信息
+    self.uploadDataErrorResponseInfo = nil;
+    self.uploadDataErrorResponse = nil;
+    
+    // 配置目标region
+    self.uploadPerformer.targetRegion = [self getTargetRegion];
+    // 配置当前region
+    if (self.uploadPerformer.currentRegion) {
+        // currentRegion有值，为断点续传，将region插入至regionList第一处
+        [self insertRegionAtFirst:self.uploadPerformer.currentRegion];
+    } else {
+        // currentRegion无值 切换region
+        [self.uploadPerformer switchRegion:[self getCurrentRegion]];
+    }
+    
+    if (self.file == nil) {
+        code = kQNLocalIOError;
+    }
+    return code;
+}
+
+- (void)startToUpload{
+    [super startToUpload];
+
+    kQNWeakSelf;
+    // 1. 启动upload
+    [self serverInit:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+        kQNStrongSelf;
+        if (!responseInfo.isOK) {
+            [self complete:responseInfo response:response];
+            return;
+        }
+        
+        // 2. 上传数据
+        [self uploadRestData:^{
+            if (![self isAllUploaded]) {
+                if (self.uploadDataErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
+                    BOOL isSwitched = [self switchRegionAndUpload];
+                    if (isSwitched == NO) {
+                        [self complete:self.uploadDataErrorResponseInfo response:self.uploadDataErrorResponse];
+                    }
+                } else {
+                    [self complete:self.uploadDataErrorResponseInfo response:self.uploadDataErrorResponse];
+                }
+                return;
+            }
+            
+            // 3. 组装文件
+            [self completeUpload:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+
+                if (responseInfo.isOK == NO) {
+                    if (responseInfo.couldRetry && [self.config allowBackupHost]) {
+                        BOOL isSwitched = [self switchRegionAndUpload];
+                        if (isSwitched == NO) {
+                            [self complete:responseInfo response:response];
+                        }
+                    } else {
+                        [self complete:responseInfo response:response];
+                    }
+                } else {
+                    QNAsyncRunInMain(^{
+                        self.option.progressHandler(self.key, 1.0);
+                     });
+                    [self complete:responseInfo response:response];
+                }
+            }];
+        }];
+    }];
+}
+
+- (void)uploadRestData:(dispatch_block_t)completeHandler {
+    
+    [self performUploadRestData:completeHandler];
+}
+
+- (void)performUploadRestData:(dispatch_block_t)completeHandler {
+    if ([self isAllUploaded]) {
+        completeHandler();
+        return;
+    }
+    
+    [self uploadNextDataCompleteHandler:^(BOOL stop, QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+        if (stop || !responseInfo.isOK) {
+            [self setErrorResponseInfo:responseInfo errorResponse:response];
+            completeHandler();
+        } else {
+            [self performUploadRestData:completeHandler];
+        }
+    }];
 }
 
 //MARK:-- concurrent upload model API

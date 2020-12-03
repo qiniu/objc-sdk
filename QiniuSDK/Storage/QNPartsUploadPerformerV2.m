@@ -76,10 +76,8 @@
     // 本地读异常
     NSData *uploadData = [self getUploadData:data];
     if (uploadData == nil) {
-        @synchronized (fileInfo) {
-            data.isUploading = NO;
-            data.isCompleted = NO;
-        }
+        data.isUploading = NO;
+        data.isCompleted = NO;
         QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithLocalIOError:@"get data error"];
         completeHandler(YES, responseInfo, nil, responseInfo.responseDictionary);
         return;

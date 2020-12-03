@@ -7,21 +7,11 @@
 //
 
 #import "QNConcurrentResumeUpload.h"
-#import "QNResponseInfo.h"
-#import "QNAsyncRun.h"
-#import "QNRequestTransaction.h"
-#import "QNDefine.h"
 
 @interface QNConcurrentResumeUpload()
 
 @property(nonatomic, strong) dispatch_group_t uploadGroup;
 @property(nonatomic, strong) dispatch_queue_t uploadQueue;
-
-@property(nonatomic, assign) float previousPercent;
-@property(nonatomic, strong)NSMutableArray <QNRequestTransaction *> *uploadTransactions;
-
-@property(nonatomic, strong)QNResponseInfo *uploadDataErrorResponseInfo;
-@property(nonatomic, strong)NSDictionary *uploadDataErrorResponse;
 
 @end
 
@@ -33,118 +23,18 @@
     return [super prepareToUpload];
 }
 
-- (void)startToUpload{
-    [super startToUpload];
-    
-    self.previousPercent = 0;
-    self.uploadDataErrorResponseInfo = nil;
-    self.uploadDataErrorResponse = nil;
-    self.uploadTransactions = [NSMutableArray array];
-    
-    NSLog(@"concurrent resume task count: %u", (unsigned int)self.config.concurrentTaskCount);
-    
-    kQNWeakSelf;
-    // 1. 启动upload
-    [self serverInit:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
-        kQNStrongSelf;
-        
-        if (!responseInfo.isOK) {
-            [self complete:responseInfo response:response];
-            return;
-        }
-        
-        // 2. 上传数据
-        [self concurrentUploadRestData:^{
-            if (![self isAllUploaded]) {
-                if (self.uploadDataErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
-                    BOOL isSwitched = [self switchRegionAndUpload];
-                    if (isSwitched == NO) {
-                        [self complete:self.uploadDataErrorResponseInfo response:self.uploadDataErrorResponse];
-                    }
-                } else {
-                    [self complete:self.uploadDataErrorResponseInfo response:self.uploadDataErrorResponse];
-                }
-                return;
-            }
-            
-            // 3. 组装文件
-            [self completeUpload:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
-                if (!responseInfo.isOK) {
-                    if (responseInfo.couldRetry && [self.config allowBackupHost]) {
-                        if (![self switchRegionAndUpload]) {
-                            [self complete:responseInfo response:response];
-                        }
-                    } else {
-                        [self complete:responseInfo response:response];
-                    }
-                } else {
-                    QNAsyncRunInMain(^{
-                        self.option.progressHandler(self.key, 1.0);
-                    });
-//                    [self removeUploadInfoRecord];
-                    [self complete:responseInfo response:response];
-                }
-            }];
-        }];
-    }];
-}
-
-- (void)concurrentUploadRestData:(dispatch_block_t)completeHandler{
+- (void)uploadRestData:(dispatch_block_t)completeHandler {
     for (int i = 0; i < self.config.concurrentTaskCount; i++) {
-        dispatch_group_enter(_uploadGroup);
-        dispatch_group_async(_uploadGroup, _uploadQueue, ^{
-            [self uploadRestData:^{
+        dispatch_group_enter(self.uploadGroup);
+        dispatch_group_async(self.uploadGroup, self.uploadQueue, ^{
+            [super performUploadRestData:^{
                 dispatch_group_leave(self.uploadGroup);
             }];
         });
     }
-    dispatch_group_notify(_uploadGroup, _uploadQueue, ^{
+    dispatch_group_notify(self.uploadGroup, self.uploadQueue, ^{
         completeHandler();
     });
-}
-
-- (void)uploadRestData:(dispatch_block_t)completeHandler{
-    if ([self isAllUploaded]) {
-        completeHandler();
-        return;
-    }
-    
-    [self uploadNextDataCompleteHandler:^(BOOL stop, QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
-        if (stop || !responseInfo.isOK) {
-            [self setErrorResponseInfo:responseInfo errorResponse:response];
-            completeHandler();
-        } else {
-            [self uploadRestData:completeHandler];
-        }
-    }];
-}
-
-- (void)setErrorResponseInfo:(QNResponseInfo *)responseInfo errorResponse:(NSDictionary *)response{
-    if (!self.uploadDataErrorResponseInfo
-        || (responseInfo.statusCode == kQNNoUsableHostError)) {
-        self.uploadDataErrorResponseInfo = responseInfo;
-        self.uploadDataErrorResponse = response ?: responseInfo.responseDictionary;
-    }
-}
-
-- (QNRequestTransaction *)createUploadRequestTransaction{
-    QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithConfig:self.config
-                                                                        uploadOption:self.option
-                                                                        targetRegion:[self getTargetRegion]
-                                                                       currentRegion:[self getCurrentRegion]
-                                                                                 key:self.key
-                                                                               token:self.token];
-    [self.uploadTransactions addObject:transaction];
-    return transaction;
-}
-- (void)removeUploadRequestTransaction:(QNRequestTransaction *)transaction{
-    [self.uploadTransactions removeObject:transaction];
-}
-
-- (void)destroyUploadRequestTransaction:(QNRequestTransaction *)transaction{
-    if (transaction) {
-        [self.uploadTransactions removeObject:transaction];
-    }
 }
 
 @end

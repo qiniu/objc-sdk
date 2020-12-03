@@ -109,6 +109,8 @@
     for (QNUploadData *data in self.uploadDataList) {
         [data clearUploadState];
     }
+    self.uploadId = nil;
+    self.expireAt = nil;
 }
 
 - (BOOL)isAllUploaded{

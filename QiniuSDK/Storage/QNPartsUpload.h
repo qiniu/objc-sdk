@@ -5,6 +5,7 @@
 //  Created by yangsen on 2020/5/7.
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
+/// 分片上传，默认为串行
 
 #import "QNBaseUpload.h"
 #import "QNUploadFileInfo.h"
@@ -14,23 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 @class QNRequestTransaction;
 @interface QNPartsUpload : QNBaseUpload
 
-@property(nonatomic, strong, readonly)QNResponseInfo *uploadDataErrorResponseInfo;
-@property(nonatomic, strong, readonly)NSDictionary *uploadDataErrorResponse;
-
-- (void)setErrorResponseInfo:(QNResponseInfo *)responseInfo
-               errorResponse:(NSDictionary *)response;
-
-- (BOOL)isAllUploaded;
-
-- (void)serverInit:(void(^)(QNResponseInfo * _Nullable responseInfo,
-                            NSDictionary * _Nullable response))completeHandler;
-
-- (void)uploadNextDataCompleteHandler:(void(^)(BOOL stop,
-                                               QNResponseInfo * _Nullable responseInfo,
-                                               NSDictionary * _Nullable response))completeHandler;
-
-- (void)completeUpload:(void(^)(QNResponseInfo * _Nullable responseInfo,
-                                NSDictionary * _Nullable response))completeHandler;
+/// 上传剩余的数据，此方法整合上传流程，上传操作为performUploadRestData，默认串行上传
+- (void)uploadRestData:(dispatch_block_t)completeHandler;
+- (void)performUploadRestData:(dispatch_block_t)completeHandler;
 
 @end
 

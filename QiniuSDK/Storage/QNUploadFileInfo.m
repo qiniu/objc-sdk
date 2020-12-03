@@ -56,6 +56,7 @@
 - (void)clearUploadState{
     self.isCompleted = NO;
     self.isUploading = NO;
+    self.etag = nil;
 }
 
 - (NSDictionary *)toDictionary{

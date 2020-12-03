@@ -173,7 +173,15 @@
 }
 
 - (void)insertRegionAtFirst:(id <QNUploadRegion>)region{
-    [self.regions insertObject:region atIndex:0];
+    BOOL hasRegion = NO;
+    for (id <QNUploadRegion> regionP in self.regions) {
+        if ([regionP.zoneInfo.regionId isEqualTo:region.zoneInfo.regionId]) {
+            hasRegion = YES;
+        }
+    }
+    if (!hasRegion) {
+        [self.regions insertObject:region atIndex:0];
+    }
 }
 
 - (BOOL)switchRegion{

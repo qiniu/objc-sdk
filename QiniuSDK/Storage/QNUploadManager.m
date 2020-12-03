@@ -37,7 +37,7 @@
 #import "QNResponseInfo.h"
 
 #import "QNFormUpload.h"
-#import "QNResumeUpload.h"
+#import "QNPartsUpload.h"
 #import "QNConcurrentResumeUpload.h"
 
 #import "QNUpToken.h"
@@ -223,15 +223,15 @@
                 [up run];
             });
         } else {
-            QNResumeUpload *up = [[QNResumeUpload alloc]
-                                  initWithFile:file
-                                  key:key
-                                  token:t
-                                  option:option
-                                  configuration:self.config
-                                  recorder:self.config.recorder
-                                  recorderKey:key
-                                  completionHandler:complete];
+            QNPartsUpload *up = [[QNPartsUpload alloc]
+                                 initWithFile:file
+                                 key:key
+                                 token:t
+                                 option:option
+                                 configuration:self.config
+                                 recorder:self.config.recorder
+                                 recorderKey:key
+                                 completionHandler:complete];
             QNAsyncRun(^{
                 [up run];
             });

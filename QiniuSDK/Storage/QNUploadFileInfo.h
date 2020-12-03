@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign, readonly)long long offset;
 /// 当前data大小
 @property(nonatomic, assign, readonly)long long size;
-/// data下标
+/// data下标 从1开始，兼容V2
 @property(nonatomic, assign, readonly)NSInteger index;
 /// data etag
 @property(nonatomic, copy)NSString *etag;

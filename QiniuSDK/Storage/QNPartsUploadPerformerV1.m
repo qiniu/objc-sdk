@@ -57,10 +57,8 @@
     
     NSData *chunkData = [self getDataWithChunk:chunk block:block];
     if (chunkData == nil) {
-        @synchronized (fileInfo) {
-            chunk.isUploading = NO;
-            chunk.isCompleted = NO;
-        }
+        chunk.isUploading = NO;
+        chunk.isCompleted = NO;
         QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithLocalIOError:@"get chunk data error"];
         completeHandler(YES, responseInfo, nil, nil);
         return;
