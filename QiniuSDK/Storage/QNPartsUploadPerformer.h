@@ -33,7 +33,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 断点续传时，起始上传偏移
 @property(nonatomic, strong, readonly)NSNumber *recoveredFrom;
-@property(nonatomic, strong)id <QNUploadRegion> targetRegion;
 @property(nonatomic, strong, readonly)id <QNUploadRegion> currentRegion;
 @property(nonatomic, strong, readonly)QNUploadFileInfo *fileInfo;
 

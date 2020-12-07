@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// data下标 从1开始，兼容V2
 @property(nonatomic, assign, readonly)NSInteger index;
 /// data etag
-@property(nonatomic, copy)NSString *etag;
+@property(nonatomic, copy, nullable)NSString *etag;
 /// 是否已完成上传
 @property(atomic, assign)BOOL isCompleted;
 /// 是否正在上传 【不进行离线缓存】

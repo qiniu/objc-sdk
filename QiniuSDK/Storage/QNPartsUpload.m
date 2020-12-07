@@ -29,15 +29,11 @@
 @end
 @implementation QNPartsUpload
 
-+ (long long)blockSize{
-    return 4 * 1024 * 1024;
-}
-
 - (void)initData {
     [super initData];
     // 根据文件从本地恢复上传信息，如果没有则重新构建上传信息
-    if (self.config.resumeUploadVersion == QNResumeUploadVersionV2) {
-        self.uploadPerformer = [[QNPartsUploadPerformerV2 alloc] initWithFile:self.file
+    if (self.config.resumeUploadVersion == QNResumeUploadVersionV1) {
+        self.uploadPerformer = [[QNPartsUploadPerformerV1 alloc] initWithFile:self.file
                                                                      fileName:self.fileName
                                                                           key:self.key
                                                                         token:self.token
@@ -45,7 +41,7 @@
                                                                 configuration:self.config
                                                                   recorderKey:self.recorderKey];
     } else {
-        self.uploadPerformer = [[QNPartsUploadPerformerV1 alloc] initWithFile:self.file
+        self.uploadPerformer = [[QNPartsUploadPerformerV2 alloc] initWithFile:self.file
                                                                      fileName:self.fileName
                                                                           key:self.key
                                                                         token:self.token
@@ -75,14 +71,9 @@
     if (code != 0) {
         return code;
     }
-    // 重置错误信息
-    self.uploadDataErrorResponseInfo = nil;
-    self.uploadDataErrorResponse = nil;
     
-    // 配置目标region
-    self.uploadPerformer.targetRegion = [self getTargetRegion];
     // 配置当前region
-    if (self.uploadPerformer.currentRegion) {
+    if (self.uploadPerformer.currentRegion && self.uploadPerformer.currentRegion.isValid) {
         // currentRegion有值，为断点续传，将region插入至regionList第一处
         [self insertRegionAtFirst:self.uploadPerformer.currentRegion];
     } else {
@@ -96,19 +87,24 @@
     return code;
 }
 
+- (BOOL)switchRegion{
+    BOOL isSuccess = [super switchRegion];
+    [self.uploadPerformer switchRegion:self.getCurrentRegion];
+    return isSuccess;
+}
+
 - (BOOL)switchRegionAndUpload{
     [self reportBlock];
-    
-    BOOL isSwitched = [super switchRegionAndUpload];
-    if (isSwitched) {
-        [self.uploadPerformer switchRegion:self.getCurrentRegion];
-    }
-    return isSwitched;
+    return [super switchRegionAndUpload];;
 }
 
 - (void)startToUpload{
     [super startToUpload];
 
+    // 重置错误信息
+    self.uploadDataErrorResponseInfo = nil;
+    self.uploadDataErrorResponse = nil;
+    
     kQNWeakSelf;
     // 1. 启动upload
     [self serverInit:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {

@@ -34,6 +34,7 @@
 @property (nonatomic,   copy) NSString *recorderKey;
 
 @property (nonatomic, strong) NSNumber *recoveredFrom;
+@property (nonatomic, strong) id <QNUploadRegion> targetRegion;
 @property (nonatomic, strong) id <QNUploadRegion> currentRegion;
 @property (nonatomic, strong) QNUploadFileInfo *fileInfo;
 
@@ -79,6 +80,9 @@
     [self removeUploadInfoRecord];
     self.currentRegion = region;
     self.recoveredFrom = nil;
+    if (!self.targetRegion) {
+        self.targetRegion = region;
+    }
 }
 
 - (void)notifyProgress {
@@ -149,11 +153,12 @@
         QNUploadDomainRegion *region = [[QNUploadDomainRegion alloc] init];
         [region setupRegionData:zoneInfo];
         self.currentRegion = region;
-        
+        self.targetRegion = region;
         self.recoveredFrom = @(fileInfo.progress * fileInfo.size);
     } else {
         [self.recorder del:self.key];
         self.currentRegion = nil;
+        self.targetRegion = nil;
         self.recoveredFrom = nil;
     }
 }

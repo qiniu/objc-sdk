@@ -42,9 +42,10 @@
                                                NSDictionary * _Nullable response))completeHandler {
     QNUploadFileInfoPartV1 *fileInfo = (QNUploadFileInfoPartV1 *)self.fileInfo;
     
-    QNUploadBlock *block = [fileInfo nextUploadBlock];
+    QNUploadBlock *block = nil;
     QNUploadData *chunk = nil;
     @synchronized (self) {
+        block = [fileInfo nextUploadBlock];
         chunk = [block nextUploadData];
         chunk.isUploading = YES;
         chunk.isCompleted = NO;
@@ -71,10 +72,29 @@
         chunk.progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
         [self notifyProgress];
     };
+    
+    void (^completeHandlerP)(QNResponseInfo *, QNUploadRegionRequestMetrics *, NSDictionary *) = ^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        kQNStrongSelf;
+        
+        NSString *blockContext = response[@"ctx"];
+        if (responseInfo.isOK && blockContext) {
+            block.context = blockContext;
+            chunk.isUploading = NO;
+            chunk.isCompleted = YES;
+            [self recordUploadInfo];
+            completeHandler(NO, responseInfo, metrics, response);
+        } else {
+            chunk.isUploading = NO;
+            chunk.isCompleted = NO;
+            completeHandler(NO, responseInfo, metrics, response);
+        }
+        completeHandler(NO, responseInfo, metrics, response);
+    };
+    
     if (chunk.isFirstData) {
-        [self makeBlock:block firstChunk:chunk chunkData:chunkData progress:progress completeHandler:completeHandler];
+        [self makeBlock:block firstChunk:chunk chunkData:chunkData progress:progress completeHandler:completeHandlerP];
     } else {
-        [self uploadChunk:block chunk:chunk chunkData:chunkData progress:progress completeHandler:completeHandler];
+        [self uploadChunk:block chunk:chunk chunkData:chunkData progress:progress completeHandler:completeHandlerP];
     }
 }
 
@@ -105,13 +125,9 @@
         chunkData:(NSData *)chunkData
          progress:(void(^)(long long totalBytesWritten,
                            long long totalBytesExpectedToWrite))progress
-  completeHandler:(void(^)(BOOL stop,
-                           QNResponseInfo * _Nullable responseInfo,
+  completeHandler:(void(^)(QNResponseInfo * _Nullable responseInfo,
                            QNUploadRegionRequestMetrics * _Nullable metrics,
                            NSDictionary * _Nullable response))completeHandler {
-    
-    chunk.isUploading = YES;
-    chunk.isCompleted = NO;
     
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
     kQNWeakSelf;
@@ -125,19 +141,7 @@
         kQNStrongObj(transaction);
         
         [self destroyUploadRequestTransaction:transaction];
-        
-        NSString *blockContext = response[@"ctx"];
-        if (responseInfo.isOK && blockContext) {
-            block.context = blockContext;
-            chunk.isUploading = NO;
-            chunk.isCompleted = YES;
-            [self recordUploadInfo];
-            completeHandler(NO, responseInfo, metrics, response);
-        } else {
-            chunk.isUploading = NO;
-            chunk.isCompleted = NO;
-            completeHandler(NO, responseInfo, metrics, response);
-        }
+        completeHandler(responseInfo, metrics, response);
     }];
 }
 
@@ -147,13 +151,9 @@
           chunkData:(NSData *)chunkData
            progress:(void(^)(long long totalBytesWritten,
                              long long totalBytesExpectedToWrite))progress
-    completeHandler:(void(^)(BOOL stop,
-                             QNResponseInfo * _Nullable responseInfo,
+    completeHandler:(void(^)(QNResponseInfo * _Nullable responseInfo,
                              QNUploadRegionRequestMetrics * _Nullable metrics,
                              NSDictionary * _Nullable response))completeHandler {
-    
-    chunk.isUploading = YES;
-    chunk.isCompleted = NO;
     
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
     kQNWeakSelf;
@@ -168,19 +168,7 @@
         kQNStrongObj(transaction);
         
         [self destroyUploadRequestTransaction:transaction];
-        
-        NSString *blockContext = response[@"ctx"];
-        if (responseInfo.isOK && blockContext) {
-            block.context = blockContext;
-            chunk.isUploading = NO;
-            chunk.isCompleted = YES;
-            [self recordUploadInfo];
-            completeHandler(NO, responseInfo, metrics, response);
-        } else {
-            chunk.isUploading = NO;
-            chunk.isCompleted = NO;
-            completeHandler(NO, responseInfo, metrics, response);
-        }
+        completeHandler(responseInfo, metrics, response);
     }];
 }
 
