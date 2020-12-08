@@ -16,7 +16,6 @@
 #import "QNTestConfig.h"
 
 @interface QNResumeUploadTest : QNUploadFlowTest
-@property QNUploadManager *upManager;
 @property BOOL inTravis;
 @end
 
@@ -24,7 +23,6 @@
 
 - (void)setUp {
     [super setUp];
-    _upManager = [[QNUploadManager alloc] init];
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
     NSString *travis = [[NSProcessInfo processInfo] environment][@"QINIU_TEST_ENV"];
     if ([travis isEqualToString:@"travis"]) {
@@ -45,7 +43,7 @@
     NSArray *sizeArray = @[@5000, @8000, @10000, @20000];
     sizeArray = @[@5000];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"resume_cancel_v1_%@k", size];
+        NSString *key = [NSString stringWithFormat:@"resume_switch_region_v1_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self switchRegionTestWithFile:tempFile key:key config:config option:nil];
     }
@@ -143,7 +141,7 @@
         builder.useHttps = NO;
     }];
     
-    NSString *key = @"resume_v1_0k";
+    NSString *key = @"resume_0k_v1_0k";
     QNTempFile *tempFile = [QNTempFile createTempFileWithSize:0 identifier:key];
     tempFile.canRemove = NO;
     [self uploadFileAndAssertResult:kQNZeroDataSize tempFile:tempFile key:key config:configHttp option:nil];

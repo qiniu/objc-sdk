@@ -152,8 +152,6 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
     [request setAllHTTPHeaderFields:headers];
     [request setTimeoutInterval:self.config.timeoutInterval];
     request.HTTPBody = body;
-
-    NSLog(@"signal request: \r\n url:%@", request.URL);
     
     kQNWeakSelf;
     [self.singleRequest request:request

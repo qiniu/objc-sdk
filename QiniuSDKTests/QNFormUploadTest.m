@@ -31,13 +31,26 @@
     [super tearDown];
 }
 
+- (void)testSwitchRegion {
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = YES;
+    }];
+    NSArray *sizeArray = @[@5, @50, @200, @500, @800, @1000, @2000, @3000, @4000];
+    for (NSNumber *size in sizeArray) {
+        NSString *key = [NSString stringWithFormat:@"form_switch_region_%@k", size];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+        [self switchRegionTestWithFile:tempFile key:key config:config option:nil];
+    }
+}
+
 - (void)testCancel {
-    float cancelPercent = 0.5;
+    float cancelPercent = 0.2;
     
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.useHttps = YES;
     }];
-    NSArray *sizeArray = @[@1000, @3000, @4000, @5000, @8000];
+    NSArray *sizeArray = @[@2000, @3000, @4000];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"form_cancel_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
@@ -49,7 +62,7 @@
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.useHttps = NO;
     }];
-    NSArray *sizeArray = @[@10, @50, @100, @200, @300, @500, @1000, @3000, @4000, @5000, @8000];
+    NSArray *sizeArray = @[@5, @50, @200, @500, @800, @1000, @2000, @3000, @4000];
     @autoreleasepool {
         for (NSNumber *size in sizeArray) {
             NSString *key = [NSString stringWithFormat:@"form_http_%@k", size];
@@ -71,7 +84,7 @@
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.useHttps = YES;
     }];
-    NSArray *sizeArray = @[@10, @50, @100, @200, @300, @500, @1000, @3000, @4000, @5000, @8000];
+    NSArray *sizeArray = @[@5, @50, @200, @500, @800, @1000, @2000, @3000, @4000];
     @autoreleasepool {
         for (NSNumber *size in sizeArray) {
             NSString *key = [NSString stringWithFormat:@"form_https_%@k", size];
@@ -128,6 +141,7 @@
 - (void)testNoToken {
     NSString *key = @"form_no_token";
     QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1024 identifier:key];
+    tempFile.canRemove = NO;
     NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
     
     [self uploadFileAndAssertResult:kQNInvalidToken tempFile:tempFile token:nil key:key config:nil option:nil];
@@ -135,6 +149,10 @@
 
     [self uploadFileAndAssertResult:kQNInvalidToken tempFile:tempFile token:@"" key:key config:nil option:nil];
     [self uploadDataAndAssertResult:kQNInvalidToken data:data token:@"" key:key config:nil option:nil];
+    
+    tempFile.canRemove = YES;
+    [self uploadFileAndAssertResult:kQNInvalidToken tempFile:tempFile token:@"ABC" key:key config:nil option:nil];
+    [self uploadDataAndAssertResult:kQNInvalidToken data:data token:@"ABC" key:key config:nil option:nil];
 }
 
 - (void)testNoComplete {
@@ -203,7 +221,7 @@
         builder.converter = ^NSString *(NSString *url) {
             return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
         };
-        NSArray *upList = [[NSArray alloc] initWithObjects:@"up-na0.qiniu.com", @"up-na0.qiniu.com", nil];
+        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono-na0.qiniu.com", @"upnono-na0.qiniu.com", nil];
         builder.useHttps = NO;
         builder.zone = [[QNFixedZone alloc] initWithUpDomainList:upList];
     }];
