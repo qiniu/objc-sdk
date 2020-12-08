@@ -36,6 +36,21 @@
 - (void)tearDown {
 }
 
+- (void)testSwitchRegionV1 {
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV1;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = YES;
+    }];
+    NSArray *sizeArray = @[@5000, @8000, @10000, @20000];
+    sizeArray = @[@5000];
+    for (NSNumber *size in sizeArray) {
+        NSString *key = [NSString stringWithFormat:@"resume_cancel_v1_%@k", size];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+        [self switchRegionTestWithFile:tempFile key:key config:config option:nil];
+    }
+}
+
 - (void)testCancelV1 {
     float cancelPercent = 0.5;
     
@@ -143,6 +158,21 @@
 
 }
 
+
+- (void)testSwitchRegionV2 {
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV2;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = YES;
+    }];
+    NSArray *sizeArray = @[@1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    sizeArray = @[@5000];
+    for (NSNumber *size in sizeArray) {
+        NSString *key = [NSString stringWithFormat:@"resume_cancel_v2_%@k", size];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+        [self switchRegionTestWithFile:tempFile key:key config:config option:nil];
+    }
+}
 
 - (void)testCancelV2 {
     float cancelPercent = 0.5;

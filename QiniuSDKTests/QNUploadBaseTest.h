@@ -15,6 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNUploadBaseTest : XCTestCase
 
+- (BOOL)versionUploadKey:(NSString *)upKey
+             responseKey:(NSString *)responseKey;
+
 - (void)uploadFileAndAssertSuccessResult:(QNTempFile * _Nullable)tempFile
                                      key:(NSString * _Nullable)key
                                   config:(QNConfiguration * _Nullable)config

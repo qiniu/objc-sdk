@@ -38,6 +38,17 @@ NS_ASSUME_NONNULL_BEGIN
                   config:(QNConfiguration * _Nullable)config
                   option:(QNUploadOption * _Nullable)option;
 
+//MARK: ----- 切换Region
+- (void)switchRegionTestWithFile:(QNTempFile * _Nullable)tempFile
+                             key:(NSString * _Nullable)key
+                          config:(QNConfiguration * _Nullable)config
+                          option:(QNUploadOption * _Nullable)option;
+
+- (void)switchRegionTestWithData:(NSData * _Nullable)data
+                             key:(NSString * _Nullable)key
+                          config:(QNConfiguration * _Nullable)config
+                          option:(QNUploadOption * _Nullable)option;
+
 @end
 
 NS_ASSUME_NONNULL_END

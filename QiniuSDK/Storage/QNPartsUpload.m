@@ -98,6 +98,17 @@
     return [super switchRegionAndUpload];;
 }
 
+// 根据错误信息进行切换region并上传，return:是否切换region并上传
+- (BOOL)switchRegionAndUploadIfNeededWithErrorResponse:(QNResponseInfo *)errorResponseInfo {
+    if (!errorResponseInfo || errorResponseInfo.isOK || // 不存在 || 不是error 不切
+        !errorResponseInfo.couldRetry || ![self.config allowBackupHost] ||  // 不能重试不切
+        ![self switchRegionAndUpload]) { // 切换失败
+        return NO;
+    }
+
+    return YES;
+}
+
 - (void)startToUpload{
     [super startToUpload];
 
@@ -109,20 +120,18 @@
     // 1. 启动upload
     [self serverInit:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
         kQNStrongSelf;
+        
         if (!responseInfo.isOK) {
-            [self complete:responseInfo response:response];
+            if (![self switchRegionAndUploadIfNeededWithErrorResponse:responseInfo]) {
+                [self complete:responseInfo response:response];
+            }
             return;
         }
         
         // 2. 上传数据
         [self uploadRestData:^{
             if (![self isAllUploaded]) {
-                if (self.uploadDataErrorResponseInfo.couldRetry && [self.config allowBackupHost]) {
-                    BOOL isSwitched = [self switchRegionAndUpload];
-                    if (isSwitched == NO) {
-                        [self complete:self.uploadDataErrorResponseInfo response:self.uploadDataErrorResponse];
-                    }
-                } else {
+                if (![self switchRegionAndUploadIfNeededWithErrorResponse:self.uploadDataErrorResponseInfo]) {
                     [self complete:self.uploadDataErrorResponseInfo response:self.uploadDataErrorResponse];
                 }
                 return;
@@ -131,22 +140,18 @@
             // 3. 组装文件
             [self completeUpload:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
 
-                if (responseInfo.isOK == NO) {
-                    if (responseInfo.couldRetry && [self.config allowBackupHost]) {
-                        BOOL isSwitched = [self switchRegionAndUpload];
-                        if (isSwitched == NO) {
-                            [self complete:responseInfo response:response];
-                        }
-                    } else {
+                if (!responseInfo.isOK) {
+                    if (![self switchRegionAndUploadIfNeededWithErrorResponse:responseInfo]) {
                         [self complete:responseInfo response:response];
                     }
-                } else {
-                    QNAsyncRunInMain(^{
-                        self.option.progressHandler(self.key, 1.0);
-                     });
-                    [self.uploadPerformer removeUploadInfoRecord];
-                    [self complete:responseInfo response:response];
+                    return;
                 }
+
+                QNAsyncRunInMain(^{
+                    self.option.progressHandler(self.key, 1.0);
+                 });
+                [self.uploadPerformer removeUploadInfoRecord];
+                [self complete:responseInfo response:response];
             }];
         }];
     }];

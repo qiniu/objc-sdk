@@ -135,7 +135,6 @@
         kQNStrongObj(transaction);
         
         [self destroyUploadRequestTransaction:transaction];
-        
         completeHandler(responseInfo, metrics, response);
     }];
 }

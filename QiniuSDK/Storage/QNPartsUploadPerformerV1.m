@@ -82,11 +82,9 @@
             chunk.isUploading = NO;
             chunk.isCompleted = YES;
             [self recordUploadInfo];
-            completeHandler(NO, responseInfo, metrics, response);
         } else {
             chunk.isUploading = NO;
             chunk.isCompleted = NO;
-            completeHandler(NO, responseInfo, metrics, response);
         }
         completeHandler(NO, responseInfo, metrics, response);
     };

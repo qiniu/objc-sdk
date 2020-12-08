@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNZoneInfo.h"
 #import "QNUploadFlowTest.h"
 
 @implementation QNUploadFlowTest
@@ -35,7 +36,7 @@
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     NSLog(@"responseInfo:%@", responseInfo);
     XCTAssert(responseInfo.isCancelled, @"Pass");
-    XCTAssert([keyUp isEqualToString:key], @"Pass");
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
 }
 
 
@@ -65,7 +66,7 @@
     NSLog(@"responseInfo:%@", responseInfo);
     XCTAssert(responseInfo.isCancelled, @"Pass");
     XCTAssert(responseInfo.reqId, @"Pass");
-    XCTAssert([keyUp isEqualToString:key], @"Pass");
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
 }
 
 //MARK: ----- 断点续传
@@ -103,7 +104,7 @@
     NSLog(@"responseInfo:%@", responseInfo);
     XCTAssert(responseInfo.isOK, @"Pass");
     XCTAssert(responseInfo.reqId, @"Pass");
-    XCTAssert([keyUp isEqualToString:key], @"Pass");
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
 }
 
 
@@ -139,7 +140,81 @@
     NSLog(@"responseInfo:%@", responseInfo);
     XCTAssert(responseInfo.isOK, @"Pass");
     XCTAssert(responseInfo.reqId, @"Pass");
-    XCTAssert([keyUp isEqualToString:key], @"Pass");
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
+}
+
+//MARK: ----- 切换Region
+- (void)switchRegionTestWithFile:(QNTempFile *)tempFile
+                             key:(NSString *)key
+                          config:(QNConfiguration *)config
+                          option:(QNUploadOption *)option {
+    
+    NSArray *upList01 = @[@"uptemp01.qbox.me", @"uptemp02.qbox.me"];
+    QNZoneInfo *zoneInfo01 = [QNZoneInfo zoneInfoWithMainHosts:upList01 regionId:nil];
+    
+    NSArray *upList02 = @[@"upload-na0.qiniup.com", @"up-na0.qbox.me"];
+    QNZoneInfo *zoneInfo02 = [QNZoneInfo zoneInfoWithMainHosts:upList02 regionId:nil];
+    QNZonesInfo *zonesInfo = [[QNZonesInfo alloc] initWithZonesInfo:@[zoneInfo01, zoneInfo02]];
+    
+    QNFixedZone *zone = [[QNFixedZone alloc] init];
+    [zone setValue:zonesInfo forKeyPath:@"zonesInfo"];
+    
+    QNConfiguration *switchConfig = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.chunkSize = config.chunkSize;
+        builder.putThreshold = config.putThreshold;
+        builder.retryMax = config.retryMax;
+        builder.timeoutInterval = config.timeoutInterval;
+        builder.retryInterval = config.retryInterval;
+        builder.recorder = config.recorder;
+        builder.recorderKeyGen = config.recorderKeyGen;
+        builder.proxy = config.proxy;
+        builder.converter = config.converter;
+        builder.useHttps = config.useHttps;
+        builder.allowBackupHost = config.allowBackupHost;
+        builder.useConcurrentResumeUpload = config.useConcurrentResumeUpload;
+        builder.resumeUploadVersion = config.resumeUploadVersion;
+        builder.concurrentTaskCount = config.concurrentTaskCount;
+
+        builder.zone = zone;
+    }];
+    [self uploadFileAndAssertSuccessResult:tempFile key:key config:switchConfig option:option];
+
+}
+
+- (void)switchRegionTestWithData:(NSData *)data
+                             key:(NSString *)key
+                          config:(QNConfiguration *)config
+                          option:(QNUploadOption *)option {
+    
+    NSArray *upList01 = @[@"uptemp01.qbox.me", @"uptemp02.qbox.me"];
+    QNZoneInfo *zoneInfo01 = [QNZoneInfo zoneInfoWithMainHosts:upList01 regionId:nil];
+    
+    NSArray *upList02 = @[@"upload-na0.qiniup.com", @"up-na0.qbox.me"];
+    QNZoneInfo *zoneInfo02 = [QNZoneInfo zoneInfoWithMainHosts:upList02 regionId:nil];
+    QNZonesInfo *zonesInfo = [[QNZonesInfo alloc] initWithZonesInfo:@[zoneInfo01, zoneInfo02]];
+    
+    QNFixedZone *zone = [[QNFixedZone alloc] init];
+    [zone setValue:zonesInfo forKeyPath:@"zonesInfo"];
+    
+    QNConfiguration *switchConfig = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.chunkSize = config.chunkSize;
+        builder.putThreshold = config.putThreshold;
+        builder.retryMax = config.retryMax;
+        builder.timeoutInterval = config.timeoutInterval;
+        builder.retryInterval = config.retryInterval;
+        builder.recorder = config.recorder;
+        builder.recorderKeyGen = config.recorderKeyGen;
+        builder.proxy = config.proxy;
+        builder.converter = config.converter;
+        builder.useHttps = config.useHttps;
+        builder.allowBackupHost = config.allowBackupHost;
+        builder.useConcurrentResumeUpload = config.useConcurrentResumeUpload;
+        builder.resumeUploadVersion = config.resumeUploadVersion;
+        builder.concurrentTaskCount = config.concurrentTaskCount;
+
+        builder.zone = zone;
+    }];
+    [self uploadDataAndAssertSuccessResult:data key:key config:switchConfig option:option];
 }
 
 @end

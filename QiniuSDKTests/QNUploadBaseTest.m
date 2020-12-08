@@ -10,6 +10,14 @@
 
 @implementation QNUploadBaseTest
 
+- (BOOL)versionUploadKey:(NSString *)upKey responseKey:(NSString *)responseKey {
+    if (upKey == nil) {
+        return responseKey == nil;
+    } else {
+        return [upKey isEqualToString:responseKey];
+    }
+}
+
 - (void)uploadFileAndAssertSuccessResult:(QNTempFile *)tempFile
                                      key:(NSString *)key
                                   config:(QNConfiguration *)config
@@ -27,15 +35,14 @@
     NSLog(@"responseInfo:%@", responseInfo);
     XCTAssert(responseInfo.isOK, @"Pass");
     XCTAssert(responseInfo.reqId, @"Pass");
-    if (key == nil) {
-//        XCTAssert([@"FgoKnypncpQlV6tTVddq9EL49l4B" isEqualToString:testResp[@"key"]], @"Pass");
-        XCTAssert(keyUp == nil, @"Pass");
-    } else {
-        XCTAssert([keyUp isEqualToString:key], @"Pass");
-    }
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
 }
 
-- (void)uploadFileAndAssertResult:(int)statusCode tempFile:(QNTempFile *)tempFile key:(NSString *)key config:(QNConfiguration *)config option:(QNUploadOption *)option{
+- (void)uploadFileAndAssertResult:(int)statusCode
+                         tempFile:(QNTempFile *)tempFile
+                              key:(NSString *)key
+                           config:(QNConfiguration *)config
+                           option:(QNUploadOption *)option{
     
     [self uploadFileAndAssertResult:statusCode tempFile:tempFile token:token_na0 key:key config:config option:option];
 }
@@ -58,11 +65,7 @@
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     NSLog(@"responseInfo:%@", responseInfo);
     XCTAssert(responseInfo.statusCode == statusCode, @"Pass");
-    if (key == nil) {
-        XCTAssert(keyUp == nil, @"Pass");
-    } else {
-        XCTAssert([keyUp isEqualToString:key], @"Pass");
-    }
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
 }
 
 - (void)uploadFile:(QNTempFile *)tempFile
@@ -110,12 +113,7 @@
     NSLog(@"responseInfo:%@", responseInfo);
     XCTAssert(responseInfo.isOK, @"Pass");
     XCTAssert(responseInfo.reqId, @"Pass");
-    if (key == nil) {
-        // c
-        XCTAssert(keyUp == nil, @"Pass");
-    } else {
-        XCTAssert([keyUp isEqualToString:key], @"Pass");
-    }
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
 }
 
 - (void)uploadDataAndAssertResult:(int)statusCode
@@ -143,11 +141,7 @@
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     NSLog(@"responseInfo:%@", responseInfo);
     XCTAssert(responseInfo.statusCode == statusCode, @"Pass");
-    if (key == nil) {
-        XCTAssert(keyUp == nil, @"Pass");
-    } else {
-        XCTAssert([keyUp isEqualToString:key], @"Pass");
-    }
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
 }
 
 - (void)uploadData:(NSData *)data
