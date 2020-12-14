@@ -136,8 +136,11 @@
     if (!self.uploadId || self.uploadId.length == 0) {
         return nil;
     }
+    NSArray *uploadDataList = [self.uploadDataList sortedArrayUsingComparator:^NSComparisonResult(QNUploadData * _Nonnull obj1, QNUploadData * _Nonnull obj2) {
+        return obj1.index - obj2.index;
+    }];
     NSMutableArray *infoArray = [NSMutableArray array];
-    for (QNUploadData *data in self.uploadDataList) {
+    for (QNUploadData *data in uploadDataList) {
         if (data.etag) {
             [infoArray addObject:@{@"etag" : data.etag, @"partNumber" : @(data.index)}];
         } else {
