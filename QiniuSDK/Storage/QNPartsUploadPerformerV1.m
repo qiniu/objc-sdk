@@ -175,9 +175,12 @@
     if (!self.file) {
         return nil;
     }
-    return [self.file read:(long)(chunk.offset + block.offset)
-                      size:(long)chunk.size
-                     error:nil];
+    NSError *error = nil;
+    NSData *data = [self.file read:(long)(chunk.offset + block.offset)
+                              size:(long)chunk.size
+                             error:&error];
+    
+    return error ? nil : data;
 }
 
 - (long long)getUploadChunkSize{
