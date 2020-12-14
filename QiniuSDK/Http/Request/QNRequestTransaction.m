@@ -301,13 +301,8 @@
     header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
     //TODO: key nil
     NSString *buckets = [[NSString alloc] initWithFormat:@"/buckets/%@", self.token.bucket];
-    NSString *objects = @"/objects/";
-    if (!self.key || self.key.length == 0) {
-        objects = [[NSString alloc] initWithFormat:@"%@%@",objects, @"~"];
-    } else {
-        objects = [[NSString alloc] initWithFormat:@"%@%@",objects, [QNUrlSafeBase64 encodeString:self.key]];
-    }
-    NSString *action = [[NSString alloc] initWithFormat:@"%@%@/uploads", buckets, objects];
+    NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [self resumeV2EncodeKey:self.key]];;
+    NSString *action  = [[NSString alloc] initWithFormat:@"%@%@/uploads", buckets, objects];
 
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
         return (BOOL)(!responseInfo.isOK);
@@ -339,7 +334,7 @@
     header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
     
     NSString *buckets = [[NSString alloc] initWithFormat:@"/buckets/%@", self.token.bucket];
-    NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [QNUrlSafeBase64 encodeString:self.key]];
+    NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [self resumeV2EncodeKey:self.key]];;
     NSString *uploads = [[NSString alloc] initWithFormat:@"/uploads/%@", uploadId];
     NSString *partNumber = [[NSString alloc] initWithFormat:@"/%ld", (long)partIndex];
     NSString *action = [[NSString alloc] initWithFormat:@"%@%@%@%@", buckets, objects, uploads, partNumber];
@@ -383,7 +378,7 @@
     header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
     
     NSString *buckets = [[NSString alloc] initWithFormat:@"/buckets/%@", self.token.bucket];
-    NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [QNUrlSafeBase64 encodeString:self.key]];
+    NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [self resumeV2EncodeKey:self.key]];
     NSString *uploads = [[NSString alloc] initWithFormat:@"/uploads/%@", uploadId];
     
     NSString *action = [[NSString alloc] initWithFormat:@"%@%@%@", buckets, objects, uploads];
@@ -427,6 +422,16 @@
 
         complete(responseInfo, metrics, response);
     }];
+}
+
+- (NSString *)resumeV2EncodeKey:(NSString *)key{
+    NSString *objects = @"/objects/";
+    if (!self.key || self.key.length == 0) {
+        objects = [[NSString alloc] initWithFormat:@"%@%@",objects, @"~"];
+    } else {
+        objects = [[NSString alloc] initWithFormat:@"%@%@",objects, [QNUrlSafeBase64 encodeString:self.key]];
+    }
+    return objects;
 }
 
 @end
