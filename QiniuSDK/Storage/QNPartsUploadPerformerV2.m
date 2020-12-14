@@ -143,9 +143,10 @@
     if (!self.file) {
         return nil;
     }
+    NSError *error = nil;
     NSData *dataByte = [self.file read:(long)data.offset
                                   size:(long)data.size
-                                 error:nil];
+                                 error:&error];
     return error ? nil : dataByte;
 }
 
