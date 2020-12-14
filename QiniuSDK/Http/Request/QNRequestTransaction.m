@@ -425,13 +425,13 @@
 }
 
 - (NSString *)resumeV2EncodeKey:(NSString *)key{
-    NSString *objects = @"/objects/";
+    NSString *encodeKey = nil;
     if (!self.key || self.key.length == 0) {
-        objects = [[NSString alloc] initWithFormat:@"%@%@",objects, @"~"];
+        encodeKey = @"~";
     } else {
-        objects = [[NSString alloc] initWithFormat:@"%@%@",objects, [QNUrlSafeBase64 encodeString:self.key]];
+        encodeKey = [QNUrlSafeBase64 encodeString:self.key];
     }
-    return objects;
+    return encodeKey;
 }
 
 @end
