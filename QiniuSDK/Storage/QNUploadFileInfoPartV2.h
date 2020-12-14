@@ -15,9 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 // 需要上传的块
 @property(nonatomic, strong, readonly)NSArray <QNUploadData *> *uploadDataList;
 // 上传标识符
-@property(nonatomic,   copy)NSString *uploadId;
+@property(nonatomic,   copy, nullable)NSString *uploadId;
 // 上传标识符有效期
-@property(nonatomic, strong)NSNumber *expireAt;
+@property(nonatomic, strong, nullable)NSNumber *expireAt;
 
 - (instancetype)initWithFileSize:(long long)fileSize
                         dataSize:(long long)dataSize

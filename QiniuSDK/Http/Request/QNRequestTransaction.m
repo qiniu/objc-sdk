@@ -301,7 +301,12 @@
     header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
     //TODO: key nil
     NSString *buckets = [[NSString alloc] initWithFormat:@"/buckets/%@", self.token.bucket];
-    NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [QNUrlSafeBase64 encodeString:self.key]];
+    NSString *objects = @"/objects/";
+    if (!self.key || self.key.length == 0) {
+        objects = [[NSString alloc] initWithFormat:@"%@%@",objects, @"~"];
+    } else {
+        objects = [[NSString alloc] initWithFormat:@"%@%@",objects, [QNUrlSafeBase64 encodeString:self.key]];
+    }
     NSString *action = [[NSString alloc] initWithFormat:@"%@%@/uploads", buckets, objects];
 
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
