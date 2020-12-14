@@ -103,6 +103,10 @@
     return 0;
 }
 
+- (BOOL)isEmpty{
+    return NO;
+}
+
 - (NSDictionary *)toDictionary{
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     dictionary[@"size"] = @(self.size);

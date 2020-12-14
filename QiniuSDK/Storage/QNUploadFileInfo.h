@@ -63,6 +63,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 所有的块是否都已经上传完毕
 - (BOOL)isAllUploaded;
 
+/// 是否有文件信息
+- (BOOL)isEmpty;
+
 /// 转化字典
 - (NSDictionary *)toDictionary;
 

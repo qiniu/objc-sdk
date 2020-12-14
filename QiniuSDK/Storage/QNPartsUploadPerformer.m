@@ -145,7 +145,7 @@
     QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:info[kQNRecordZoneInfoKey]];
     QNUploadFileInfo *fileInfo = [self getFileInfoWithDictionary:info[kQNRecordFileInfoKey]];
     
-    if (zoneInfo && fileInfo
+    if (zoneInfo && fileInfo && ![fileInfo isEmpty]
         && fileInfo.size == self.file.size && fileInfo.modifyTime == self.file.modifyTime) {
         
         self.fileInfo = fileInfo;

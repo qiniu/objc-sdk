@@ -132,6 +132,10 @@
     return progress;
 }
 
+- (BOOL)isEmpty{
+    return !self.uploadDataList || self.uploadDataList.count == 0;
+}
+
 - (NSArray <NSDictionary *> *)getPartInfoArray{
     if (!self.uploadId || self.uploadId.length == 0) {
         return nil;

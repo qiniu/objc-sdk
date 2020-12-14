@@ -254,6 +254,10 @@
     return progress;
 }
 
+- (BOOL)isEmpty{
+    return !self.uploadBlocks || self.uploadBlocks.count == 0;
+}
+
 - (NSArray <NSString *> *)allBlocksContexts{
     if (!self.uploadBlocks || self.uploadBlocks.count == 0) {
         return nil;
