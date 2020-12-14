@@ -426,8 +426,10 @@
 
 - (NSString *)resumeV2EncodeKey:(NSString *)key{
     NSString *encodeKey = nil;
-    if (!self.key || self.key.length == 0) {
+    if (!self.key) {
         encodeKey = @"~";
+    } else if (self.key.length == 0) {
+        encodeKey = @"";
     } else {
         encodeKey = [QNUrlSafeBase64 encodeString:self.key];
     }
