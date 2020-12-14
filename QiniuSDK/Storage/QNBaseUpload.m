@@ -177,6 +177,7 @@
     for (id <QNUploadRegion> regionP in self.regions) {
         if ([regionP.zoneInfo.regionId isEqualToString:region.zoneInfo.regionId]) {
             hasRegion = YES;
+            break;
         }
     }
     if (!hasRegion) {
