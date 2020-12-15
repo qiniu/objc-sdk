@@ -164,7 +164,6 @@
         builder.useHttps = YES;
     }];
     NSArray *sizeArray = @[@1000, @3000, @4000, @5000, @8000, @10000, @20000];
-    sizeArray = @[@5000];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"resume_cancel_v2_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];

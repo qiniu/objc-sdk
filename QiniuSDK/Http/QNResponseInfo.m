@@ -218,7 +218,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
     if (self.isCancelled
         || _statusCode == 100
         || (_statusCode > 300 && _statusCode < 400)
-        || (_statusCode > 400 && _statusCode < 500)
+        || (_statusCode > 400 && _statusCode < 500 && _statusCode != 406)
         || _statusCode == 501 || _statusCode == 573
         || _statusCode == 608 || _statusCode == 612 || _statusCode == 614 || _statusCode == 616
         || _statusCode == 619 || _statusCode == 630 || _statusCode == 631 || _statusCode == 640
