@@ -258,6 +258,10 @@
     return !self.uploadBlocks || self.uploadBlocks.count == 0;
 }
 
+- (BOOL)isValid{
+    return ![self isEmpty];
+}
+
 - (NSArray <NSString *> *)allBlocksContexts{
     if (!self.uploadBlocks || self.uploadBlocks.count == 0) {
         return nil;

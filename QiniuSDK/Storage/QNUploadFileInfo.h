@@ -66,6 +66,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 是否有文件信息
 - (BOOL)isEmpty;
 
+/// 文件是否有效
+- (BOOL)isValid;
+
 /// 转化字典
 - (NSDictionary *)toDictionary;
 

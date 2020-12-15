@@ -29,7 +29,7 @@
                             QNUploadRegionRequestMetrics * _Nullable metrics,
                             NSDictionary * _Nullable response))completeHandler {
     QNUploadFileInfoPartV2 *fileInfo = (QNUploadFileInfoPartV2 *)self.fileInfo;
-    if (fileInfo.uploadId && (fileInfo.expireAt.integerValue - [[NSDate date] timeIntervalSince1970]) > 600) {
+    if (fileInfo && [fileInfo isValid]) {
         QNResponseInfo *responseInfo = [QNResponseInfo successResponse];
         completeHandler(responseInfo, nil, nil);
         return;

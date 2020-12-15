@@ -107,6 +107,10 @@
     return NO;
 }
 
+- (BOOL)isValid{
+    return YES;
+}
+
 - (NSDictionary *)toDictionary{
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     dictionary[@"size"] = @(self.size);

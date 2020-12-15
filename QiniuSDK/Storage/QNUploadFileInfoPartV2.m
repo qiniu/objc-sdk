@@ -136,6 +136,10 @@
     return !self.uploadDataList || self.uploadDataList.count == 0;
 }
 
+- (BOOL)isValid{
+    return ![self isEmpty] && self.uploadId && (self.expireAt.integerValue - [[NSDate date] timeIntervalSince1970]) > 6000;
+}
+
 - (NSArray <NSDictionary *> *)getPartInfoArray{
     if (!self.uploadId || self.uploadId.length == 0) {
         return nil;
