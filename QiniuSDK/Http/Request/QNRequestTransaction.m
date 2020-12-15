@@ -332,17 +332,21 @@
     header[@"Authorization"] = token;
     header[@"Content-Type"] = @"application/octet-stream";
     header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
-    
+    if (self.uploadOption.checkCrc) {
+        NSString *md5 = [[partData qn_md5] lowercaseString];
+        if (md5) {
+            header[@"Content-MD5"] = md5;
+        }
+    }
     NSString *buckets = [[NSString alloc] initWithFormat:@"/buckets/%@", self.token.bucket];
     NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [self resumeV2EncodeKey:self.key]];;
     NSString *uploads = [[NSString alloc] initWithFormat:@"/uploads/%@", uploadId];
     NSString *partNumber = [[NSString alloc] initWithFormat:@"/%ld", (long)partIndex];
     NSString *action = [[NSString alloc] initWithFormat:@"%@%@%@%@", buckets, objects, uploads, partNumber];
-    NSString *md5 = [[partData qn_md5] lowercaseString];
     BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
         NSString *etag = [NSString stringWithFormat:@"%@", response[@"etag"]];
         NSString *serverMD5 = [NSString stringWithFormat:@"%@", response[@"md5"]];
-        return (BOOL)(!responseInfo.isOK || !etag || (responseInfo.isOK && self.uploadOption.checkCrc && (!serverMD5 || ![serverMD5 isEqualToString:md5])));
+        return (BOOL)(!responseInfo.isOK || !etag || !serverMD5);
     };
     
     [self.regionRequest put:action

@@ -8,7 +8,21 @@
 
 #import "QNUploadBaseTest.h"
 
+@interface QNUploadBaseTest()
+
+@property(nonatomic, strong)QNUploadOption *defaultOption;
+
+@end
 @implementation QNUploadBaseTest
+
+- (void)setUp {
+    [super setUp];
+    self.defaultOption = [[QNUploadOption alloc] initWithMime:nil
+                                              progressHandler:nil
+                                                       params:nil
+                                                     checkCrc:YES
+                                           cancellationSignal:nil];
+}
 
 - (BOOL)versionUploadKey:(NSString *)upKey responseKey:(NSString *)responseKey {
     if (upKey == nil) {
@@ -83,7 +97,9 @@
             config:(QNConfiguration *)config
             option:(QNUploadOption *)option
           complete:(void(^)(QNResponseInfo *responseInfo, NSString *key))complete {
-    
+    if (!option) {
+        option = self.defaultOption;
+    }
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
     [upManager putFile:tempFile.fileUrl.path key:key token:token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         
@@ -159,7 +175,9 @@
             config:(QNConfiguration *)config
             option:(QNUploadOption *)option
           complete:(void(^)(QNResponseInfo *responseInfo, NSString *key))complete{
-    
+    if (!option) {
+        option = self.defaultOption;
+    }
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
     [upManager putData:data key:key token:token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *response) {
 
