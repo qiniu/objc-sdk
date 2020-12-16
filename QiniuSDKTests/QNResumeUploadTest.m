@@ -156,6 +156,32 @@
 
 }
 
+- (void)testCustomParamV1 {
+    
+    NSDictionary *userParam = @{@"x:foo" : @"foo_value",
+                                @"x:bar" : @"bar_value"};
+    NSDictionary *metaParam = @{@"0000" : @"meta_value_0",
+                                @"x-qn-meta-aaa" : @"meta_value_1",
+                                @"x-qn-meta-key-2" : @"meta_value_2"};
+    QNUploadOption *option = [[QNUploadOption alloc] initWithMime:nil
+                                                  progressHandler:nil
+                                                           params:userParam
+                                                   metaDataParams:metaParam
+                                                         checkCrc:YES
+                                               cancellationSignal:nil];
+    
+    QNConfiguration *configHttp = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV1;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = NO;
+    }];
+    
+    NSString *key = @"resume_custom_param_v1";
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1024 * 1024 * 5 identifier:key];
+    
+    [self uploadFileAndAssertSuccessResult:tempFile key:key config:configHttp option:option];
+}
+
 
 - (void)testSwitchRegionV2 {
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
@@ -277,6 +303,32 @@
        }];
     [self uploadFileAndAssertResult:kQNZeroDataSize tempFile:tempFile key:key config:configHttps option:nil];
 
+}
+
+- (void)testCustomParamV2 {
+    
+    NSDictionary *userParam = @{@"x:foo" : @"foo_value",
+                                @"x:bar" : @"bar_value"};
+    NSDictionary *metaParam = @{@"0000" : @"meta_value_0",
+                                @"x-qn-meta-aaaa" : @"meta_value_1",
+                                @"x-qn-meta-key-2" : @"meta_value_2"};
+    QNUploadOption *option = [[QNUploadOption alloc] initWithMime:nil
+                                                  progressHandler:nil
+                                                           params:userParam
+                                                   metaDataParams:metaParam
+                                                         checkCrc:YES
+                                               cancellationSignal:nil];
+    
+    QNConfiguration *configHttp = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV2;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = NO;
+    }];
+    
+    NSString *key = @"resume_custom_param_v2";
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1024 * 1024 * 5 identifier:key];
+    
+    [self uploadFileAndAssertSuccessResult:tempFile key:key config:configHttp option:option];
 }
 
 //- (void)testProxy {

@@ -121,6 +121,9 @@
     if (self.uploadOption.params) {
         [param addEntriesFromDictionary:self.uploadOption.params];
     }
+    if (self.uploadOption.metaDataParam) {
+        [param addEntriesFromDictionary:self.uploadOption.metaDataParam];
+    }
     if (self.key && self.key.length > 0) {
         param[@"key"] = self.key;
     }
@@ -268,6 +271,10 @@
     [self.uploadOption.params enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *obj, BOOL *stop) {
         action = [NSString stringWithFormat:@"%@/%@/%@", action, key, [QNUrlSafeBase64 encodeString:obj]];
     }];
+    
+    [self.uploadOption.metaDataParam enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *obj, BOOL *stop) {
+        action = [NSString stringWithFormat:@"%@/%@/%@", action, key, [QNUrlSafeBase64 encodeString:obj]];
+    }];
 
     //添加路径
     NSString *fname = [[NSString alloc] initWithFormat:@"/fname/%@", [QNUrlSafeBase64 encodeString:fileName]];
@@ -399,6 +406,9 @@
     }
     if (self.uploadOption.params) {
         bodyDictionary[@"customVars"] = self.uploadOption.params;
+    }
+    if (self.uploadOption.metaDataParam) {
+        bodyDictionary[@"metaData"] = self.uploadOption.metaDataParam;
     }
     
     NSError *error = nil;

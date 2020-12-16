@@ -179,6 +179,30 @@
     [self uploadDataAndAssertSuccessResult:data key:nil config:nil option:nil];
 }
 
+
+- (void)testCustomParam {
+    
+    NSDictionary *userParam = @{@"x:foo" : @"foo_value",
+                                @"x:bar" : @"bar_value"};
+    NSDictionary *metaParam = @{@"aaaa" : @"meta_value_1",
+                                @"x-qn-meta-key-2" : @"meta_value_2"};
+    QNUploadOption *option = [[QNUploadOption alloc] initWithMime:nil
+                                                  progressHandler:nil
+                                                           params:userParam
+                                                   metaDataParams:metaParam
+                                                         checkCrc:YES
+                                               cancellationSignal:nil];
+    NSString *file_key = @"form_custom_param_file";
+    NSString *data_key = @"form_custom_param_data";
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1024 identifier:file_key];
+    NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
+    
+    [self uploadFileAndAssertSuccessResult:tempFile key:file_key config:nil option:option];
+    [self uploadDataAndAssertSuccessResult:data key:data_key config:nil option:option];
+}
+
+
+
 //- (void)testProxy {
 //    __block QNResponseInfo *testInfo = nil;
 //    __block NSDictionary *testResp = nil;
