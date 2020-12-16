@@ -64,7 +64,8 @@
 + (instancetype)responseInfoOfZeroData:(NSString *)path;
 + (instancetype)responseInfoWithLocalIOError:(NSString *)desc;
 + (instancetype)responseInfoWithMaliciousResponseError:(NSString *)desc;
-+ (instancetype)responseInfoWithNoUsableHostError:(NSString *)desc;
+// 使用responseInfoWithSDKInteriorError替代
++ (instancetype)responseInfoWithNoUsableHostError:(NSString *)desc NS_UNAVAILABLE;
 + (instancetype)responseInfoWithSDKInteriorError:(NSString *)desc;
 + (instancetype)responseInfoWithUnexpectedSysCallError:(NSString *)desc;
 

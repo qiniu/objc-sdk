@@ -84,7 +84,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 }
 
 + (instancetype)responseInfoWithNoUsableHostError:(NSString *)desc{
-    return [QNResponseInfo errorResponseInfo:kQNNoUsableHostError
+    return [QNResponseInfo errorResponseInfo:kQNSDKInteriorError
                                    errorDesc:desc];
 }
 

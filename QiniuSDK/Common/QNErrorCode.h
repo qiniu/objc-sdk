@@ -49,9 +49,9 @@ extern const int kQNLocalIOError;
 extern const int kQNMaliciousResponseError;
 
 /**
- *    没有可用的Host 错误
+ *    没有可用的Host 错误【废弃】
  */
-extern const int kQNNoUsableHostError;
+extern const int kQNNoUsableHostError NS_UNAVAILABLE;
 
 /**
  *    SDK 内部错误

@@ -59,8 +59,7 @@
     if (!responseInfo) {
         return;
     }
-    if (!self.uploadDataErrorResponseInfo
-        || (responseInfo.statusCode == kQNNoUsableHostError)) {
+    if (!self.uploadDataErrorResponseInfo || responseInfo.statusCode != kQNSDKInteriorError) {
         self.uploadDataErrorResponseInfo = responseInfo;
         self.uploadDataErrorResponse = response ?: responseInfo.responseDictionary;
     }

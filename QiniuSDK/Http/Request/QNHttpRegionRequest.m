@@ -117,7 +117,7 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
               complete:(QNRegionRequestCompleteHandler)complete{
     
     if (!server.host || server.host.length == 0) {
-        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithNoUsableHostError:@"server error"];
+        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithSDKInteriorError:@"server error"];
         [self complete:responseInfo response:nil complete:complete];
         return;
     }
