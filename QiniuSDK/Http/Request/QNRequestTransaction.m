@@ -306,7 +306,7 @@
     header[@"Authorization"] = token;
     header[@"Content-Type"] = @"application/octet-stream";
     header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
-    //TODO: key nil
+
     NSString *buckets = [[NSString alloc] initWithFormat:@"/buckets/%@", self.token.bucket];
     NSString *objects = [[NSString alloc] initWithFormat:@"/objects/%@", [self resumeV2EncodeKey:self.key]];;
     NSString *action  = [[NSString alloc] initWithFormat:@"%@%@/uploads", buckets, objects];

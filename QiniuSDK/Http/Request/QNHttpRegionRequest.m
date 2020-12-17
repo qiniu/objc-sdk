@@ -38,17 +38,17 @@
                          token:(QNUpToken *)token
                         region:(id <QNUploadRegion>)region
                    requestInfo:(QNUploadRequestInfo *)requestInfo
-                  requestState:(QNUploadRequestState *)requestState{
+                  requestState:(QNUploadRequestState *)requestState {
     if (self = [super init]) {
         _config = config;
         _uploadOption = uploadOption;
         _region = region;
         _requestState = requestState;
         _singleRequest = [[QNHttpSingleRequest alloc] initWithConfig:config
-                                                      uploadOption:uploadOption
-                                                             token:token
-                                                       requestInfo:requestInfo
-                                                      requestState:requestState];
+                                                        uploadOption:uploadOption
+                                                               token:token
+                                                         requestInfo:requestInfo
+                                                        requestState:requestState];
     }
     return self;
 }

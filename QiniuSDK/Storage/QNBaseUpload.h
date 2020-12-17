@@ -103,8 +103,6 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
 //MARK: -- 机房管理
 
 /// 在区域列表头部插入一个区域
-/// @param zoneInfo zone信息
-- (void)insertRegionAtFirstByZoneInfo:(QNZoneInfo *)zoneInfo;
 - (void)insertRegionAtFirst:(id <QNUploadRegion>)region;
 /// 切换区域
 - (BOOL)switchRegion;

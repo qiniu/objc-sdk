@@ -166,12 +166,6 @@
     return defaultRegions.count > 0;
 }
 
-- (void)insertRegionAtFirstByZoneInfo:(QNZoneInfo *)zoneInfo{
-    QNUploadDomainRegion *region = [[QNUploadDomainRegion alloc] init];
-    [region setupRegionData:zoneInfo];
-    [self insertRegionAtFirst:region];
-}
-
 - (void)insertRegionAtFirst:(id <QNUploadRegion>)region{
     BOOL hasRegion = NO;
     for (id <QNUploadRegion> regionP in self.regions) {
