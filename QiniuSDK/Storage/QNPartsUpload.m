@@ -88,7 +88,9 @@
 
 - (BOOL)switchRegion{
     BOOL isSuccess = [super switchRegion];
-    [self.uploadPerformer switchRegion:self.getCurrentRegion];
+    if (isSuccess) {
+        [self.uploadPerformer switchRegion:self.getCurrentRegion];
+    }
     return isSuccess;
 }
 
@@ -139,6 +141,10 @@
             // 3. 组装文件
             [self completeUpload:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
 
+                if ([self shouldRemoveUploadInfoRecord:responseInfo]) {
+                    [self.uploadPerformer removeUploadInfoRecord];
+                }
+                
                 if (!responseInfo.isOK) {
                     if (![self switchRegionAndUploadIfNeededWithErrorResponse:responseInfo]) {
                         [self complete:responseInfo response:response];
@@ -149,7 +155,6 @@
                 QNAsyncRunInMain(^{
                     self.option.progressHandler(self.key, 1.0);
                  });
-                [self.uploadPerformer removeUploadInfoRecord];
                 [self complete:responseInfo response:response];
             }];
         }];
@@ -218,6 +223,10 @@
     [self reportBlock];
     [self.file close];
     [super complete:info response:response];
+}
+
+- (BOOL)shouldRemoveUploadInfoRecord:(QNResponseInfo *)info {
+    return info.isOK || info.statusCode == 612 || info.statusCode == 614;
 }
 
 //MARK:-- 统计block日志

@@ -154,26 +154,31 @@ static NSString *kQNErrorDomain = @"qiniu.com";
                 NSMutableDictionary *errorUserInfo = [@{@"errorHost" : host ?: @""} mutableCopy];
                 if (!body) {
                     _message = @"no response data";
-                    [errorUserInfo setDictionary:@{@"error":_message}];
-                    _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
+                    _error = nil;
                     _responseDictionary = nil;
                 } else {
                     NSError *tmp = nil;
                     NSDictionary *responseInfo = nil;
                     responseInfo = [NSJSONSerialization JSONObjectWithData:body options:NSJSONReadingMutableLeaves error:&tmp];
                     if (tmp){
-                        _message = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding] ?: @"";
-                        [errorUserInfo setDictionary:@{@"error" : _message}];
-                        _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
+                        _message = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding];
+                        _error = nil;
                         _responseDictionary = nil;
-                    } else if (responseInfo && statusCode > 199 && statusCode < 300) {
+                    } else if (statusCode == 200) {
                         _error = nil;
                         _message = @"ok";
                         _responseDictionary = responseInfo;
                     } else {
-                        _message = @"unknown error";
-                        [errorUserInfo setDictionary:@{@"error" : _message}];
-                        _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
+                        NSString *errorString = responseInfo[@"error"];
+                        if (errorString) {
+                            [errorUserInfo setDictionary:@{@"error" : errorString}];
+                            _message = errorString;
+                            _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
+                        } else {
+                            _message = errorString;
+                            _error = nil;
+                        }
+                        
                         _responseDictionary = responseInfo;
                     }
                 }
