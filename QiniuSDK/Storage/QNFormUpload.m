@@ -57,19 +57,17 @@
         
         [self addRegionRequestMetricsOfOneFlow:metrics];
         
-        if (responseInfo.isOK) {
-            QNAsyncRunInMain(^{
-                self.option.progressHandler(self.key, 1.0);
-            });
-            [self complete:responseInfo response:response];
-        } else if (responseInfo.couldRetry && self.config.allowBackupHost) {
-            BOOL isSwitched = [self switchRegionAndUpload];
-            if (isSwitched == NO) {
+        if (!responseInfo.isOK) {
+            if (![self switchRegionAndUploadIfNeededWithErrorResponse:responseInfo]) {
                 [self complete:responseInfo response:response];
             }
-        } else {
-            [self complete:responseInfo response:response];
+            return;
         }
+        
+        QNAsyncRunInMain(^{
+            self.option.progressHandler(self.key, 1.0);
+        });
+        [self complete:responseInfo response:response];
     }];
 }
 

@@ -94,7 +94,7 @@
 - (void)initData{
     _strongSelf = self;
     _currentRegionIndex = 0;
-    _metrics = [QNUploadTaskMetrics emptyMetrics];
+_metrics = [QNUploadTaskMetrics emptyMetrics];
 }
 
 - (void)run {
@@ -137,6 +137,17 @@
         [self startToUpload];
     }
     return isSwitched;
+}
+
+// 根据错误信息进行切换region并上传，return:是否切换region并上传
+- (BOOL)switchRegionAndUploadIfNeededWithErrorResponse:(QNResponseInfo *)errorResponseInfo {
+    if (!errorResponseInfo || errorResponseInfo.isOK || // 不存在 || 不是error 不切
+        !errorResponseInfo.couldRetry || ![self.config allowBackupHost] ||  // 不能重试不切
+        ![self switchRegionAndUpload]) { // 切换失败
+        return NO;
+    }
+
+    return YES;
 }
 
 - (void)complete:(QNResponseInfo *)info
