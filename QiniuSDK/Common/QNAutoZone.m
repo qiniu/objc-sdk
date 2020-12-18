@@ -99,7 +99,7 @@
               on:(QNPrequeryReturn)ret {
     
     if (token == nil || ![token isValid]) {
-        ret(-1, nil, nil);
+        ret(-1, [QNResponseInfo responseInfoWithInvalidToken:@"invalid token"], nil);
         return;
     }
     
@@ -119,7 +119,7 @@
     }
     
     if (zonesInfo != nil && zonesInfo.isValid) {
-        ret(0, nil, nil);
+        ret(0, [QNResponseInfo successResponse], nil);
         return;
     }
 
