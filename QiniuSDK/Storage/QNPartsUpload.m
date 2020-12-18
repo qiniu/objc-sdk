@@ -174,7 +174,6 @@
     
     [self uploadNextDataCompleteHandler:^(BOOL stop, QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
         if (stop || !responseInfo.isOK) {
-            [self setErrorResponseInfo:responseInfo errorResponse:response];
             completeHandler();
         } else {
             [self performUploadRestData:completeHandler];
@@ -188,6 +187,10 @@
     kQNWeakSelf;
     void(^completeHandlerP)(QNResponseInfo *, QNUploadRegionRequestMetrics *, NSDictionary *) = ^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response){
         kQNStrongSelf;
+        
+        if (!responseInfo.isOK) {
+            [self setErrorResponseInfo:responseInfo errorResponse:response];
+        }
         [self addRegionRequestMetricsOfOneFlow:metrics];
         completeHandler(responseInfo, response);
     };
@@ -200,6 +203,10 @@
     kQNWeakSelf;
     void(^completeHandlerP)(BOOL, QNResponseInfo *, QNUploadRegionRequestMetrics *, NSDictionary *) = ^(BOOL stop, QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response){
         kQNStrongSelf;
+        
+        if (!responseInfo.isOK) {
+            [self setErrorResponseInfo:responseInfo errorResponse:response];
+        }
         [self addRegionRequestMetricsOfOneFlow:metrics];
         completeHandler(stop, responseInfo, response);
     };
@@ -212,6 +219,10 @@
     kQNWeakSelf;
     void(^completeHandlerP)(QNResponseInfo *, QNUploadRegionRequestMetrics *, NSDictionary *) = ^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response){
         kQNStrongSelf;
+        
+        if (!responseInfo.isOK) {
+            [self setErrorResponseInfo:responseInfo errorResponse:response];
+        }
         [self addRegionRequestMetricsOfOneFlow:metrics];
         completeHandler(responseInfo, response);
     };

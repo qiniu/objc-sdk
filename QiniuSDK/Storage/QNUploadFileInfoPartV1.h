@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 // 需要上传的片数据
 @property(nonatomic, strong, readonly)NSArray <QNUploadData *> *uploadDataList;
 // block上传上下文信息
-@property(nonatomic,  copy)NSString *context;
+@property(nonatomic,   copy, nullable)NSString *context;
 // 是否已完成上传【不进行离线缓存】
 @property(nonatomic, assign, readonly)BOOL isCompleted;
 // 上传进度 【不进行离线缓存】

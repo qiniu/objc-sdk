@@ -111,6 +111,7 @@
 }
 
 - (void)clearUploadState{
+    self.context = nil;
     for (QNUploadData *data in self.uploadDataList) {
         [data clearUploadState];
     }
