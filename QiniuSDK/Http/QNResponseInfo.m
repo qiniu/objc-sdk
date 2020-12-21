@@ -164,7 +164,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
                         _message = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding];
                         _error = nil;
                         _responseDictionary = nil;
-                    } else if (statusCode == 200) {
+                    } else if (statusCode >= 200 && statusCode < 300) {
                         _error = nil;
                         _message = @"ok";
                         _responseDictionary = responseInfo;

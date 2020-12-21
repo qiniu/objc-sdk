@@ -94,7 +94,7 @@
 - (void)initData{
     _strongSelf = self;
     _currentRegionIndex = 0;
-_metrics = [QNUploadTaskMetrics emptyMetrics];
+    _metrics = [QNUploadTaskMetrics emptyMetrics];
 }
 
 - (void)run {
