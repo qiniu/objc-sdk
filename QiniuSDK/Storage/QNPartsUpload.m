@@ -134,11 +134,7 @@
             // 3. 组装文件
             [self completeUpload:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
                 kQNStrongSelf;
-                
-                if ([self shouldRemoveUploadInfoRecord:responseInfo]) {
-                    [self.uploadPerformer removeUploadInfoRecord];
-                }
-                
+                                
                 if (!responseInfo.isOK) {
                     if (![self switchRegionAndUploadIfNeededWithErrorResponse:responseInfo]) {
                         [self complete:responseInfo response:response];
@@ -230,6 +226,9 @@
 - (void)complete:(QNResponseInfo *)info response:(NSDictionary *)response{
     [self reportBlock];
     [self.file close];
+    if ([self shouldRemoveUploadInfoRecord:info]) {
+        [self.uploadPerformer removeUploadInfoRecord];
+    }
     [super complete:info response:response];
 }
 
