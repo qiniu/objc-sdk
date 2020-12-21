@@ -118,8 +118,11 @@
             return;
         }
         
+        kQNWeakSelf;
         // 2. 上传数据
         [self uploadRestData:^{
+            kQNStrongSelf;
+            
             if (![self isAllUploaded]) {
                 if (![self switchRegionAndUploadIfNeededWithErrorResponse:self.uploadDataErrorResponseInfo]) {
                     [self complete:self.uploadDataErrorResponseInfo response:self.uploadDataErrorResponse];
@@ -127,9 +130,11 @@
                 return;
             }
             
+            kQNWeakSelf;
             // 3. 组装文件
             [self completeUpload:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
-
+                kQNStrongSelf;
+                
                 if ([self shouldRemoveUploadInfoRecord:responseInfo]) {
                     [self.uploadPerformer removeUploadInfoRecord];
                 }
@@ -161,7 +166,10 @@
         return;
     }
     
+    kQNWeakSelf;
     [self uploadNextDataCompleteHandler:^(BOOL stop, QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+        kQNStrongSelf;
+        
         if (stop || !responseInfo.isOK) {
             completeHandler();
         } else {
