@@ -234,7 +234,7 @@
 }
 
 - (BOOL)shouldRemoveUploadInfoRecord:(QNResponseInfo *)info {
-    return info.isOK || info.statusCode == 612 || info.statusCode == 614;
+    return info.isOK || info.statusCode == 612 || info.statusCode == 614 || info.statusCode == 701;
 }
 
 //MARK:-- 统计block日志
