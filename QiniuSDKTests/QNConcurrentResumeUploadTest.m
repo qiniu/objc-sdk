@@ -47,10 +47,10 @@
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.resumeUploadVersion = QNResumeUploadVersionV1;
         builder.useConcurrentResumeUpload = YES;
-        builder.concurrentTaskCount = 3;
+        builder.concurrentTaskCount = 2;
         builder.useHttps = YES;
     }];
-    NSArray *sizeArray = @[@1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    NSArray *sizeArray = @[@10000, @20000];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"concurrent_cancel_v1_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
@@ -95,12 +95,13 @@
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.resumeUploadVersion = QNResumeUploadVersionV1;
         builder.useConcurrentResumeUpload = YES;
+        builder.concurrentTaskCount = 2;
         builder.useHttps = YES;
         builder.chunkSize = 1 * 1024 * 1024;
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniu"] error:nil];
     }];
     
-    NSArray *sizeArray = @[@1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    NSArray *sizeArray = @[@10000, @20000];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"concurrent_reupload_v1_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
@@ -177,10 +178,10 @@
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.resumeUploadVersion = QNResumeUploadVersionV2;
         builder.useConcurrentResumeUpload = YES;
-        builder.concurrentTaskCount = 3;
+        builder.concurrentTaskCount = 2;
         builder.useHttps = YES;
     }];
-    NSArray *sizeArray = @[@1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    NSArray *sizeArray = @[@10000, @20000];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"concurrent_cancel_v2_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
@@ -225,12 +226,13 @@
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.resumeUploadVersion = QNResumeUploadVersionV2;
         builder.useConcurrentResumeUpload = YES;
+        builder.concurrentTaskCount = 2;
         builder.useHttps = YES;
         builder.chunkSize = 1 * 1024 * 1024;
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniu"] error:nil];
     }];
     
-    NSArray *sizeArray = @[@1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    NSArray *sizeArray = @[@10000, @20000];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"concurrent_reupload_v2_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];

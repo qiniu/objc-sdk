@@ -47,8 +47,8 @@
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     NSLog(@"responseInfo:%@", responseInfo);
-    XCTAssert(responseInfo.isOK, @"Pass");
-    XCTAssert(responseInfo.reqId, @"Pass");
+    XCTAssertTrue(responseInfo.isOK, @"Pass");
+    XCTAssertTrue(responseInfo.reqId, @"Pass");
     XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
 }
 
@@ -78,7 +78,7 @@
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     NSLog(@"responseInfo:%@", responseInfo);
-    XCTAssert(responseInfo.statusCode == statusCode, @"Pass");
+    XCTAssertTrue(responseInfo.statusCode == statusCode, @"Pass");
     XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
 }
 
@@ -127,8 +127,8 @@
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     NSLog(@"responseInfo:%@", responseInfo);
-    XCTAssert(responseInfo.isOK, @"Pass");
-    XCTAssert(responseInfo.reqId, @"Pass");
+    XCTAssertTrue(responseInfo.isOK, @"Pass");
+    XCTAssertTrue(responseInfo.reqId, @"Pass");
     XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
 }
 
@@ -156,7 +156,7 @@
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     NSLog(@"responseInfo:%@", responseInfo);
-    XCTAssert(responseInfo.statusCode == statusCode, @"Pass");
+    XCTAssertTrue(responseInfo.statusCode == statusCode, @"Pass");
     XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
 }
 
