@@ -15,6 +15,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNUploadBaseTest : XCTestCase
 
+@property(nonatomic, strong)QNUploadOption *defaultOption;
+
 - (BOOL)versionUploadKey:(NSString *)upKey
              responseKey:(NSString *)responseKey;
 

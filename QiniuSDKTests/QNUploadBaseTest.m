@@ -10,15 +10,15 @@
 
 @interface QNUploadBaseTest()
 
-@property(nonatomic, strong)QNUploadOption *defaultOption;
-
 @end
 @implementation QNUploadBaseTest
 
 - (void)setUp {
     [super setUp];
     self.defaultOption = [[QNUploadOption alloc] initWithMime:nil
-                                              progressHandler:nil
+                                              progressHandler:^(NSString *key, float percent) {
+        NSLog(@"== key:%@ percent:%f", key, percent);
+    }
                                                        params:nil
                                                      checkCrc:YES
                                            cancellationSignal:nil];

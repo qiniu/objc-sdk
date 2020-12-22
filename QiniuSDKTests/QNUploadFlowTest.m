@@ -13,10 +13,17 @@
 
 - (void)cancelTest:(float)cancelPercent tempFile:(QNTempFile *)tempFile key:(NSString *)key config:(QNConfiguration *)config option:(QNUploadOption *)option {
     
+    if (!option) {
+        option = self.defaultOption;
+    }
+    
     __block BOOL cancelFlag = NO;
     QNUploadOption *cancelOption = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
         if (cancelPercent <= percent) {
             cancelFlag = YES;
+        }
+        if (option.progressHandler) {
+            option.progressHandler(key, percent);
         }
     }
         params:option.params
@@ -42,10 +49,17 @@
 
 - (void)cancelTest:(float)cancelPercent data:(NSData *)data key:(NSString *)key config:(QNConfiguration *)config option:(QNUploadOption *)option {
     
+    if (!option) {
+        option = self.defaultOption;
+    }
+    
     __block BOOL cancelFlag = NO;
     QNUploadOption *cancelOption = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
         if (cancelPercent <= percent) {
             cancelFlag = YES;
+        }
+        if (option.progressHandler) {
+            option.progressHandler(key, percent);
         }
     }
         params:option.params
@@ -72,6 +86,10 @@
 //MARK: ----- 断点续传
 - (void)resumeUploadTest:(float)resumePercent tempFile:(QNTempFile *)tempFile key:(NSString *)key config:(QNConfiguration *)config option:(QNUploadOption *)option {
     
+    if (!option) {
+        option = self.defaultOption;
+    }
+    
     tempFile.canRemove = NO;
     [self cancelTest:resumePercent tempFile:tempFile key:key config:config option:option];
     
@@ -81,11 +99,20 @@
     __block BOOL isSuccess = NO;
     QNUploadOption *resumeOption = [[QNUploadOption alloc] initWithMime:option.mimeType progressHandler:^(NSString *key, float percent) {
         float minPercent = 0;
-        if (config.useConcurrentResumeUpload) {
-            minPercent = percent + (config.chunkSize) * config.concurrentTaskCount / tempFile.size;
+        float currentChunkCount = 0;
+        float chunkSize = 0;
+        if (!config.useConcurrentResumeUpload) {
+            currentChunkCount = 1;
+            chunkSize = config.chunkSize;
+        } else if (config.resumeUploadVersion == QNResumeUploadVersionV1) {
+            currentChunkCount = config.concurrentTaskCount;
+            chunkSize = 4 * 1024 * 1024;
         } else {
-            minPercent = percent + config.chunkSize / tempFile.size;
+            currentChunkCount = config.concurrentTaskCount;
+            chunkSize = config.chunkSize;
         }
+        minPercent = percent + currentChunkCount * chunkSize / [tempFile size];
+        
         if (resumePercent <= minPercent) {
             isSuccess = YES;
         }
@@ -102,6 +129,7 @@
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     NSLog(@"responseInfo:%@", responseInfo);
+    XCTAssertTrue(isSuccess, @"Pass");
     XCTAssertTrue(responseInfo.isOK, @"Pass");
     XCTAssertTrue(responseInfo.reqId, @"Pass");
     XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
@@ -110,6 +138,10 @@
 
 - (void)resumeUploadTest:(float)resumePercent data:(NSData *)data key:(NSString *)key config:(QNConfiguration *)config option:(QNUploadOption *)option {
     
+    if (!option) {
+        option = self.defaultOption;
+    }
+    
     [self cancelTest:resumePercent data:data key:key config:config option:option];
     
     __block QNResponseInfo *responseInfo = nil;
@@ -117,14 +149,20 @@
     __block BOOL isSuccess = NO;
     QNUploadOption *resumeOption = [[QNUploadOption alloc] initWithMime:option.mimeType progressHandler:^(NSString *key, float percent) {
         float minPercent = 0;
-        if (config.useConcurrentResumeUpload) {
-            minPercent = percent + (config.chunkSize) * config.concurrentTaskCount / data.length;
+        float currentChunkCount = 0;
+        float chunkSize = 0;
+        if (!config.useConcurrentResumeUpload) {
+            currentChunkCount = 1;
+            chunkSize = config.chunkSize;
+        } else if (config.resumeUploadVersion == QNResumeUploadVersionV1) {
+            currentChunkCount = config.concurrentTaskCount;
+            chunkSize = 4 * 1024 * 1024;
         } else {
-            minPercent = percent + config.chunkSize / data.length;
+            currentChunkCount = config.concurrentTaskCount;
+            chunkSize = config.chunkSize;
         }
-        if (resumePercent <= minPercent) {
-            isSuccess = YES;
-        }
+        minPercent = percent + currentChunkCount * chunkSize / (double) data.length;
+        
         if (option.progressHandler) {
             option.progressHandler(key, percent);
         }
@@ -138,6 +176,7 @@
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     NSLog(@"responseInfo:%@", responseInfo);
+    XCTAssertTrue(isSuccess, @"Pass");
     XCTAssertTrue(responseInfo.isOK, @"Pass");
     XCTAssertTrue(responseInfo.reqId, @"Pass");
     XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");

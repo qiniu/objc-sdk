@@ -77,7 +77,6 @@
 
 - (void)switchRegion:(id <QNUploadRegion>)region {
     [self.fileInfo clearUploadState];
-    [self removeUploadInfoRecord];
     self.currentRegion = region;
     self.recoveredFrom = nil;
     if (!self.targetRegion) {
