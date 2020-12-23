@@ -52,7 +52,8 @@
     }
 
     if (block == nil || chunk == nil) {
-        completeHandler(YES, nil, nil, nil);
+        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithSDKInteriorError:@"no chunk left"];
+        completeHandler(YES, responseInfo, nil, nil);
         return;
     }
     

@@ -114,7 +114,7 @@
     }
 
     QNUpToken *t = [QNUpToken parse:token];
-    if (t == nil) {
+    if (t == nil || ![t isValid]) {
         QNResponseInfo *info = [QNResponseInfo responseInfoWithInvalidToken:@"invalid token"];
         [QNUploadManager complete:token
                               key:key
@@ -155,7 +155,7 @@
     
     @autoreleasepool {
         QNUpToken *t = [QNUpToken parse:token];
-        if (t == nil) {
+        if (t == nil || ![t isValid]) {
             QNResponseInfo *info = [QNResponseInfo responseInfoWithInvalidToken:@"invalid token"];
             [QNUploadManager complete:token
                                   key:key

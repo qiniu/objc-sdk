@@ -69,7 +69,8 @@
     }
     // 上传完毕
     if (data == nil) {
-        completeHandler(YES, nil, nil, nil);
+        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithSDKInteriorError:@"no data left"];
+        completeHandler(YES, responseInfo, nil, nil);
         return;
     }
     
