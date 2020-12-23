@@ -36,10 +36,10 @@
     completeHandler(responseInfo, nil, nil);
 }
 
-- (void)uploadNextDataCompleteHandler:(void(^)(BOOL stop,
-                                               QNResponseInfo * _Nullable responseInfo,
-                                               QNUploadRegionRequestMetrics * _Nullable metrics,
-                                               NSDictionary * _Nullable response))completeHandler {
+- (void)uploadNextData:(void(^)(BOOL stop,
+                                QNResponseInfo * _Nullable responseInfo,
+                                QNUploadRegionRequestMetrics * _Nullable metrics,
+                                NSDictionary * _Nullable response))completeHandler {
     QNUploadFileInfoPartV1 *fileInfo = (QNUploadFileInfoPartV1 *)self.fileInfo;
     
     QNUploadBlock *block = nil;

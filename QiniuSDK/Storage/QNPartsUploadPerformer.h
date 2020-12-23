@@ -67,10 +67,10 @@ NS_ASSUME_NONNULL_BEGIN
                             QNUploadRegionRequestMetrics * _Nullable metrics,
                             NSDictionary * _Nullable response))completeHandler;
 /// 上传文件分片 【子类实现】
-- (void)uploadNextDataCompleteHandler:(void(^)(BOOL stop,
-                                               QNResponseInfo * _Nullable responseInfo,
-                                               QNUploadRegionRequestMetrics * _Nullable metrics,
-                                               NSDictionary * _Nullable response))completeHandler;
+- (void)uploadNextData:(void(^)(BOOL stop,
+                                QNResponseInfo * _Nullable responseInfo,
+                                QNUploadRegionRequestMetrics * _Nullable metrics,
+                                NSDictionary * _Nullable response))completeHandler;
 /// 完成上传，服务端组织文件信息 【子类实现】
 - (void)completeUpload:(void(^)(QNResponseInfo * _Nullable responseInfo,
                                 QNUploadRegionRequestMetrics * _Nullable metrics,

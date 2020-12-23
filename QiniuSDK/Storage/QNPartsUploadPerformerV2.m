@@ -56,10 +56,10 @@
     }];
 }
 
-- (void)uploadNextDataCompleteHandler:(void(^)(BOOL stop,
-                                               QNResponseInfo * _Nullable responseInfo,
-                                               QNUploadRegionRequestMetrics * _Nullable metrics,
-                                               NSDictionary * _Nullable response))completeHandler {
+- (void)uploadNextData:(void(^)(BOOL stop,
+                                QNResponseInfo * _Nullable responseInfo,
+                                QNUploadRegionRequestMetrics * _Nullable metrics,
+                                NSDictionary * _Nullable response))completeHandler {
     QNUploadFileInfoPartV2 *fileInfo = (QNUploadFileInfoPartV2 *)self.fileInfo;
     QNUploadData *data = nil;
     @synchronized (self) {

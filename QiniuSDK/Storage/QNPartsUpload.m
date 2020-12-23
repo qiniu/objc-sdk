@@ -163,7 +163,7 @@
     }
     
     kQNWeakSelf;
-    [self uploadNextDataCompleteHandler:^(BOOL stop, QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
+    [self uploadNextData:^(BOOL stop, QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
         kQNStrongSelf;
         
         if (stop || !responseInfo.isOK) {
@@ -191,7 +191,7 @@
     [self.uploadPerformer serverInit:completeHandlerP];
 }
 
-- (void)uploadNextDataCompleteHandler:(void(^)(BOOL stop, QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler {
+- (void)uploadNextData:(void(^)(BOOL stop, QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler {
     
     kQNWeakSelf;
     void(^completeHandlerP)(BOOL, QNResponseInfo *, QNUploadRegionRequestMetrics *, NSDictionary *) = ^(BOOL stop, QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response){
@@ -204,7 +204,7 @@
         completeHandler(stop, responseInfo, response);
     };
     
-    [self.uploadPerformer uploadNextDataCompleteHandler:completeHandlerP];
+    [self.uploadPerformer uploadNextData:completeHandlerP];
 }
 
 - (void)completeUpload:(void(^)(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response))completeHandler {
