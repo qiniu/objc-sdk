@@ -50,7 +50,7 @@
         builder.concurrentTaskCount = 2;
         builder.useHttps = YES;
     }];
-    NSArray *sizeArray = @[@10000, @20000];
+    NSArray *sizeArray = @[@20000];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"concurrent_cancel_v1_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
@@ -181,7 +181,7 @@
         builder.concurrentTaskCount = 2;
         builder.useHttps = YES;
     }];
-    NSArray *sizeArray = @[@10000, @20000];
+    NSArray *sizeArray = @[@20000];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"concurrent_cancel_v2_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];

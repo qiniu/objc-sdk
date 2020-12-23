@@ -38,7 +38,7 @@
 @property (nonatomic, strong) id <QNUploadRegion> currentRegion;
 @property (nonatomic, strong) QNUploadFileInfo *fileInfo;
 
-@property(nonatomic, assign) CGFloat previousPercent;
+@property(nonatomic, assign) double previousPercent;
 @property(nonatomic, strong)NSMutableArray <QNRequestTransaction *> *uploadTransactions;
 
 @end
