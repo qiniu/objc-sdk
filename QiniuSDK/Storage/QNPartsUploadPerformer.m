@@ -196,9 +196,9 @@
                              NSDictionary * _Nullable))completeHandler {}
 
 - (void)uploadNextData:(void (^)(BOOL stop,
-                        QNResponseInfo * _Nullable,
-                        QNUploadRegionRequestMetrics * _Nullable,
-                        NSDictionary * _Nullable))completeHandler {}
+                                 QNResponseInfo * _Nullable,
+                                 QNUploadRegionRequestMetrics * _Nullable,
+                                 NSDictionary * _Nullable))completeHandler {}
 
 - (void)completeUpload:(void (^)(QNResponseInfo * _Nullable,
                                  QNUploadRegionRequestMetrics * _Nullable,

@@ -109,9 +109,11 @@
         NSString *md5 = response[@"md5"];
         if (responseInfo.isOK && etag && md5) {
             data.etag = etag;
+            data.progress = 1;
             data.isUploading = NO;
             data.isCompleted = YES;
             [self recordUploadInfo];
+            [self notifyProgress];
         } else {
             data.isUploading = NO;
             data.isCompleted = NO;

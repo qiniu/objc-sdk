@@ -80,9 +80,11 @@
         NSString *blockContext = response[@"ctx"];
         if (responseInfo.isOK && blockContext) {
             block.context = blockContext;
+            chunk.progress = 1;
             chunk.isUploading = NO;
             chunk.isCompleted = YES;
             [self recordUploadInfo];
+            [self notifyProgress];
         } else {
             chunk.isUploading = NO;
             chunk.isCompleted = NO;
