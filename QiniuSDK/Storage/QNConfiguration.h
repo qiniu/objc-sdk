@@ -148,7 +148,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property(nonatomic, assign)BOOL isDnsOpen;
 
 /**
- *   dns 预取失败后 会进行重新预取  rePreHostNum为最多尝试次数
+ *   dns 预取失败后 会进行重新预取  dnsRepreHostNum为最多尝试次数
  */
 @property(nonatomic, assign)UInt32 dnsRepreHostNum;
 
