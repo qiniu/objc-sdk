@@ -46,7 +46,6 @@
     }];
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
-    NSLog(@"responseInfo:%@", responseInfo);
     XCTAssertTrue(responseInfo.isOK, @"Pass");
     XCTAssertTrue(responseInfo.reqId, @"Pass");
     XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
@@ -77,7 +76,6 @@
     }];
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
-    NSLog(@"responseInfo:%@", responseInfo);
     XCTAssertTrue(responseInfo.statusCode == statusCode, @"Pass");
     XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
 }
@@ -106,7 +104,7 @@
         if (complete) {
             complete(info, key);
         }
-        
+        NSLog(@"key:%@ responseInfo:%@", key, info);
         [tempFile remove];
     } option:option];
 }
@@ -126,7 +124,6 @@
     }];
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
-    NSLog(@"responseInfo:%@", responseInfo);
     XCTAssertTrue(responseInfo.isOK, @"Pass");
     XCTAssertTrue(responseInfo.reqId, @"Pass");
     XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
@@ -155,7 +152,6 @@
     }];
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
-    NSLog(@"responseInfo:%@", responseInfo);
     XCTAssertTrue(responseInfo.statusCode == statusCode, @"Pass");
     XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
 }
@@ -184,7 +180,7 @@
         if (complete) {
             complete(info, key);
         }
-        
+        NSLog(@"key:%@ responseInfo:%@", key, info);
     } option:option];
 }
 
