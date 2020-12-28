@@ -106,7 +106,7 @@
         }
         return isCancelled;
     };
-
+    NSLog(@"== Single:%@", request.URL);
     [self.client request:request connectionProxy:self.config.proxy progress:^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
         kQNStrongSelf;
         
