@@ -45,7 +45,7 @@
     AGWW_WAIT_WHILE(completeCount != (maxCount - start), 600 * 10);
     
     NSLog(@"complex_upload v1 successCount: %d", successCount);
-    XCTAssert(successCount == maxCount, @"Pass");
+    XCTAssert(completeCount == (maxCount - start), @"Pass");
 }
 
 - (void)testMutiUploadV2{
@@ -77,7 +77,7 @@
     AGWW_WAIT_WHILE(completeCount != (maxCount - start), 600 * 30);
     
     NSLog(@"complex_upload v2 successCount: %d", successCount);
-    XCTAssert(successCount == maxCount, @"Pass");
+    XCTAssert(completeCount == (maxCount - start), @"Pass");
 }
 
 @end
