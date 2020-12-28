@@ -21,7 +21,7 @@
     __block int completeCount = 0;
     __block int successCount = 0;
     
-    for (int i=20; i<maxCount; i++) {
+    for (int i=35; i<maxCount; i++) {
         QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
             builder.resumeUploadVersion = QNResumeUploadVersionV1;
             builder.useConcurrentResumeUpload = YES;
@@ -52,7 +52,7 @@
     __block int completeCount = 0;
     __block int successCount = 0;
     
-    for (int i=20; i<maxCount; i++) {
+    for (int i=35; i<maxCount; i++) {
         QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
             builder.resumeUploadVersion = QNResumeUploadVersionV2;
             builder.useConcurrentResumeUpload = YES;
