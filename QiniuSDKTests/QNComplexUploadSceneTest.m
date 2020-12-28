@@ -21,7 +21,8 @@
     __block int completeCount = 0;
     __block int successCount = 0;
     
-    for (int i=35; i<maxCount; i++) {
+    int start = 30;
+    for (int i=start; i<maxCount; i++) {
         QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
             builder.resumeUploadVersion = QNResumeUploadVersionV1;
             builder.useConcurrentResumeUpload = YES;
@@ -41,7 +42,7 @@
         }];
     }
     
-    AGWW_WAIT_WHILE(completeCount != maxCount, 600 * 30);
+    AGWW_WAIT_WHILE(completeCount != (maxCount - start), 600 * 10);
     
     NSLog(@"complex_upload v1 successCount: %d", successCount);
     XCTAssert(successCount == maxCount, @"Pass");
@@ -52,7 +53,8 @@
     __block int completeCount = 0;
     __block int successCount = 0;
     
-    for (int i=35; i<maxCount; i++) {
+    int start = 30;
+    for (int i=start; i<maxCount; i++) {
         QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
             builder.resumeUploadVersion = QNResumeUploadVersionV2;
             builder.useConcurrentResumeUpload = YES;
@@ -72,7 +74,7 @@
         }];
     }
     
-    AGWW_WAIT_WHILE(completeCount != maxCount, 600 * 30);
+    AGWW_WAIT_WHILE(completeCount != (maxCount - start), 600 * 30);
     
     NSLog(@"complex_upload v2 successCount: %d", successCount);
     XCTAssert(successCount == maxCount, @"Pass");
