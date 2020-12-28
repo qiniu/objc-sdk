@@ -8,6 +8,7 @@
 
 #import "QNDefine.h"
 #import "QNUtils.h"
+#import "QNLogUtil.h"
 #import "QNPartsUpload.h"
 #import "QNZoneInfo.h"
 #import "QNReportItem.h"
@@ -33,6 +34,7 @@
     [super initData];
     // 根据文件从本地恢复上传信息，如果没有则重新构建上传信息
     if (self.config.resumeUploadVersion == QNResumeUploadVersionV1) {
+        QNLogInfo(@"key:%@ 分片V1", self.key);
         self.uploadPerformer = [[QNPartsUploadPerformerV1 alloc] initWithFile:self.file
                                                                      fileName:self.fileName
                                                                           key:self.key
@@ -41,6 +43,7 @@
                                                                 configuration:self.config
                                                                   recorderKey:self.recorderKey];
     } else {
+        QNLogInfo(@"key:%@ 分片V2", self.key);
         self.uploadPerformer = [[QNPartsUploadPerformerV2 alloc] initWithFile:self.file
                                                                      fileName:self.fileName
                                                                           key:self.key
@@ -75,10 +78,12 @@
     if (self.uploadPerformer.currentRegion && self.uploadPerformer.currentRegion.isValid) {
         // currentRegion有值，为断点续传，将region插入至regionList第一处
         [self insertRegionAtFirst:self.uploadPerformer.currentRegion];
+        QNLogInfo(@"key:%@ 使用缓存region", self.key);
     } else {
         // currentRegion无值 切换region
         [self.uploadPerformer switchRegion:[self getCurrentRegion]];
     }
+    QNLogInfo(@"key:%@ region:%@", self.key, self.uploadPerformer.currentRegion.zoneInfo.regionId);
     
     if (self.file == nil) {
         code = kQNLocalIOError;
@@ -90,6 +95,7 @@
     BOOL isSuccess = [super switchRegion];
     if (isSuccess) {
         [self.uploadPerformer switchRegion:self.getCurrentRegion];
+        QNLogInfo(@"key:%@ 切换region：%@", self.key , self.uploadPerformer.currentRegion.zoneInfo.regionId);
     }
     return isSuccess;
 }
@@ -106,8 +112,11 @@
     self.uploadDataErrorResponseInfo = nil;
     self.uploadDataErrorResponse = nil;
     
-    kQNWeakSelf;
+    
+    QNLogInfo(@"key:%@ serverInit", self.key);
+    
     // 1. 启动upload
+    kQNWeakSelf;
     [self serverInit:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
         kQNStrongSelf;
         
@@ -118,8 +127,10 @@
             return;
         }
         
-        kQNWeakSelf;
+        QNLogInfo(@"key:%@ uploadRestData", self.key);
+        
         // 2. 上传数据
+        kQNWeakSelf;
         [self uploadRestData:^{
             kQNStrongSelf;
             
@@ -130,8 +141,10 @@
                 return;
             }
             
-            kQNWeakSelf;
+            QNLogInfo(@"key:%@ completeUpload", self.key);
+            
             // 3. 组装文件
+            kQNWeakSelf;
             [self completeUpload:^(QNResponseInfo * _Nullable responseInfo, NSDictionary * _Nullable response) {
                 kQNStrongSelf;
                                 
@@ -152,7 +165,7 @@
 }
 
 - (void)uploadRestData:(dispatch_block_t)completeHandler {
-    
+    QNLogInfo(@"key:%@ 串行分片", self.key);
     [self performUploadRestData:completeHandler];
 }
 

@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNLogUtil.h"
 #import "QNAsyncRun.h"
 #import "QNUpToken.h"
 #import "QNZoneInfo.h"
@@ -114,6 +115,7 @@
             [self.recorder set:key data:data];
         }
     }
+    QNLogInfo(@"key:%@ recorderKey:%@ recordUploadInfo", self.key, self.recorderKey);
 }
 
 - (void)removeUploadInfoRecord {
@@ -121,9 +123,12 @@
     self.recoveredFrom = nil;
     [self.fileInfo clearUploadState];
     [self.recorder del:self.recorderKey];
+    QNLogInfo(@"key:%@ recorderKey:%@ removeUploadInfoRecord", self.key, self.recorderKey);
 }
 
 - (void)recoverUploadInfoFromRecord {
+    QNLogInfo(@"key:%@ recorderKey:%@ recorder:%@ recoverUploadInfoFromRecord", self.key, self.recorderKey, self.recorder);
+    
     NSString *key = self.recorderKey;
     if (self.recorder == nil || key == nil || [key isEqualToString:@""]) {
         return;
@@ -131,12 +136,14 @@
 
     NSData *data = [self.recorder get:key];
     if (data == nil) {
+        QNLogInfo(@"key:%@ recorderKey:%@ recoverUploadInfoFromRecord data:nil", self.key, self.recorderKey);
         return;
     }
 
     NSError *error = nil;
     NSDictionary *info = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&error];
     if (error != nil || ![info isKindOfClass:[NSDictionary class]]) {
+        QNLogInfo(@"key:%@ recorderKey:%@ recoverUploadInfoFromRecord json error", self.key, self.recorderKey);
         [self.recorder del:self.key];
         return;
     }
@@ -146,6 +153,7 @@
     
     if (zoneInfo && fileInfo && ![fileInfo isEmpty]
         && fileInfo.size == self.file.size && fileInfo.modifyTime == self.file.modifyTime) {
+        QNLogInfo(@"key:%@ recorderKey:%@ recoverUploadInfoFromRecord valid", self.key, self.recorderKey);
         
         self.fileInfo = fileInfo;
         
@@ -155,6 +163,8 @@
         self.targetRegion = region;
         self.recoveredFrom = @(fileInfo.progress * fileInfo.size);
     } else {
+        QNLogInfo(@"key:%@ recorderKey:%@ recoverUploadInfoFromRecord invalid", self.key, self.recorderKey);
+        
         [self.recorder del:self.key];
         self.currentRegion = nil;
         self.targetRegion = nil;

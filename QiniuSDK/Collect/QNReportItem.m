@@ -8,6 +8,7 @@
 
 #import "QNReportItem.h"
 #import "QNAsyncRun.h"
+#import "QNLogUtil.h"
 
 @interface QNReportItem()
 
@@ -72,6 +73,7 @@
 - (void)reportItem:(QNReportItem *)item token:(NSString *)token{
     QNAsyncRun(^{
         NSString *itemJsonString = [item toJson];
+        QNLogInfo(@"up log:%@", itemJsonString);
         if (itemJsonString && ![itemJsonString isEqualToString:@"{}"]) {
             [self report:itemJsonString token:token];
         }

@@ -6,6 +6,7 @@
 //  Copyright © 2019 Qiniu. All rights reserved.
 //
 
+#import "QNLogUtil.h"
 #import "QNConcurrentResumeUpload.h"
 
 @interface QNConcurrentResumeUpload()
@@ -24,6 +25,8 @@
 }
 
 - (void)uploadRestData:(dispatch_block_t)completeHandler {
+    QNLogInfo(@"key:%@ 并发分片", self.key);
+    
     for (int i = 0; i < self.config.concurrentTaskCount; i++) {
         dispatch_group_enter(self.uploadGroup);
         dispatch_group_async(self.uploadGroup, self.uploadQueue, ^{

@@ -12,6 +12,7 @@
 #import "QNZoneInfo.h"
 #import "QNUploadServerFreezeManager.h"
 #import "QNDnsPrefetch.h"
+#import "QNLogUtil.h"
 #import "QNUtils.h"
 
 @interface QNUploadIpGroup : NSObject
@@ -247,6 +248,8 @@
     if (server == nil) {
         self.isAllFrozen = YES;
     }
+    
+    QNLogInfo(@"get server host:%@ ip:%@", server.host, server.ip);
     return server;
 }
 
@@ -254,6 +257,7 @@
     if (freezeServer.serverId) {
         // 无法连接到Host || Host不可用， 局部冻结
         if (!responseInfo.canConnectToHost || responseInfo.isHostUnavailable) {
+            QNLogInfo(@"partial freeze server host:%@ ip:%@", freezeServer.host, freezeServer.ip);
             [_domainDictionary[freezeServer.serverId] freeze:freezeServer.ip
                                                freezeManager:self.partialFreezeManager
                                                   frozenTime:kQNGlobalConfiguration.partialHostFrozenTime];
@@ -264,6 +268,7 @@
         
         // Host不可用，全局冻结
         if (responseInfo.isHostUnavailable) {
+            QNLogInfo(@"global freeze server host:%@ ip:%@", freezeServer.host, freezeServer.ip);
             [_domainDictionary[freezeServer.serverId] freeze:freezeServer.ip
                                                freezeManager:kQNUploadServerFreezeManager
                                                   frozenTime:kQNGlobalConfiguration.globalHostFrozenTime];
