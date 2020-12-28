@@ -137,7 +137,7 @@
 }
 
 - (BOOL)isValid{
-    return ![self isEmpty] && self.uploadId && (self.expireAt.integerValue - [[NSDate date] timeIntervalSince1970]) > 6000;
+    return ![self isEmpty] && self.uploadId && (self.expireAt.integerValue - [[NSDate date] timeIntervalSince1970]) > 3600*24;
 }
 
 - (NSArray <NSDictionary *> *)getPartInfoArray{
