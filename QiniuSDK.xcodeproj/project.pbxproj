@@ -1150,7 +1150,7 @@
 		DF2CDDF719DAC05500CE01FB /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1140;
+				LastUpgradeCheck = 1220;
 				ORGANIZATIONNAME = Qiniu;
 				TargetAttributes = {
 					31259E4624E63B9700CF7531 = {
@@ -1333,7 +1333,6 @@
 				31A1841B246A8C77001D6EEE /* QNUploadRequestMetrics.m in Sources */,
 				451A36B724BD893D00754A15 /* QNReportConfig.m in Sources */,
 				313B37F62574F00F00FBB57B /* QNPartsUploadPerformerV2.m in Sources */,
-				31C2EECD242CC52600713A33 /* QNDnsCacheInfo.m in Sources */,
 				31BAA279243DB83700B7E883 /* QNURLProtocol.m in Sources */,
 				313B380E2575E49400FBB57B /* QNPartsUploadPerformer.m in Sources */,
 				31F553A32456F2F3000B66AD /* QNFile.m in Sources */,
@@ -1632,6 +1631,7 @@
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
+				"EXCLUDED_ARCHS[sdk=*]" = arm64;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = QiniuSDK_Mac;
@@ -1645,6 +1645,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				"EXCLUDED_ARCHS[sdk=*]" = arm64;
 				PRODUCT_NAME = QiniuSDK_Mac;
 			};
 			name = Release;
