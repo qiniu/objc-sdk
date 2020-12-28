@@ -8,21 +8,25 @@
 
 #import "QNLogUtil.h"
 
-static int _level = 0;
+#if DEBUG
+static QNLogLevel _level = QNLogLevelVerbose;
+#else
+static QNLogLevel _level = QNLogLevelNone;
+#endif
 
 @implementation QNLogUtil
 
-+ (void)setLogLevel:(int)level{
++ (void)setLogLevel:(QNLogLevel)level {
     _level = level < 0 ? 0 : level;
 }
 
-+ (void)log:(int)level
++ (void)log:(QNLogLevel)level
        file:(NSString *)file
    function:(NSString *)function
        line:(NSUInteger)line
      format:(NSString *)format, ... {
     
-    if (!format || _level < level) {
+    if (!format || level > _level) {
         return;
     }
     
@@ -35,7 +39,7 @@ static int _level = 0;
     NSString *levelString = @[@"V", @"D", @"I", @"W", @"E"][level%5];
     NSDate *date = [NSDate date];
     message = [NSString stringWithFormat:@"[%@]/%@ %@ %@->%@->%ld %@", levelString, date, thread.name, file, function, line, message];
-    
+
     NSLog(@"%@", message);
 }
 
