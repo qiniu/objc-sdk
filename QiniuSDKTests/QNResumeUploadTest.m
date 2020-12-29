@@ -6,7 +6,7 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 
-#import <XCTest/XCTest.h>
+#import "QNUploadFlowTest.h"
 
 #import <AGAsyncTestHelper.h>
 
@@ -15,8 +15,7 @@
 #import "QNTempFile.h"
 #import "QNTestConfig.h"
 
-@interface QNResumeUploadTest : XCTestCase
-@property QNUploadManager *upManager;
+@interface QNResumeUploadTest : QNUploadFlowTest
 @property BOOL inTravis;
 @end
 
@@ -24,7 +23,6 @@
 
 - (void)setUp {
     [super setUp];
-    _upManager = [[QNUploadManager alloc] init];
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
     NSString *travis = [[NSProcessInfo processInfo] environment][@"QINIU_TEST_ENV"];
     if ([travis isEqualToString:@"travis"]) {
@@ -34,240 +32,303 @@
 }
 
 - (void)tearDown {
-    [super tearDown];
 }
 
-- (void)testCancel {
-    int size = 6 * 1024;
-    NSString *keyUp = [NSString stringWithFormat:@"resume_cancel_%dk", size];
-    QNTempFile *tempFile = [QNTempFile createTempfileWithSize:size * 1024 identifier:keyUp];
-    __block NSString *key = nil;
-    __block QNResponseInfo *info = nil;
-    __block BOOL flag = NO;
-    QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
-        flag = YES;
-    }
-        params:@{ @"x:lan" : @"objc" }
-        checkCrc:NO
-        cancellationSignal:^BOOL() {
-            return flag;
-        }];
-    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-        key = k;
-        info = i;
-    }
-                 option:opt];
-
-    AGWW_WAIT_WHILE(key == nil, 60 * 30);
-    NSLog(@"info %@", info);
-    XCTAssert(info.isCancelled, @"Pass");
-    XCTAssert([keyUp isEqualToString:key], @"Pass");
-
-    [tempFile remove];
-}
-
-- (void) template:(int)size {
-    NSString *keyUp = [NSString stringWithFormat:@"resume_template_%dk", size];
-    QNTempFile *tempFile = [QNTempFile createTempfileWithSize:size * 1024 identifier:keyUp];
-    __block NSString *key = nil;
-    __block NSDictionary *testResp = nil;
-    __block QNResponseInfo *info = nil;
-    QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler:^(NSString *key, float percent) {
-        NSLog(@"progress %f", percent);
-    }];
-    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-        key = k;
-        info = i;
-        testResp = resp;
-    }
-                 option:opt];
-    AGWW_WAIT_WHILE(key == nil, 60 * 30);
-    NSLog(@"%@ info %@", keyUp, info);
-    XCTAssert(info.isOK, @"Pass");
-    XCTAssert(info.reqId, @"Pass");
-    XCTAssert([keyUp isEqualToString:key], @"Pass");
-    XCTAssert([tempFile.fileHash isEqualToString:testResp[@"hash"]], @"Pass");
-    [tempFile remove];
-}
-
-- (void)templateHttps:(int)size {
-    NSString *keyUp = [NSString stringWithFormat:@"resume_templateHttps_%dk", size];
-    QNTempFile *tempFile = [QNTempFile createTempfileWithSize:size * 1024 identifier:keyUp];
-    __block NSString *key = nil;
-    __block NSDictionary *testResp = nil;
-    __block QNResponseInfo *info = nil;
-    QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler:^(NSString *key, float percent) {
-        NSLog(@"progress %f", percent);
-    }];
-
+- (void)testSwitchRegionV1 {
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV1;
+        builder.useConcurrentResumeUpload = NO;
         builder.useHttps = YES;
     }];
-    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
-
-    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_z0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-        key = k;
-        info = i;
-        testResp = resp;
+    NSArray *sizeArray = @[@5000, @8000, @10000, @20000];
+    sizeArray = @[@5000];
+    for (NSNumber *size in sizeArray) {
+        NSString *key = [NSString stringWithFormat:@"resume_switch_region_v1_%@k", size];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+        [self switchRegionTestWithFile:tempFile key:key config:config option:nil];
     }
-                option:opt];
-    AGWW_WAIT_WHILE(key == nil, 60 * 30);
-    NSLog(@"%@ info %@", key, info);
-    XCTAssert(info.isOK, @"Pass");
-    XCTAssert(info.reqId, @"Pass");
-    XCTAssert([keyUp isEqualToString:key], @"Pass");
-    XCTAssert([tempFile.fileHash isEqualToString:testResp[@"hash"]], @"Pass");
-    [tempFile remove];
 }
 
-- (void)testNoKey {
-    QNTempFile *tempFile = [QNTempFile createTempfileWithSize:600 * 1024 identifier:@"resume_nokey"];
-    __block QNResponseInfo *info = nil;
-    __block NSDictionary *testResp = nil;
-    __block NSString *key = nil;
-    [_upManager putFile:tempFile.fileUrl.path key:nil token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-        key = k;
-        info = i;
-        testResp = resp;
-    }
-                 option:nil];
-    AGWW_WAIT_WHILE(info == nil, 60 * 30);
-    NSLog(@"resp %@", testResp);
-    XCTAssert(info.isOK, @"Pass");
-    XCTAssert(info.reqId, @"Pass");
-    XCTAssert(key == nil, @"Pass");
-    XCTAssert([@"FlUVjj3un6gu8Kaa1f2SdA1E5oD_" isEqualToString:testResp[@"key"]], @"Pass");
-    XCTAssert([tempFile.fileHash isEqualToString:testResp[@"hash"]], @"Pass");
-    [tempFile remove];
-}
-
-- (void)test0k {
-    NSString *keyUp = [NSString stringWithFormat:@"resume_%dk", 0];
-    QNTempFile *tempFile = [QNTempFile createTempfileWithSize:0 identifier:keyUp];
-    __block NSString *key = nil;
-    __block QNResponseInfo *info = nil;
-    QNUploadOption *opt = [[QNUploadOption alloc] initWithProgressHandler:^(NSString *key, float percent) {
-        NSLog(@"progress %f", percent);
-    }];
-    [_upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-        key = k;
-        info = i;
-    }
-                 option:opt];
-    AGWW_WAIT_WHILE(key == nil, 60 * 30);
-    NSLog(@"info %@", info);
-    XCTAssert(info.statusCode == kQNZeroDataSize, @"Pass");
-    XCTAssert([keyUp isEqualToString:key], @"Pass");
-
-    [tempFile remove];
-}
-
-- (void)test500k {
-    [self template:500];
-}
-
-- (void)test600k {
-    [self template:600];
-}
-
-- (void)test3M {
-    [self template:3 * 1024];
-}
-
-- (void)test5M {
-    [self template:5 * 1024];
-}
-
-- (void)test10M {
-    [self template:10 * 1024];
-}
-
-- (void)testReupload{
-    
-    NSString *keyUp = @"resume_reupload_20M";
-    QNTempFile *tempFile = [QNTempFile createTempfileWithSize: 20 * 1024 * 1024 identifier:keyUp];
-    __block NSString *key = nil;
-    __block QNResponseInfo *info = nil;
-    __block BOOL flag = NO;
-    __block BOOL isReupload = NO;
-    QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:nil
-                                               progressHandler:^(NSString *key, float percent) {
-        if (percent > 0.8) {
-            flag = YES;
-        }
-        NSLog(@"Reupload progress %f", percent);
-    }
-                                                        params:@{ @"x:lan" : @"objc" }
-                                                      checkCrc:NO
-                                            cancellationSignal:^BOOL() {
-        if (isReupload) {
-            return NO;
-        } else {
-            return flag;
-        }
-    }];
+- (void)testCancelV1 {
+    float cancelPercent = 0.5;
     
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV1;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = YES;
+    }];
+    NSArray *sizeArray = @[@10000, @20000];
+    for (NSNumber *size in sizeArray) {
+        NSString *key = [NSString stringWithFormat:@"resume_cancel_v1_%@k", size];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+        [self cancelTest:cancelPercent tempFile:tempFile key:key config:config option:nil];
+    }
+}
+
+- (void)testHttpV1 {
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV1;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = NO;
+    }];
+    NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    for (NSNumber *size in sizeArray) {
+        NSString *key = [NSString stringWithFormat:@"resume_http_v1_%@k", size];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+        [self uploadFileAndAssertSuccessResult:tempFile key:key config:config option:nil];
+    }
+}
+
+
+- (void)testHttpsV1 {
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV1;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = YES;
+    }];
+    NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    for (NSNumber *size in sizeArray) {
+        NSString *key = [NSString stringWithFormat:@"resume_https_v1_%@k", size];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+        [self uploadFileAndAssertSuccessResult:tempFile key:key config:config option:nil];
+    }
+}
+
+
+- (void)testReuploadV1 {
+    
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV1;
         builder.useConcurrentResumeUpload = NO;
         builder.useHttps = YES;
         builder.chunkSize = 1 * 1024 * 1024;
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniu"] error:nil];
     }];
-    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
-
-    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-        key = k;
-        info = i;
-    } option:opt];
     
-    AGWW_WAIT_WHILE(key == nil, 60 * 30);
-    NSLog(@"Reupload ================");
-    key = nil;
-    isReupload = YES;
+    NSArray *sizeArray = @[@30000];
+    for (NSNumber *size in sizeArray) {
+        NSString *key = [NSString stringWithFormat:@"resume_reupload_v1_%@k", size];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+        [self resumeUploadTest:0.5 tempFile:tempFile key:key config:config option:nil];
+    }
+}
+
+- (void)testNoKeyV1 {
+    QNConfiguration *configHttp = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV1;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = NO;
+    }];
     
-    QNUploadManager *upManager_re = [[QNUploadManager alloc] initWithConfiguration:config];
-    [upManager_re putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-        key = k;
-        info = i;
-    } option:opt];
+    NSString *keyUp = [NSString stringWithFormat:@"resume_NoKey_v1_%dk", 600];
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:600 * 1024 identifier:keyUp];
+    tempFile.canRemove = NO;
+    [self uploadFileAndAssertSuccessResult:tempFile key:nil config:configHttp option:nil];
     
-    AGWW_WAIT_WHILE(key == nil, 60 * 30);
-    NSLog(@"info %@", info);
-    XCTAssert(info.isOK, @"Pass");
-    XCTAssert([keyUp isEqualToString:key], @"Pass");
-
-    [tempFile remove];
+    tempFile.canRemove = YES;
+    QNConfiguration *configHttps = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV1;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = YES;
+    }];
+    [self uploadFileAndAssertSuccessResult:tempFile key:nil config:configHttps option:nil];
 }
 
-- (void)test1Ms {
-    [self templateHttps:1024 * 1];
+- (void)test0kV1 {
+    QNConfiguration *configHttp = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV1;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = NO;
+    }];
+    
+    NSString *key = @"resume_0k_v1_0k";
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:0 identifier:key];
+    tempFile.canRemove = NO;
+    [self uploadFileAndAssertResult:kQNZeroDataSize tempFile:tempFile key:key config:configHttp option:nil];
+
+    tempFile.canRemove = YES;
+    QNConfiguration *configHttps = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV1;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = YES;
+    }];
+    [self uploadFileAndAssertResult:kQNZeroDataSize tempFile:tempFile key:key config:configHttps option:nil];
+
 }
 
-- (void)test5Ms {
-    [self templateHttps:1024 * 5];
+- (void)testCustomParamV1 {
+    
+    NSDictionary *userParam = @{@"x:foo" : @"foo_value",
+                                @"x:bar" : @"bar_value"};
+    NSDictionary *metaParam = @{@"0000" : @"meta_value_0",
+                                @"x-qn-meta-aaa" : @"meta_value_1",
+                                @"x-qn-meta-key-2" : @"meta_value_2"};
+    QNUploadOption *option = [[QNUploadOption alloc] initWithMime:nil
+                                                  progressHandler:nil
+                                                           params:userParam
+                                                   metaDataParams:metaParam
+                                                         checkCrc:YES
+                                               cancellationSignal:nil];
+    
+    QNConfiguration *configHttp = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV1;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = NO;
+    }];
+    
+    NSString *key = @"resume_custom_param_v1";
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1024 * 1024 * 5 identifier:key];
+    
+    [self uploadFileAndAssertSuccessResult:tempFile key:key config:configHttp option:option];
 }
 
-#ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
 
-- (void)test1M {
-    if (_inTravis) {
-        return;
+- (void)testSwitchRegionV2 {
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV2;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = YES;
+    }];
+    NSArray *sizeArray = @[@1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    for (NSNumber *size in sizeArray) {
+        NSString *key = [NSString stringWithFormat:@"resume_cancel_v2_%@k", size];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+        [self switchRegionTestWithFile:tempFile key:key config:config option:nil];
     }
-    [self template:1024];
 }
 
-- (void)test4M {
-    if (_inTravis) {
-        return;
+- (void)testCancelV2 {
+    float cancelPercent = 0.5;
+    
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV2;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = YES;
+    }];
+    NSArray *sizeArray = @[@10000, @20000];
+    for (NSNumber *size in sizeArray) {
+        NSString *key = [NSString stringWithFormat:@"resume_cancel_v2_%@k", size];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+        [self cancelTest:cancelPercent tempFile:tempFile key:key config:config option:nil];
     }
-    [self template:4 * 1024];
 }
 
-- (void)test8M {
-    if (_inTravis) {
-        return;
+- (void)testHttpV2 {
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV2;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = NO;
+    }];
+    NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    for (NSNumber *size in sizeArray) {
+        NSString *key = [NSString stringWithFormat:@"resume_http_v2_%@k", size];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+        [self uploadFileAndAssertSuccessResult:tempFile key:key config:config option:nil];
     }
-    [self template:8 * 1024 + 1];
+}
+
+
+- (void)testHttpsV2 {
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV2;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = YES;
+    }];
+    NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    for (NSNumber *size in sizeArray) {
+        NSString *key = [NSString stringWithFormat:@"resume_https_v2_%@k", size];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+        [self uploadFileAndAssertSuccessResult:tempFile key:key config:config option:nil];
+    }
+}
+
+
+- (void)testReuploadV2 {
+    
+    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV2;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = YES;
+        builder.chunkSize = 1 * 1024 * 1024;
+        builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniu"] error:nil];
+    }];
+    
+    NSArray *sizeArray = @[@30000];
+    for (NSNumber *size in sizeArray) {
+        NSString *key = [NSString stringWithFormat:@"resume_reupload_v2_%@k", size];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
+        [self resumeUploadTest:0.5 tempFile:tempFile key:key config:config option:nil];
+    }
+}
+
+- (void)testNoKeyV2 {
+    QNConfiguration *configHttp = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV2;
+        builder.useConcurrentResumeUpload = NO;
+        builder.concurrentTaskCount = 3;
+        builder.useHttps = NO;
+    }];
+    
+    NSString *keyUp = [NSString stringWithFormat:@"resume_NoKey_v2_%dk", 600];
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:600 * 1024 identifier:keyUp];
+    tempFile.canRemove = NO;
+    [self uploadFileAndAssertSuccessResult:tempFile key:nil config:configHttp option:nil];
+    
+    tempFile.canRemove = YES;
+    QNConfiguration *configHttps = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV2;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = YES;
+    }];
+    [self uploadFileAndAssertSuccessResult:tempFile key:nil config:configHttps option:nil];
+}
+
+- (void)test0kV2 {
+    QNConfiguration *configHttp = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV2;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = NO;
+    }];
+    
+    NSString *key = @"resume_v2_0k";
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:0 identifier:key];
+    tempFile.canRemove = NO;
+    [self uploadFileAndAssertResult:kQNZeroDataSize tempFile:tempFile key:key config:configHttp option:nil];
+
+    tempFile.canRemove = YES;
+    QNConfiguration *configHttps = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+           builder.useConcurrentResumeUpload = NO;
+           builder.concurrentTaskCount = 3;
+           builder.useHttps = YES;
+       }];
+    [self uploadFileAndAssertResult:kQNZeroDataSize tempFile:tempFile key:key config:configHttps option:nil];
+
+}
+
+- (void)testCustomParamV2 {
+    
+    NSDictionary *userParam = @{@"x:foo" : @"foo_value",
+                                @"x:bar" : @"bar_value"};
+    NSDictionary *metaParam = @{@"0000" : @"meta_value_0",
+                                @"x-qn-meta-aaaa" : @"meta_value_1",
+                                @"x-qn-meta-key-2" : @"meta_value_2"};
+    QNUploadOption *option = [[QNUploadOption alloc] initWithMime:nil
+                                                  progressHandler:nil
+                                                           params:userParam
+                                                   metaDataParams:metaParam
+                                                         checkCrc:YES
+                                               cancellationSignal:nil];
+    
+    QNConfiguration *configHttp = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.resumeUploadVersion = QNResumeUploadVersionV2;
+        builder.useConcurrentResumeUpload = NO;
+        builder.useHttps = NO;
+    }];
+    
+    NSString *key = @"resume_custom_param_v2";
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1024 * 1024 * 5 identifier:key];
+    
+    [self uploadFileAndAssertSuccessResult:tempFile key:key config:configHttp option:option];
 }
 
 //- (void)testProxy {
@@ -304,69 +365,4 @@
 //
 //    [tempFile remove];
 //}
-
-- (void)testUrlConvert {
-    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        builder.converter = ^NSString *(NSString *url) {
-            return [url stringByReplacingOccurrencesOfString:@"upnono" withString:@"up"];
-        };
-        NSArray *upList = [[NSArray alloc] initWithObjects:@"upnono-na0.qiniu.com", @"upnono-na0.qiniu.com", nil];
-        builder.useHttps = NO;
-        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:upList];
-    }];
-
-    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
-
-    int size = 600;
-    NSString *keyUp = [NSString stringWithFormat:@"resume_convert_%dk", size];
-    QNTempFile *tempFile = [QNTempFile createTempfileWithSize:600 * 1024 identifier:keyUp];
-    __block QNResponseInfo *info = nil;
-    __block NSString *key = nil;
-    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-        key = k;
-        info = i;
-    }
-                option:nil];
-
-    AGWW_WAIT_WHILE(key == nil, 60 * 30);
-    NSLog(@"info %@", info);
-    XCTAssert(info.isOK, @"Pass");
-    XCTAssert([keyUp isEqualToString:key], @"Pass");
-    XCTAssert([info.host isEqual:@"up-na0.qiniu.com"], @"Pass");
-    [tempFile remove];
-}
-
-//- (void)testHosts {
-//    QNResolver *resolver = [[QNResolver alloc] initWithAddress:@"114.114.115.115"];
-//    QNDnsManager *dns = [[QNDnsManager alloc] init:[NSArray arrayWithObject:resolver] networkInfo:[QNNetworkInfo normal]];
-//    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-//        NSArray *ips = [[QNFixedZone zone0] up:nil].ips;
-//        QNServiceAddress *s1 = [[QNServiceAddress alloc] init:@"http://uphosttest.qiniu.com" ips:ips];
-//        QNServiceAddress *s2 = [[QNServiceAddress alloc] init:@"http://uphosttestbak.qiniu.com" ips:ips];
-//        builder.zone = [[QNFixedZone alloc] initWithUp:s1 upBackup:s2];
-//        builder.dns = dns;
-//    }];
-//
-//    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
-//
-//    int size = 600;
-//    QNTempFile *tempFile = [QNTempFile createTempfileWithSize:size * 1024];
-//    NSString *keyUp = [NSString stringWithFormat:@"%dkconvert", size];
-//    __block QNResponseInfo *info = nil;
-//    __block NSString *key = nil;
-//    [upManager putFile:tempFile.fileUrl.path key:keyUp token:token_na0 complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
-//        key = k;
-//        info = i;
-//    }
-//                option:nil];
-//
-//    AGWW_WAIT_WHILE(key == nil, 60 * 30);
-//    NSLog(@"info %@", info);
-//    XCTAssert(info.isOK, @"Pass");
-//    XCTAssert([keyUp isEqualToString:key], @"Pass");
-//    XCTAssert([info.host isEqual:@"uphosttest.qiniu.com"] || [info.host isEqual:@"uphosttestbak.qiniu.com"], @"Pass");
-//    [tempFile remove];
-//}
-
-#endif
 @end

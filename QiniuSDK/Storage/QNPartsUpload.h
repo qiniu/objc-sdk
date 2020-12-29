@@ -5,24 +5,19 @@
 //  Created by yangsen on 2020/5/7.
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
+/// 分片上传，默认为串行
 
 #import "QNBaseUpload.h"
 #import "QNUploadFileInfo.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class QNRequestTransaction;
 @interface QNPartsUpload : QNBaseUpload
 
-/// 块大小 分块和并发分块大小可能不通
-@property(nonatomic, assign, readonly, class)long long blockSize;
-/// 定制chunk大小 在执行run之前赋值
-@property(nonatomic, strong)NSNumber *chunkSize;
-/// 上传信息
-@property(nonatomic, strong, readonly)QNUploadFileInfo *uploadFileInfo;
-
-- (void)recordUploadInfo;
-
-- (void)removeUploadInfoRecord;
+/// 上传剩余的数据，此方法整合上传流程，上传操作为performUploadRestData，默认串行上传
+- (void)uploadRestData:(dispatch_block_t)completeHandler;
+- (void)performUploadRestData:(dispatch_block_t)completeHandler;
 
 @end
 

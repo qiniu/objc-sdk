@@ -55,6 +55,7 @@
 @property (nonatomic, readonly, getter=isNotQiniu) BOOL notQiniu;
 
 //MARK:-- 构造函数 【内部使用】
++ (instancetype)successResponse;
 + (instancetype)cancelResponse;
 + (instancetype)responseInfoWithNetworkError:(NSString *)desc;
 + (instancetype)responseInfoWithInvalidArgument:(NSString *)desc;
@@ -63,7 +64,9 @@
 + (instancetype)responseInfoOfZeroData:(NSString *)path;
 + (instancetype)responseInfoWithLocalIOError:(NSString *)desc;
 + (instancetype)responseInfoWithMaliciousResponseError:(NSString *)desc;
-+ (instancetype)responseInfoWithNoUsableHostError:(NSString *)desc;
+// 使用responseInfoWithSDKInteriorError替代
++ (instancetype)responseInfoWithNoUsableHostError:(NSString *)desc NS_UNAVAILABLE;
++ (instancetype)responseInfoWithSDKInteriorError:(NSString *)desc;
 + (instancetype)responseInfoWithUnexpectedSysCallError:(NSString *)desc;
 
 + (instancetype)errorResponseInfo:(int)errorType

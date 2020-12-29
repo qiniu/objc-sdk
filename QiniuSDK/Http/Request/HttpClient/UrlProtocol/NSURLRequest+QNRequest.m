@@ -59,7 +59,8 @@
 
 - (NSData *)qn_getHttpBody{
     
-    if (self.HTTPBody || ![self.HTTPMethod isEqualToString:@"POST"]) {
+    if (self.HTTPBody ||
+        (![self.HTTPMethod isEqualToString:@"POST"] && ![self.HTTPMethod isEqualToString:@"PUT"])) {
         return self.HTTPBody;
     }
     

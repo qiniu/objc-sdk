@@ -38,17 +38,17 @@
                          token:(QNUpToken *)token
                         region:(id <QNUploadRegion>)region
                    requestInfo:(QNUploadRequestInfo *)requestInfo
-                  requestState:(QNUploadRequestState *)requestState{
+                  requestState:(QNUploadRequestState *)requestState {
     if (self = [super init]) {
         _config = config;
         _uploadOption = uploadOption;
         _region = region;
         _requestState = requestState;
         _singleRequest = [[QNHttpSingleRequest alloc] initWithConfig:config
-                                                      uploadOption:uploadOption
-                                                             token:token
-                                                       requestInfo:requestInfo
-                                                      requestState:requestState];
+                                                        uploadOption:uploadOption
+                                                               token:token
+                                                         requestInfo:requestInfo
+                                                        requestState:requestState];
     }
     return self;
 }
@@ -88,6 +88,25 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
 }
 
 
+- (void)put:(NSString *)action
+    headers:(NSDictionary *)headers
+       body:(NSData *)body
+shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
+   progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
+   complete:(QNRegionRequestCompleteHandler)complete{
+    
+    self.requestMetrics = [[QNUploadRegionRequestMetrics alloc] initWithRegion:self.region];
+    [self performRequest:[self getNextServer:nil]
+                  action:action
+                 headers:headers
+                  method:@"PUT"
+                    body:body
+             shouldRetry:shouldRetry
+                progress:progress
+                complete:complete];
+}
+
+
 - (void)performRequest:(id <QNUploadServer>)server
                 action:(NSString *)action
                headers:(NSDictionary *)headers
@@ -98,7 +117,7 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
               complete:(QNRegionRequestCompleteHandler)complete{
     
     if (!server.host || server.host.length == 0) {
-        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithNoUsableHostError:@"server error"];
+        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithSDKInteriorError:@"server error"];
         [self complete:responseInfo response:nil complete:complete];
         return;
     }
@@ -168,12 +187,14 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
             [self complete:responseInfo response:response complete:complete];
         }
     }];
+    
 }
 
 - (void)complete:(QNResponseInfo *)responseInfo
         response:(NSDictionary *)response
         complete:(QNRegionRequestCompleteHandler)completionHandler {
 
+    self.singleRequest = nil;
     if (completionHandler) {
         completionHandler(responseInfo, self.requestMetrics, response);
     }

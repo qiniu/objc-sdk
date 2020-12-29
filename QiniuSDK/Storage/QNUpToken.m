@@ -74,4 +74,8 @@
     return [NSString stringWithFormat:@"%@:%@", _access, _bucket];
 }
 
+- (BOOL)isValid {
+    return _access && _access.length > 0 && _bucket && _bucket.length > 0;
+}
+
 @end

@@ -40,7 +40,8 @@ extern NSString *const QNZoneInfoEmptyRegionId;
 
 @interface QNZonesInfo : NSObject
 
-@property (nonatomic, strong) NSArray<QNZoneInfo *> *zonesInfo;
+@property (readonly) BOOL isValid;
+@property (nonatomic, strong, readonly) NSArray<QNZoneInfo *> *zonesInfo;
 
 /// 根据键值对构造对象 【内部使用】
 /// @param dictionary 键值对信息

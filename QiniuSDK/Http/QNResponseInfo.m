@@ -27,6 +27,14 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 @end
 
 @implementation QNResponseInfo
++ (instancetype)successResponse{
+    QNResponseInfo *responseInfo = [[QNResponseInfo alloc] init];
+    responseInfo.statusCode = 200;
+    responseInfo.message = @"inter:ok";
+    responseInfo.xlog = @"inter:xlog";
+    responseInfo.reqId = @"inter:reqid";
+    return responseInfo;
+}
 
 + (instancetype)cancelResponse {
     return [QNResponseInfo errorResponseInfo:kQNRequestCancelled
@@ -76,7 +84,12 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 }
 
 + (instancetype)responseInfoWithNoUsableHostError:(NSString *)desc{
-    return [QNResponseInfo errorResponseInfo:kQNNoUsableHostError
+    return [QNResponseInfo errorResponseInfo:kQNSDKInteriorError
+                                   errorDesc:desc];
+}
+
++ (instancetype)responseInfoWithSDKInteriorError:(NSString *)desc{
+    return [QNResponseInfo errorResponseInfo:kQNSDKInteriorError
                                    errorDesc:desc];
 }
 
@@ -141,26 +154,31 @@ static NSString *kQNErrorDomain = @"qiniu.com";
                 NSMutableDictionary *errorUserInfo = [@{@"errorHost" : host ?: @""} mutableCopy];
                 if (!body) {
                     _message = @"no response data";
-                    [errorUserInfo setDictionary:@{@"error":_message}];
-                    _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
+                    _error = nil;
                     _responseDictionary = nil;
                 } else {
                     NSError *tmp = nil;
                     NSDictionary *responseInfo = nil;
                     responseInfo = [NSJSONSerialization JSONObjectWithData:body options:NSJSONReadingMutableLeaves error:&tmp];
                     if (tmp){
-                        _message = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding] ?: @"";
-                        [errorUserInfo setDictionary:@{@"error" : _message}];
-                        _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
+                        _message = [[NSString alloc] initWithData:body encoding:NSUTF8StringEncoding];
+                        _error = nil;
                         _responseDictionary = nil;
-                    } else if (responseInfo && statusCode > 199 && statusCode < 300) {
+                    } else if (statusCode >= 200 && statusCode < 300) {
                         _error = nil;
                         _message = @"ok";
                         _responseDictionary = responseInfo;
                     } else {
-                        _message = @"unknown error";
-                        [errorUserInfo setDictionary:@{@"error" : _message}];
-                        _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
+                        NSString *errorString = responseInfo[@"error"];
+                        if (errorString) {
+                            [errorUserInfo setDictionary:@{@"error" : errorString}];
+                            _message = errorString;
+                            _error = [[NSError alloc] initWithDomain:kQNErrorDomain code:statusCode userInfo:errorUserInfo];
+                        } else {
+                            _message = errorString;
+                            _error = nil;
+                        }
+                        
                         _responseDictionary = responseInfo;
                     }
                 }
@@ -171,7 +189,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
             _message = [NSString stringWithFormat:@"%@", error];
             _responseDictionary = nil;
         } else {
-            _statusCode = -9;
+            _statusCode = kQNSDKInteriorError;
             _message = @"no response";
         }
     }
@@ -205,7 +223,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
     if (self.isCancelled
         || _statusCode == 100
         || (_statusCode > 300 && _statusCode < 400)
-        || (_statusCode > 400 && _statusCode < 500)
+        || (_statusCode > 400 && _statusCode < 500 && _statusCode != 406)
         || _statusCode == 501 || _statusCode == 573
         || _statusCode == 608 || _statusCode == 612 || _statusCode == 614 || _statusCode == 616
         || _statusCode == 619 || _statusCode == 630 || _statusCode == 631 || _statusCode == 640

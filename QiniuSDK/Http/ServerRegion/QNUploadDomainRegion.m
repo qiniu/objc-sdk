@@ -125,8 +125,14 @@
             return;
         }
         
-        NSMutableDictionary *ipGroupInfos = [NSMutableDictionary dictionary];
+        // get address List of host
         NSArray *inetAddresses = [kQNDnsPrefetch getInetAddressByHost:self.host];
+        if (!inetAddresses || inetAddresses.count == 0) {
+            return;
+        }
+        
+        // address List to ipList of group & check ip network
+        NSMutableDictionary *ipGroupInfos = [NSMutableDictionary dictionary];
         for (id <QNIDnsNetworkAddress> inetAddress in inetAddresses) {
             NSString *ipValue = inetAddress.ipValue;
             NSString *groupType = [QNUtils getIpType:ipValue host:self.host];
@@ -137,12 +143,14 @@
             }
         }
         
+        // ipList of group to ipGroup List
         NSMutableArray *ipGroupList = [NSMutableArray array];
         for (NSString *groupType in ipGroupInfos.allKeys) {
             NSArray *ipList = ipGroupInfos[groupType];
             QNUploadIpGroup *ipGroup = [[QNUploadIpGroup alloc] initWithGroupType:groupType ipList:ipList];
             [ipGroupList addObject:ipGroup];
         }
+        
         self.ipGroupList = ipGroupList;
     }
 }
