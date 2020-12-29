@@ -309,9 +309,9 @@
 
 //MARK: -- progress and timer action
 - (void)setupProgress{
-    self.bytesSent = 256 * 1024;
+    self.bytesSent = 512 * 1024;
     self.totalBytesExpectedToSend = [self.request.qn_getHttpBody length];
-    self.maxBytesSent = self.totalBytesExpectedToSend * 0.5;
+    self.maxBytesSent = self.totalBytesExpectedToSend * 0.8;
 }
 
 - (void)startProgress{
@@ -336,7 +336,7 @@
     }
     
     kQNWeakSelf;
-    NSTimer *timer = [NSTimer timerWithTimeInterval:0.5
+    NSTimer *timer = [NSTimer timerWithTimeInterval:0.3
                                              target:weak_self
                                            selector:@selector(timerAction)
                                            userInfo:nil

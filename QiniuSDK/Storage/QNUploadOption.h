@@ -29,9 +29,14 @@ typedef BOOL (^QNUpCancellationSignal)(void);
 @interface QNUploadOption : NSObject
 
 /**
- *    用于服务器上传回调通知的自定义参数，参数的key必须以x: 开头
+ *    用于服务器上传回调通知的自定义参数，参数的key必须以x: 开头  eg: x:foo
  */
 @property (copy, nonatomic, readonly) NSDictionary *params;
+
+/**
+ *    用于设置meta数据，参数的key必须以x-qn-meta- 开头  eg: x-qn-meta-key
+ */
+@property (copy, nonatomic, readonly) NSDictionary *metaDataParam;
 
 /**
  *    指定文件的mime类型
@@ -58,7 +63,7 @@ typedef BOOL (^QNUpCancellationSignal)(void);
  *
  *    @param mimeType     mime类型
  *    @param progress     进度函数
- *    @param params       自定义服务器回调参数
+ *    @param params       自定义服务器回调参数 参数的key必须以x: 开头  eg: x:foo
  *    @param check        是否进行crc检查
  *    @param cancellation 中途取消函数
  *
@@ -67,6 +72,26 @@ typedef BOOL (^QNUpCancellationSignal)(void);
 - (instancetype)initWithMime:(NSString *)mimeType
              progressHandler:(QNUpProgressHandler)progress
                       params:(NSDictionary *)params
+                    checkCrc:(BOOL)check
+          cancellationSignal:(QNUpCancellationSignal)cancellation;
+
+
+/**
+ *    可选参数的初始化方法
+ *
+ *    @param mimeType       mime类型
+ *    @param progress       进度函数
+ *    @param params         自定义服务器回调参数 参数的key必须以x: 开头  eg: x:foo
+ *    @param metaDataParams 设置meta数据，参数的key必须以x-qn-meta- 开头  eg: x-qn-meta-key
+ *    @param check          是否进行crc检查
+ *    @param cancellation   中途取消函数
+ *
+ *    @return 可选参数类实例
+ */
+- (instancetype)initWithMime:(NSString *)mimeType
+             progressHandler:(QNUpProgressHandler)progress
+                      params:(NSDictionary *)params
+              metaDataParams:(NSDictionary *)metaDataParams
                     checkCrc:(BOOL)check
           cancellationSignal:(QNUpCancellationSignal)cancellation;
 

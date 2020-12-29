@@ -87,10 +87,10 @@
     QNUploadServerFreezeItem *item = nil;
     @synchronized (self) {
         item = self.freezeInfo[infoKey];
-    }
-    if (!item) {
-        item = [QNUploadServerFreezeItem item:host type:type];
-        self.freezeInfo[infoKey] = item;
+        if (!item) {
+            item = [QNUploadServerFreezeItem item:host type:type];
+            self.freezeInfo[infoKey] = item;
+        }
     }
     [item freeze:frozenTime];
 }

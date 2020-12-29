@@ -23,7 +23,7 @@
 
 - (void)testFile5M {
     NSError *error;
-    QNTempFile *file = [QNTempFile createTempfileWithSize:5 * 1024 * 1024 identifier:@"5M"];
+    QNTempFile *file = [QNTempFile createTempFileWithSize:5 * 1024 * 1024 identifier:@"5M"];
     NSString *x = [QNEtag file:file.fileUrl.path error:&error];
     XCTAssert([@"ljfceY5osQDM_NJlPaUFlJqQ8POB" isEqualToString:x], @"Pass");
     [file remove];
@@ -31,7 +31,7 @@
 
 - (void)testFile3M {
     NSError *error;
-    QNTempFile *file = [QNTempFile createTempfileWithSize:3 * 1024 * 1024 identifier:@"3M"];
+    QNTempFile *file = [QNTempFile createTempFileWithSize:3 * 1024 * 1024 identifier:@"3M"];
     NSString *x = [QNEtag file:file.fileUrl.path error:&error];
     XCTAssert([@"FtPguFLrJJy4r4LRCzjJDP7wgIZe" isEqualToString:x], @"Pass");
     [file remove];

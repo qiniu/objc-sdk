@@ -1,73 +1,12 @@
 //
-//  QNUploadData.m
-//  QiniuSDK_Mac
+//  QNUploadFileInfoPartV1.m
+//  QiniuSDK
 //
-//  Created by yangsen on 2020/4/30.
+//  Created by yangsen on 2020/11/30.
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
-#import "QNUploadFileInfo.h"
 
-@interface QNUploadData()
-
-@property(nonatomic, assign)long long offset;
-@property(nonatomic, assign)long long size;
-@property(nonatomic, assign)NSInteger index;
-@property(nonatomic, assign)NSInteger blockIndex;
-
-@end
-@implementation QNUploadData
-
-+ (instancetype)dataFromDictionary:(NSDictionary *)dictionary{
-    if (![dictionary isKindOfClass:[NSDictionary class]]) {
-        return nil;
-    }
-         
-    QNUploadData *data = [[QNUploadData alloc] init];
-    data.offset     = [dictionary[@"offset"] longLongValue];
-    data.size       = [dictionary[@"size"] longLongValue];
-    data.index      = [dictionary[@"index"] integerValue];
-    data.blockIndex = [dictionary[@"blockIndex"] integerValue];
-    data.isCompleted = [dictionary[@"isCompleted"] boolValue];
-    if (data.isCompleted) {
-        data.progress = 1;
-    }
-    return data;
-}
-
-- (instancetype)initWithOffset:(long long)offset
-                      dataSize:(long long)dataSize
-                         index:(NSInteger)index
-                    blockIndex:(NSInteger)blockIndex{
-    if (self = [super init]) {
-        _offset = offset;
-        _size = dataSize;
-        _index = index;
-        _blockIndex = blockIndex;
-    }
-    return self;
-}
-
-- (BOOL)isFirstData{
-    return self.index == 0;
-}
-
-- (void)clearUploadState{
-    self.isCompleted = NO;
-    self.isUploading = NO;
-}
-
-- (NSDictionary *)toDictionary{
-    NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    dictionary[@"offset"]      = @(self.offset);
-    dictionary[@"size"]        = @(self.size);
-    dictionary[@"index"]       = @(self.index);
-    dictionary[@"blockIndex"]  = @(self.blockIndex);
-    dictionary[@"isCompleted"] = @(self.isCompleted);
-    return [dictionary copy];
-}
-
-@end
-
+#import "QNUploadFileInfoPartV1.h"
 
 @interface QNUploadBlock()
 
@@ -141,15 +80,14 @@
 - (void)createDataList:(long long)dataSize{
     
     long long offSize = 0;
-    NSInteger dataIndex = 0;
+    NSInteger dataIndex = 1; /// 从1开始 兼容分片v2
     NSMutableArray *datas = [NSMutableArray array];
     while (offSize < self.size) {
         long long lastSize = self.size - offSize;
         long long dataSizeP = MIN(lastSize, dataSize);
         QNUploadData *data = [[QNUploadData alloc] initWithOffset:offSize
                                                          dataSize:dataSizeP
-                                                            index:dataIndex
-                                                       blockIndex:self.index];
+                                                            index:dataIndex];
         [datas addObject:data];
         offSize += dataSizeP;
         dataIndex += 1;
@@ -173,6 +111,7 @@
 }
 
 - (void)clearUploadState{
+    self.context = nil;
     for (QNUploadData *data in self.uploadDataList) {
         [data clearUploadState];
     }
@@ -207,22 +146,25 @@
 @end
 
 
-
-@interface QNUploadFileInfo()
+@interface QNUploadFileInfoPartV1()
 
 @property(nonatomic, assign)long long size;
 @property(nonatomic, assign)NSInteger modifyTime;
 @property(nonatomic, strong)NSArray <QNUploadBlock *> *uploadBlocks;
 
 @end
-@implementation QNUploadFileInfo
+
+@implementation QNUploadFileInfoPartV1
+
+@synthesize size = _size;
+@synthesize modifyTime = _modifyTime;
 
 + (instancetype)infoFromDictionary:(NSDictionary *)dictionary{
     if (![dictionary isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
     
-    QNUploadFileInfo *fileInfo = [[QNUploadFileInfo alloc] init];
+    QNUploadFileInfoPartV1 *fileInfo = [[QNUploadFileInfoPartV1 alloc] init];
     fileInfo.size = [dictionary[@"size"] longLongValue];
     fileInfo.modifyTime = [dictionary[@"modifyTime"] integerValue];
     
@@ -273,34 +215,25 @@
     self.uploadBlocks = [blocks copy];
 }
 
-- (QNUploadData *)nextUploadData{
+- (QNUploadBlock *)nextUploadBlock{
     if (!self.uploadBlocks || self.uploadBlocks.count == 0) {
         return nil;
     }
     
-    QNUploadData *data = nil;
-    for (QNUploadBlock *block in self.uploadBlocks) {
-        data = [block nextUploadData];
-        if (data) {
+    QNUploadBlock *block = nil;
+    for (QNUploadBlock *blockP in self.uploadBlocks) {
+        if ([blockP nextUploadData]) {
+            block = blockP;
             break;
         }
     }
-    return data;
+    return block;
 }
 
 - (void)clearUploadState{
     for (QNUploadBlock *block in self.uploadBlocks) {
         [block clearUploadState];
     }
-}
-
-- (QNUploadBlock *)blockWithIndex:(NSInteger)blockIndex{
-    
-    QNUploadBlock *block = nil;
-    if (blockIndex < self.uploadBlocks.count) {
-        block = self.uploadBlocks[blockIndex];
-    }
-    return block;
 }
 
 - (BOOL)isAllUploaded{
@@ -320,6 +253,14 @@
         progress += block.progress * ((float)block.size / (float)self.size);
     }
     return progress;
+}
+
+- (BOOL)isEmpty{
+    return !self.uploadBlocks || self.uploadBlocks.count == 0;
+}
+
+- (BOOL)isValid{
+    return ![self isEmpty];
 }
 
 - (NSArray <NSString *> *)allBlocksContexts{

@@ -32,8 +32,21 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 
 - (instancetype)initWithBuilder:(QNConfigurationBuilder *)builder {
     if (self = [super init]) {
-
+        _useConcurrentResumeUpload = builder.useConcurrentResumeUpload;
+        _resumeUploadVersion = builder.resumeUploadVersion;
+        _concurrentTaskCount = builder.concurrentTaskCount;
+        
         _chunkSize = builder.chunkSize;
+        if (builder.resumeUploadVersion == QNResumeUploadVersionV1) {
+            if (_chunkSize < 1024) {
+                _chunkSize = 1024;
+            }
+        } else if (builder.resumeUploadVersion == QNResumeUploadVersionV2) {
+            if (_chunkSize < 1024 * 1024) {
+                _chunkSize = 1024 * 1024;
+            }
+        }
+        
         _putThreshold = builder.putThreshold;
         _retryMax = builder.retryMax;
         _retryInterval = builder.retryInterval;
@@ -52,9 +65,6 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 
         _allowBackupHost = builder.allowBackupHost;
 
-        _useConcurrentResumeUpload = builder.useConcurrentResumeUpload;
-        
-        _concurrentTaskCount = builder.concurrentTaskCount;
     }
     return self;
 }
@@ -78,10 +88,11 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     _dnsCacheDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches/Dns"];
     _dnsRepreHostNum = 2;
     _dnsCacheTime = kQNDefaultDnsCacheTime;
-    
+
     _globalHostFrozenTime = 10;
     _partialHostFrozenTime = 5*60;
 }
+
 @end
 
 @implementation QNConfigurationBuilder
@@ -104,6 +115,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
         _useHttps = YES;
         _allowBackupHost = YES;
         _useConcurrentResumeUpload = NO;
+        _resumeUploadVersion = QNResumeUploadVersionV1;
         _concurrentTaskCount = 3;
     }
     return self;
