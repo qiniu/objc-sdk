@@ -209,6 +209,9 @@
     }
     self.oldDomainHostList = oldDomainHostList;
     self.oldDomainDictionary = [self createDomainDictionary:serverGroups];
+    
+    QNLogInfo(@"region :%@",domainHostList);
+    QNLogInfo(@"region old:%@",oldDomainHostList);
 }
 - (NSDictionary *)createDomainDictionary:(NSArray <NSString *> *)hosts{
     NSMutableDictionary *domainDictionary = [NSMutableDictionary dictionary];
