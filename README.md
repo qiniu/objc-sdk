@@ -2,7 +2,8 @@
 
 [![@qiniu on weibo](http://img.shields.io/badge/weibo-%40qiniutek-blue.svg)](http://weibo.com/qiniutek)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md)
-[![Build Status](https://travis-ci.org/qiniu/objc-sdk.svg?branch=master)](https://travis-ci.org/qiniu/objc-sdk)
+[![Build Status](https://github.com/qiniu/objc-sdk/workflows/Run%20Test%20Cases/badge.svg)](https://github.com/qiniu/objc-sdk/actions)
+[![Badge w/ Version](https://cocoapod-badges.herokuapp.com/v/Qiniu/badge.png)](http://cocoadocs.org/docsets/Qiniu)
 [![GitHub release](https://img.shields.io/github/v/tag/qiniu/objc-sdk.svg?label=release)](https://github.com/qiniu/objc-sdk/releases)
 [![codecov](https://codecov.io/gh/qiniu/objc-sdk/branch/master/graph/badge.svg)](https://codecov.io/gh/qiniu/objc-sdk)
 ![Platform](http://img.shields.io/cocoapods/p/Qiniu.svg)
