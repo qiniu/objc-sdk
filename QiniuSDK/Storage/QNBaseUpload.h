@@ -93,6 +93,8 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
 
 /// 切换区域
 - (BOOL)switchRegionAndUpload;
+// 根据错误信息进行切换region并上传，return:是否切换region并上传
+- (BOOL)switchRegionAndUploadIfNeededWithErrorResponse:(QNResponseInfo *)errorResponseInfo;
 
 /// 上传结束调用回调方法，在上传结束时调用，该方法内部会调用回调，已通知上层上传结束
 /// @param info 上传返回信息
@@ -103,8 +105,7 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
 //MARK: -- 机房管理
 
 /// 在区域列表头部插入一个区域
-/// @param zoneInfo zone信息
-- (void)insertRegionAtFirstByZoneInfo:(QNZoneInfo *)zoneInfo;
+- (void)insertRegionAtFirst:(id <QNUploadRegion>)region;
 /// 切换区域
 - (BOOL)switchRegion;
 /// 获取目标区域

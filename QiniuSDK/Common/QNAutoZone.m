@@ -34,10 +34,8 @@
     self.cache = [NSMutableDictionary dictionary];
 }
 
-- (void)cache:(NSDictionary *)zonesInfo
-     forToken:(QNUpToken *)token{
+- (void)cache:(NSDictionary *)zonesInfo forKey:(NSString *)cacheKey{
     
-    NSString *cacheKey = token.index;
     if (!cacheKey || [cacheKey isEqualToString:@""]) {
         return;
     }
@@ -51,9 +49,8 @@
     }
 }
 
-- (QNZonesInfo *)zonesInfoForToken:(QNUpToken *)token{
+- (QNZonesInfo *)zonesInfoForKey:(NSString *)cacheKey{
     
-    NSString *cacheKey = token.index;
     if (!cacheKey || [cacheKey isEqualToString:@""]) {
         return nil;
     }
@@ -67,15 +64,7 @@
         return nil;
     }
     
-    QNZonesInfo *zonesInfo = [QNZonesInfo infoWithDictionary:zonesInfoDic];
-    NSMutableArray *zonesInfoArray = [NSMutableArray array];
-    for (QNZoneInfo *zoneInfo in zonesInfo.zonesInfo) {
-        if ([zoneInfo isValid]) {
-            [zonesInfoArray addObject:zoneInfo];
-        }
-    }
-    zonesInfo.zonesInfo = [zonesInfoArray copy];
-    return zonesInfo;
+    return [QNZonesInfo infoWithDictionary:zonesInfoDic];
 }
 
 @end
@@ -109,24 +98,28 @@
 - (void)preQuery:(QNUpToken *)token
               on:(QNPrequeryReturn)ret {
     
-    if (token == nil || token.index == nil) {
-        ret(-1, nil, nil);
+    if (token == nil || ![token isValid]) {
+        ret(-1, [QNResponseInfo responseInfoWithInvalidToken:@"invalid token"], nil);
         return;
     }
     
+    NSString *cacheKey = token.index;
+    
     [_lock lock];
-    QNZonesInfo *zonesInfo = [_cache objectForKey:[token index]];
+    QNZonesInfo *zonesInfo = [_cache objectForKey:cacheKey];
     [_lock unlock];
     
     if (zonesInfo == nil) {
-        zonesInfo = [[QNAutoZoneCache share] zonesInfoForToken:token];
-        [self.lock lock];
-        [self.cache setValue:zonesInfo forKey:[token index]];
-        [self.lock unlock];
+        zonesInfo = [[QNAutoZoneCache share] zonesInfoForKey:cacheKey];
+        if (zonesInfo && zonesInfo.isValid) {
+            [self.lock lock];
+            [self.cache setValue:zonesInfo forKey:cacheKey];
+            [self.lock unlock];
+        }
     }
     
-    if (zonesInfo != nil) {
-        ret(0, nil, nil);
+    if (zonesInfo != nil && zonesInfo.isValid) {
+        ret(0, [QNResponseInfo successResponse], nil);
         return;
     }
 
@@ -141,9 +134,9 @@
         if (responseInfo.isOK) {
             QNZonesInfo *zonesInfo = [QNZonesInfo infoWithDictionary:response];
             [self.lock lock];
-            [self.cache setValue:zonesInfo forKey:[token index]];
+            [self.cache setValue:zonesInfo forKey:cacheKey];
             [self.lock unlock];
-            [[QNAutoZoneCache share] cache:response forToken:token];
+            [[QNAutoZoneCache share] cache:response forKey:cacheKey];
             ret(0, responseInfo, metrics);
         } else {
             
@@ -152,7 +145,7 @@
             } else {
                 QNZonesInfo *zonesInfo = [[QNFixedZone localsZoneInfo] getZonesInfoWithToken:token];
                 [self.lock lock];
-                [self.cache setValue:zonesInfo forKey:[token index]];
+                [self.cache setValue:zonesInfo forKey:cacheKey];
                 [self.lock unlock];
                 ret(0, responseInfo, metrics);
             }

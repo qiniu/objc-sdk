@@ -99,6 +99,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
 @end
 
 @interface QNZonesInfo()
+@property (nonatomic, strong) NSArray<QNZoneInfo *> *zonesInfo;
 @end
 @implementation QNZonesInfo
 
@@ -117,7 +118,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
     if ([hosts isKindOfClass:[NSArray class]]) {
         for (NSInteger i = 0; i < hosts.count; i++) {
             QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:hosts[i]];
-            if (zoneInfo) {
+            if (zoneInfo && [zoneInfo isValid]) {
                 [zonesInfo addObject:zoneInfo];
             }
         }
@@ -125,5 +126,8 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
     return [[[self class] alloc] initWithZonesInfo:zonesInfo];
 }
 
+- (BOOL)isValid {
+    return [self.zonesInfo count] > 0;
+}
 
 @end

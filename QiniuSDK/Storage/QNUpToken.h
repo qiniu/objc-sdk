@@ -16,6 +16,7 @@
 @property (copy, nonatomic, readonly) NSString *bucket;
 @property (copy, nonatomic, readonly) NSString *token;
 
+@property (readonly) BOOL isValid;
 @property (readonly) BOOL hasReturnUrl;
 
 - (NSString *)index;

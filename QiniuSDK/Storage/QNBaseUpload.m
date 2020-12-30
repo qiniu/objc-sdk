@@ -139,6 +139,17 @@
     return isSwitched;
 }
 
+// 根据错误信息进行切换region并上传，return:是否切换region并上传
+- (BOOL)switchRegionAndUploadIfNeededWithErrorResponse:(QNResponseInfo *)errorResponseInfo {
+    if (!errorResponseInfo || errorResponseInfo.isOK || // 不存在 || 不是error 不切
+        !errorResponseInfo.couldRetry || ![self.config allowBackupHost] ||  // 不能重试不切
+        ![self switchRegionAndUpload]) { // 切换失败
+        return NO;
+    }
+
+    return YES;
+}
+
 - (void)complete:(QNResponseInfo *)info
         response:(NSDictionary *)response{
     if (self.currentRegionRequestMetrics) {
@@ -166,14 +177,17 @@
     return defaultRegions.count > 0;
 }
 
-- (void)insertRegionAtFirstByZoneInfo:(QNZoneInfo *)zoneInfo{
-    QNUploadDomainRegion *region = [[QNUploadDomainRegion alloc] init];
-    [region setupRegionData:zoneInfo];
-    [self insertRegionAtFirst:region];
-}
-
 - (void)insertRegionAtFirst:(id <QNUploadRegion>)region{
-    [self.regions insertObject:region atIndex:0];
+    BOOL hasRegion = NO;
+    for (id <QNUploadRegion> regionP in self.regions) {
+        if ([regionP.zoneInfo.regionId isEqualToString:region.zoneInfo.regionId]) {
+            hasRegion = YES;
+            break;
+        }
+    }
+    if (!hasRegion) {
+        [self.regions insertObject:region atIndex:0];
+    }
 }
 
 - (BOOL)switchRegion{

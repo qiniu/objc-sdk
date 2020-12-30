@@ -6,6 +6,7 @@
 //  Copyright (c) 2015年 Qiniu. All rights reserved.
 //
 #import "QNDefine.h"
+#import "QNLogUtil.h"
 #import "QNFormUpload.h"
 #import "QNResponseInfo.h"
 #import "QNRequestTransaction.h"
@@ -21,6 +22,8 @@
 @implementation QNFormUpload
 
 - (void)startToUpload {
+    
+    QNLogInfo(@"key:%@ form上传", self.key);
     
     self.uploadTransaction = [[QNRequestTransaction alloc] initWithConfig:self.config
                                                              uploadOption:self.option
@@ -57,19 +60,17 @@
         
         [self addRegionRequestMetricsOfOneFlow:metrics];
         
-        if (responseInfo.isOK) {
-            QNAsyncRunInMain(^{
-                self.option.progressHandler(self.key, 1.0);
-            });
-            [self complete:responseInfo response:response];
-        } else if (responseInfo.couldRetry && self.config.allowBackupHost) {
-            BOOL isSwitched = [self switchRegionAndUpload];
-            if (isSwitched == NO) {
+        if (!responseInfo.isOK) {
+            if (![self switchRegionAndUploadIfNeededWithErrorResponse:responseInfo]) {
                 [self complete:responseInfo response:response];
             }
-        } else {
-            [self complete:responseInfo response:response];
+            return;
         }
+        
+        QNAsyncRunInMain(^{
+            self.option.progressHandler(self.key, 1.0);
+        });
+        [self complete:responseInfo response:response];
     }];
 }
 

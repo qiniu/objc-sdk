@@ -9,7 +9,9 @@
 /* Begin PBXBuildFile section */
 		26F62ADDD5B6306E978C9A3F /* libPods-QiniuDemoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14CB2139715DD7B6FD5B146E /* libPods-QiniuDemoTests.a */; };
 		2B848FF719DFA7ECB394CA9F /* libPods-QiniuDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B9BC5A8D93F988C1240E05F /* libPods-QiniuDemo.a */; };
-		31304CA7256368E7001034D2 /* UploadResource_49M.zip in Resources */ = {isa = PBXBuildFile; fileRef = 31304CA6256368E7001034D2 /* UploadResource_49M.zip */; };
+		31304CA325628E97001034D2 /* image.png in Resources */ = {isa = PBXBuildFile; fileRef = 31304CA025628E97001034D2 /* image.png */; };
+		31304CA425628E97001034D2 /* UploadResource_49M.zip in Resources */ = {isa = PBXBuildFile; fileRef = 31304CA125628E97001034D2 /* UploadResource_49M.zip */; };
+		31304CA525628E97001034D2 /* image.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 31304CA225628E97001034D2 /* image.jpg */; };
 		318191AB2531516F00D18536 /* UploadResource.dmg in Resources */ = {isa = PBXBuildFile; fileRef = 318191AA2531516F00D18536 /* UploadResource.dmg */; };
 		93D230241C86D7F700434F6D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D230231C86D7F700434F6D /* main.m */; };
 		93D230271C86D7F700434F6D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D230261C86D7F700434F6D /* AppDelegate.m */; };
@@ -41,7 +43,9 @@
 /* Begin PBXFileReference section */
 		14CB2139715DD7B6FD5B146E /* libPods-QiniuDemoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuDemoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		24EE530BBB100BED89B08A3D /* Pods-QiniuDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuDemo/Pods-QiniuDemo.release.xcconfig"; sourceTree = "<group>"; };
-		31304CA6256368E7001034D2 /* UploadResource_49M.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = UploadResource_49M.zip; sourceTree = "<group>"; };
+		31304CA025628E97001034D2 /* image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image.png; sourceTree = "<group>"; };
+		31304CA125628E97001034D2 /* UploadResource_49M.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = UploadResource_49M.zip; sourceTree = "<group>"; };
+		31304CA225628E97001034D2 /* image.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = image.jpg; sourceTree = "<group>"; };
 		318191AA2531516F00D18536 /* UploadResource.dmg */ = {isa = PBXFileReference; lastKnownFileType = file; path = UploadResource.dmg; sourceTree = "<group>"; };
 		318191AF25315F3500D18536 /* Configure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Configure.h; sourceTree = "<group>"; };
 		6B9BC5A8D93F988C1240E05F /* libPods-QiniuDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -96,7 +100,9 @@
 		318191A92531516F00D18536 /* DemoTestResource */ = {
 			isa = PBXGroup;
 			children = (
-				31304CA6256368E7001034D2 /* UploadResource_49M.zip */,
+				31304CA225628E97001034D2 /* image.jpg */,
+				31304CA025628E97001034D2 /* image.png */,
+				31304CA125628E97001034D2 /* UploadResource_49M.zip */,
 				318191AF25315F3500D18536 /* Configure.h */,
 				318191AA2531516F00D18536 /* UploadResource.dmg */,
 			);
@@ -295,10 +301,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				93D230321C86D7F700434F6D /* LaunchScreen.storyboard in Resources */,
-				31304CA7256368E7001034D2 /* UploadResource_49M.zip in Resources */,
 				318191AB2531516F00D18536 /* UploadResource.dmg in Resources */,
 				93D2302F1C86D7F700434F6D /* Assets.xcassets in Resources */,
 				93D2302D1C86D7F700434F6D /* Main.storyboard in Resources */,
+				31304CA525628E97001034D2 /* image.jpg in Resources */,
+				31304CA325628E97001034D2 /* image.png in Resources */,
+				31304CA425628E97001034D2 /* UploadResource_49M.zip in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

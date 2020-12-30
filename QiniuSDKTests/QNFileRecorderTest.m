@@ -48,7 +48,7 @@
 
 - (void) template:(int)size pos:(float)pos {
     NSString *keyUp = [NSString stringWithFormat:@"fileRecorder_%dk", size];
-    QNTempFile *tempFile = [QNTempFile createTempfileWithSize:size * 1024 identifier:keyUp];
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:size * 1024 identifier:keyUp];
     __block NSString *key = nil;
     __block QNResponseInfo *info = nil;
     __block BOOL flag = NO;
@@ -60,7 +60,7 @@
         NSLog(@"progress %f", percent);
     }
         params:nil
-        checkCrc:NO
+        checkCrc:YES
         cancellationSignal:^BOOL() {
             return flag;
         }];

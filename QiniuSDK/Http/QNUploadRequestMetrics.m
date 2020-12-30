@@ -152,17 +152,23 @@
 }
 
 - (void)addMetricsList:(NSArray<QNUploadSingleRequestMetrics *> *)metricsList{
-    [_metricsListInter addObjectsFromArray:metricsList];
+    @synchronized (self) {
+        [_metricsListInter addObjectsFromArray:metricsList];
+    }
 }
 
 - (void)addMetrics:(QNUploadRegionRequestMetrics*)metrics{
     if ([metrics.region.zoneInfo.regionId isEqualToString:self.region.zoneInfo.regionId]) {
-        [_metricsListInter addObjectsFromArray:metrics.metricsListInter];
+        @synchronized (self) {
+            [_metricsListInter addObjectsFromArray:metrics.metricsListInter];
+        }
     }
 }
 
 - (NSArray<QNUploadSingleRequestMetrics *> *)metricsList{
-    return [_metricsListInter copy];
+    @synchronized (self) {
+        return [_metricsListInter copy];
+    }
 }
 
 @end

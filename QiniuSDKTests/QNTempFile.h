@@ -10,17 +10,19 @@
 
 @interface QNTempFile : NSObject
 
+@property(nonatomic, assign)BOOL canRemove;
+@property(nonatomic, assign)long long size;
 @property(nonatomic, strong)NSURL *fileUrl;
 @property(nonatomic,  copy, readonly)NSString *fileHash;
 
-+ (QNTempFile *)createTempfileWithSize:(int)size;
-+ (QNTempFile *)createTempfileWithSize:(int)size
++ (QNTempFile *)createTempFileWithSize:(int)size;
++ (QNTempFile *)createTempFileWithSize:(int)size
                                   name:(NSString *)name;
 
 // identifier相同，文件内容则相同
-+ (QNTempFile *)createTempfileWithSize:(int)size
++ (QNTempFile *)createTempFileWithSize:(int)size
                             identifier:(NSString *)identifier;
-+ (QNTempFile *)createTempfileWithSize:(int)size
++ (QNTempFile *)createTempFileWithSize:(int)size
                                   name:(NSString *)name
                             identifier:(NSString *)identifier;
 

@@ -14,7 +14,7 @@
 @interface QNEtag : NSObject
 
 /**
- *    文件etag
+ *    文件etag 【已废除】
  *
  *    @param filePath 文件路径
  *    @param error    输出文件读取错误
@@ -25,7 +25,7 @@
              error:(NSError **)error;
 
 /**
- *    二进制数据etag
+ *    二进制数据etag 【已废除】
  *
  *    @param data 数据
  *

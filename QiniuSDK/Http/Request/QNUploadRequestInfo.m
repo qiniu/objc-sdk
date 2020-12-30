@@ -21,4 +21,7 @@ NSString * const QNUploadRequestTypeForm = @"form";
 NSString * const QNUploadRequestTypeMkblk = @"mkblk";
 NSString * const QNUploadRequestTypeBput = @"bput";
 NSString * const QNUploadRequestTypeMkfile = @"mkfile";
+NSString * const QNUploadRequestTypeInitParts = @"init_parts";
+NSString * const QNUploadRequestTypeUploadPart = @"upload_part";
+NSString * const QNUploadRequestTypeCompletePart = @"complete_part";
 NSString * const QNUploadRequestTypeUpLog = @"uplog";
