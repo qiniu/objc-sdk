@@ -197,6 +197,7 @@ NSString * const QNReportRequestKeyOsVersion = @"os_version";
 NSString * const QNReportRequestKeySDKName = @"sdk_name";
 NSString * const QNReportRequestKeySDKVersion = @"sdk_version";
 NSString * const QNReportRequestKeyClientTime = @"client_time";
+NSString * const QNReportRequestKeyHttpClient = @"http_client";
 NSString * const QNReportRequestKeyNetworkType = @"network_type";
 NSString * const QNReportRequestKeySignalStrength = @"signal_strength";
 NSString * const QNReportRequestKeyPrefetchedDnsSource = @"prefetched_dns_source";
@@ -205,7 +206,9 @@ NSString * const QNReportRequestKeyPrefetchedErrorMessage = @"prefetched_error_m
 
 //MARK:-- 分块上传统计⽇志
 NSString * const QNReportBlockKeyLogType = @"log_type";
-NSString *const QNReportBlockKeyUpTime = @"up_time";
+NSString * const QNReportBlockKeyUpTime = @"up_time";
+NSString * const QNReportBlockKeyTargetBucket = @"target_bucket";
+NSString * const QNReportBlockKeyTargetKey = @"target_key";
 NSString * const QNReportBlockKeyTargetRegionId = @"target_region_id";
 NSString * const QNReportBlockKeyCurrentRegionId = @"current_region_id";
 NSString * const QNReportBlockKeyTotalElapsedTime = @"total_elapsed_time";
@@ -216,6 +219,10 @@ NSString * const QNReportBlockKeyPid = @"pid";
 NSString * const QNReportBlockKeyTid = @"tid";
 NSString * const QNReportBlockKeyUpApiVersion = @"up_api_version";
 NSString * const QNReportBlockKeyClientTime = @"client_time";
+NSString * const QNReportBlockKeyOsName = @"os_name";
+NSString * const QNReportBlockKeyOsVersion = @"os_version";
+NSString * const QNReportBlockKeySDKName = @"sdk_name";
+NSString * const QNReportBlockKeySDKVersion = @"sdk_version";
 
 
 //MARK:-- 上传质量统计
@@ -231,3 +238,7 @@ NSString * const QNReportQualityKeyBytesSent = @"bytes_sent";
 NSString * const QNReportQualityKeyCloudType = @"cloud_type";
 NSString * const QNReportQualityKeyErrorType = @"error_type";
 NSString * const QNReportQualityKeyErrorDescription = @"error_description";
+NSString * const QNReportQualityKeyOsName = @"os_name";
+NSString * const QNReportQualityKeyOsVersion = @"os_version";
+NSString * const QNReportQualityKeySDKName = @"sdk_name";
+NSString * const QNReportQualityKeySDKVersion = @"sdk_version";
