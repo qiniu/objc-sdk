@@ -6,6 +6,7 @@
 //  Copyright © 2021 Qiniu. All rights reserved.
 //
 
+#import "QNDefine.h"
 #import "QNSingleFlight.h"
 
 @interface QNSingleFlightTask : NSObject
@@ -73,7 +74,10 @@
         }
     }
     
+    kQNWeakSelf;
     action(^(id value, NSError *error){
+        kQNStrongSelf;
+        
         NSArray *tasksP = nil;
         @synchronized (call) {
             call.value = value;

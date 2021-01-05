@@ -25,7 +25,7 @@
     for (int i = 0; i < maxCount; i++) {
         [singleFlight perform:@"key" action:^(QNSingleFlightComplete  _Nonnull complete) {
             NSString *index = [NSString stringWithFormat:@"%d", i];
-            NSLog(@"== action value: %@", index);
+            NSLog(@"== sync action value: %@", index);
             complete(index, nil);
             
         } complete:^(id  _Nonnull value, NSError * _Nonnull error) {
@@ -34,7 +34,7 @@
                 successCount += 1;
             }
             completeCount += 1;
-            NSLog(@"== complete value: %@ completeCount:%d", value, completeCount);
+            NSLog(@"== sync complete value: %@ completeCount:%d", value, completeCount);
         }];
     }
     
@@ -50,7 +50,7 @@
     for (int i = 0; i < maxCount; i++) {
         [singleFlight perform:@"key" action:^(QNSingleFlightComplete  _Nonnull complete) {
             NSString *index = [NSString stringWithFormat:@"%d", i];
-            NSLog(@"== action value: %@", index);
+            NSLog(@"== async action value: %@", index);
             
             dispatch_async(dispatch_get_global_queue(0, 0), ^{
                 complete(index, nil);
@@ -60,7 +60,7 @@
             @synchronized (self) {
                 completeCount += 1;
             }
-            NSLog(@"== complete value: %@ completeCount:%d", value, completeCount);
+            NSLog(@"== async complete value: %@ completeCount:%d", value, completeCount);
         }];
     }
     
