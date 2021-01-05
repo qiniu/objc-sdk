@@ -267,7 +267,13 @@
     [item setReportValue:@(self.file.size) forKey:QNReportBlockKeyFileSize];
     [item setReportValue:@([QNUtils getCurrentProcessID]) forKey:QNReportBlockKeyPid];
     [item setReportValue:@([QNUtils getCurrentThreadID]) forKey:QNReportBlockKeyTid];
-    [item setReportValue:@(1) forKey:QNReportBlockKeyUpApiVersion];
+    
+    if (self.config.resumeUploadVersion == QNResumeUploadVersionV1) {
+        [item setReportValue:@(1) forKey:QNReportBlockKeyUpApiVersion];
+    } else {
+        [item setReportValue:@(2) forKey:QNReportBlockKeyUpApiVersion];
+    }
+    
     [item setReportValue:[QNUtils getCurrentNetworkType] forKey:QNReportBlockKeyClientTime];
     [item setReportValue:[QNUtils systemName] forKey:QNReportBlockKeyOsName];
     [item setReportValue:[QNUtils systemVersion] forKey:QNReportBlockKeyOsVersion];
