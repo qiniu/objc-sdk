@@ -13,6 +13,7 @@
 #import "QNZone.h"
 #import "QNFixedZone.h"
 #import "QNAutoZone.h"
+#import "QNLogUtil.h"
 #import "QNConfiguration.h"
 #import "QNRecorderDelegate.h"
 #import "QNFileRecorder.h"
