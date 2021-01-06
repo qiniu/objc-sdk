@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNLogUtil.h"
 #import "QNUploadBaseTest.h"
 
 @interface QNUploadBaseTest()
@@ -15,6 +16,8 @@
 
 - (void)setUp {
     [super setUp];
+    [QNLogUtil setLogLevel:QNLogLevelInfo];
+    
     self.defaultOption = [[QNUploadOption alloc] initWithMime:nil
                                               progressHandler:^(NSString *key, float percent) {
         NSLog(@"== key:%@ percent:%f", key, percent);

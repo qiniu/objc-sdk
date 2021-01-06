@@ -82,16 +82,19 @@ extern NSString *const QNReportRequestKeyOsVersion;
 extern NSString *const QNReportRequestKeySDKName;
 extern NSString *const QNReportRequestKeySDKVersion;
 extern NSString *const QNReportRequestKeyClientTime;
+extern NSString *const QNReportRequestKeyHttpClient;
 extern NSString *const QNReportRequestKeyNetworkType;
 extern NSString *const QNReportRequestKeySignalStrength;
-extern NSString * const QNReportRequestKeyPrefetchedDnsSource;
-extern NSString * const QNReportRequestKeyPrefetchedBefore;
-extern NSString * const QNReportRequestKeyPrefetchedErrorMessage;
+extern NSString *const QNReportRequestKeyPrefetchedDnsSource;
+extern NSString *const QNReportRequestKeyPrefetchedBefore;
+extern NSString *const QNReportRequestKeyPrefetchedErrorMessage;
 
 
 //MARK:-- 分块上传统计⽇志
 extern NSString *const QNReportBlockKeyLogType;
 extern NSString *const QNReportBlockKeyUpTime;
+extern NSString *const QNReportBlockKeyTargetBucket;
+extern NSString *const QNReportBlockKeyTargetKey;
 extern NSString *const QNReportBlockKeyTargetRegionId;
 extern NSString *const QNReportBlockKeyCurrentRegionId;
 extern NSString *const QNReportBlockKeyTotalElapsedTime;
@@ -102,7 +105,10 @@ extern NSString *const QNReportBlockKeyPid;
 extern NSString *const QNReportBlockKeyTid;
 extern NSString *const QNReportBlockKeyUpApiVersion;
 extern NSString *const QNReportBlockKeyClientTime;
-
+extern NSString *const QNReportBlockKeyOsName;
+extern NSString *const QNReportBlockKeyOsVersion;
+extern NSString *const QNReportBlockKeySDKName;
+extern NSString *const QNReportBlockKeySDKVersion;
 
 //MARK:-- 上传质量统计
 extern NSString *const QNReportQualityKeyLogType;
@@ -115,7 +121,12 @@ extern NSString *const QNReportQualityKeyRequestsCount;
 extern NSString *const QNReportQualityKeyRegionsCount;
 extern NSString *const QNReportQualityKeyBytesSent;
 extern NSString *const QNReportQualityKeyCloudType;
-extern NSString * const QNReportQualityKeyErrorType;
-extern NSString * const QNReportQualityKeyErrorDescription;
+extern NSString *const QNReportQualityKeyErrorType;
+extern NSString *const QNReportQualityKeyErrorDescription;
+extern NSString *const QNReportQualityKeyOsName;
+extern NSString *const QNReportQualityKeyOsVersion;
+extern NSString *const QNReportQualityKeySDKName;
+extern NSString *const QNReportQualityKeySDKVersion;
+
 
 NS_ASSUME_NONNULL_END

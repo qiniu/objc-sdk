@@ -10,6 +10,7 @@
 #import "QNAsyncRun.h"
 #import "QNVersion.h"
 #import "QNUtils.h"
+#import "QNLogUtil.h"
 #import "QNHttpSingleRequest.h"
 #import "QNConfiguration.h"
 #import "QNUploadOption.h"
@@ -107,6 +108,8 @@
         return isCancelled;
     };
 
+    QNLogInfo(@"key:%@ retry:%d url:%@", self.requestInfo.key, self.currentRetryTime, request.URL);
+    
     [self.client request:request connectionProxy:self.config.proxy progress:^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
         kQNStrongSelf;
         
@@ -142,6 +145,7 @@
                                                                response:(NSHTTPURLResponse *)response
                                                                    body:responseData
                                                                   error:error];
+        QNLogInfo(@"key:%@ response:%@", self.requestInfo.key, responseInfo);
         if (shouldRetry(responseInfo, responseDic)
             && self.currentRetryTime < self.config.retryMax
             && responseInfo.couldHostRetry) {

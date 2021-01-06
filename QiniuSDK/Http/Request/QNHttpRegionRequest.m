@@ -7,6 +7,7 @@
 //
 
 #import "QNDefine.h"
+#import "QNLogUtil.h"
 #import "QNAsyncRun.h"
 #import "QNHttpRegionRequest.h"
 #import "QNConfiguration.h"
@@ -20,6 +21,7 @@
 
 @property(nonatomic, strong)QNConfiguration *config;
 @property(nonatomic, strong)QNUploadOption *uploadOption;
+@property(nonatomic, strong)QNUploadRequestInfo *requestInfo;
 @property(nonatomic, strong)QNUploadRequestState *requestState;
 
 @property(nonatomic, strong)QNUploadRegionRequestMetrics *requestMetrics;
@@ -43,6 +45,7 @@
         _config = config;
         _uploadOption = uploadOption;
         _region = region;
+        _requestInfo = requestInfo;
         _requestState = requestState;
         _singleRequest = [[QNHttpSingleRequest alloc] initWithConfig:config
                                                         uploadOption:uploadOption
@@ -152,6 +155,9 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
     [request setAllHTTPHeaderFields:headers];
     [request setTimeoutInterval:self.config.timeoutInterval];
     request.HTTPBody = body;
+    
+    QNLogInfo(@"key:%@ url:%@", self.requestInfo.key, request.URL);
+    QNLogInfo(@"key:%@ headers:%@", self.requestInfo.key, headers);
     
     kQNWeakSelf;
     [self.singleRequest request:request

@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNLogUtil.h"
 #import "QNDefine.h"
 #import "QNRequestTransaction.h"
 #import "QNUploadFileInfoPartV1.h"
@@ -52,6 +53,8 @@
     }
 
     if (block == nil || chunk == nil) {
+        QNLogInfo(@"key:%@ no chunk left", self.key);
+        
         QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithSDKInteriorError:@"no chunk left"];
         completeHandler(YES, responseInfo, nil, nil);
         return;
@@ -59,6 +62,8 @@
     
     NSData *chunkData = [self getDataWithChunk:chunk block:block];
     if (chunkData == nil) {
+        QNLogInfo(@"key:%@ get chunk data error", self.key);
+        
         chunk.isUploading = NO;
         chunk.isCompleted = NO;
         QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithLocalIOError:@"get chunk data error"];
@@ -93,8 +98,10 @@
     };
     
     if (chunk.isFirstData) {
+        QNLogInfo(@"key:%@ makeBlock", self.key);
         [self makeBlock:block firstChunk:chunk chunkData:chunkData progress:progress completeHandler:completeHandlerP];
     } else {
+        QNLogInfo(@"key:%@ uploadChunk", self.key);
         [self uploadChunk:block chunk:chunk chunkData:chunkData progress:progress completeHandler:completeHandlerP];
     }
 }

@@ -34,6 +34,7 @@
 #import "QNConfiguration.h"
 #import "QNCrc32.h"
 #import "QNFile.h"
+#import "QNUtils.h"
 #import "QNResponseInfo.h"
 
 #import "QNFormUpload.h"
@@ -423,6 +424,11 @@
     [item setReportValue:taskMetricsP.requestCount forKey:QNReportQualityKeyRequestsCount];
     [item setReportValue:taskMetricsP.regionCount forKey:QNReportQualityKeyRegionsCount];
     [item setReportValue:taskMetricsP.bytesSend forKey:QNReportQualityKeyBytesSent];
+    
+    [item setReportValue:[QNUtils systemName] forKey:QNReportQualityKeyOsName];
+    [item setReportValue:[QNUtils systemVersion] forKey:QNReportQualityKeyOsVersion];
+    [item setReportValue:[QNUtils sdkLanguage] forKey:QNReportQualityKeySDKName];
+    [item setReportValue:[QNUtils sdkVersion] forKey:QNReportQualityKeySDKVersion];
     
     [item setReportValue:responseInfo.requestReportErrorType forKey:QNReportQualityKeyErrorType];
     NSString *errorDesc = responseInfo.requestReportErrorType ? responseInfo.message : nil;

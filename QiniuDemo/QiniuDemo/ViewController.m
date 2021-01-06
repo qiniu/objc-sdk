@@ -7,7 +7,6 @@
 //
 
 #import "Configure.h" // 测试参数配置，暂时只有token，可删除
-
 #import "ViewController.h"
 #import "QNTransactionManager.h"
 
@@ -34,6 +33,8 @@ typedef NS_ENUM(NSInteger, UploadState){
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [QNLogUtil setLogLevel:QNLogLevelInfo];
+    
     // Do any additional setup after loading the view, typically from a nib.
     [self changeUploadState:UploadStatePrepare];
     self.title = @"七牛云上传";

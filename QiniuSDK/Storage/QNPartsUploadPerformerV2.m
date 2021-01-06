@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNLogUtil.h"
 #import "QNDefine.h"
 #import "QNRequestTransaction.h"
 #import "QNUploadFileInfoPartV2.h"
@@ -28,8 +29,10 @@
 - (void)serverInit:(void(^)(QNResponseInfo * _Nullable responseInfo,
                             QNUploadRegionRequestMetrics * _Nullable metrics,
                             NSDictionary * _Nullable response))completeHandler {
+    
     QNUploadFileInfoPartV2 *fileInfo = (QNUploadFileInfoPartV2 *)self.fileInfo;
     if (fileInfo && [fileInfo isValid]) {
+        QNLogInfo(@"key:%@ serverInit success", self.key);
         QNResponseInfo *responseInfo = [QNResponseInfo successResponse];
         completeHandler(responseInfo, nil, nil);
         return;
@@ -69,6 +72,8 @@
     }
     // 上传完毕
     if (data == nil) {
+        QNLogInfo(@"key:%@ no data left", self.key);
+        
         QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithSDKInteriorError:@"no data left"];
         completeHandler(YES, responseInfo, nil, nil);
         return;
@@ -77,6 +82,8 @@
     // 本地读异常
     NSData *uploadData = [self getUploadData:data];
     if (uploadData == nil) {
+        QNLogInfo(@"key:%@ get data error", self.key);
+        
         data.isUploading = NO;
         data.isCompleted = NO;
         QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithLocalIOError:@"get data error"];

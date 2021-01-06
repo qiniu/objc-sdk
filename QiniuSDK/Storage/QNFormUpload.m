@@ -6,6 +6,7 @@
 //  Copyright (c) 2015年 Qiniu. All rights reserved.
 //
 #import "QNDefine.h"
+#import "QNLogUtil.h"
 #import "QNFormUpload.h"
 #import "QNResponseInfo.h"
 #import "QNRequestTransaction.h"
@@ -21,6 +22,8 @@
 @implementation QNFormUpload
 
 - (void)startToUpload {
+    
+    QNLogInfo(@"key:%@ form上传", self.key);
     
     self.uploadTransaction = [[QNRequestTransaction alloc] initWithConfig:self.config
                                                              uploadOption:self.option
