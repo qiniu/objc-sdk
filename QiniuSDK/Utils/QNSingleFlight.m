@@ -16,6 +16,7 @@
 @end
 
 @interface QNSingleFlightCall : NSObject
+@property(nonatomic, assign)BOOL isComplete;
 @property(nonatomic, strong)NSMutableArray <QNSingleFlightTask *> *tasks;
 @property(nonatomic, strong)id value;
 @property(nonatomic, strong)NSError *error;
@@ -49,6 +50,7 @@
         
         if (!call) {
             call = [[QNSingleFlightCall alloc] init];
+            call.isComplete = false;
             call.tasks = [NSMutableArray array];
             if (key) {
                 self.callInfo[key] = call;
@@ -57,9 +59,8 @@
         }
         
         @synchronized (call) {
-            if (call.value || call.error) {
-                shouldComplete = true;
-            } else {
+            shouldComplete = call.isComplete;
+            if (!shouldComplete) {
                 QNSingleFlightTask *task = [[QNSingleFlightTask alloc] init];
                 task.complete = complete;
                 [call.tasks addObject:task];
@@ -85,6 +86,10 @@
         
         NSArray *tasksP = nil;
         @synchronized (call) {
+            if (call.isComplete) {
+                return;
+            }
+            call.isComplete = true;
             call.value = value;
             call.error = error;
             tasksP = [call.tasks copy];

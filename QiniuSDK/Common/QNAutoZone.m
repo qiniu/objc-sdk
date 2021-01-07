@@ -191,8 +191,6 @@
             }
         }
     }];
-
-    
 }
 
 - (QNRequestTransaction *)createUploadRequestTransaction:(QNUpToken *)token{
