@@ -16,30 +16,35 @@
 
 @implementation QNSingleFlightTest
 
+#define RetryCount 5
 - (void)testSync {
     
     int maxCount = 1000;
     __block int completeCount = 0;
-    __block int successCount = 0;
     QNSingleFlight *singleFlight = [[QNSingleFlight alloc] init];
     for (int i = 0; i < maxCount; i++) {
-        [singleFlight perform:@"key" action:^(QNSingleFlightComplete  _Nonnull complete) {
-            NSString *index = [NSString stringWithFormat:@"%d", i];
-            NSLog(@"== sync action value: %@", index);
-            complete(index, nil);
-            
-        } complete:^(id  _Nonnull value, NSError * _Nonnull error) {
-            NSString *index = [NSString stringWithFormat:@"%d", i];
-            if ([(NSString *)value isEqualToString:index]) {
-                successCount += 1;
-            }
+        [self singleFlight:singleFlight index:i retryCount:RetryCount isAsync:false complete:^{
             completeCount += 1;
-            NSLog(@"== sync complete value: %@ completeCount:%d", value, completeCount);
+            NSLog(@"== sync completeCount:%d", completeCount);
         }];
     }
     
     AGWW_WAIT_WHILE(completeCount != maxCount, 60);
-    XCTAssertTrue(successCount == maxCount, @"Pass");
+}
+
+- (void)testSyncRetry {
+    
+    int maxCount = 1000;
+    __block int completeCount = 0;
+    QNSingleFlight *singleFlight = [[QNSingleFlight alloc] init];
+    for (int i = 0; i < maxCount; i++) {
+        [self singleFlight:singleFlight index:i retryCount:0 isAsync:false complete:^{
+            completeCount += 1;
+            NSLog(@"== sync completeCount:%d", completeCount);
+        }];
+    }
+    
+    AGWW_WAIT_WHILE(completeCount != maxCount, 60);
 }
 
 - (void)testAsync {
@@ -48,25 +53,80 @@
     __block int completeCount = 0;
     QNSingleFlight *singleFlight = [[QNSingleFlight alloc] init];
     for (int i = 0; i < maxCount; i++) {
-        [singleFlight perform:@"key" action:^(QNSingleFlightComplete  _Nonnull complete) {
-            NSString *index = [NSString stringWithFormat:@"%d", i];
-            NSLog(@"== async action value: %@", index);
-            
-            dispatch_async(dispatch_get_global_queue(0, 0), ^{
-                complete(index, nil);
-            });
-    
-        } complete:^(id  _Nonnull value, NSError * _Nonnull error) {
+        [self singleFlight:singleFlight index:i retryCount:RetryCount isAsync:true complete:^{
             @synchronized (self) {
                 completeCount += 1;
             }
-            NSLog(@"== async complete value: %@ completeCount:%d", value, completeCount);
+            NSLog(@"== async completeCount:%d", completeCount);
         }];
     }
     
     AGWW_WAIT_WHILE(completeCount != maxCount, 10);
-    XCTAssertTrue(completeCount == maxCount, @"Pass");
 }
 
+- (void)testAsyncRetry {
+    
+    int maxCount = 1000;
+    __block int completeCount = 0;
+    QNSingleFlight *singleFlight = [[QNSingleFlight alloc] init];
+    for (int i = 0; i < maxCount; i++) {
+        [self singleFlight:singleFlight index:i retryCount:0 isAsync:true complete:^{
+            @synchronized (self) {
+                completeCount += 1;
+            }
+            NSLog(@"== async completeCount:%d", completeCount);
+        }];
+    }
+    
+    AGWW_WAIT_WHILE(completeCount != maxCount, 10);
+}
+
+
+- (void)singleFlight:(QNSingleFlight *)singleFlight
+               index:(int)index
+          retryCount:(int)retryCount
+             isAsync:(int)isAsync
+            complete:(dispatch_block_t)complete {
+    
+    __weak typeof(self) weakSelf = self;
+    [singleFlight perform:@"key" action:^(QNSingleFlightComplete  _Nonnull complete) {
+        
+        NSString *indexString = [NSString stringWithFormat:@"%d", index];
+        
+        dispatch_block_t completeBlock = ^(){
+            if (retryCount != RetryCount) {
+                NSLog(@"== %@ action retryCount:%d index:%d error", isAsync ? @"async" : @"sync", retryCount, index);
+                complete(nil, [[NSError alloc] initWithDomain:NSArgumentDomain code:-1 userInfo:nil]);
+            } else {
+                NSLog(@"== %@ action retryCount:%d index:%d value", isAsync ? @"async" : @"sync", retryCount, index);
+                complete(indexString, nil);
+            }
+        };
+        if (isAsync) {
+            dispatch_async(dispatch_get_global_queue(0, 0), ^{
+                sleep(1);
+                completeBlock();
+            });
+        } else {
+            completeBlock();
+        }
+    } complete:^(id  _Nonnull value, NSError * _Nonnull error) {
+        __strong typeof(self) self = weakSelf;
+        
+        if (retryCount != RetryCount) {
+            [self singleFlight:singleFlight index:index retryCount:retryCount+1 isAsync:isAsync complete:complete];
+        } else {
+            NSString *indexString = [NSString stringWithFormat:@"%d", index];
+            NSLog(@"== %@ action complete retryCount:%d value:%@ index:%d", isAsync ? @"async" : @"sync", retryCount, value, index);
+        
+            if (!isAsync) {
+                XCTAssertTrue(value != nil, @"Pass");
+                XCTAssertTrue(error == nil, @"Pass");
+                XCTAssertTrue([(NSString *)value isEqualToString:indexString], @"Pass");
+            }
+            complete();
+        }
+    }];
+}
 
 @end

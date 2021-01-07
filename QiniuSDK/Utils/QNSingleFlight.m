@@ -35,14 +35,14 @@
         return;
     }
 
+    BOOL isFirstTask = false;
+    BOOL shouldComplete = false;
     QNSingleFlightCall *call = nil;
-    NSMutableArray *tasks = nil;
     @synchronized (self) {
         if (!self.callInfo) {
             self.callInfo = [NSMutableDictionary dictionary];
         }
         
-        BOOL isFirstTask = false;
         if (key) {
             call = self.callInfo[key];
         }
@@ -58,42 +58,47 @@
         
         @synchronized (call) {
             if (call.value || call.error) {
-                if (complete) {
-                    complete(call.value, call.error);
-                }
-                return;
+                shouldComplete = true;
+            } else {
+                QNSingleFlightTask *task = [[QNSingleFlightTask alloc] init];
+                task.complete = complete;
+                [call.tasks addObject:task];
             }
-            tasks = call.tasks;
-            QNSingleFlightTask *task = [[QNSingleFlightTask alloc] init];
-            task.complete = complete;
-            [tasks addObject:task];
-        }
-        
-        if (!isFirstTask) {
-            return;
         }
     }
     
+    if (shouldComplete) {
+        if (complete) {
+            complete(call.value, call.error);
+        }
+        return;
+    }
+    if (!isFirstTask) {
+        return;
+    }
+    
     kQNWeakSelf;
+    kQNWeakObj(call);
     action(^(id value, NSError *error){
         kQNStrongSelf;
+        kQNStrongObj(call);
         
         NSArray *tasksP = nil;
         @synchronized (call) {
             call.value = value;
             call.error = error;
-            tasksP = [tasks copy];
-        }
-        
-        for (QNSingleFlightTask *task in tasksP) {
-            if (task.complete) {
-                task.complete(value, error);
-            }
+            tasksP = [call.tasks copy];
         }
         
         if (key) {
             @synchronized (self) {
                 [self.callInfo removeObjectForKey:key];
+            }
+        }
+        
+        for (QNSingleFlightTask *task in tasksP) {
+            if (task.complete) {
+                task.complete(value, error);
             }
         }
     });

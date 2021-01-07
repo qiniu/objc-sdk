@@ -48,6 +48,38 @@
     XCTAssert(completeCount == (maxCount - start), @"Pass");
 }
 
+- (void)test100UploadV1{
+    int maxCount = 100;
+    __block int completeCount = 0;
+    __block int successCount = 0;
+    
+    int start = 0;
+    for (int i=start; i<maxCount; i++) {
+        QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+            builder.resumeUploadVersion = QNResumeUploadVersionV1;
+            builder.useConcurrentResumeUpload = YES;
+            builder.concurrentTaskCount = 3;
+            builder.chunkSize = (i%4 + 1) * 1014 * 1024 + i;
+        }];
+        int size = (i + 1) * 1024;
+        NSString *keyUp = [NSString stringWithFormat:@"complex_100_upload_v1_%dk", size];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:size * 50 identifier:keyUp];
+        [self uploadFile:tempFile key:keyUp config:config option:nil complete:^(QNResponseInfo * _Nonnull responseInfo, NSString * _Nonnull key) {
+            @synchronized (self) {
+                if (responseInfo.isOK) {
+                    successCount += 1;
+                }
+                completeCount += 1;
+            }
+        }];
+    }
+    
+    AGWW_WAIT_WHILE(completeCount != (maxCount - start), 600 * 10);
+    
+    NSLog(@"complex_100_upload v1 successCount: %d", successCount);
+    XCTAssert(completeCount == (maxCount - start), @"Pass");
+}
+
 - (void)testMutiUploadV2{
     int maxCount = 37;
     __block int completeCount = 0;
@@ -77,6 +109,38 @@
     AGWW_WAIT_WHILE(completeCount != (maxCount - start), 600 * 30);
     
     NSLog(@"complex_upload v2 successCount: %d", successCount);
+    XCTAssert(completeCount == (maxCount - start), @"Pass");
+}
+
+- (void)test100UploadV2{
+    int maxCount = 100;
+    __block int completeCount = 0;
+    __block int successCount = 0;
+    
+    int start = 0;
+    for (int i=start; i<maxCount; i++) {
+        QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+            builder.resumeUploadVersion = QNResumeUploadVersionV2;
+            builder.useConcurrentResumeUpload = YES;
+            builder.concurrentTaskCount = 3;
+            builder.chunkSize = (i%4 + 1) * 1024 * 1024 + i;
+        }];
+        int size = (i + 1) * 1024;
+        NSString *keyUp = [NSString stringWithFormat:@"complex_100_upload_v2_%dk", size];
+        QNTempFile *tempFile = [QNTempFile createTempFileWithSize:size * 50 identifier:keyUp];
+        [self uploadFile:tempFile key:keyUp config:config option:nil complete:^(QNResponseInfo * _Nonnull responseInfo, NSString * _Nonnull key) {
+            @synchronized (self) {
+                if (responseInfo.isOK) {
+                    successCount += 1;
+                }
+                completeCount += 1;
+            }
+        }];
+    }
+    
+    AGWW_WAIT_WHILE(completeCount != (maxCount - start), 600 * 30);
+    
+    NSLog(@"complex_100_upload v2 successCount: %d", successCount);
     XCTAssert(completeCount == (maxCount - start), @"Pass");
 }
 
