@@ -91,6 +91,8 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 
     _globalHostFrozenTime = 10;
     _partialHostFrozenTime = 5*60;
+    
+    _connectCheckURLStrings = @[@"https://www.baidu.com", @"https://www.google.com/"];
 }
 
 @end

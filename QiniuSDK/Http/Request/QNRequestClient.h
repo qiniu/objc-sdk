@@ -16,7 +16,7 @@ typedef void (^QNRequestClientCompleteHandler)(NSURLResponse * _Nullable, QNUplo
 
 - (void)request:(NSURLRequest *)request
 connectionProxy:(NSDictionary * _Nullable)connectionProxy
-       progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
+       progress:(void(^ _Nullable)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
        complete:(QNRequestClientCompleteHandler)complete;
 
 - (void)cancel;
