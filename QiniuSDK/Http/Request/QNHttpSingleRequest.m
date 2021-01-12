@@ -171,6 +171,7 @@
     responseInfo.statusCode == -1001 /* NSURLErrorTimedOut */ ||
     responseInfo.statusCode == -1003 /* NSURLErrorCannotFindHost */ ||
     responseInfo.statusCode == -1004 /* NSURLErrorCannotConnectToHost */ ||
+    responseInfo.statusCode == -1005 /* NSURLErrorNetworkConnectionLost */ ||
     responseInfo.statusCode == -1006 /* NSURLErrorDNSLookupFailed */ ||
     responseInfo.statusCode == -1009 /* NSURLErrorNotConnectedToInternet */ ||
     responseInfo.isTlsError;
