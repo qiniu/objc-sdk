@@ -179,13 +179,17 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  */
 @property(nonatomic, assign)UInt32 partialHostFrozenTime;
 
-
 /**
  *  网络连接状态检测使用的connectCheckURLStrings，网络链接状态检测可能会影响重试机制，启动网络连接状态检测有助于提高上传可用性。
  *  当请求的 Response 为网络异常时，并发对 connectCheckURLStrings 中 URLString 进行 HEAD 请求，以此检测当前网络状态的链接状态，其中任意一个 URLString 链接成功则认为当前网络状态链接良好；
  *  当 connectCheckURLStrings 为 nil 或者 空数组时则弃用检测功能。
  */
 @property(nonatomic, strong)NSArray <NSString *> *connectCheckURLStrings;
+
+/**
+ *  网络连接状态检测HEAD请求超时，默认：3s
+ */
+@property(nonatomic, assign)NSTimeInterval connectCheckTimeout;
 
 
 + (instancetype)shared;

@@ -88,7 +88,7 @@
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     request.URL = [NSURL URLWithString:host];
     request.HTTPMethod = @"HEAD";
-    request.timeoutInterval = 3;
+    request.timeoutInterval = kQNGlobalConfiguration.connectCheckTimeout;
     
     QNUploadSystemClient *client = [[QNUploadSystemClient alloc] init];
     [client request:request connectionProxy:nil progress:nil complete:^(NSURLResponse * response, QNUploadSingleRequestMetrics * metrics, NSData * _Nullable data, NSError * error) {
