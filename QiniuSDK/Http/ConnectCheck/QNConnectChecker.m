@@ -7,6 +7,7 @@
 //
 
 #import "QNDefine.h"
+#import "QNLogUtil.h"
 #import "QNConfiguration.h"
 #import "QNSingleFlight.h"
 #import "QNConnectChecker.h"
@@ -74,6 +75,9 @@
             }
             if (completeCount == allHosts.count) {
                 complete(isConnected);
+                QNLogInfo(@"== check all hosts has completed totalCount:%d completeCount:%d", allHosts.count, completeCount);
+            } else {
+                QNLogInfo(@"== check all hosts not completed totalCount:%d completeCount:%d", allHosts.count, completeCount);
             }
         }];
     }
@@ -89,8 +93,10 @@
     QNUploadSystemClient *client = [[QNUploadSystemClient alloc] init];
     [client request:request connectionProxy:nil progress:nil complete:^(NSURLResponse * response, QNUploadSingleRequestMetrics * metrics, NSData * _Nullable data, NSError * error) {
         if (response && [(NSHTTPURLResponse *)response statusCode] > 99) {
+            QNLogInfo(@"== checkHost:%@ result: true", host);
             complete(true);
         } else {
+            QNLogInfo(@"== checkHost:%@ result: false", host);
             complete(false);
         }
     }];

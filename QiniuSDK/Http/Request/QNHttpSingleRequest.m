@@ -147,7 +147,7 @@
                                                                    body:responseData
                                                                   error:error];
         if ([self shouldCheckConnect:responseInfo] && ![QNConnectChecker check]) {
-            NSString *message = [NSString stringWithFormat:@"check origin statusCode:%d error:%@", responseInfo.statusCode, responseInfo.message];
+            NSString *message = [NSString stringWithFormat:@"check origin statusCode:%d error:%@", responseInfo.statusCode, responseInfo.error];
             responseInfo = [QNResponseInfo errorResponseInfo:NSURLErrorNotConnectedToInternet errorDesc:message];
         }
         
