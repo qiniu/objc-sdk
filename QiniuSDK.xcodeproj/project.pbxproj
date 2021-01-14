@@ -207,6 +207,8 @@
 		31CBB0FC2595F2720089C795 /* QNLogUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 31CBB0F82595F2720089C795 /* QNLogUtil.m */; };
 		31CFBA6825AEA52100B8EC24 /* QNConnctCheckTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31CFBA6725AEA52100B8EC24 /* QNConnctCheckTest.m */; };
 		31CFBA6925AEA52100B8EC24 /* QNConnctCheckTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31CFBA6725AEA52100B8EC24 /* QNConnctCheckTest.m */; };
+		31CFBA8C25AFE71300B8EC24 /* QNConnectChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = 31FE6A0925A8320200C02B27 /* QNConnectChecker.h */; };
+		31CFBA9225AFE71700B8EC24 /* QNConnectChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 31FE6A0A25A8320200C02B27 /* QNConnectChecker.m */; };
 		31D8446A254017BD005C0222 /* QNErrorCode.h in Headers */ = {isa = PBXBuildFile; fileRef = 31D84468254017BD005C0222 /* QNErrorCode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		31D8446B254017BD005C0222 /* QNErrorCode.m in Sources */ = {isa = PBXBuildFile; fileRef = 31D84469254017BD005C0222 /* QNErrorCode.m */; };
 		31D8446C254017BD005C0222 /* QNErrorCode.m in Sources */ = {isa = PBXBuildFile; fileRef = 31D84469254017BD005C0222 /* QNErrorCode.m */; };
@@ -981,6 +983,7 @@
 				318E2EF42552ADD1004EDE8C /* QNReportItem.h in Headers */,
 				313B37EF2574F00200FBB57B /* QNPartsUploadPerformerV1.h in Headers */,
 				313B37F52574F00F00FBB57B /* QNPartsUploadPerformerV2.h in Headers */,
+				31CFBA8C25AFE71300B8EC24 /* QNConnectChecker.h in Headers */,
 				318E2EF72552ADE6004EDE8C /* QNPipeline.h in Headers */,
 				318E2F302552AE39004EDE8C /* QNConcurrentResumeUpload.h in Headers */,
 				318E2F1B2552AE2F004EDE8C /* QNDnsPrefetch.h in Headers */,
@@ -1505,6 +1508,7 @@
 				3149A1DE2462A57400A2A15B /* QNUploadDomainRegion.m in Sources */,
 				31C2EEE5242DE86D00713A33 /* QNUtils.m in Sources */,
 				4543D70224D29B21006E28B1 /* QNDnsPrefetch.m in Sources */,
+				31CFBA9225AFE71700B8EC24 /* QNConnectChecker.m in Sources */,
 				31FD0921248662F900217848 /* QNUploadServerFreezeManager.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
