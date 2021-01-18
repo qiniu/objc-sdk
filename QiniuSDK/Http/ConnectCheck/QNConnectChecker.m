@@ -60,6 +60,7 @@
 + (void)checkAllHosts:(void (^)(BOOL isConnected))complete {
     
     __block int completeCount = 0;
+    __block BOOL isCompleted = false;
     __block BOOL isConnected = false;
     kQNWeakSelf;
     NSArray *allHosts = [kQNGlobalConfiguration.connectCheckURLStrings copy];
@@ -73,9 +74,17 @@
             if (isHostConnected) {
                 isConnected = YES;
             }
-            if (completeCount == allHosts.count) {
+            if (isHostConnected || completeCount == allHosts.count) {
+                @synchronized (self) {
+                    if (isCompleted) {
+                        QNLogInfo(@"== check all hosts has completed totalCount:%d completeCount:%d", allHosts.count, completeCount);
+                        return;
+                    } else {
+                        QNLogInfo(@"== check all hosts completed totalCount:%d completeCount:%d", allHosts.count, completeCount);
+                        isCompleted = true;
+                    }
+                }
                 complete(isConnected);
-                QNLogInfo(@"== check all hosts has completed totalCount:%d completeCount:%d", allHosts.count, completeCount);
             } else {
                 QNLogInfo(@"== check all hosts not completed totalCount:%d completeCount:%d", allHosts.count, completeCount);
             }
