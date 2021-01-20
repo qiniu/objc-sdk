@@ -173,8 +173,7 @@
     responseInfo.statusCode == -1004 /* NSURLErrorCannotConnectToHost */ ||
     responseInfo.statusCode == -1005 /* NSURLErrorNetworkConnectionLost */ ||
     responseInfo.statusCode == -1006 /* NSURLErrorDNSLookupFailed */ ||
-    responseInfo.statusCode == -1009 /* NSURLErrorNotConnectedToInternet */ ||
-    responseInfo.isTlsError;
+    responseInfo.statusCode == -1009 /* NSURLErrorNotConnectedToInternet */;
 }
 
 - (void)complete:(QNResponseInfo *)responseInfo
