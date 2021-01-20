@@ -39,10 +39,10 @@
 - (void)testInit {
     NSError *error = nil;
     [QNFileRecorder fileRecorderWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniutest"] error:&error];
-    XCTAssert(error == nil, @"Pass");
+    XCTAssert(error == nil, @"error 1:%@", error);
     [QNFileRecorder fileRecorderWithFolder:@"/qiniutest" error:&error];
     NSLog(@"file recorder %@", error);
-    XCTAssert(error != nil, @"Pass");
+    XCTAssert(error != nil, @"error 2:%@", error);
     [QNFileRecorder fileRecorderWithFolder:@"/qiniutest" error:nil];
 }
 
@@ -71,8 +71,8 @@
                  option:opt];
     AGWW_WAIT_WHILE(key == nil, 60 * 30);
     NSLog(@"%@ info %@", keyUp, info);
-    XCTAssert(info.isCancelled, @"Pass");
-    XCTAssert([keyUp isEqualToString:key], @"Pass");
+    XCTAssert(info.isCancelled, @"cancel info:%@", info);
+    XCTAssert([keyUp isEqualToString:key], @"cancel keyUp:%@ key:%@", keyUp, key);
 
     // continue
     key = nil;
@@ -95,9 +95,9 @@
     NSLog(@"failed: %@", failed ? @"YES" : @"NO");
     AGWW_WAIT_WHILE(key == nil, 60 * 30);
     NSLog(@"info %@", info);
-    XCTAssert(info.isOK, @"Pass");
-    XCTAssert(!failed, @"Pass");
-    XCTAssert([keyUp isEqualToString:key], @"Pass");
+    XCTAssert(info.isOK, @"continue info: %@", info);
+    XCTAssert(!failed, @"continue info: %@", info);
+    XCTAssert([keyUp isEqualToString:key], @"continue keyUp:%@ key:%@", keyUp, key);
     [tempFile remove];
 }
 

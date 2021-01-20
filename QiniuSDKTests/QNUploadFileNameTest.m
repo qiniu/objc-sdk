@@ -67,11 +67,11 @@
     
     WAIT_WHILE(responseInfo == nil, 5*60);
     
-    XCTAssert(responseInfo.isOK && responseInfo.reqId, @"Pass");
-    XCTAssert([keyUp isEqualToString:key], @"Pass");
+    XCTAssert(responseInfo.isOK && responseInfo.reqId, @"response info:%@", responseInfo);
+    XCTAssert([keyUp isEqualToString:key], @"keyUp:%@ key:%@", keyUp, key);
 //    XCTAssert([tempFile.fileHash isEqualToString:response[@"hash"]], @"Pass");
-    XCTAssert([paramValue isEqualToString:response[paramResponseKey]], @"Pass");
-    XCTAssert([tempFile.fileUrl.lastPathComponent isEqualToString:response[@"fname"]], @"Pass");
+    XCTAssert([paramValue isEqualToString:response[paramResponseKey]], @"paramValue:%@ response paramValue:%@", paramValue, response[paramResponseKey]);
+    XCTAssert([tempFile.fileUrl.lastPathComponent isEqualToString:response[@"fname"]], @"file name:%@ fname:%@", tempFile.fileUrl.lastPathComponent, response[@"fname"]);
     [tempFile remove];
 }
 

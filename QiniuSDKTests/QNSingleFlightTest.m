@@ -119,11 +119,11 @@
             NSLog(@"== %@ action complete retryCount:%d value:%@ index:%d", isAsync ? @"async" : @"sync", retryCount, value, index);
         
             if (!isAsync) {
-                XCTAssertTrue(value != nil, @"Pass");
-                XCTAssertTrue(error == nil, @"Pass");
-                XCTAssertTrue([(NSString *)value isEqualToString:indexString], @"Pass");
+                XCTAssertTrue(value != nil, @"value:%@",value);
+                XCTAssertTrue(error == nil, @"error:%@", error);
+                XCTAssertTrue([(NSString *)value isEqualToString:indexString], @"value:%@ error:%@", value, error);
             } else {
-                XCTAssertTrue((value != nil || error != nil), @"Pass");
+                XCTAssertTrue((value != nil || error != nil), @"value:%@ error:%@", value, error);
             }
             
             complete();

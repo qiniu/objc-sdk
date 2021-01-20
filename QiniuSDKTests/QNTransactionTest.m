@@ -30,7 +30,7 @@
     QNTransaction *normal = [QNTransaction transaction:@"1" after:0 action:^{
         NSLog(@"1");
     }];
-    XCTAssert(normal, @"success");
+    XCTAssert(normal, @"normal is nil");
     
     QNTransaction *time = [QNTransaction timeTransaction:@"2"
                                                    after:0
@@ -38,7 +38,7 @@
                                                   action:^{
         NSLog(@"2");
     }];
-    XCTAssert(time, @"success");
+    XCTAssert(time, @"time is nil");
 }
 
 - (void)testTransactionManagerAddAndRemove {
@@ -60,19 +60,19 @@
     [manager addTransaction:transaction02];
     QNTransaction *header = [manager valueForKeyPath:@"transactionList.header"];
 
-    XCTAssert((header == transaction01) || (header == transaction02) || (header == nil), @"success");
+    XCTAssert((header == transaction01) || (header == transaction02) || (header == nil), @"header:%@ transaction01:%@", header, transaction01);
     
     [manager removeTransaction:transaction01];
     
     header = [manager valueForKeyPath:@"transactionList.header"];
     NSLog(@"header: %@", header.name);
-    XCTAssert((header == transaction02) || (header == nil), @"success");
+    XCTAssert((header == transaction02) || (header == nil), @"header:%@ transaction02:%@", header, transaction02);
 
     [manager removeTransaction:transaction02];
     
     header = [manager valueForKeyPath:@"transactionList.header"];
     NSLog(@"header: %@", header.name);
-    XCTAssert(header == nil, @"success");
+    XCTAssert(header == nil, @"header:%@", header);
 
     QNTransaction *transaction03 = [QNTransaction transaction:@"3" after:0 action:^{
         NSLog(@"3");
@@ -91,7 +91,7 @@
     
     header = [manager valueForKeyPath:@"transactionList.header"];
     NSLog(@"header: %@", header.name);
-    XCTAssert(header == transaction04, @"success");
+    XCTAssert(header == transaction04, @"header:%@ transaction04:%@", header, transaction04);
 }
 
 @end

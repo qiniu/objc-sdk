@@ -21,7 +21,7 @@
     [kQNUploadServerFreezeManager freezeHost:host type:host frozenTime:10];
     
     BOOL isFrozen = [kQNUploadServerFreezeManager isFrozenHost:host type:host];
-    XCTAssertTrue(isFrozen, "pass");
+    XCTAssertTrue(isFrozen, "isFrozen false");
 }
 
 - (void)testUnfreeze {
@@ -29,11 +29,11 @@
     [kQNUploadServerFreezeManager freezeHost:host type:host frozenTime:10];
     
     BOOL isFrozen = [kQNUploadServerFreezeManager isFrozenHost:host type:host];
-    XCTAssertTrue(isFrozen, "pass");
+    XCTAssertTrue(isFrozen, "isFrozen false");
     
     [kQNUploadServerFreezeManager unfreezeHost:host type:host];
     isFrozen = [kQNUploadServerFreezeManager isFrozenHost:host type:host];
-    XCTAssertTrue(isFrozen == NO, "pass");
+    XCTAssertTrue(isFrozen == NO, "isFrozen true");
 }
 
 

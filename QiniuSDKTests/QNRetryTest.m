@@ -41,7 +41,7 @@
     }
     
     AGWW_WAIT_WHILE(completeCount != maxCount, 60 * 30);
-    XCTAssert(successCount == maxCount, @"Pass");
+    XCTAssert(successCount == maxCount, @"success count:%d maxCount:%d", successCount, maxCount);
 }
 
 - (void)testAllHostsFrozen{
@@ -68,7 +68,7 @@
     }
     
     AGWW_WAIT_WHILE(completeCount != maxCount, 60 * 30);
-    XCTAssert(successCount == 0, @"Pass");
+    XCTAssert(successCount == 0, @"success count:%d maxCount:%d", successCount, maxCount);
 }
 
 - (void)template:(int)size complete:(void(^)(BOOL isSuccess))complete{

@@ -18,7 +18,8 @@
 @implementation QNEtagTest
 
 - (void)testEtagZero {
-    XCTAssert([@"Fto5o-5ea0sNMlW_75VgGJCv2AcJ" isEqualToString:[QNEtag data:nil]], @"Pass");
+    NSString *etag = [QNEtag data:nil];
+    XCTAssert([@"Fto5o-5ea0sNMlW_75VgGJCv2AcJ" isEqualToString:etag], @"etag:%@", etag);
 }
 
 - (void)testFile5M {
