@@ -54,7 +54,7 @@
     __block BOOL isComplete = NO;
     [self upload:param complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         
-        XCTAssert(i.statusCode == 401, @"Pass");
+        XCTAssert(i.statusCode == 401, @"response info:%@", i);
         isComplete = YES;
     }];
     
@@ -71,7 +71,7 @@
     __block BOOL isComplete = NO;
     [self upload:param complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         
-        XCTAssert(i.statusCode == 414, @"Pass");
+        XCTAssert(i.statusCode == 414, @"response info:%@", i);
         isComplete = YES;
     }];
     
@@ -85,7 +85,7 @@
     __block BOOL isComplete = NO;
     [self upload:param complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         
-        XCTAssert(i.statusCode == 614, @"Pass");
+        XCTAssert(i.statusCode == 614, @"response info:%@", i);
         isComplete = YES;
     }];
     
@@ -100,7 +100,7 @@
     __block BOOL isComplete = NO;
     [self upload:param complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
         
-        XCTAssert(i.statusCode == 631, @"Pass");
+        XCTAssert(i.statusCode == 631, @"response info:%@", i);
         isComplete = YES;
     }];
     

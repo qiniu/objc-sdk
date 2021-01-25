@@ -11,7 +11,7 @@
 #import "QNDefine.h"
 #import "QNUtils.h"
 #import "QNCrc32.h"
-#import "NSData+MD5.h"
+#import "NSData+QNMD5.h"
 #import "QNUrlSafeBase64.h"
 #import "QNUpToken.h"
 #import "QNConfiguration.h"

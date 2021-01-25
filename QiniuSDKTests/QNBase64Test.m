@@ -18,8 +18,8 @@
 - (void)testEncode {
     // This is an example of a functional test case.
     NSString *source = @"你好/+=";
-
-    XCTAssert([[QNUrlSafeBase64 encodeString:source] isEqual:@"5L2g5aW9Lys9"], @"Pass");
+    NSString *encode = [QNUrlSafeBase64 encodeString:source];
+    XCTAssert([encode isEqual:@"5L2g5aW9Lys9"], @"encode: %@", encode);
 }
 
 @end

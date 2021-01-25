@@ -32,7 +32,7 @@
     
     id<QNUploadServer> server = [region getNextServer:NO responseInfo:nil freezeServer:nil];
     
-    XCTAssertNotNil(server, @"PASS");
+    XCTAssertNotNil(server, @"server is nil");
 }
 
 

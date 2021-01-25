@@ -49,9 +49,9 @@
     }];
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
-    XCTAssertTrue(responseInfo.isOK, @"Pass");
-    XCTAssertTrue(responseInfo.reqId, @"Pass");
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
+    XCTAssertTrue(responseInfo.isOK, @"response info:%@", responseInfo);
+    XCTAssertTrue(responseInfo.reqId, @"response info:%@", responseInfo);
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@ key:%@", keyUp, key);
 }
 
 - (void)uploadFileAndAssertResult:(int)statusCode
@@ -79,8 +79,8 @@
     }];
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
-    XCTAssertTrue(responseInfo.statusCode == statusCode, @"Pass");
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
+    XCTAssertTrue(responseInfo.statusCode == statusCode, @"response info:%@", responseInfo);
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@ key:%@", keyUp, key);
 }
 
 - (void)uploadFile:(QNTempFile *)tempFile
@@ -127,9 +127,9 @@
     }];
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
-    XCTAssertTrue(responseInfo.isOK, @"Pass");
-    XCTAssertTrue(responseInfo.reqId, @"Pass");
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
+    XCTAssertTrue(responseInfo.isOK, @"response info:%@", responseInfo);
+    XCTAssertTrue(responseInfo.reqId, @"response info:%@", responseInfo);
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@ key:%@", keyUp, key);
 }
 
 - (void)uploadDataAndAssertResult:(int)statusCode
@@ -155,8 +155,8 @@
     }];
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
-    XCTAssertTrue(responseInfo.statusCode == statusCode, @"Pass");
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
+    XCTAssertTrue(responseInfo.statusCode == statusCode, @"response info:%@", responseInfo);
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@ key:%@", keyUp, key);
 }
 
 - (void)uploadData:(NSData *)data

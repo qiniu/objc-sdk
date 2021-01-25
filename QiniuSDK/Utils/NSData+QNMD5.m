@@ -6,7 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
-#import "NSData+MD5.h"
+#import "NSData+QNMD5.h"
 #import <CommonCrypto/CommonDigest.h>
 
 @implementation NSData(QNMD5)
