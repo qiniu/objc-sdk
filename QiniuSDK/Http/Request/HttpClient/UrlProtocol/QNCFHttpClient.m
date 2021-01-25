@@ -20,11 +20,9 @@
 @property(nonatomic, strong)NSInputStream *inputStream;
 @property(nonatomic, strong)NSRunLoop *inputStreamRunLoop;
 
-// 模拟上传进度
+// 上传进度
 @property(nonatomic, strong)NSTimer *progressTimer; // 进度定时器
 @property(nonatomic, assign)int64_t totalBytesSent; // 已上传大小
-@property(nonatomic, assign)int64_t bytesSent; // 模拟每次上传大小
-@property(nonatomic, assign)int64_t maxBytesSent; // 模拟上传最大值
 @property(nonatomic, assign)int64_t totalBytesExpectedToSend; // 总大小
 
 @end
@@ -309,9 +307,7 @@
 
 //MARK: -- progress and timer action
 - (void)setupProgress{
-    self.bytesSent = 512 * 1024;
     self.totalBytesExpectedToSend = [self.request.qn_getHttpBody length];
-    self.maxBytesSent = self.totalBytesExpectedToSend * 0.8;
 }
 
 - (void)startProgress{
@@ -336,7 +332,7 @@
     }
     
     kQNWeakSelf;
-    NSTimer *timer = [NSTimer timerWithTimeInterval:0.3
+    NSTimer *timer = [NSTimer timerWithTimeInterval:0.5
                                              target:weak_self
                                            selector:@selector(timerAction)
                                            userInfo:nil
@@ -354,10 +350,11 @@
 }
 
 - (void)timerAction{
-
-    self.totalBytesSent += self.bytesSent;
-    if (self.totalBytesSent < self.maxBytesSent) {
-        [self delegate_didSendBodyData:self.bytesSent
+    long long totalBytesSent = [(NSNumber *)CFBridgingRelease(CFReadStreamCopyProperty((CFReadStreamRef)[self inputStream], kCFStreamPropertyHTTPRequestBytesWrittenCount)) longLongValue];
+    long long bytesSent = totalBytesSent - self.totalBytesSent;
+    self.totalBytesSent = totalBytesSent;
+    if (bytesSent > 0 && self.totalBytesSent <= self.totalBytesSent) {
+        [self delegate_didSendBodyData:bytesSent
                         totalBytesSent:self.totalBytesSent
               totalBytesExpectedToSend:self.totalBytesExpectedToSend];
     }
