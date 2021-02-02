@@ -8,7 +8,6 @@
 
 #import "QNConfiguration.h"
 #import "QNResponseInfo.h"
-#import "QNSessionManager.h"
 #import "QNUpToken.h"
 #import "QNReportConfig.h"
 #import "QNAutoZone.h"

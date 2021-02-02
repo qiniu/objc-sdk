@@ -220,11 +220,15 @@
     if (metrics == nil) {
         return;
     }
-    if (self.currentRegionRequestMetrics == nil) {
-        self.currentRegionRequestMetrics = metrics;
-    } else {
-        [self.currentRegionRequestMetrics addMetrics:metrics];
+    
+    @synchronized (self) {
+        if (self.currentRegionRequestMetrics == nil) {
+            self.currentRegionRequestMetrics = metrics;
+            return;
+        }
     }
+    
+    [self.currentRegionRequestMetrics addMetrics:metrics];
 }
 
 @end

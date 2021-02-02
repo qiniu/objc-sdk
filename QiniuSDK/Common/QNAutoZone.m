@@ -110,9 +110,9 @@
 
 - (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token {
     if (token == nil) return nil;
-    [_lock lock];
+    [self.lock lock];
     QNZonesInfo *zonesInfo = [_cache objectForKey:[token index]];
-    [_lock unlock];
+    [self.lock unlock];
     return zonesInfo;
 }
 
@@ -156,13 +156,13 @@
             kQNStrongSelf;
             kQNStrongObj(transaction);
             
+            [self destroyUploadRequestTransaction:transaction];
+            
             QNUCQuerySingleFlightValue *value = [[QNUCQuerySingleFlightValue alloc] init];
             value.responseInfo = responseInfo;
             value.response = response;
             value.metrics = metrics;
             complete(value, nil);
-
-            [self destroyUploadRequestTransaction:transaction];
         }];
         
     } complete:^(id  _Nullable value, NSError * _Nullable error) {
@@ -198,13 +198,17 @@
     QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithHosts:@[kQNPreQueryHost00, kQNPreQueryHost01]
                                                                            regionId:QNZoneInfoEmptyRegionId
                                                                               token:token];
+    [self.lock lock];
     [self.transactions addObject:transaction];
+    [self.lock unlock];
     return transaction;
 }
 
 - (void)destroyUploadRequestTransaction:(QNRequestTransaction *)transaction{
     if (transaction) {
+        [self.lock lock];
         [self.transactions removeObject:transaction];
+        [self.lock unlock];
     }
 }
 
