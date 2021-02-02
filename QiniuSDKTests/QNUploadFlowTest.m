@@ -42,8 +42,8 @@
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     NSLog(@"responseInfo:%@", responseInfo);
-    XCTAssertTrue(responseInfo.isCancelled, @"Pass");
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
+    XCTAssertTrue(responseInfo.isCancelled, @"response info:%@", responseInfo);
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@, key:%@", keyUp, key);
 }
 
 
@@ -78,9 +78,9 @@
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     NSLog(@"responseInfo:%@", responseInfo);
-    XCTAssertTrue(responseInfo.isCancelled, @"Pass");
-    XCTAssertTrue(responseInfo.reqId, @"Pass");
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
+    XCTAssertTrue(responseInfo.isCancelled, @"response info:%@", responseInfo);
+    XCTAssertTrue(responseInfo.reqId, @"response info:%@", responseInfo);
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@, key:%@", keyUp, key);
 }
 
 //MARK: ----- 断点续传
@@ -129,10 +129,10 @@
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     NSLog(@"responseInfo:%@", responseInfo);
-    XCTAssertTrue(isSuccess, @"Pass");
-    XCTAssertTrue(responseInfo.isOK, @"Pass");
-    XCTAssertTrue(responseInfo.reqId, @"Pass");
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
+    XCTAssertTrue(isSuccess, @"response info:%@", responseInfo);
+    XCTAssertTrue(responseInfo.isOK, @"response info:%@", responseInfo);
+    XCTAssertTrue(responseInfo.reqId, @"response info:%@", responseInfo);
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@, key:%@", keyUp, key);
 }
 
 
@@ -176,10 +176,10 @@
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     NSLog(@"responseInfo:%@", responseInfo);
-    XCTAssertTrue(isSuccess, @"Pass");
-    XCTAssertTrue(responseInfo.isOK, @"Pass");
-    XCTAssertTrue(responseInfo.reqId, @"Pass");
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
+    XCTAssertTrue(isSuccess, @"response info:%@", responseInfo);
+    XCTAssertTrue(responseInfo.isOK, @"response info:%@", responseInfo);
+    XCTAssertTrue(responseInfo.reqId, @"response info:%@", responseInfo);
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@, key:%@", keyUp, key);
 }
 
 //MARK: ----- 切换Region

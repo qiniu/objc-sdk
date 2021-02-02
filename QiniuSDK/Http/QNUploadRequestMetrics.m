@@ -194,9 +194,10 @@
 }
 
 - (NSNumber *)totalElapsedTime{
-    if (self.metricsInfo) {
+    NSDictionary *metricsInfo = [self syncCopyMetricsInfo];
+    if (metricsInfo) {
         double time = 0;
-        for (QNUploadRegionRequestMetrics *metrics in self.metricsInfo.allValues) {
+        for (QNUploadRegionRequestMetrics *metrics in metricsInfo.allValues) {
             time += metrics.totalElapsedTime.doubleValue;
         }
         return time > 0 ? @(time) : nil;
@@ -206,9 +207,10 @@
 }
 
 - (NSNumber *)requestCount{
-    if (self.metricsInfo) {
+    NSDictionary *metricsInfo = [self syncCopyMetricsInfo];
+    if (metricsInfo) {
         NSInteger count = 0;
-        for (QNUploadRegionRequestMetrics *metrics in self.metricsInfo.allValues) {
+        for (QNUploadRegionRequestMetrics *metrics in metricsInfo.allValues) {
             count += metrics.requestCount.integerValue;
         }
         return @(count);
@@ -218,9 +220,10 @@
 }
 
 - (NSNumber *)bytesSend{
-    if (self.metricsInfo) {
+    NSDictionary *metricsInfo = [self syncCopyMetricsInfo];
+    if (metricsInfo) {
         long long bytes = 0;
-        for (QNUploadRegionRequestMetrics *metrics in self.metricsInfo.allValues) {
+        for (QNUploadRegionRequestMetrics *metrics in metricsInfo.allValues) {
             bytes += metrics.bytesSend.longLongValue;
         }
         return @(bytes);
@@ -230,9 +233,10 @@
 }
 
 - (NSNumber *)regionCount{
-    if (self.metricsInfo) {
+    NSDictionary *metricsInfo = [self syncCopyMetricsInfo];
+    if (metricsInfo) {
         int count = 0;
-        for (QNUploadRegionRequestMetrics *metrics in self.metricsInfo.allValues) {
+        for (QNUploadRegionRequestMetrics *metrics in metricsInfo.allValues) {
             if (![metrics.region.zoneInfo.regionId isEqualToString:QNZoneInfoEmptyRegionId]) {
                 count += 1;
             }
@@ -255,6 +259,12 @@
         } else {
             self.metricsInfo[regionId] = metrics;
         }
+    }
+}
+
+- (NSDictionary<NSString *, QNUploadRegionRequestMetrics *> *)syncCopyMetricsInfo {
+    @synchronized (self) {
+        return [_metricsInfo copy];
     }
 }
 

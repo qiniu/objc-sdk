@@ -42,7 +42,7 @@
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
 
-    XCTAssert(testInfo.reqId == nil, @"Pass");
+    XCTAssert(testInfo.reqId == nil, @"response info1:%@", testInfo);
 
     testInfo = nil;
     [_httpManager post:@"http://up.qiniu.com" withData:data withParams:nil withHeaders:nil withIdentifier:nil withCompleteBlock:^(QNResponseInfo *httpResponseInfo, NSDictionary *respBody) {
@@ -51,7 +51,7 @@
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.reqId, @"Pass");
+    XCTAssert(testInfo.reqId, @"response info2:%@", testInfo);
 }
 
 //- (void)testProxy {
@@ -87,8 +87,8 @@
 
     AGWW_WAIT_WHILE(testInfo == nil, 100.0);
     NSLog(@"%@", testInfo);
-    XCTAssert(testInfo.reqId, @"Pass");
-    XCTAssert([testInfo.host isEqual:@"up.qiniu.com"], @"Pass");
+    XCTAssert(testInfo.reqId, @"response info1:%@", testInfo);
+    XCTAssert([testInfo.host isEqual:@"up.qiniu.com"], @"response info1:%@", testInfo);
 }
 
 //- (void)testPostIp {

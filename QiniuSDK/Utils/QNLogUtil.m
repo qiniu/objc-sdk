@@ -8,11 +8,11 @@
 
 #import "QNLogUtil.h"
 
-#if DEBUG
-static QNLogLevel _level = QNLogLevelVerbose;
-#else
+//#if DEBUG
+//static QNLogLevel _level = QNLogLevelVerbose;
+//#else
 static QNLogLevel _level = QNLogLevelNone;
-#endif
+//#endif
 
 static BOOL _enableDate = false;
 static BOOL _enableFile = true;

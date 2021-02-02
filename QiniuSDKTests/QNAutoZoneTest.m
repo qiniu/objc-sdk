@@ -47,7 +47,7 @@
         c = code;
     }];
     AGWW_WAIT_WHILE(x == 0, 100.0);
-    XCTAssertEqual(0, c, @"Pass");
+    XCTAssertEqual(0, c, @"c: %d", c);
 }
 
 - (void)testMutiHttp{

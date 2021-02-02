@@ -257,6 +257,8 @@
     QNReportItem *item = [QNReportItem item];
     [item setReportValue:QNReportLogTypeBlock forKey:QNReportBlockKeyLogType];
     [item setReportValue:@([[NSDate date] timeIntervalSince1970]) forKey:QNReportBlockKeyUpTime];
+    [item setReportValue:self.token.bucket forKey:QNReportBlockKeyTargetBucket];
+    [item setReportValue:self.key forKey:QNReportBlockKeyTargetKey];
     [item setReportValue:[self getTargetRegion].zoneInfo.regionId forKey:QNReportBlockKeyTargetRegionId];
     [item setReportValue:[self getCurrentRegion].zoneInfo.regionId forKey:QNReportBlockKeyCurrentRegionId];
     [item setReportValue:metrics.totalElapsedTime forKey:QNReportBlockKeyTotalElapsedTime];
@@ -265,8 +267,18 @@
     [item setReportValue:@(self.file.size) forKey:QNReportBlockKeyFileSize];
     [item setReportValue:@([QNUtils getCurrentProcessID]) forKey:QNReportBlockKeyPid];
     [item setReportValue:@([QNUtils getCurrentThreadID]) forKey:QNReportBlockKeyTid];
-    [item setReportValue:@(1) forKey:QNReportBlockKeyUpApiVersion];
+    
+    if (self.config.resumeUploadVersion == QNResumeUploadVersionV1) {
+        [item setReportValue:@(1) forKey:QNReportBlockKeyUpApiVersion];
+    } else {
+        [item setReportValue:@(2) forKey:QNReportBlockKeyUpApiVersion];
+    }
+    
     [item setReportValue:[QNUtils getCurrentNetworkType] forKey:QNReportBlockKeyClientTime];
+    [item setReportValue:[QNUtils systemName] forKey:QNReportBlockKeyOsName];
+    [item setReportValue:[QNUtils systemVersion] forKey:QNReportBlockKeyOsVersion];
+    [item setReportValue:[QNUtils sdkLanguage] forKey:QNReportBlockKeySDKName];
+    [item setReportValue:[QNUtils sdkVersion] forKey:QNReportBlockKeySDKVersion];
     
     [kQNReporter reportItem:item token:self.token.token];
 }

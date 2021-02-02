@@ -79,7 +79,7 @@
     QN_TEST_CASE_WAIT_TIME(5);
 
     NSArray <id <QNIDnsNetworkAddress>> *addressList = [kQNDnsPrefetch getInetAddressByHost:host];
-    XCTAssert(addressList.count > 0, @"success");
+    XCTAssert(addressList.count > 0, @"addressList count:%ld", addressList.count);
 }
 
 - (void)testPreFetch {
@@ -89,7 +89,7 @@
     AGWW_WAIT_WHILE([kQNDnsPrefetch getInetAddressByHost:kCustomHost] == nil, 60 * 5);
     
     NSArray <id <QNIDnsNetworkAddress>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
-    XCTAssert(addressList.count > 0, @"success");
+    XCTAssert(addressList.count > 0, @"addressList count:%ld", addressList.count);
 }
 
 - (void)notestCustomDns {
@@ -101,7 +101,7 @@
     
     NSArray <id <QNIDnsNetworkAddress>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
     NSLog(@"addressList count: %ld", addressList.count);
-    XCTAssert(addressList.count==1, @"success");
+    XCTAssert(addressList.count==1, @"addressList count:%ld", addressList.count);
     XCTAssert([addressList.firstObject.ipValue isEqualToString:CustomIPValue], @"success");
 }
 
@@ -120,7 +120,7 @@
     
     NSArray <id <QNIDnsNetworkAddress>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
     
-    XCTAssert(addressList.count==1, @"success");
+    XCTAssert(addressList.count==1, @"addressList count:%ld", addressList.count);
     XCTAssert(addressList.firstObject.ttlValue.doubleValue == 120, @"success");
     
 }
@@ -150,7 +150,7 @@
     dispatch_group_notify(group, dispatch_get_main_queue(), ^{
         // 1 or 0
         NSLog(@"successPrefetchNum: %d", successPrefetchNum);
-        XCTAssert(successPrefetchNum >= 0, @"success");
+        XCTAssert(successPrefetchNum >= 0, @"successPrefetchNum:%d", successPrefetchNum);
     });
     
     QN_TEST_CASE_WAIT_TIME(2);

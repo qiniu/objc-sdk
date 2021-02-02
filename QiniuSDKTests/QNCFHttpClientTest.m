@@ -186,8 +186,9 @@
 
 - (void)onReceiveResponse:(nonnull NSURLResponse *)response {
     NSHTTPURLResponse *responseP = (NSHTTPURLResponse *)response;
-    NSLog(@"statusCode: %ld \r\n header: %@", responseP.statusCode, responseP.allHeaderFields);
-    XCTAssert(responseP.statusCode == 200, @"Pass");
+    NSString *responseInfo = [NSString stringWithFormat:@"statusCode: %ld \r\n header: %@", responseP.statusCode, responseP.allHeaderFields];
+    NSLog(@"responseInfo: %@", responseInfo);
+    XCTAssert(responseP.statusCode == 200, @"response: %@", responseInfo);
 }
 
 - (void)redirectedToRequest:(nonnull NSURLRequest *)request redirectResponse:(nonnull NSURLResponse *)redirectResponse {

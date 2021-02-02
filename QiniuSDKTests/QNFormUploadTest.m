@@ -63,14 +63,8 @@
         builder.useHttps = NO;
     }];
     NSArray *sizeArray = @[@5, @50, @200, @500, @800, @1000, @2000, @3000, @4000];
+    sizeArray = @[@200000];
     @autoreleasepool {
-        for (NSNumber *size in sizeArray) {
-            NSString *key = [NSString stringWithFormat:@"form_http_%@k", size];
-            QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
-            NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
-            [self uploadDataAndAssertSuccessResult:data key:key config:config option:nil];
-        }
-        
         for (NSNumber *size in sizeArray) {
             NSString *key = [NSString stringWithFormat:@"form_http_%@k", size];
             QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
@@ -86,13 +80,6 @@
     }];
     NSArray *sizeArray = @[@5, @50, @200, @500, @800, @1000, @2000, @3000, @4000];
     @autoreleasepool {
-        for (NSNumber *size in sizeArray) {
-            NSString *key = [NSString stringWithFormat:@"form_https_%@k", size];
-            QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
-            NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
-            [self uploadDataAndAssertSuccessResult:data key:key config:config option:nil];
-        }
-        
         for (NSNumber *size in sizeArray) {
             NSString *key = [NSString stringWithFormat:@"form_https_%@k", size];
             QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];

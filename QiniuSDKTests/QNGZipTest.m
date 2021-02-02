@@ -27,7 +27,7 @@
     
     NSData *data = [NSData data];
     NSData *gzip = [NSData qn_gZip:data];
-    XCTAssertTrue([data isEqualToData:gzip], "pass");
+    XCTAssertTrue([data isEqualToData:gzip], "data is not equal to gzip");
     
     NSString *string = @"ABCDEFG";
     data = [string dataUsingEncoding:NSUTF8StringEncoding];
@@ -35,10 +35,10 @@
     
     NSData *gUnzip = [NSData qn_gUnzip:gzip];
     NSString *stringGUnzip =  [[NSString alloc] initWithData:gUnzip encoding:NSUTF8StringEncoding];
-    XCTAssertTrue([string isEqualToString:stringGUnzip], "pass");
+    XCTAssertTrue([string isEqualToString:stringGUnzip], "string:%@ is not equal to stringGUnzip:%@", string, stringGUnzip);
     
     NSData *reGUnzip = [NSData qn_gUnzip:gUnzip];
-    XCTAssertTrue([gUnzip isEqualToData:reGUnzip], "pass");
+    XCTAssertTrue([gUnzip isEqualToData:reGUnzip], "gUnzip is not equal to reGUnzip");
 }
 
 

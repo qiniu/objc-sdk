@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNLogUtil.h"
 #import "QNUploadBaseTest.h"
 
 @interface QNUploadBaseTest()
@@ -15,6 +16,8 @@
 
 - (void)setUp {
     [super setUp];
+    [QNLogUtil setLogLevel:QNLogLevelInfo];
+    
     self.defaultOption = [[QNUploadOption alloc] initWithMime:nil
                                               progressHandler:^(NSString *key, float percent) {
         NSLog(@"== key:%@ percent:%f", key, percent);
@@ -46,9 +49,9 @@
     }];
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
-    XCTAssertTrue(responseInfo.isOK, @"Pass");
-    XCTAssertTrue(responseInfo.reqId, @"Pass");
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
+    XCTAssertTrue(responseInfo.isOK, @"response info:%@", responseInfo);
+    XCTAssertTrue(responseInfo.reqId, @"response info:%@", responseInfo);
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@ key:%@", keyUp, key);
 }
 
 - (void)uploadFileAndAssertResult:(int)statusCode
@@ -76,8 +79,8 @@
     }];
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
-    XCTAssertTrue(responseInfo.statusCode == statusCode, @"Pass");
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
+    XCTAssertTrue(responseInfo.statusCode == statusCode, @"response info:%@", responseInfo);
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@ key:%@", keyUp, key);
 }
 
 - (void)uploadFile:(QNTempFile *)tempFile
@@ -124,9 +127,9 @@
     }];
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
-    XCTAssertTrue(responseInfo.isOK, @"Pass");
-    XCTAssertTrue(responseInfo.reqId, @"Pass");
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
+    XCTAssertTrue(responseInfo.isOK, @"response info:%@", responseInfo);
+    XCTAssertTrue(responseInfo.reqId, @"response info:%@", responseInfo);
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@ key:%@", keyUp, key);
 }
 
 - (void)uploadDataAndAssertResult:(int)statusCode
@@ -152,8 +155,8 @@
     }];
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
-    XCTAssertTrue(responseInfo.statusCode == statusCode, @"Pass");
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"Pass");
+    XCTAssertTrue(responseInfo.statusCode == statusCode, @"response info:%@", responseInfo);
+    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@ key:%@", keyUp, key);
 }
 
 - (void)uploadData:(NSData *)data
