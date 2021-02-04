@@ -63,7 +63,6 @@
         builder.useHttps = NO;
     }];
     NSArray *sizeArray = @[@5, @50, @200, @500, @800, @1000, @2000, @3000, @4000];
-    sizeArray = @[@200000];
     @autoreleasepool {
         for (NSNumber *size in sizeArray) {
             NSString *key = [NSString stringWithFormat:@"form_http_%@k", size];

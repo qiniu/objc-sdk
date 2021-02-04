@@ -15,9 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 // old server 不验证tls sni
 @property(nonatomic, assign)BOOL isUseOldServer;
 
-// 是否使用HTTP3
-@property(atomic, assign, readonly)BOOL isHTTP3;
-
 // 用户是否取消
 @property(nonatomic, assign)BOOL isUserCancel;
 

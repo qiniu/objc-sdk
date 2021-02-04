@@ -22,3 +22,6 @@
 #define kQNHttpVersion1 @"http_version_1"
 #define kQNHttpVersion2 @"http_version_2"
 #define kQNHttpVersion3 @"http_version_3"
+
+BOOL kQNIsHttp3(NSString * _Nullable httpVersion);
+BOOL kQNIsHttp2(NSString * _Nullable httpVersion);

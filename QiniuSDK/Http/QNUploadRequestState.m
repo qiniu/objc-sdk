@@ -31,8 +31,4 @@
     return state;
 }
 
-- (BOOL)isHTTP3 {
-    return [self.httpVersion isEqualToString:kQNHttpVersion3];
-}
-
 @end

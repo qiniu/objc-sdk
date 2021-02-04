@@ -161,7 +161,6 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
     kQNWeakSelf;
     [self.singleRequest request:request
                          server:server
-                      toSkipDns:toSkipDns
                     shouldRetry:shouldRetry
                        progress:progress
                        complete:^(QNResponseInfo * _Nullable responseInfo, NSArray<QNUploadSingleRequestMetrics *> * _Nullable metrics, NSDictionary * _Nullable response) {

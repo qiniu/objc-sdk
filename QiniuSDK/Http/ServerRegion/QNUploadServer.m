@@ -27,6 +27,7 @@
     server.ip = ip;
     server.host = host;
     server.source = source ?: @"none";
+    server.httpVersion = kQNHttpVersion2;
     server.ipPrefetchedTime = ipPrefetchedTime;
     return server;
 }

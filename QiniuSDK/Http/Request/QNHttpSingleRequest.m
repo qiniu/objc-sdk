@@ -64,24 +64,22 @@
 
 - (void)request:(NSURLRequest *)request
          server:(id <QNUploadServer>)server
-      toSkipDns:(BOOL)toSkipDns
     shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
        progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
        complete:(QNSingleRequestCompleteHandler)complete{
     
     _currentRetryTime = 0;
     _requestMetricsList = [NSMutableArray array];
-    [self retryRequest:request server:server toSkipDns:toSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
+    [self retryRequest:request server:server shouldRetry:shouldRetry progress:progress complete:complete];
 }
 
 - (void)retryRequest:(NSURLRequest *)request
               server:(id <QNUploadServer>)server
-           toSkipDns:(BOOL)toSkipDns
          shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
             progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
             complete:(QNSingleRequestCompleteHandler)complete{
     
-    if (toSkipDns && kQNGlobalConfiguration.isDnsOpen) {
+    if (kQNIsHttp3(server.httpVersion)) {
         self.client = [[QNUploadSystemClient alloc] init];
     } else {
         self.client = [[QNUploadSystemClient alloc] init];
@@ -146,7 +144,7 @@
             && responseInfo.couldHostRetry) {
             self.currentRetryTime += 1;
             QNAsyncRunAfter(self.config.retryInterval, kQNBackgroundQueue, ^{
-                [self retryRequest:request server:server toSkipDns:toSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
+                [self retryRequest:request server:server shouldRetry:shouldRetry progress:progress complete:complete];
             });
         } else {
             [self complete:responseInfo server:server response:responseDic requestMetrics:metrics complete:complete];

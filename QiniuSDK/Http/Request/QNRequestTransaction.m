@@ -103,7 +103,7 @@
     };
     
     NSDictionary *header = @{@"User-Agent" : [kQNUserAgent getUserAgent:self.token.token]};
-    NSString *action = [NSString stringWithFormat:@"/v4/query?ak=%@&bucket=%@", self.token.access, self.token.bucket];
+    NSString *action = [NSString stringWithFormat:@"/v4/query?ak=%@&bucket=%@&sdk_name=%@&sdk_version=%@", self.token.access, self.token.bucket, [QNUtils sdkLanguage], [QNUtils sdkVersion]];
     [self.regionRequest get:action
                     headers:header
                 shouldRetry:shouldRetry

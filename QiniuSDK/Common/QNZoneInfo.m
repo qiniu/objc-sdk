@@ -16,6 +16,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
 @property(nonatomic, strong) NSDate *buildDate;
 
 @property(nonatomic, assign) long ttl;
+@property(nonatomic, assign)BOOL http3Enabled;
 @property(nonatomic, strong)NSArray<NSString *> *domains;
 @property(nonatomic, strong)NSArray<NSString *> *old_domains;
 
@@ -60,12 +61,18 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
         regionId = QNZoneInfoEmptyRegionId;
     }
     long ttl = [[detailInfo objectForKey:@"ttl"] longValue];
+    BOOL http3Enabled = false;
+    if ([detailInfo[@"features"] isKindOfClass:[NSDictionary class]] &&
+        [detailInfo[@"features"][@"http3"] isKindOfClass:[NSDictionary class]]) {
+        http3Enabled = [detailInfo[@"features"][@"http3"][@"enabled"] boolValue];
+    }
     NSDictionary *up = [detailInfo objectForKey:@"up"];
     NSArray *domains = [up objectForKey:@"domains"];
     NSArray *old_domains = [up objectForKey:@"old"];
     
     NSMutableArray *allHosts = [NSMutableArray array];
     QNZoneInfo *zoneInfo = [[QNZoneInfo alloc] init:ttl regionId:regionId];
+    zoneInfo.http3Enabled = http3Enabled;
     if ([domains isKindOfClass:[NSArray class]]) {
         zoneInfo.domains = domains;
         [allHosts addObjectsFromArray:domains];
