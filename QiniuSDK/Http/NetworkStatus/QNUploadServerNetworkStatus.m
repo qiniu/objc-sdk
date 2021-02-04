@@ -26,26 +26,29 @@
     return serverStatus.supportHTTP3;
 }
 
-+ (QNUploadServer *)getBetterNetworkServer:(QNUploadServer *)serverA
-                                   serverB:(QNUploadServer *)serverB{
++ (QNUploadServer *)getBetterNetworkServer:(QNUploadServer *)serverA serverB:(QNUploadServer *)serverB {
+    return [self isServerNetworkBetter:serverA thanServerB:serverB] ? serverA : serverB;
+}
+
++ (BOOL)isServerNetworkBetter:(QNUploadServer *)serverA thanServerB:(QNUploadServer *)serverB {
     if (serverA == nil) {
-        return serverB;
+        return NO;
     } else if (serverB == nil) {
-        return serverA;
+        return YES;
     }
     
     NSString *serverTypeA = [QNUtils getIpType:serverA.ip host:serverA.host];
     NSString *serverTypeB = [QNUtils getIpType:serverA.ip host:serverA.host];
     if (serverTypeA == nil) {
-        return serverB;
+        return NO;
     } else if (serverTypeB == nil) {
-        return serverA;
+        return YES;
     }
     
     QNNetworkStatus *serverStatusA = [kQNNetworkStatusManager getNetworkStatus:serverTypeA];
     QNNetworkStatus *serverStatusB = [kQNNetworkStatusManager getNetworkStatus:serverTypeB];
 
-    return serverStatusB.speed < serverStatusA.speed ? serverA : serverB;
+    return serverStatusB.speed < serverStatusA.speed;
 }
 
 @end

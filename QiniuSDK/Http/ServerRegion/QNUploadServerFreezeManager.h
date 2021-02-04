@@ -10,26 +10,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-#define kQNUploadServerFreezeManager [QNUploadServerFreezeManager shared]
 @interface QNUploadServerFreezeManager : NSObject
 
-+ (instancetype)shared;
-
 /// 查询host是否被冻结
-/// @param host host
-/// @param type host类型
-- (BOOL)isFrozenHost:(NSString *)host type:(NSString * _Nullable)type;
+/// @param type 冻结Key
+- (BOOL)isTypeFrozen:(NSString * _Nullable)type;
 
 /// 冻结host
-/// @param host host
-/// @param type host类型
+/// @param type 冻结Key
 /// @param frozenTime 冻结时间
-- (void)freezeHost:(NSString *)host type:(NSString * _Nullable)type frozenTime:(NSInteger)frozenTime;
+- (void)freezeType:(NSString * _Nullable)type frozenTime:(NSInteger)frozenTime;
 
 /// 解冻host
-/// @param host host
-/// @param type host类型
-- (void)unfreezeHost:(NSString *)host type:(NSString * _Nullable)type;
+/// @param type 冻结Key
+- (void)unfreezeType:(NSString * _Nullable)type;
 
 @end
 

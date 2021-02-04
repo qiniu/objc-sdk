@@ -7,8 +7,8 @@
 //
 
 #import "QNUploadDomainRegion.h"
-#import "QNUtils.h"
 #import "QNUploadServerFreezeManager.h"
+#import "QNUploadServerFreezeUtil.h"
 #import "QNZoneInfo.h"
 #import "QNFixedZone.h"
 #import <XCTest/XCTest.h>
@@ -22,15 +22,15 @@
 - (void)testGetOneServer {
     
     NSString *host = @"baidu.com";
-    NSString *type = [QNUtils getIpType:nil host:host];
+    NSString *frozenType = QNUploadFrozenType(host, @"");
     QNFixedZone *zone = [[QNFixedZone alloc] initWithUpDomainList:@[host]];
     
     QNUploadDomainRegion *region = [[QNUploadDomainRegion alloc] init];
     [region setupRegionData:[[zone getZonesInfoWithToken:nil].zonesInfo firstObject]];
     
-    [kQNUploadServerFreezeManager freezeHost:host type:type frozenTime:100];
+    [kQNUploadGlobalHttp2Freezer freezeType:frozenType frozenTime:100];
     
-    id<QNUploadServer> server = [region getNextServer:NO responseInfo:nil freezeServer:nil];
+    id<QNUploadServer> server = [region getNextServer:nil responseInfo:nil freezeServer:nil];
     
     XCTAssertNotNil(server, @"server is nil");
 }
