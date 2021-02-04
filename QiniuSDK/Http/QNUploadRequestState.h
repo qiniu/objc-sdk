@@ -16,10 +16,15 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign)BOOL isUseOldServer;
 
 // 是否使用HTTP3
-@property(atomic, assign)BOOL isHTTP3;
+@property(atomic, assign, readonly)BOOL isHTTP3;
 
 // 用户是否取消
-@property(atomic, assign)BOOL isUserCancel;
+@property(nonatomic, assign)BOOL isUserCancel;
+
+// 是否使用http version
+@property(nonatomic,   copy)NSString *httpVersion;
+
+- (instancetype)copy;
 
 @end
 

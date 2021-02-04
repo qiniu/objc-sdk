@@ -14,33 +14,22 @@
 
 @interface QNNetworkStatus()
 @property(nonatomic, assign)int speed;
-@property(nonatomic, assign)BOOL supportHTTP3;
-@property(nonatomic, assign)NSTimeInterval http3FrozenTimestamp;
 @end
 @implementation QNNetworkStatus
 - (instancetype)init{
     if (self = [super init]) {
         _speed = 200;
-        _http3FrozenTimestamp = 0;
     }
     return self;
-}
-- (void)setSupportHTTP3:(BOOL)supportHTTP3{
-    _http3FrozenTimestamp = supportHTTP3 ? 0 : ([[NSDate date] timeIntervalSince1970]);
-}
-- (BOOL)isSupportHTTP3{
-    return _http3FrozenTimestamp < [[NSDate date] timeIntervalSince1970];
 }
 - (NSDictionary *)toDictionary{
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     [dictionary setObject:@(self.speed) forKey:@"speed"];
-    [dictionary setObject:@(self.http3FrozenTimestamp) forKey:@"http3FrozenTimestamp"];
     return dictionary;
 }
 + (QNNetworkStatus *)statusFromDictionary:(NSDictionary *)dictionary{
     QNNetworkStatus *status = [[QNNetworkStatus alloc] init];
     status.speed = [dictionary[@"speed"] intValue];
-    status.http3FrozenTimestamp = [dictionary[@"http3FrozenTimestamp"] doubleValue];
     return status;
 }
 @end
@@ -86,8 +75,7 @@
     return status;
 }
 
-- (void)updateNetworkStatus:(NSString *)type
-                      speed:(int)speed{
+- (void)updateNetworkStatus:(NSString *)type speed:(int)speed{
     if (type == nil || type.length == 0) {
         return;
     }
@@ -99,24 +87,6 @@
             self.networkStatusInfo[type] = status;
         }
         status.speed = speed;
-    }
-    
-    [self asyncRecordNetworkStatusInfo];
-}
-
-- (void)updateNetworkStatus:(NSString *)type
-               supportHTTP3:(BOOL)supportHTTP3{
-    if (type == nil && type.length > 0) {
-        return;
-    }
-    
-    @synchronized (self) {
-        QNNetworkStatus *status = self.networkStatusInfo[type];
-        if (status == nil) {
-            status = [[QNNetworkStatus alloc] init];
-            self.networkStatusInfo[type] = status;
-        }
-        status.supportHTTP3 = supportHTTP3;
     }
     
     [self asyncRecordNetworkStatusInfo];

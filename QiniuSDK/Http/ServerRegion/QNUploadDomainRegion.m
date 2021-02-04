@@ -72,7 +72,6 @@
             
             id <QNIDnsNetworkAddress> inetAddress = [ipGroup getServerIP];
             QNUploadServer *filterServer = [QNUploadServer server:self.host
-                                                             host:self.host
                                                                ip:inetAddress.ipValue
                                                            source:inetAddress.sourceValue
                                                  ipPrefetchedTime:inetAddress.timestampValue];
@@ -90,7 +89,7 @@
     // Host未解析出IP时:
     if (condition == nil || condition(self.host, nil, nil, &stop)) {
         // 未解析时，没有可比性，直接返回自身，自身即为最优
-        server = [QNUploadServer server:self.host host:self.host ip:nil source:nil ipPrefetchedTime:nil];
+        server = [QNUploadServer server:self.host ip:nil source:nil ipPrefetchedTime:nil];
     }
     
     return server;
@@ -104,10 +103,10 @@
         NSInteger index = arc4random()%self.ipGroupList.count;
         QNUploadIpGroup *ipGroup = self.ipGroupList[index];
         id <QNIDnsNetworkAddress> inetAddress = [ipGroup getServerIP];
-        QNUploadServer *server = [QNUploadServer server:self.host host:self.host ip:inetAddress.ipValue source:inetAddress.sourceValue ipPrefetchedTime:inetAddress.timestampValue];;
+        QNUploadServer *server = [QNUploadServer server:self.host ip:inetAddress.ipValue source:inetAddress.sourceValue ipPrefetchedTime:inetAddress.timestampValue];;
         return server;
     } else {
-        return [QNUploadServer server:self.host host:self.host ip:nil source:nil ipPrefetchedTime:nil];
+        return [QNUploadServer server:self.host ip:nil source:nil ipPrefetchedTime:nil];
     }
 }
 
@@ -152,6 +151,10 @@
 
 
 @interface QNUploadDomainRegion()
+
+// 是否支持http3
+@property(nonatomic, assign)BOOL isSupportHttp3;
+
 // 是否获取过，PS：当第一次获取Domain，而区域所有Domain又全部冻结时，返回一个domain尝试一次
 @property(atomic   , assign)BOOL hasGot;
 @property(atomic   , assign)BOOL isAllFrozen;
@@ -214,32 +217,36 @@
         return nil;
     }
     
-    [self freezeServerIfNeed:requestState responseInfo:responseInfo freezeServer:freezeServer];
+    [self freezeServerIfNeed:responseInfo freezeServer:freezeServer];
     
     QNUploadServer *server = nil;
     NSArray *hostList = requestState.isUseOldServer ? self.oldDomainHostList : self.domainHostList;
     NSDictionary *domainInfo = requestState.isUseOldServer ? self.oldDomainDictionary : self.domainDictionary;
     
     // 1. 优先使用http3
-    for (NSString *host in hostList) {
-        server = [domainInfo[host] getServerWithCondition:^BOOL(NSString *host, QNUploadServer *serverP, QNUploadServer *filterServer, BOOL *stop) {
-            
-            // 1.1 剔除冻结对象
-            NSString *frozenType = QNUploadFrozenType(host, filterServer.ip);
-            BOOL isFrozen = [QNUploadServerFreezeUtil isType:frozenType
-                                      frozenByFreezeManagers:@[kQNUploadGlobalHttp3Freezer]];
-            if (isFrozen) {
-                return NO;
-            }
-            
-            // 1.2 挑选网络状态最优
-            return [QNUploadServerNetworkStatus isServerNetworkBetter:filterServer thanServerB:serverP];
-        }];
+    if (self.isSupportHttp3 && [requestState.httpVersion isEqualToString:kQNHttpVersion3]) {
+        for (NSString *host in hostList) {
+            server = [domainInfo[host] getServerWithCondition:^BOOL(NSString *host, QNUploadServer *serverP, QNUploadServer *filterServer, BOOL *stop) {
+                
+                // 1.1 剔除冻结对象
+                NSString *frozenType = QNUploadFrozenType(host, filterServer.ip);
+                BOOL isFrozen = [QNUploadServerFreezeUtil isType:frozenType
+                                          frozenByFreezeManagers:@[kQNUploadGlobalHttp3Freezer]];
+                if (isFrozen) {
+                    return NO;
+                }
+                
+                // 1.2 挑选网络状态最优
+                return [QNUploadServerNetworkStatus isServerNetworkBetter:filterServer thanServerB:serverP];
+            }];
+        }
+        
+        if (server) {
+            server.httpVersion = kQNHttpVersion3;
+            return server;
+        }
     }
     
-    if (server) {
-        return server;
-    }
     
     // 2. 挑选http2
     for (NSString *host in hostList) {
@@ -273,12 +280,13 @@
         self.isAllFrozen = YES;
     }
     
+    server.httpVersion = kQNHttpVersion2;
+    
     QNLogInfo(@"get server host:%@ ip:%@", server.host, server.ip);
     return server;
 }
 
-- (void)freezeServerIfNeed:(QNUploadRequestState *)requestState
-              responseInfo:(QNResponseInfo *)responseInfo
+- (void)freezeServerIfNeed:(QNResponseInfo *)responseInfo
               freezeServer:(QNUploadServer *)freezeServer {
     
     if (freezeServer == nil || freezeServer.serverId == nil || responseInfo == nil) {
@@ -286,7 +294,7 @@
     }
     
     NSString *frozenType = QNUploadFrozenType(freezeServer.host, freezeServer.ip);
-    if (requestState.isHTTP3) {
+    if ([freezeServer.httpVersion isEqualToString:kQNHttpVersion3]) {
         [kQNUploadGlobalHttp3Freezer freezeType:frozenType frozenTime:kQNUploadHttp3FrozenTime];
         return;
     }

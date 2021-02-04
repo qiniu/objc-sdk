@@ -13,8 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNUploadServerNetworkStatus : NSObject
 
-+ (BOOL)isServerSupportHTTP3:(QNUploadServer *)server;
-
 + (QNUploadServer *)getBetterNetworkServer:(QNUploadServer *)serverA
                                    serverB:(QNUploadServer *)serverB;
 

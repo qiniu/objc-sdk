@@ -10,7 +10,6 @@
 
 @interface QNUploadServer()
 
-@property(nonatomic,  copy)NSString *serverId;
 @property(nonatomic,  copy)NSString *ip;
 @property(nonatomic,  copy)NSString *host;
 @property(nonatomic,  copy)NSString *source;
@@ -18,19 +17,22 @@
 
 @end
 @implementation QNUploadServer
+@synthesize httpVersion;
 
-+ (instancetype)server:(NSString *)serverId
-                  host:(NSString *)host
++ (instancetype)server:(NSString *)host
                     ip:(NSString *)ip
                 source:(NSString *)source
       ipPrefetchedTime:(NSNumber *)ipPrefetchedTime{
     QNUploadServer *server = [[QNUploadServer alloc] init];
-    server.serverId = serverId;
     server.ip = ip;
     server.host = host;
     server.source = source ?: @"none";
     server.ipPrefetchedTime = ipPrefetchedTime;
     return server;
+}
+
+- (NSString *)serverId {
+    return [self.host copy];
 }
 
 @end

@@ -14,8 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 网速 单位：kb/s   默认：200kb/s
 @property(nonatomic, assign, readonly)int speed;
-/// 是否支持HTTP3 默认不支持
-@property(nonatomic, assign, readonly)BOOL supportHTTP3;
 
 @end
 
@@ -30,8 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateNetworkStatus:(NSString *)type
                       speed:(int)speed;
-- (void)updateNetworkStatus:(NSString *)type
-               supportHTTP3:(BOOL)supportHTTP3;
 
 @end
 

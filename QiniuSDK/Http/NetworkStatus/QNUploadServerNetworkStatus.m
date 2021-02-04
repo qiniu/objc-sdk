@@ -12,20 +12,6 @@
 
 @implementation QNUploadServerNetworkStatus
 
-+ (BOOL)isServerSupportHTTP3:(QNUploadServer *)server{
-    if (server == nil) {
-        return false;
-    }
-    
-    NSString *serverType = [QNUtils getIpType:server.ip host:server.host];
-    if (serverType == nil) {
-        return false;
-    }
-    
-    QNNetworkStatus *serverStatus = [kQNNetworkStatusManager getNetworkStatus:serverType];
-    return serverStatus.supportHTTP3;
-}
-
 + (QNUploadServer *)getBetterNetworkServer:(QNUploadServer *)serverA serverB:(QNUploadServer *)serverB {
     return [self isServerNetworkBetter:serverA thanServerB:serverB] ? serverA : serverB;
 }
