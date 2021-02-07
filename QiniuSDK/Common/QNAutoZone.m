@@ -156,13 +156,13 @@
             kQNStrongSelf;
             kQNStrongObj(transaction);
             
-            [self destroyUploadRequestTransaction:transaction];
-            
             QNUCQuerySingleFlightValue *value = [[QNUCQuerySingleFlightValue alloc] init];
             value.responseInfo = responseInfo;
             value.response = response;
             value.metrics = metrics;
             complete(value, nil);
+            
+            [self destroyUploadRequestTransaction:transaction];
         }];
         
     } complete:^(id  _Nullable value, NSError * _Nullable error) {

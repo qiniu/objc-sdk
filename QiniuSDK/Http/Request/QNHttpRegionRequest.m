@@ -198,10 +198,10 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
         response:(NSDictionary *)response
         complete:(QNRegionRequestCompleteHandler)completionHandler {
 
-    self.singleRequest = nil;
     if (completionHandler) {
         completionHandler(responseInfo, self.requestMetrics, response);
     }
+    self.singleRequest = nil;
 }
 
 //MARK: --
