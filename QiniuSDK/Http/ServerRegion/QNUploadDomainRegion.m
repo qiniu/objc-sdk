@@ -55,7 +55,7 @@
     return domain;
 }
 
-- (QNUploadServer *)getServerWithCondition:(BOOL(^)(NSString *host, QNUploadServer *server, QNUploadServer *filterServer, BOOL *stop))condition {
+- (QNUploadServer *)getServerWithCondition:(BOOL(^)(NSString *host, QNUploadServer *server, QNUploadServer *filterServer))condition {
 
     @synchronized (self) {
         if (!self.ipGroupList || self.ipGroupList.count == 0) {
@@ -63,7 +63,6 @@
         }
     }
     
-    BOOL stop = NO;
     QNUploadServer *server = nil;
     
     // Host解析出IP时:
@@ -75,11 +74,11 @@
                                                                ip:inetAddress.ipValue
                                                            source:inetAddress.sourceValue
                                                  ipPrefetchedTime:inetAddress.timestampValue];
-            if (condition == nil || condition(self.host, server, filterServer, &stop)) {
+            if (condition == nil || condition(self.host, server, filterServer)) {
                 server = filterServer;
             }
             
-            if (condition == nil || stop) {
+            if (condition == nil) {
                 break;
             }
         }
@@ -87,7 +86,7 @@
     }
     
     // Host未解析出IP时:
-    if (condition == nil || condition(self.host, nil, nil, &stop)) {
+    if (condition == nil || condition(self.host, nil, nil)) {
         // 未解析时，没有可比性，直接返回自身，自身即为最优
         server = [QNUploadServer server:self.host ip:nil source:nil ipPrefetchedTime:nil];
     }
@@ -229,7 +228,7 @@
     // 1. 优先使用http3
     if (self.http3Enabled && kQNIsHttp3(requestState.httpVersion)) {
         for (NSString *host in hostList) {
-            server = [domainInfo[host] getServerWithCondition:^BOOL(NSString *host, QNUploadServer *serverP, QNUploadServer *filterServer, BOOL *stop) {
+            QNUploadServer *domainServer = [domainInfo[host] getServerWithCondition:^BOOL(NSString *host, QNUploadServer *serverP, QNUploadServer *filterServer) {
                 
                 // 1.1 剔除冻结对象
                 NSString *frozenType = QNUploadFrozenType(host, filterServer.ip);
@@ -242,6 +241,7 @@
                 // 1.2 挑选网络状态最优
                 return [QNUploadServerNetworkStatus isServerNetworkBetter:filterServer thanServerB:serverP];
             }];
+            server = [QNUploadServerNetworkStatus getBetterNetworkServer:server serverB:domainServer];
         }
         
         if (server) {
@@ -254,7 +254,7 @@
     // 2. 挑选http2
     for (NSString *host in hostList) {
         kQNWeakSelf;
-        server = [domainInfo[host] getServerWithCondition:^BOOL(NSString *host, QNUploadServer *serverP, QNUploadServer *filterServer, BOOL *stop) {
+        QNUploadServer *domainServer = [domainInfo[host] getServerWithCondition:^BOOL(NSString *host, QNUploadServer *serverP, QNUploadServer *filterServer) {
             kQNStrongSelf;
             
             // 2.1 剔除冻结对象
@@ -268,6 +268,7 @@
             // 2.2 挑选网络状态最优
             return [QNUploadServerNetworkStatus isServerNetworkBetter:filterServer thanServerB:serverP];
         }];
+        server = [QNUploadServerNetworkStatus getBetterNetworkServer:server serverB:domainServer];
     }
 
     // 3. 无可用 server 随机获取一个

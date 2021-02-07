@@ -94,8 +94,4 @@
     }
 }
 
-- (NSString *)getItemInfoKey:(NSString *)host type:(NSString *)type{
-    return [NSString stringWithFormat:@"%@:%@", host ?: @"none", type ?: @"none"];
-}
-
 @end
