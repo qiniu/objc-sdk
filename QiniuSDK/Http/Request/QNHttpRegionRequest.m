@@ -211,9 +211,7 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
         self.requestState.isUseOldServer = YES;
     }
     
-    id <QNUploadServer> server = [self.region getNextServer:[self.requestState copy] responseInfo:responseInfo freezeServer:self.currentServer];
-    self.requestState.httpVersion = server.httpVersion;
-    return server;
+    return [self.region getNextServer:[self.requestState copy] responseInfo:responseInfo freezeServer:self.currentServer];
 }
 
 @end

@@ -222,11 +222,12 @@
     [self freezeServerIfNeed:responseInfo freezeServer:freezeServer];
     
     QNUploadServer *server = nil;
-    NSArray *hostList = requestState.isUseOldServer ? self.oldDomainHostList : self.domainHostList;
-    NSDictionary *domainInfo = requestState.isUseOldServer ? self.oldDomainDictionary : self.domainDictionary;
+    BOOL isUseOldServer = requestState.isUseOldServer;
+    NSArray *hostList = isUseOldServer ? self.oldDomainHostList : self.domainHostList;
+    NSDictionary *domainInfo = isUseOldServer ? self.oldDomainDictionary : self.domainDictionary;
     
     // 1. 优先使用http3
-    if (self.http3Enabled && kQNIsHttp3(requestState.httpVersion)) {
+    if (self.http3Enabled) {
         for (NSString *host in hostList) {
             QNUploadServer *domainServer = [domainInfo[host] getServerWithCondition:^BOOL(NSString *host, QNUploadServer *serverP, QNUploadServer *filterServer) {
                 
@@ -307,14 +308,14 @@
     }
     
     // 2. http2 冻结
-    // 无法连接到Host || Host不可用， 局部冻结
+    // 2.1 无法连接到Host || Host不可用， 局部冻结
     if (!responseInfo.canConnectToHost || responseInfo.isHostUnavailable) {
         QNLogInfo(@"partial freeze server host:%@ ip:%@", freezeServer.host, freezeServer.ip);
         
         [self.partialHttp2Freezer freezeType:frozenType frozenTime:kQNGlobalConfiguration.partialHostFrozenTime];
     }
     
-    // Host不可用，全局冻结
+    // 2.2 Host不可用，全局冻结
     if (responseInfo.isHostUnavailable) {
         QNLogInfo(@"global freeze server host:%@ ip:%@", freezeServer.host, freezeServer.ip);
         

@@ -19,13 +19,11 @@
 
 - (void)initData{
     _isUserCancel = NO;
-    _httpVersion = kQNHttpVersion2;
     _isUseOldServer = NO;
 }
 
 - (instancetype)copy {
     QNUploadRequestState *state = [[QNUploadRequestState alloc] init];
-    state.httpVersion = self.httpVersion;
     state.isUserCancel = self.isUserCancel;
     state.isUseOldServer = self.isUseOldServer;
     return state;

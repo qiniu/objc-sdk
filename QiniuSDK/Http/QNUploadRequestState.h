@@ -18,9 +18,6 @@ NS_ASSUME_NONNULL_BEGIN
 // 用户是否取消
 @property(nonatomic, assign)BOOL isUserCancel;
 
-// 是否使用http version
-@property(nonatomic,   copy)NSString *httpVersion;
-
 - (instancetype)copy;
 
 @end
