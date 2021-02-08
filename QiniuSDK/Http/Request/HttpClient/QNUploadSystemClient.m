@@ -87,6 +87,18 @@ connectionProxy:(NSDictionary *)connectionProxy
     self.requestMetrics.responseStartDate = transactionMetrics.responseStartDate;
     self.requestMetrics.responseEndDate = transactionMetrics.responseEndDate;
     
+    if ([transactionMetrics.networkProtocolName isEqualToString:@"http/1.0"]) {
+        self.requestMetrics.httpVersion = @"1.0";
+    } else if ([transactionMetrics.networkProtocolName isEqualToString:@"http/1.1"]) {
+        self.requestMetrics.httpVersion = @"1.1";
+    } else if ([transactionMetrics.networkProtocolName isEqualToString:@"h2"]) {
+        self.requestMetrics.httpVersion = @"2";
+    } else if ([transactionMetrics.networkProtocolName isEqualToString:@"h3"]) {
+        self.requestMetrics.httpVersion = @"3";
+    } else {
+        self.requestMetrics.httpVersion = transactionMetrics.networkProtocolName;
+    }
+    
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
     if (@available(iOS 13.0, *)) {
         self.requestMetrics.localAddress = transactionMetrics.localAddress;

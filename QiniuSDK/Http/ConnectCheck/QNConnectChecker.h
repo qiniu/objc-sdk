@@ -6,15 +6,16 @@
 //  Copyright © 2021 Qiniu. All rights reserved.
 //
 
+#import "QNUploadRequestMetrics.h"
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface QNConnectChecker : NSObject
 
-+ (NSHTTPURLResponse *)check;
++ (QNUploadSingleRequestMetrics *)check;
 
-+ (BOOL)isConnected:(NSHTTPURLResponse *)response;
++ (BOOL)isConnected:(QNUploadSingleRequestMetrics *)metrics;
 
 @end
 

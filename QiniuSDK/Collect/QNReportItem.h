@@ -56,6 +56,7 @@ extern NSString *const QNReportRequestKeyUpTime;
 extern NSString *const QNReportRequestKeyStatusCode;
 extern NSString *const QNReportRequestKeyRequestId;
 extern NSString *const QNReportRequestKeyHost;
+extern NSString *const QNReportRequestKeyHttpVersion;
 extern NSString *const QNReportRequestKeyRemoteIp;
 extern NSString *const QNReportRequestKeyPort;
 extern NSString *const QNReportRequestKeyTargetBucket;
@@ -88,6 +89,7 @@ extern NSString *const QNReportRequestKeySignalStrength;
 extern NSString *const QNReportRequestKeyPrefetchedDnsSource;
 extern NSString *const QNReportRequestKeyPrefetchedBefore;
 extern NSString *const QNReportRequestKeyPrefetchedErrorMessage;
+extern NSString *const QNReportRequestKeyNetworkMeasuring;
 
 
 //MARK:-- 分块上传统计⽇志

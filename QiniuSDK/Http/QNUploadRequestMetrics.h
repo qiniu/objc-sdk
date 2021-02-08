@@ -13,7 +13,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNUploadSingleRequestMetrics : NSObject
 
-@property (nullable , copy) NSURLResponse *connectCheckResponse;
+// 请求的 httpVersion
+@property(nonatomic,  copy)NSString *httpVersion;
+
+// 只有进行网络检测才会有 connectCheckMetrics
+@property (nullable , strong) QNUploadSingleRequestMetrics *connectCheckMetrics;
 
 @property (nonatomic, copy) NSURLRequest *request;
 @property (nullable , copy) NSURLResponse *response;

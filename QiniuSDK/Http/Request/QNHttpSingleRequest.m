@@ -134,9 +134,9 @@
                                                                    body:responseData
                                                                   error:error];
         if ([self shouldCheckConnect:responseInfo]) {
-            NSHTTPURLResponse *checkResponse = [QNConnectChecker check];
-            metrics.connectCheckResponse = checkResponse;
-            if ([QNConnectChecker isConnected:checkResponse]) {
+            QNUploadSingleRequestMetrics *connectCheckMetrics = [QNConnectChecker check];
+            metrics.connectCheckMetrics = connectCheckMetrics;
+            if (![QNConnectChecker isConnected:connectCheckMetrics]) {
                 NSString *message = [NSString stringWithFormat:@"check origin statusCode:%d error:%@", responseInfo.statusCode, responseInfo.error];
                 responseInfo = [QNResponseInfo errorResponseInfo:NSURLErrorNotConnectedToInternet errorDesc:message];
             }
@@ -250,6 +250,20 @@
     }
     [item setReportValue:kQNDnsPrefetch.lastPrefetchedErrorMessage forKey:QNReportRequestKeyPrefetchedErrorMessage];
     
+    
+    [item setReportValue:requestMetrics.httpVersion forKey:QNReportRequestKeyHttpVersion];
+
+    if (requestMetricsP.connectCheckMetrics) {
+        NSString *connectCheckDuration = [NSString stringWithFormat:@"%ld", (long)requestMetricsP.connectCheckMetrics.totalElapsedTime];
+        NSString *connectCheckStatusCode = @"";
+        if (requestMetrics.connectCheckMetrics.response) {
+            connectCheckStatusCode = [NSString stringWithFormat:@"%ld", (long)((NSHTTPURLResponse *)requestMetricsP.connectCheckMetrics.response).statusCode];
+        }
+        NSString *networkMeasuring = [NSString stringWithFormat:@"duration:%@ status_code:%@",connectCheckDuration, connectCheckStatusCode];
+        [item setReportValue:networkMeasuring forKey:QNReportRequestKeyNetworkMeasuring];
+    }
+    
+
     [kQNReporter reportItem:item token:self.token.token];
 }
 

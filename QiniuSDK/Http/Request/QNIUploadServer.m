@@ -9,7 +9,7 @@
 #import "QNIUploadServer.h"
 
 BOOL kQNIsHttp3(NSString * _Nullable httpVersion) {
-    return [httpVersion isEqualToString:kQNHttpVersion1];
+    return [httpVersion isEqualToString:kQNHttpVersion3];
 }
 
 BOOL kQNIsHttp2(NSString * _Nullable httpVersion) {
