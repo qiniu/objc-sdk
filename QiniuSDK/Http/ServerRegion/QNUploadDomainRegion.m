@@ -279,8 +279,8 @@
         server = [domainInfo[host] getOneServer];
         [self unfreezeServer:server];
     }
-    
     self.hasGot = true;
+    
     if (server == nil) {
         self.isAllFrozen = YES;
     }

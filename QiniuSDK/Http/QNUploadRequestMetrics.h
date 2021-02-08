@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNUploadSingleRequestMetrics : NSObject
 
+@property (nullable , copy) NSURLResponse *connectCheckResponse;
+
 @property (nonatomic, copy) NSURLRequest *request;
 @property (nullable , copy) NSURLResponse *response;
 

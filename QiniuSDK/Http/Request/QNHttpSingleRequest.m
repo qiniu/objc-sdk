@@ -133,9 +133,13 @@
                                                                response:(NSHTTPURLResponse *)response
                                                                    body:responseData
                                                                   error:error];
-        if ([self shouldCheckConnect:responseInfo] && ![QNConnectChecker check]) {
-            NSString *message = [NSString stringWithFormat:@"check origin statusCode:%d error:%@", responseInfo.statusCode, responseInfo.error];
-            responseInfo = [QNResponseInfo errorResponseInfo:NSURLErrorNotConnectedToInternet errorDesc:message];
+        if ([self shouldCheckConnect:responseInfo]) {
+            NSHTTPURLResponse *checkResponse = [QNConnectChecker check];
+            metrics.connectCheckResponse = checkResponse;
+            if ([QNConnectChecker isConnected:checkResponse]) {
+                NSString *message = [NSString stringWithFormat:@"check origin statusCode:%d error:%@", responseInfo.statusCode, responseInfo.error];
+                responseInfo = [QNResponseInfo errorResponseInfo:NSURLErrorNotConnectedToInternet errorDesc:message];
+            }
         }
         
         QNLogInfo(@"key:%@ response:%@", self.requestInfo.key, responseInfo);

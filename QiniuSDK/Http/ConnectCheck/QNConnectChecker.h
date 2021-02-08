@@ -12,9 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNConnectChecker : NSObject
 
-+ (BOOL)check;
++ (NSHTTPURLResponse *)check;
 
-+ (void)check:(void(^)(BOOL isConnected))complete;
++ (BOOL)isConnected:(NSHTTPURLResponse *)response;
 
 @end
 
