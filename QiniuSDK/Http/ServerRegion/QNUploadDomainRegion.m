@@ -42,7 +42,6 @@
 @end
 
 @interface QNUploadServerDomain: NSObject
-@property(atomic   , assign)BOOL isAllFrozen;
 @property(nonatomic,   copy)NSString *host;
 @property(nonatomic, strong)NSArray <QNUploadIpGroup *> *ipGroupList;
 @end
@@ -51,7 +50,6 @@
 + (QNUploadServerDomain *)domain:(NSString *)host{
     QNUploadServerDomain *domain = [[QNUploadServerDomain alloc] init];
     domain.host = host;
-    domain.isAllFrozen = false;
     return domain;
 }
 
