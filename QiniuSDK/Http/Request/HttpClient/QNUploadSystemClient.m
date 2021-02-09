@@ -65,6 +65,7 @@ connectionProxy:(NSDictionary *)connectionProxy
     self.requestMetrics.endDate = [NSDate date];
     self.requestMetrics.request = task.currentRequest;
     self.requestMetrics.response = task.response;
+    self.requestMetrics.error = error;
     self.requestMetrics.countOfResponseBodyBytesReceived = task.response.expectedContentLength;
     self.requestMetrics.countOfRequestHeaderBytesSent = [NSString stringWithFormat:@"%@", task.currentRequest.allHTTPHeaderFields].length;
     self.complete(task.response, self.requestMetrics,self.responseData, error);

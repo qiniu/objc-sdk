@@ -254,10 +254,13 @@
     [item setReportValue:requestMetrics.httpVersion forKey:QNReportRequestKeyHttpVersion];
 
     if (requestMetricsP.connectCheckMetrics) {
-        NSString *connectCheckDuration = [NSString stringWithFormat:@"%ld", (long)requestMetricsP.connectCheckMetrics.totalElapsedTime];
+        QNUploadSingleRequestMetrics *metrics = requestMetricsP.connectCheckMetrics;
+        NSString *connectCheckDuration = [NSString stringWithFormat:@"%.2lf", [metrics.totalElapsedTime doubleValue]];
         NSString *connectCheckStatusCode = @"";
-        if (requestMetrics.connectCheckMetrics.response) {
-            connectCheckStatusCode = [NSString stringWithFormat:@"%ld", (long)((NSHTTPURLResponse *)requestMetricsP.connectCheckMetrics.response).statusCode];
+        if (metrics.response) {
+            connectCheckStatusCode = [NSString stringWithFormat:@"%ld", (long)((NSHTTPURLResponse *)metrics.response).statusCode];
+        } else if (metrics.error) {
+            connectCheckStatusCode = [NSString stringWithFormat:@"%ld", metrics.error.code];
         }
         NSString *networkMeasuring = [NSString stringWithFormat:@"duration:%@ status_code:%@",connectCheckDuration, connectCheckStatusCode];
         [item setReportValue:networkMeasuring forKey:QNReportRequestKeyNetworkMeasuring];
