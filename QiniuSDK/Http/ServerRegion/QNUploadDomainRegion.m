@@ -154,8 +154,8 @@
 // 是否支持http3
 @property(nonatomic, assign)BOOL http3Enabled;
 
-// 是否获取过，PS：当第一次获取Domain，而区域所有Domain又全部冻结时，返回一个domain尝试一次
-@property(atomic   , assign)BOOL hasGot;
+// 是否冻结过Host，PS：如果没有冻结过 Host,则当前 Region 上传也就不会有错误信息，可能会返回-9，所以必须要再进行一次尝试
+@property(atomic   , assign)BOOL hasFreezeHost;
 @property(atomic   , assign)BOOL isAllFrozen;
 // 局部http2冻结管理对象
 @property(nonatomic, strong)QNUploadServerFreezeManager *partialHttp2Freezer;
@@ -176,6 +176,7 @@
     _zoneInfo = zoneInfo;
     
     self.isAllFrozen = NO;
+    self.hasFreezeHost = NO;
     self.http3Enabled = zoneInfo.http3Enabled;
     // 暂时屏蔽
     self.http3Enabled = false;
@@ -272,14 +273,13 @@
         server = [QNUploadServerNetworkStatus getBetterNetworkServer:server serverB:domainServer];
     }
 
-    // 3. 无可用 server 随机获取一个
-    if (server == nil && !self.hasGot && hostList.count > 0) {
+    // 3. 无可用 server 且未冻结过 Host 则随机获取一个
+    if (server == nil && !self.hasFreezeHost && hostList.count > 0) {
         NSInteger index = arc4random()%hostList.count;
         NSString *host = hostList[index];
         server = [domainInfo[host] getOneServer];
         [self unfreezeServer:server];
     }
-    self.hasGot = true;
     
     if (server == nil) {
         self.isAllFrozen = YES;
@@ -302,6 +302,7 @@
     // 1. http3 冻结
     if (kQNIsHttp3(freezeServer.httpVersion)) {
         if (!responseInfo.canConnectToHost || responseInfo.isHostUnavailable) {
+            self.hasFreezeHost = YES;
             [kQNUploadGlobalHttp3Freezer freezeType:frozenType frozenTime:kQNUploadHttp3FrozenTime];
         }
         return;
@@ -311,14 +312,14 @@
     // 2.1 无法连接到Host || Host不可用， 局部冻结
     if (!responseInfo.canConnectToHost || responseInfo.isHostUnavailable) {
         QNLogInfo(@"partial freeze server host:%@ ip:%@", freezeServer.host, freezeServer.ip);
-        
+        self.hasFreezeHost = YES;
         [self.partialHttp2Freezer freezeType:frozenType frozenTime:kQNGlobalConfiguration.partialHostFrozenTime];
     }
     
     // 2.2 Host不可用，全局冻结
     if (responseInfo.isHostUnavailable) {
         QNLogInfo(@"global freeze server host:%@ ip:%@", freezeServer.host, freezeServer.ip);
-        
+        self.hasFreezeHost = YES;
         [kQNUploadGlobalHttp2Freezer freezeType:frozenType frozenTime:kQNGlobalConfiguration.globalHostFrozenTime];
     }
 }
