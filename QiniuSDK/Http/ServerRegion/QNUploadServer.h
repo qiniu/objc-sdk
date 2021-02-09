@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic,  copy)NSString *httpVersion;
 
 /// 上传server构造方法
-/// @param serverId server标识，一般使用host
 /// @param host host
 /// @param ip host对应的IP
 /// @param source ip查询来源，@"system"，@"httpdns"， @"none"， @"customized" 自定义请使用@"customized"

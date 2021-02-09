@@ -251,7 +251,7 @@
     [item setReportValue:kQNDnsPrefetch.lastPrefetchedErrorMessage forKey:QNReportRequestKeyPrefetchedErrorMessage];
     
     
-    [item setReportValue:requestMetrics.httpVersion forKey:QNReportRequestKeyHttpVersion];
+    [item setReportValue:requestMetricsP.httpVersion forKey:QNReportRequestKeyHttpVersion];
 
     if (requestMetricsP.connectCheckMetrics) {
         QNUploadSingleRequestMetrics *metrics = requestMetricsP.connectCheckMetrics;
