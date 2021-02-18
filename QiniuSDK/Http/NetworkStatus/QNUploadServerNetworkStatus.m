@@ -23,8 +23,8 @@
         return YES;
     }
     
-    NSString *serverTypeA = [QNUtils getIpType:serverA.ip host:serverA.host];
-    NSString *serverTypeB = [QNUtils getIpType:serverA.ip host:serverA.host];
+    NSString *serverTypeA = [QNNetworkStatusManager getNetworkStatusType:serverA.host ip:serverA.ip];
+    NSString *serverTypeB = [QNNetworkStatusManager getNetworkStatusType:serverB.host ip:serverB.ip];
     if (serverTypeA == nil) {
         return NO;
     } else if (serverTypeB == nil) {

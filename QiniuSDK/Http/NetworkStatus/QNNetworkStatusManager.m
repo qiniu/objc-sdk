@@ -61,6 +61,11 @@
     [self asyncRecordNetworkStatusInfo];
 }
 
++ (NSString *)getNetworkStatusType:(NSString *)host
+                                ip:(NSString *)ip {
+    return [QNUtils getIpType:ip host:host];
+}
+
 - (QNNetworkStatus *)getNetworkStatus:(NSString *)type{
     if (type == nil || type.length == 0) {
         return nil;

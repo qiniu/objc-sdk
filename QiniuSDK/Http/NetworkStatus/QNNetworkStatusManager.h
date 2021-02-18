@@ -24,6 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedInstance;
 
++ (NSString *)getNetworkStatusType:(NSString *)host
+                                ip:(NSString *)ip;
+
 - (QNNetworkStatus *)getNetworkStatus:(NSString *)type;
 
 - (void)updateNetworkStatus:(NSString *)type

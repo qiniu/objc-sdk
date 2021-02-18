@@ -184,11 +184,11 @@
                          server:(id <QNUploadServer>)server
                  requestMetrics:(QNUploadSingleRequestMetrics *)requestMetrics{
     long long byte = requestMetrics.bytesSend.longLongValue;
-    if (requestMetrics.startDate && requestMetrics.endDate && byte > 1024 * 1024) {
+    if (requestMetrics.startDate && requestMetrics.endDate && byte >= 1024 * 1024) {
         double second = [requestMetrics.endDate timeIntervalSinceDate:requestMetrics.startDate];
         if (second > 0) {
             int speed = (int)(byte / second);
-            NSString *type = [QNUtils getIpType:server.ip host:server.host];
+            NSString *type = [QNNetworkStatusManager getNetworkStatusType:server.host ip:server.ip];
             [kQNNetworkStatusManager updateNetworkStatus:type speed:speed];
         }
     }
