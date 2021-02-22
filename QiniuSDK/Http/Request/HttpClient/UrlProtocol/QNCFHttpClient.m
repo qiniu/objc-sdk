@@ -366,7 +366,7 @@
     }
     
     NSInteger errorCode = kQNNetworkError;
-    NSString *errorInfo = [NSString stringWithFormat:@"cf client:[%ld] %@", (long)errorCode, cfError.localizedDescription];
+    NSString *errorInfo = [NSString stringWithFormat:@"cf client:[%ld] %@", (long)cfError.code, cfError.localizedDescription];
     switch (cfError.code) {
         case ENOENT: /* No such file or directory */
             errorCode = NSFileNoSuchFileError;
