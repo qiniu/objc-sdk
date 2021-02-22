@@ -242,6 +242,10 @@
                 return [QNUploadServerNetworkStatus isServerNetworkBetter:filterServer thanServerB:serverP];
             }];
             server = [QNUploadServerNetworkStatus getBetterNetworkServer:server serverB:domainServer];
+            
+            if (server) {
+                break;
+            }
         }
         
         if (server) {
@@ -269,6 +273,10 @@
             return [QNUploadServerNetworkStatus isServerNetworkBetter:filterServer thanServerB:serverP];
         }];
         server = [QNUploadServerNetworkStatus getBetterNetworkServer:server serverB:domainServer];
+        
+        if (server) {
+            break;
+        }
     }
 
     // 3. 无可用 server 且未冻结过 Host 则随机获取一个
