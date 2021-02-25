@@ -45,9 +45,7 @@
     [transaction initPart:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         kQNStrongSelf;
         kQNStrongObj(transaction);
-        
-        [self destroyUploadRequestTransaction:transaction];
-        
+                
         NSString *uploadId = response[@"uploadId"];
         NSNumber *expireAt = response[@"expireAt"];
         if (responseInfo.isOK && uploadId && expireAt) {
@@ -56,6 +54,7 @@
             [self recordUploadInfo];
         }
         completeHandler(responseInfo, metrics, response);
+        [self destroyUploadRequestTransaction:transaction];
     }];
 }
 
@@ -110,8 +109,6 @@
         kQNStrongSelf;
         kQNStrongObj(transaction);
 
-        [self destroyUploadRequestTransaction:transaction];
-        
         NSString *etag = response[@"etag"];
         NSString *md5 = response[@"md5"];
         if (responseInfo.isOK && etag && md5) {
@@ -126,6 +123,7 @@
             data.isCompleted = NO;
         }
         completeHandler(NO, responseInfo, metrics, response);
+        [self destroyUploadRequestTransaction:transaction];
     }];
 }
 
@@ -144,8 +142,8 @@
         kQNStrongSelf;
         kQNStrongObj(transaction);
         
-        [self destroyUploadRequestTransaction:transaction];
         completeHandler(responseInfo, metrics, response);
+        [self destroyUploadRequestTransaction:transaction];
     }];
 }
 

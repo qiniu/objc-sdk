@@ -9,6 +9,7 @@
 #import "QNDefine.h"
 #import "QNLogUtil.h"
 #import "QNAsyncRun.h"
+#import "QNUploadRequestState.h"
 #import "QNHttpRegionRequest.h"
 #import "QNConfiguration.h"
 #import "QNUploadOption.h"
@@ -27,8 +28,6 @@
 @property(nonatomic, strong)QNUploadRegionRequestMetrics *requestMetrics;
 @property(nonatomic, strong)QNHttpSingleRequest *singleRequest;
 
-// old server 不验证tls sni
-@property(nonatomic, assign)BOOL isUseOldServer;
 @property(nonatomic, strong)id <QNUploadServer> currentServer;
 @property(nonatomic, strong)id <QNUploadRegion> region;
 
@@ -162,7 +161,6 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
     kQNWeakSelf;
     [self.singleRequest request:request
                          server:server
-                      toSkipDns:toSkipDns
                     shouldRetry:shouldRetry
                        progress:progress
                        complete:^(QNResponseInfo * _Nullable responseInfo, NSArray<QNUploadSingleRequestMetrics *> * _Nullable metrics, NSDictionary * _Nullable response) {
@@ -200,20 +198,20 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
         response:(NSDictionary *)response
         complete:(QNRegionRequestCompleteHandler)completionHandler {
 
-    self.singleRequest = nil;
     if (completionHandler) {
         completionHandler(responseInfo, self.requestMetrics, response);
     }
+    self.singleRequest = nil;
 }
 
 //MARK: --
 - (id <QNUploadServer>)getNextServer:(QNResponseInfo *)responseInfo{
 
     if (responseInfo.isTlsError) {
-        self.isUseOldServer = YES;
+        self.requestState.isUseOldServer = YES;
     }
     
-    return [self.region getNextServer:self.isUseOldServer responseInfo:responseInfo freezeServer:self.currentServer];
+    return [self.region getNextServer:[self.requestState copy] responseInfo:responseInfo freezeServer:self.currentServer];
 }
 
 @end

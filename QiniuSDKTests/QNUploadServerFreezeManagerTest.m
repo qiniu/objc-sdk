@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNUploadServerFreezeUtil.h"
 #import "QNUploadServerFreezeManager.h"
 #import <XCTest/XCTest.h>
 
@@ -18,22 +19,28 @@
 - (void)testFreeze {
     
     NSString *host = @"baidu.com";
-    [kQNUploadServerFreezeManager freezeHost:host type:host frozenTime:10];
+    NSString *frozenType = QNUploadFrozenType(host, @"");
     
-    BOOL isFrozen = [kQNUploadServerFreezeManager isFrozenHost:host type:host];
-    XCTAssertTrue(isFrozen, "isFrozen false");
+    [kQNUploadGlobalHttp2Freezer freezeType:frozenType frozenTime:10];
+    BOOL isFrozen = [kQNUploadGlobalHttp2Freezer isTypeFrozen:frozenType];
+    XCTAssertTrue(isFrozen, "http2 isFrozen false");
+    
+    [kQNUploadGlobalHttp3Freezer freezeType:frozenType frozenTime:10];
+    isFrozen = [kQNUploadGlobalHttp3Freezer isTypeFrozen:frozenType];
+    XCTAssertTrue(isFrozen, "http3 isFrozen false");
 }
 
 - (void)testUnfreeze {
     NSString *host = @"baidu.com";
-    [kQNUploadServerFreezeManager freezeHost:host type:host frozenTime:10];
+    NSString *frozenType = QNUploadFrozenType(host, @"");
     
-    BOOL isFrozen = [kQNUploadServerFreezeManager isFrozenHost:host type:host];
-    XCTAssertTrue(isFrozen, "isFrozen false");
+    [kQNUploadGlobalHttp2Freezer freezeType:frozenType frozenTime:10];
+    BOOL isFrozen = [kQNUploadGlobalHttp2Freezer isTypeFrozen:frozenType];
+    XCTAssertTrue(isFrozen, "http2 isFrozen false");
     
-    [kQNUploadServerFreezeManager unfreezeHost:host type:host];
-    isFrozen = [kQNUploadServerFreezeManager isFrozenHost:host type:host];
-    XCTAssertTrue(isFrozen == NO, "isFrozen true");
+    [kQNUploadGlobalHttp2Freezer unfreezeType:frozenType];
+    isFrozen = [kQNUploadGlobalHttp2Freezer isTypeFrozen:frozenType];
+    XCTAssertTrue(isFrozen == NO, "http2 isFrozen true");
 }
 
 

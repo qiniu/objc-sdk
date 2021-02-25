@@ -29,7 +29,7 @@
     int maxCount = 100;
     int successCount = 0;
     for (int i = 0; i < maxCount; i++) {
-        if ([QNConnectChecker check]) {
+        if ([QNConnectChecker isConnected:[QNConnectChecker check]]) {
             successCount += 1;
         }
     }
@@ -43,7 +43,7 @@
     int maxCount = 100;
     int successCount = 0;
     for (int i = 0; i < maxCount; i++) {
-        if ([QNConnectChecker check]) {
+        if ([QNConnectChecker isConnected:[QNConnectChecker check]]) {
             successCount += 1;
         }
     }
@@ -57,7 +57,7 @@
     int maxCount = 100;
     int successCount = 0;
     for (int i = 0; i < maxCount; i++) {
-        if ([QNConnectChecker check]) {
+        if ([QNConnectChecker isConnected:[QNConnectChecker check]]) {
             successCount += 1;
         }
     }

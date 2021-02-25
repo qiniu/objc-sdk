@@ -39,8 +39,8 @@
                                                           timeoutInterval:request.timeoutInterval];
     newRequest.allHTTPHeaderFields = request.allHTTPHeaderFields;
     
-    NSInteger headerLength = [NSString stringWithFormat:@"%@", self.request.allHTTPHeaderFields].length;
-    NSInteger bodyLength = [self.request.qn_getHttpBody length];
+    NSInteger headerLength = [NSString stringWithFormat:@"%@", request.allHTTPHeaderFields].length;
+    NSInteger bodyLength = [request.qn_getHttpBody length];
     _totalBytes = @(headerLength + bodyLength);
     _request = [newRequest copy];
 }

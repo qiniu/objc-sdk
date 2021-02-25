@@ -10,7 +10,6 @@
 #import "QNConfiguration.h"
 #import "QNCrc32.h"
 #import "QNRecorderDelegate.h"
-#import "QNSessionManager.h"
 #import "QNUpToken.h"
 #import "QNUrlSafeBase64.h"
 #import "QNAsyncRun.h"

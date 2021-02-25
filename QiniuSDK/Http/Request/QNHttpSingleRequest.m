@@ -16,7 +16,9 @@
 #import "QNUploadOption.h"
 #import "QNUpToken.h"
 #import "QNResponseInfo.h"
+#import "QNNetworkStatusManager.h"
 #import "QNRequestClient.h"
+#import "QNUploadRequestState.h"
 
 #import "QNConnectChecker.h"
 #import "QNDnsPrefetch.h"
@@ -25,19 +27,6 @@
 
 #import "QNUploadSystemClient.h"
 #import "NSURLRequest+QNRequest.h"
-
-
-@implementation QNUploadRequestState
-- (instancetype)init{
-    if (self = [super init]) {
-        [self initData];
-    }
-    return self;
-}
-- (void)initData{
-    _isUserCancel = NO;
-}
-@end
 
 
 
@@ -75,24 +64,22 @@
 
 - (void)request:(NSURLRequest *)request
          server:(id <QNUploadServer>)server
-      toSkipDns:(BOOL)toSkipDns
     shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
        progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
        complete:(QNSingleRequestCompleteHandler)complete{
     
     _currentRetryTime = 0;
     _requestMetricsList = [NSMutableArray array];
-    [self retryRequest:request server:server toSkipDns:toSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
+    [self retryRequest:request server:server shouldRetry:shouldRetry progress:progress complete:complete];
 }
 
 - (void)retryRequest:(NSURLRequest *)request
               server:(id <QNUploadServer>)server
-           toSkipDns:(BOOL)toSkipDns
          shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shouldRetry
             progress:(void(^)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
             complete:(QNSingleRequestCompleteHandler)complete{
     
-    if (toSkipDns && kQNGlobalConfiguration.isDnsOpen) {
+    if (kQNIsHttp3(server.httpVersion)) {
         self.client = [[QNUploadSystemClient alloc] init];
     } else {
         self.client = [[QNUploadSystemClient alloc] init];
@@ -146,9 +133,13 @@
                                                                response:(NSHTTPURLResponse *)response
                                                                    body:responseData
                                                                   error:error];
-        if ([self shouldCheckConnect:responseInfo] && ![QNConnectChecker check]) {
-            NSString *message = [NSString stringWithFormat:@"check origin statusCode:%d error:%@", responseInfo.statusCode, responseInfo.error];
-            responseInfo = [QNResponseInfo errorResponseInfo:NSURLErrorNotConnectedToInternet errorDesc:message];
+        if ([self shouldCheckConnect:responseInfo]) {
+            QNUploadSingleRequestMetrics *connectCheckMetrics = [QNConnectChecker check];
+            metrics.connectCheckMetrics = connectCheckMetrics;
+            if (![QNConnectChecker isConnected:connectCheckMetrics]) {
+                NSString *message = [NSString stringWithFormat:@"check origin statusCode:%d error:%@", responseInfo.statusCode, responseInfo.error];
+                responseInfo = [QNResponseInfo errorResponseInfo:NSURLErrorNotConnectedToInternet errorDesc:message];
+            }
         }
         
         QNLogInfo(@"key:%@ response:%@", self.requestInfo.key, responseInfo);
@@ -157,7 +148,7 @@
             && responseInfo.couldHostRetry) {
             self.currentRetryTime += 1;
             QNAsyncRunAfter(self.config.retryInterval, kQNBackgroundQueue, ^{
-                [self retryRequest:request server:server toSkipDns:toSkipDns shouldRetry:shouldRetry progress:progress complete:complete];
+                [self retryRequest:request server:server shouldRetry:shouldRetry progress:progress complete:complete];
             });
         } else {
             [self complete:responseInfo server:server response:responseDic requestMetrics:metrics complete:complete];
@@ -177,14 +168,29 @@
 }
 
 - (void)complete:(QNResponseInfo *)responseInfo
-          server:(id <QNUploadServer>)server
-        response:(NSDictionary *)response
-  requestMetrics:(QNUploadSingleRequestMetrics *)requestMetrics
-        complete:(QNSingleRequestCompleteHandler)complete {
-    
+            server:(id<QNUploadServer>)server
+          response:(NSDictionary *)response
+    requestMetrics:(QNUploadSingleRequestMetrics *)requestMetrics
+          complete:(QNSingleRequestCompleteHandler)complete {
+    [self updateHostNetworkStatus:responseInfo server:server requestMetrics:requestMetrics];
     [self reportRequest:responseInfo server:server requestMetrics:requestMetrics];
     if (complete) {
         complete(responseInfo, [self.requestMetricsList copy], response);
+    }
+}
+
+//MARK:-- 统计网络状态
+- (void)updateHostNetworkStatus:(QNResponseInfo *)responseInfo
+                         server:(id <QNUploadServer>)server
+                 requestMetrics:(QNUploadSingleRequestMetrics *)requestMetrics{
+    long long byte = requestMetrics.bytesSend.longLongValue;
+    if (requestMetrics.startDate && requestMetrics.endDate && byte >= 1024 * 1024) {
+        double second = [requestMetrics.endDate timeIntervalSinceDate:requestMetrics.startDate];
+        if (second > 0) {
+            int speed = (int)(byte / second);
+            NSString *type = [QNNetworkStatusManager getNetworkStatusType:server.host ip:server.ip];
+            [kQNNetworkStatusManager updateNetworkStatus:type speed:speed];
+        }
     }
 }
 
@@ -228,7 +234,7 @@
     [item setReportValue:info.requestReportErrorType forKey:QNReportRequestKeyErrorType];
     NSString *errorDesc = info.requestReportErrorType ? info.message : nil;
     [item setReportValue:errorDesc forKey:QNReportRequestKeyErrorDescription];
-    [item setReportValue:self.requestInfo.requestType forKey:QNReportRequestKeyUpType]; 
+    [item setReportValue:self.requestInfo.requestType forKey:QNReportRequestKeyUpType];
     [item setReportValue:[QNUtils systemName] forKey:QNReportRequestKeyOsName];
     [item setReportValue:[QNUtils systemVersion] forKey:QNReportRequestKeyOsVersion];
     [item setReportValue:[QNUtils sdkLanguage] forKey:QNReportRequestKeySDKName];
@@ -244,6 +250,23 @@
     }
     [item setReportValue:kQNDnsPrefetch.lastPrefetchedErrorMessage forKey:QNReportRequestKeyPrefetchedErrorMessage];
     
+    
+    [item setReportValue:requestMetricsP.httpVersion forKey:QNReportRequestKeyHttpVersion];
+
+    if (requestMetricsP.connectCheckMetrics) {
+        QNUploadSingleRequestMetrics *metrics = requestMetricsP.connectCheckMetrics;
+        NSString *connectCheckDuration = [NSString stringWithFormat:@"%.2lf", [metrics.totalElapsedTime doubleValue]];
+        NSString *connectCheckStatusCode = @"";
+        if (metrics.response) {
+            connectCheckStatusCode = [NSString stringWithFormat:@"%ld", (long)((NSHTTPURLResponse *)metrics.response).statusCode];
+        } else if (metrics.error) {
+            connectCheckStatusCode = [NSString stringWithFormat:@"%ld", metrics.error.code];
+        }
+        NSString *networkMeasuring = [NSString stringWithFormat:@"duration:%@ status_code:%@",connectCheckDuration, connectCheckStatusCode];
+        [item setReportValue:networkMeasuring forKey:QNReportRequestKeyNetworkMeasuring];
+    }
+    
+
     [kQNReporter reportItem:item token:self.token.token];
 }
 

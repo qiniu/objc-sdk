@@ -16,6 +16,7 @@ extern NSString *const QNZoneInfoEmptyRegionId;
 @interface QNZoneInfo : NSObject
 
 @property(nonatomic, assign, readonly)long ttl;
+@property(nonatomic, assign, readonly)BOOL http3Enabled;
 @property(nonatomic, strong, readonly)NSArray<NSString *> *domains;
 @property(nonatomic, strong, readonly)NSArray<NSString *> *old_domains;
 

@@ -122,8 +122,8 @@
         kQNStrongSelf;
         kQNStrongObj(transaction);
         
-        [self destroyUploadRequestTransaction:transaction];
         completeHandler(responseInfo, metrics, response);
+        [self destroyUploadRequestTransaction:transaction];
     }];
 }
 
@@ -148,8 +148,8 @@
         kQNStrongSelf;
         kQNStrongObj(transaction);
         
-        [self destroyUploadRequestTransaction:transaction];
         completeHandler(responseInfo, metrics, response);
+        [self destroyUploadRequestTransaction:transaction];
     }];
 }
 
@@ -175,8 +175,8 @@
         kQNStrongSelf;
         kQNStrongObj(transaction);
         
-        [self destroyUploadRequestTransaction:transaction];
         completeHandler(responseInfo, metrics, response);
+        [self destroyUploadRequestTransaction:transaction];
     }];
 }
 

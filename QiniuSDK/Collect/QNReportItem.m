@@ -171,6 +171,7 @@ NSString *const QNReportRequestKeyUpTime = @"up_time";
 NSString * const QNReportRequestKeyStatusCode = @"status_code";
 NSString * const QNReportRequestKeyRequestId = @"req_id";
 NSString * const QNReportRequestKeyHost = @"host";
+NSString * const QNReportRequestKeyHttpVersion = @"http_version";
 NSString * const QNReportRequestKeyRemoteIp = @"remote_ip";
 NSString * const QNReportRequestKeyPort = @"port";
 NSString * const QNReportRequestKeyTargetBucket = @"target_bucket";
@@ -203,6 +204,7 @@ NSString * const QNReportRequestKeySignalStrength = @"signal_strength";
 NSString * const QNReportRequestKeyPrefetchedDnsSource = @"prefetched_dns_source";
 NSString * const QNReportRequestKeyPrefetchedBefore = @"prefetched_before";
 NSString * const QNReportRequestKeyPrefetchedErrorMessage = @"prefetched_error_message";
+NSString * const QNReportRequestKeyNetworkMeasuring = @"network_measuring";
 
 //MARK:-- 分块上传统计⽇志
 NSString * const QNReportBlockKeyLogType = @"log_type";
