@@ -612,7 +612,162 @@
             break;
         case EQFULL: /* Interface output queue is full */
             break;
-
+        case -9800:    /* SSL protocol error */
+            errorCode = NSURLErrorSecureConnectionFailed;
+            break;
+        case -9801:    /* Cipher Suite negotiation failure */
+            errorCode = NSURLErrorSecureConnectionFailed;
+            break;
+        case -9802:    /* Fatal alert */
+            errorCode = kQNUnexpectedSysCallError;
+            break;
+        case -9803:    /* I/O would block (not fatal) */
+            errorCode = kQNUnexpectedSysCallError;
+            break;
+        case -9804:    /* attempt to restore an unknown session */
+            errorCode = kQNUnexpectedSysCallError;
+            break;
+        case -9805:    /* connection closed gracefully */
+            errorCode = NSURLErrorNetworkConnectionLost;
+            break;
+        case -9806:    /* connection closed via error */
+            errorCode = NSURLErrorNetworkConnectionLost;
+            break;
+        case -9807:    /* invalid certificate chain */
+            errorCode = NSURLErrorServerCertificateNotYetValid;
+            break;
+        case -9808:    /* bad certificate format */
+            errorCode = NSURLErrorServerCertificateNotYetValid;
+            break;
+        case -9809:    /* underlying cryptographic error */
+            errorCode = NSURLErrorSecureConnectionFailed;
+            break;
+        case -9810:    /* Internal error */
+            errorCode = NSURLErrorNotConnectedToInternet;
+            break;
+        case -9811:    /* module attach failure */
+            errorCode = kQNUnexpectedSysCallError;
+            break;
+        case -9812:    /* valid cert chain, untrusted root */
+            errorCode = NSURLErrorServerCertificateHasUnknownRoot;
+            break;
+        case -9813:    /* cert chain not verified by root */
+            errorCode = NSURLErrorServerCertificateHasUnknownRoot;
+            break;
+        case -9814:    /* chain had an expired cert */
+            errorCode = NSURLErrorServerCertificateHasBadDate;
+            break;
+        case -9815:    /* chain had a cert not yet valid */
+            errorCode = NSURLErrorServerCertificateNotYetValid;
+            break;
+        case -9816:    /* server closed session with no notification */
+            errorCode = NSURLErrorNetworkConnectionLost;
+            break;
+        case -9817:    /* insufficient buffer provided */
+            errorCode = NSURLErrorCannotDecodeRawData;
+            break;
+        case -9818:    /* bad SSLCipherSuite */
+            errorCode = NSURLErrorClientCertificateRejected;
+            break;
+        case -9819:    /* unexpected message received */
+            errorCode = NSURLErrorNotConnectedToInternet;
+            break;
+        case -9820:    /* bad MAC */
+            errorCode = NSURLErrorNotConnectedToInternet;
+            break;
+        case -9821:    /* decryption failed */
+            errorCode = NSURLErrorNotConnectedToInternet;
+            break;
+        case -9822:    /* record overflow */
+            errorCode = NSURLErrorDataLengthExceedsMaximum;
+            break;
+        case -9823:    /* decompression failure */
+            errorCode = NSURLErrorDownloadDecodingFailedMidStream;
+            break;
+        case -9824:    /* handshake failure */
+            errorCode = NSURLErrorClientCertificateRejected;
+            break;
+        case -9825:    /* misc. bad certificate */
+            errorCode = NSURLErrorServerCertificateNotYetValid;
+            break;
+        case -9826:    /* bad unsupported cert format */
+            errorCode = NSURLErrorServerCertificateNotYetValid;
+            break;
+        case -9827:    /* certificate revoked */
+            errorCode = NSURLErrorServerCertificateNotYetValid;
+            break;
+        case -9828:    /* certificate expired */
+            errorCode = NSURLErrorServerCertificateNotYetValid;
+            break;
+        case -9829:    /* unknown certificate */
+            errorCode = NSURLErrorServerCertificateNotYetValid;
+            break;
+        case -9830:    /* illegal parameter */
+            errorCode = NSURLErrorCannotDecodeRawData;
+            break;
+        case -9831:    /* unknown Cert Authority */
+            errorCode = NSURLErrorServerCertificateNotYetValid;
+            break;
+        case -9832:    /* access denied */
+            errorCode = NSURLErrorClientCertificateRejected;
+            break;
+        case -9833:    /* decoding error */
+            errorCode = NSURLErrorServerCertificateNotYetValid;
+            break;
+        case -9834:    /* decryption error */
+            errorCode = NSURLErrorCannotDecodeRawData;
+            break;
+        case -9835:    /* export restriction */
+            errorCode = NSURLErrorCannotConnectToHost;
+            break;
+        case -9836:    /* bad protocol version */
+            errorCode = NSURLErrorCannotConnectToHost;
+            break;
+        case -9837:    /* insufficient security */
+            errorCode = NSURLErrorClientCertificateRejected;
+            break;
+        case -9838:    /* internal error */
+            errorCode = NSURLErrorTimedOut;
+            break;
+        case -9839:    /* user canceled */
+            errorCode = NSURLErrorCancelled;
+            break;
+        case -9840:    /* no renegotiation allowed */
+            errorCode = NSURLErrorCannotConnectToHost;
+            break;
+        case -9841:    /* peer cert is valid, or was ignored if verification disabled */
+            errorCode = NSURLErrorServerCertificateNotYetValid;
+            break;
+        case -9842:    /* server has requested a client cert */
+            errorCode = NSURLErrorClientCertificateRejected;
+            break;
+        case -9843:    /* peer host name mismatch */
+            errorCode = NSURLErrorNotConnectedToInternet;
+            break;
+        case -9844:    /* peer dropped connection before responding */
+            errorCode = NSURLErrorNetworkConnectionLost;
+            break;
+        case -9845:    /* decryption failure */
+            errorCode = NSURLErrorCannotDecodeRawData;
+            break;
+        case -9846:    /* bad MAC */
+            errorCode = NSURLErrorNotConnectedToInternet;
+            break;
+        case -9847:    /* record overflow */
+            errorCode = NSURLErrorDataLengthExceedsMaximum;
+            break;
+        case -9848:    /* configuration error */
+            errorCode = kQNUnexpectedSysCallError;
+            break;
+        case -9849:    /* unexpected (skipped) record in DTLS */
+            errorCode = kQNUnexpectedSysCallError;
+            break;
+        case -9850:   /* weak ephemeral dh key  */
+            errorCode = kQNUnexpectedSysCallError;
+            break;
+        case -9851:    /* SNI */
+            errorCode = NSURLErrorClientCertificateRejected;
+            break;
         default:
             break;
     }
