@@ -72,6 +72,19 @@
     return zAs0;
 }
 
++ (instancetype)zoneFogCnEast1 {
+    static QNFixedZone *zFogCnEast1 = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        zFogCnEast1 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload-fog-cn-east-1.qiniup.com",
+                                                                  @"up-fog-cn-east-1.qiniup.com"]
+                                                      oldUpList:@[@"upload-fog-cn-east-1.qiniup.com",
+                                                                  @"up-fog-cn-east-1.qiniup.com"]
+                                                       regionId:@"fog-cn-east-1"];;
+    });
+    return zFogCnEast1;
+}
+
 + (QNFixedZone *)localsZoneInfo{
 
     NSArray *zones = @[[QNFixedZone zone0],
