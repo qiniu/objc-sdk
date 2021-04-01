@@ -1,7 +1,7 @@
 #Changelog
 ## 8.2.1(2021-04-01)
 ## 增加
-- 增加雾存储 zoneFogCnEast1
+- 增加雾存储 [FixedZone zoneFogCnEast1]
 - 优化日志统计
 
 ## 8.2.0(2021-02-20)
