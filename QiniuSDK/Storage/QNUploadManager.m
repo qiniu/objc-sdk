@@ -218,7 +218,7 @@
                                             option:option
                                             configuration:self.config
                                             recorder:self.config.recorder
-                                            recorderKey:key
+                                            recorderKey:recorderKey
                                             completionHandler:complete];
             QNAsyncRun(^{
                 [up run];
@@ -231,7 +231,7 @@
                                  option:option
                                  configuration:self.config
                                  recorder:self.config.recorder
-                                 recorderKey:key
+                                 recorderKey:recorderKey
                                  completionHandler:complete];
             QNAsyncRun(^{
                 [up run];
