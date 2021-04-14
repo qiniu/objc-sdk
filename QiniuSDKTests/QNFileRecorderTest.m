@@ -27,7 +27,9 @@
     NSError *error = nil;
     QNFileRecorder *file = [QNFileRecorder fileRecorderWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniutest"] error:&error];
     NSLog(@"recorder error %@", error);
-    _upManager = [[QNUploadManager alloc] initWithRecorder:file];
+    _upManager = [[QNUploadManager alloc] initWithRecorder:file recorderKeyGenerator:^NSString *(NSString *uploadKey, NSString *filePath) {
+        return [NSString stringWithFormat:@"Qiniu:%@", uploadKey];
+    }];
 #ifdef __MAC_OS_X_VERSION_MIN_REQUIRED
     NSString *travis = [[NSProcessInfo processInfo] environment][@"QINIU_TEST_ENV"];
     if ([travis isEqualToString:@"travis"]) {
