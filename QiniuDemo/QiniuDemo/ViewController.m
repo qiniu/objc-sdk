@@ -9,6 +9,7 @@
 #import "Configure.h" // 测试参数配置，暂时只有token，可删除
 #import "ViewController.h"
 #import "QNTransactionManager.h"
+#import <Photos/Photos.h>
 
 typedef NS_ENUM(NSInteger, UploadState){
     UploadStatePrepare,
@@ -102,7 +103,19 @@ typedef NS_ENUM(NSInteger, UploadState){
         return weakSelf.uploadState == UploadStateCancelling;
     }];
     
-    [upManager putFile:filePath key:@"DemoResource" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//    [upManager putFile:filePath key:@"DemoResource" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//        NSLog(@"info ===== %@", info);
+//        NSLog(@"resp ===== %@", resp);
+//
+//        [weakSelf changeUploadState:UploadStatePrepare];
+//        [weakSelf alertMessage:info.message];
+//    }
+//                option:uploadOption];
+    
+    NSURL *url = [NSURL fileURLWithPath:filePath];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
+    PHAsset *asset = fetchResult.firstObject;
+    [upManager putPHAsset:asset key:@"DemoResource" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         NSLog(@"info ===== %@", info);
         NSLog(@"resp ===== %@", resp);
         
