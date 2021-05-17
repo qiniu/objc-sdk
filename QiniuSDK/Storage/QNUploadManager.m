@@ -48,6 +48,9 @@
 #import "QNDnsPrefetch.h"
 #import "QNZone.h"
 
+#import "QNUploadSourceFile.h"
+#import "QNUploadSourceStream.h"
+
 @interface QNUploadManager ()
 @property (nonatomic) QNConfiguration *config;
 @end
@@ -153,6 +156,17 @@
                   token:(NSString *)token
                complete:(QNUpCompletionHandler)completionHandler
                  option:(QNUploadOption *)option {
+    [self putInternal:[QNUploadSourceFile file:file]
+                  key:key token:token
+             complete:completionHandler
+               option:option];
+}
+
+- (void)putInternal:(id<QNUploadSource>)source
+                key:(NSString *)key
+              token:(NSString *)token
+           complete:(QNUpCompletionHandler)completionHandler
+             option:(QNUploadOption *)option {
     
     @autoreleasepool {
         QNUpToken *t = [QNUpToken parse:token];
@@ -169,7 +183,6 @@
 
 
         QNUpTaskCompletionHandler complete = ^(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp) {
-            [file close];
             [QNUploadManager complete:token
                                   key:key
                          responseInfo:info
@@ -180,10 +193,11 @@
 
         [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone token:t];
 
-        if ([file size] <= self.config.putThreshold) {
+        long long sourceSize = [source getSize];
+        if (sourceSize > 0 && sourceSize <= self.config.putThreshold) {
             NSError *error;
-            NSData *data = [file readAllWithError:&error];
-            [file close];
+            NSData *data = [source readData:sourceSize dataOffset:0 error:&error];
+            [source close];
             if (error) {
                 QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
                 [QNUploadManager complete:token
@@ -195,9 +209,8 @@
                 return;
             }
             
-            NSString *fileName = [[file path] lastPathComponent];
             [self putData:data
-                 fileName:fileName
+                 fileName:[source getFileName]
                       key:key
                     token:token
                  complete:completionHandler
@@ -207,12 +220,12 @@
 
         NSString *recorderKey = key;
         if (self.config.recorder != nil && self.config.recorderKeyGen != nil) {
-            recorderKey = self.config.recorderKeyGen(key, [file path]);
+            recorderKey = self.config.recorderKeyGen(key, [source getId]);
         }
         
         if (self.config.useConcurrentResumeUpload) {
             QNConcurrentResumeUpload *up = [[QNConcurrentResumeUpload alloc]
-                                            initWithFile:file
+                                            initWithSource:source
                                             key:key
                                             token:t
                                             option:option
@@ -225,7 +238,7 @@
             });
         } else {
             QNPartsUpload *up = [[QNPartsUpload alloc]
-                                 initWithFile:file
+                                 initWithSource:source
                                  key:key
                                  token:t
                                  option:option

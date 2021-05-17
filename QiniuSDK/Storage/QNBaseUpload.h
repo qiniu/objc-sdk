@@ -15,10 +15,8 @@
 #import "QNAsyncRun.h"
 #import "QNUploadManager.h"
 #import "QNUploadOption.h"
-
-
 #import "QNZone.h"
-#import "QNFileDelegate.h"
+#import "QNUploadSource.h"
 #import "QNUploadRequestMetrics.h"
 
 typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp);
@@ -28,7 +26,7 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
 @property (nonatomic,   copy, readonly) NSString *key;
 @property (nonatomic,   copy, readonly) NSString *fileName;
 @property (nonatomic, strong, readonly) NSData *data;
-@property (nonatomic, strong, readonly) id <QNFileDelegate> file;
+@property (nonatomic, strong, readonly) id <QNUploadSource> uploadSource;
 @property (nonatomic, strong, readonly) QNUpToken *token;
 @property (nonatomic, strong, readonly) QNUploadOption *option;
 @property (nonatomic, strong, readonly) QNConfiguration *config;
@@ -51,14 +49,14 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
 /// @param recorder 断点续传记录信息
 /// @param recorderKey 断电上传信息保存的key值，需确保唯一性
 /// @param completionHandler 上传完成回调
-- (instancetype)initWithFile:(id<QNFileDelegate>)file
-                         key:(NSString *)key
-                       token:(QNUpToken *)token
-                      option:(QNUploadOption *)option
-               configuration:(QNConfiguration *)config
-                    recorder:(id<QNRecorderDelegate>)recorder
-                 recorderKey:(NSString *)recorderKey
-           completionHandler:(QNUpTaskCompletionHandler)completionHandler;
+- (instancetype)initWithSource:(id<QNUploadSource>)uploadSource
+                           key:(NSString *)key
+                         token:(QNUpToken *)token
+                        option:(QNUploadOption *)option
+                 configuration:(QNConfiguration *)config
+                      recorder:(id<QNRecorderDelegate>)recorder
+                   recorderKey:(NSString *)recorderKey
+             completionHandler:(QNUpTaskCompletionHandler)completionHandler;
 
 /// data 构造函数
 /// @param data 上传data流

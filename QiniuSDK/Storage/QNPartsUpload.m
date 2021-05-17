@@ -35,27 +35,27 @@
     // 根据文件从本地恢复上传信息，如果没有则重新构建上传信息
     if (self.config.resumeUploadVersion == QNResumeUploadVersionV1) {
         QNLogInfo(@"key:%@ 分片V1", self.key);
-        self.uploadPerformer = [[QNPartsUploadPerformerV1 alloc] initWithFile:self.file
-                                                                     fileName:self.fileName
-                                                                          key:self.key
-                                                                        token:self.token
-                                                                       option:self.option
-                                                                configuration:self.config
-                                                                  recorderKey:self.recorderKey];
+        self.uploadPerformer = [[QNPartsUploadPerformerV1 alloc] initWithSource:self.uploadSource
+                                                                       fileName:self.fileName
+                                                                            key:self.key
+                                                                          token:self.token
+                                                                         option:self.option
+                                                                  configuration:self.config
+                                                                    recorderKey:self.recorderKey];
     } else {
         QNLogInfo(@"key:%@ 分片V2", self.key);
-        self.uploadPerformer = [[QNPartsUploadPerformerV2 alloc] initWithFile:self.file
-                                                                     fileName:self.fileName
-                                                                          key:self.key
-                                                                        token:self.token
-                                                                       option:self.option
-                                                                configuration:self.config
-                                                                  recorderKey:self.recorderKey];
+        self.uploadPerformer = [[QNPartsUploadPerformerV2 alloc] initWithSource:self.uploadSource
+                                                                       fileName:self.fileName
+                                                                            key:self.key
+                                                                          token:self.token
+                                                                         option:self.option
+                                                                  configuration:self.config
+                                                                    recorderKey:self.recorderKey];
     }
 }
 
 - (BOOL)isAllUploaded {
-    return [self.uploadPerformer.fileInfo isAllUploaded];
+    return [self.uploadPerformer.uploadInfo isAllUploaded];
 }
 
 - (void)setErrorResponseInfo:(QNResponseInfo *)responseInfo errorResponse:(NSDictionary *)response{
@@ -85,7 +85,7 @@
     }
     QNLogInfo(@"key:%@ region:%@", self.key, self.uploadPerformer.currentRegion.zoneInfo.regionId);
     
-    if (self.file == nil) {
+    if (self.uploadSource == nil) {
         code = kQNLocalIOError;
     }
     return code;
@@ -238,7 +238,7 @@
 
 - (void)complete:(QNResponseInfo *)info response:(NSDictionary *)response{
     [self reportBlock];
-    [self.file close];
+    [self.uploadSource close];
     if ([self shouldRemoveUploadInfoRecord:info]) {
         [self.uploadPerformer removeUploadInfoRecord];
     }
@@ -264,7 +264,7 @@
     [item setReportValue:metrics.totalElapsedTime forKey:QNReportBlockKeyTotalElapsedTime];
     [item setReportValue:metrics.bytesSend forKey:QNReportBlockKeyBytesSent];
     [item setReportValue:self.uploadPerformer.recoveredFrom forKey:QNReportBlockKeyRecoveredFrom];
-    [item setReportValue:@(self.file.size) forKey:QNReportBlockKeyFileSize];
+    [item setReportValue:@([self.uploadSource getSize]) forKey:QNReportBlockKeyFileSize];
     [item setReportValue:@([QNUtils getCurrentProcessID]) forKey:QNReportBlockKeyPid];
     [item setReportValue:@([QNUtils getCurrentThreadID]) forKey:QNReportBlockKeyTid];
     

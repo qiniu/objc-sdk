@@ -8,7 +8,7 @@
 /// 分片上传，默认为串行
 
 #import "QNBaseUpload.h"
-#import "QNUploadFileInfo.h"
+#import "QNUploadInfo.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

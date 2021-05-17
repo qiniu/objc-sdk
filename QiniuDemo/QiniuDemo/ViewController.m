@@ -51,6 +51,11 @@ typedef NS_ENUM(NSInteger, UploadState){
 #ifdef YourToken
 //        NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource.dmg" ofType:nil];
         NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
+        
+        NSFileManager *manager = [NSFileManager defaultManager];
+        NSURL *desktopUrl = [manager URLsForDirectory:NSDesktopDirectory inDomains:NSUserDomainMask].firstObject;
+        path = [desktopUrl URLByAppendingPathComponent:@"pycharm.dmg"].path;
+        
         [self uploadImageToQNFilePath:path];
         [self changeUploadState:UploadStateUploading];
 #else
@@ -103,7 +108,19 @@ typedef NS_ENUM(NSInteger, UploadState){
         return weakSelf.uploadState == UploadStateCancelling;
     }];
     
-//    [upManager putFile:filePath key:@"DemoResource" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+    [upManager putFile:filePath key:@"DemoResource" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+        NSLog(@"info ===== %@", info);
+        NSLog(@"resp ===== %@", resp);
+
+        [weakSelf changeUploadState:UploadStatePrepare];
+        [weakSelf alertMessage:info.message];
+    }
+                option:uploadOption];
+    
+//    NSURL *url = [NSURL fileURLWithPath:filePath];
+//    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
+//    PHAsset *asset = fetchResult.firstObject;
+//    [upManager putPHAsset:asset key:@"DemoResource" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
 //        NSLog(@"info ===== %@", info);
 //        NSLog(@"resp ===== %@", resp);
 //
@@ -111,18 +128,6 @@ typedef NS_ENUM(NSInteger, UploadState){
 //        [weakSelf alertMessage:info.message];
 //    }
 //                option:uploadOption];
-    
-    NSURL *url = [NSURL fileURLWithPath:filePath];
-    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
-    PHAsset *asset = fetchResult.firstObject;
-    [upManager putPHAsset:asset key:@"DemoResource" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        NSLog(@"info ===== %@", info);
-        NSLog(@"resp ===== %@", resp);
-        
-        [weakSelf changeUploadState:UploadStatePrepare];
-        [weakSelf alertMessage:info.message];
-    }
-                option:uploadOption];
 }
 
 - (void)gotoImageLibrary {

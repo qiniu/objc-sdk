@@ -48,6 +48,7 @@
 		31304CA225628E97001034D2 /* image.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = image.jpg; sourceTree = "<group>"; };
 		318191AA2531516F00D18536 /* UploadResource.dmg */ = {isa = PBXFileReference; lastKnownFileType = file; path = UploadResource.dmg; sourceTree = "<group>"; };
 		318191AF25315F3500D18536 /* Configure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Configure.h; sourceTree = "<group>"; };
+		3189882026469145003CCA68 /* QiniuDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QiniuDemo.entitlements; sourceTree = "<group>"; };
 		6B9BC5A8D93F988C1240E05F /* libPods-QiniuDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		93D2301F1C86D7F700434F6D /* QiniuDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QiniuDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93D230231C86D7F700434F6D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -154,6 +155,7 @@
 		93D230211C86D7F700434F6D /* QiniuDemo */ = {
 			isa = PBXGroup;
 			children = (
+				3189882026469145003CCA68 /* QiniuDemo.entitlements */,
 				318191A92531516F00D18536 /* DemoTestResource */,
 				93D230251C86D7F700434F6D /* AppDelegate.h */,
 				93D230261C86D7F700434F6D /* AppDelegate.m */,
@@ -536,12 +538,14 @@
 			baseConfigurationReference = F90FEC5E40BE695E8AA6A8A7 /* Pods-QiniuDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = QiniuDemo/QiniuDemo.entitlements;
 				DEVELOPMENT_TEAM = W2TP34G2MM;
 				INFOPLIST_FILE = QiniuDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.qiniu.QiniuDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 			};
 			name = Debug;
 		};
@@ -550,12 +554,14 @@
 			baseConfigurationReference = 24EE530BBB100BED89B08A3D /* Pods-QiniuDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = QiniuDemo/QiniuDemo.entitlements;
 				DEVELOPMENT_TEAM = W2TP34G2MM;
 				INFOPLIST_FILE = QiniuDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.qiniu.QiniuDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTS_MACCATALYST = YES;
 			};
 			name = Release;
 		};

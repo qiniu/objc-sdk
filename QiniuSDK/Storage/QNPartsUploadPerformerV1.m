@@ -9,7 +9,7 @@
 #import "QNLogUtil.h"
 #import "QNDefine.h"
 #import "QNRequestTransaction.h"
-#import "QNUploadFileInfoPartV1.h"
+#import "QNUploadInfoV1.h"
 #import "QNPartsUploadPerformerV1.h"
 
 @interface QNPartsUploadPerformerV1()
@@ -19,15 +19,12 @@
     return 4 * 1024 * 1024;
 }
 
-- (QNUploadFileInfo *)getFileInfoWithDictionary:(NSDictionary *)fileInfoDictionary {
-    return [QNUploadFileInfoPartV1 infoFromDictionary:fileInfoDictionary];
+- (QNUploadInfo *)getFileInfoWithDictionary:(NSDictionary *)fileInfoDictionary {
+    return [QNUploadInfoV1 info:self.uploadSource dictionary:fileInfoDictionary];
 }
 
-- (QNUploadFileInfo *)getDefaultUploadFileInfo {
-    return [[QNUploadFileInfoPartV1 alloc] initWithFileSize:[self.file size]
-                                                  blockSize:[QNPartsUploadPerformerV1 blockSize]
-                                                   dataSize:[self getUploadChunkSize]
-                                                 modifyTime:[self.file modifyTime]];
+- (QNUploadInfo *)getDefaultUploadInfo {
+    return [QNUploadInfoV1 info:self.uploadSource configuration:self.config];
 }
 
 - (void)serverInit:(void(^)(QNResponseInfo * _Nullable responseInfo,
@@ -41,32 +38,32 @@
                                 QNResponseInfo * _Nullable responseInfo,
                                 QNUploadRegionRequestMetrics * _Nullable metrics,
                                 NSDictionary * _Nullable response))completeHandler {
-    QNUploadFileInfoPartV1 *fileInfo = (QNUploadFileInfoPartV1 *)self.fileInfo;
+    QNUploadInfoV1 *uploadInfo = (QNUploadInfoV1 *)self.uploadInfo;
     
+    NSError *error;
     QNUploadBlock *block = nil;
     QNUploadData *chunk = nil;
     @synchronized (self) {
-        block = [fileInfo nextUploadBlock];
-        chunk = [block nextUploadData];
-        chunk.isUploading = YES;
-        chunk.isCompleted = NO;
+        block = [uploadInfo nextUploadBlock:&error];
+        chunk = [uploadInfo nextUploadData:block];
+        chunk.state = QNUploadStateUploading;
     }
 
-    if (block == nil || chunk == nil) {
-        QNLogInfo(@"key:%@ no chunk left", self.key);
-        
-        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithSDKInteriorError:@"no chunk left"];
+    if (error) {
+        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithLocalIOError:[NSString stringWithFormat:@"%@", error]];
         completeHandler(YES, responseInfo, nil, nil);
         return;
     }
     
-    NSData *chunkData = [self getDataWithChunk:chunk block:block];
-    if (chunkData == nil) {
-        QNLogInfo(@"key:%@ get chunk data error", self.key);
+    if (block == nil || chunk == nil) {
+        QNLogInfo(@"key:%@ no chunk left", self.key);
         
-        chunk.isUploading = NO;
-        chunk.isCompleted = NO;
-        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoWithLocalIOError:@"get chunk data error"];
+        QNResponseInfo *responseInfo = nil;
+        if (uploadInfo.getSourceSize == 0) {
+            responseInfo = [QNResponseInfo responseInfoOfZeroData:@"file is empty"];
+        } else {
+            responseInfo = [QNResponseInfo responseInfoWithSDKInteriorError:@"no chunk left"];
+        }
         completeHandler(YES, responseInfo, nil, nil);
         return;
     }
@@ -74,8 +71,7 @@
     kQNWeakSelf;
     void (^progress)(long long, long long) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
         kQNStrongSelf;
-        
-        chunk.progress = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
+        chunk.uploadSize = totalBytesWritten;
         [self notifyProgress];
     };
     
@@ -85,39 +81,36 @@
         NSString *blockContext = response[@"ctx"];
         if (responseInfo.isOK && blockContext) {
             block.context = blockContext;
-            chunk.progress = 1;
-            chunk.isUploading = NO;
-            chunk.isCompleted = YES;
+            chunk.state = QNUploadStateComplete;
             [self recordUploadInfo];
             [self notifyProgress];
         } else {
-            chunk.isUploading = NO;
-            chunk.isCompleted = NO;
+            chunk.state = QNUploadStateWaitToUpload;
         }
         completeHandler(NO, responseInfo, metrics, response);
     };
     
-    if (chunk.isFirstData) {
+    if ([uploadInfo isFirstData:chunk]) {
         QNLogInfo(@"key:%@ makeBlock", self.key);
-        [self makeBlock:block firstChunk:chunk chunkData:chunkData progress:progress completeHandler:completeHandlerP];
+        [self makeBlock:block firstChunk:chunk chunkData:chunk.data progress:progress completeHandler:completeHandlerP];
     } else {
         QNLogInfo(@"key:%@ uploadChunk", self.key);
-        [self uploadChunk:block chunk:chunk chunkData:chunkData progress:progress completeHandler:completeHandlerP];
+        [self uploadChunk:block chunk:chunk chunkData:chunk.data progress:progress completeHandler:completeHandlerP];
     }
 }
 
 - (void)completeUpload:(void(^)(QNResponseInfo * _Nullable responseInfo,
                                 QNUploadRegionRequestMetrics * _Nullable metrics,
                                 NSDictionary * _Nullable response))completeHandler {
-    QNUploadFileInfoPartV1 *fileInfo = (QNUploadFileInfoPartV1 *)self.fileInfo;
+    QNUploadInfoV1 *uploadInfo = (QNUploadInfoV1 *)self.uploadInfo;
     
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
     
     kQNWeakSelf;
     kQNWeakObj(transaction);
-    [transaction makeFile:fileInfo.size
+    [transaction makeFile:[uploadInfo getSourceSize]
                  fileName:self.fileName
-            blockContexts:[fileInfo allBlocksContexts]
+            blockContexts:[uploadInfo allBlocksContexts]
                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         kQNStrongSelf;
         kQNStrongObj(transaction);
@@ -178,27 +171,6 @@
         completeHandler(responseInfo, metrics, response);
         [self destroyUploadRequestTransaction:transaction];
     }];
-}
-
-
-- (NSData *)getDataWithChunk:(QNUploadData *)chunk block:(QNUploadBlock *)block{
-    if (!self.file) {
-        return nil;
-    }
-    NSError *error = nil;
-    NSData *data = [self.file read:(long)(chunk.offset + block.offset)
-                              size:(long)chunk.size
-                             error:&error];
-    
-    return error ? nil : data;
-}
-
-- (long long)getUploadChunkSize{
-    if (self.config.useConcurrentResumeUpload) {
-        return [QNPartsUploadPerformerV1 blockSize];
-    } else {
-        return self.config.chunkSize;
-    }
 }
 
 @end
