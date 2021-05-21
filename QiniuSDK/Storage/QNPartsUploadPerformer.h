@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)switchRegion:(id <QNUploadRegion>)region;
 
 /// 通知回调当前进度
-- (void)notifyProgress;
+- (void)notifyProgress:(BOOL)isCompleted;
 
 /// 分片信息保存本地
 - (void)recordUploadInfo;

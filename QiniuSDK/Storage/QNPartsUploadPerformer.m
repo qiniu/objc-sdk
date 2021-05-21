@@ -17,6 +17,7 @@
 #import "QNRecorderDelegate.h"
 #import "QNUploadDomainRegion.h"
 #import "QNPartsUploadPerformer.h"
+#import "QNUpProgress.h"
 #import "QNRequestTransaction.h"
 
 #define kQNRecordFileInfoKey @"recordFileInfo"
@@ -39,8 +40,8 @@
 @property (nonatomic, strong) id <QNUploadRegion> currentRegion;
 @property (nonatomic, strong) QNUploadInfo *uploadInfo;
 
-@property(nonatomic, assign) double previousPercent;
-@property(nonatomic, strong)NSMutableArray <QNRequestTransaction *> *uploadTransactions;
+@property(nonatomic, strong) QNUpProgress *progress;
+@property(nonatomic, strong) NSMutableArray <QNRequestTransaction *> *uploadTransactions;
 
 @end
 @implementation QNPartsUploadPerformer
@@ -85,20 +86,16 @@
     }
 }
 
-// todo:
-- (void)notifyProgress {
-//    float percent = self.uploadInfo.progress;
-//    if (percent > 0.95) {
-//        percent = 0.95;
-//    }
-//    if (percent > self.previousPercent) {
-//        self.previousPercent = percent;
-//    } else {
-//        percent = self.previousPercent;
-//    }
-//    QNAsyncRunInMain(^{
-//        self.option.progressHandler(self.key, percent);
-//    });
+- (void)notifyProgress:(BOOL)isCompleted {
+    if (self.uploadInfo == nil) {
+        return;
+    }
+    
+    if (isCompleted) {
+        [self.progress notifyDone:self.key totalBytes:[self.uploadInfo getSourceSize]];
+    } else {
+        [self.progress progress:self.key uploadBytes:[self.uploadInfo uploadSize] totalBytes:[self.uploadInfo getSourceSize]];
+    }
 }
 
 - (void)recordUploadInfo {
@@ -215,5 +212,12 @@
 - (void)completeUpload:(void (^)(QNResponseInfo * _Nullable,
                                  QNUploadRegionRequestMetrics * _Nullable,
                                  NSDictionary * _Nullable))completeHandler {}
+
+- (QNUpProgress *)progress {
+    if (_progress == nil) {
+        _progress = [QNUpProgress progress:self.option.progressHandler byteProgress:self.option.byteProgressHandler];
+    }
+    return _progress;
+}
 
 @end

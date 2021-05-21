@@ -93,7 +93,7 @@
     void (^progress)(long long, long long) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
         kQNStrongSelf;
         data.uploadSize = totalBytesWritten;
-        [self notifyProgress];
+        [self notifyProgress:false];
     };
     
     QNRequestTransaction *transaction = [self createUploadRequestTransaction];
@@ -113,7 +113,7 @@
             data.etag = etag;
             data.state = QNUploadStateComplete;
             [self recordUploadInfo];
-            [self notifyProgress];
+            [self notifyProgress:false];
         } else {
             data.state = QNUploadStateWaitToUpload;
         }
@@ -136,7 +136,9 @@
     [transaction completeParts:self.fileName uploadId:uploadInfo.uploadId partInfoArray:partInfoArray complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         kQNStrongSelf;
         kQNStrongObj(transaction);
-        
+        if (responseInfo.isOK) {
+            [self notifyProgress:true];
+        }
         completeHandler(responseInfo, metrics, response);
         [self destroyUploadRequestTransaction:transaction];
     }];

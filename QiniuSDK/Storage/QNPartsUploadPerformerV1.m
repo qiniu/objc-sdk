@@ -72,7 +72,7 @@
     void (^progress)(long long, long long) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
         kQNStrongSelf;
         chunk.uploadSize = totalBytesWritten;
-        [self notifyProgress];
+        [self notifyProgress:false];
     };
     
     void (^completeHandlerP)(QNResponseInfo *, QNUploadRegionRequestMetrics *, NSDictionary *) = ^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
@@ -83,7 +83,7 @@
             block.context = blockContext;
             chunk.state = QNUploadStateComplete;
             [self recordUploadInfo];
-            [self notifyProgress];
+            [self notifyProgress:false];
         } else {
             chunk.state = QNUploadStateWaitToUpload;
         }
@@ -114,7 +114,9 @@
                  complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
         kQNStrongSelf;
         kQNStrongObj(transaction);
-        
+        if (responseInfo.isOK) {
+            [self notifyProgress:true];
+        }
         completeHandler(responseInfo, metrics, response);
         [self destroyUploadRequestTransaction:transaction];
     }];

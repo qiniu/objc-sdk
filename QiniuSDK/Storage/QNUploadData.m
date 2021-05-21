@@ -79,9 +79,9 @@
 
 - (long long)uploadSize {
     if (self.state == QNUploadStateComplete) {
-        return self.size;
+        return _size;
     } else {
-        return self.uploadSize;
+        return _uploadSize;
     }
 }
 

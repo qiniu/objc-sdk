@@ -17,6 +17,15 @@
 typedef void (^QNUpProgressHandler)(NSString *key, float percent);
 
 /**
+ * 上传进度回调函数
+ *
+ * @param key         上传文件的保存文件名
+ * @param uploadBytes 已上传大小
+ * @param totalBytes  总大小；无法获取大小时为 -1
+ */
+typedef void (^QNUpByteProgressHandler)(NSString *key, long long uploadBytes, long long totalBytes);
+
+/**
  *    上传中途取消函数
  *
  *    @return 如果想取消，返回True, 否则返回No
@@ -54,6 +63,13 @@ typedef BOOL (^QNUpCancellationSignal)(void);
 @property (copy, readonly) QNUpProgressHandler progressHandler;
 
 /**
+ *    进度回调函数
+ *    注：
+ *      使用此接口，progressHandler 会无效
+ */
+@property (copy, readonly) QNUpByteProgressHandler byteProgressHandler;
+
+/**
  *    中途取消函数
  */
 @property (copy, readonly) QNUpCancellationSignal cancellationSignal;
@@ -71,6 +87,12 @@ typedef BOOL (^QNUpCancellationSignal)(void);
  */
 - (instancetype)initWithMime:(NSString *)mimeType
              progressHandler:(QNUpProgressHandler)progress
+                      params:(NSDictionary *)params
+                    checkCrc:(BOOL)check
+          cancellationSignal:(QNUpCancellationSignal)cancellation;
+
+- (instancetype)initWithMime:(NSString *)mimeType
+         byteProgressHandler:(QNUpByteProgressHandler)progress
                       params:(NSDictionary *)params
                     checkCrc:(BOOL)check
           cancellationSignal:(QNUpCancellationSignal)cancellation;
@@ -95,7 +117,16 @@ typedef BOOL (^QNUpCancellationSignal)(void);
                     checkCrc:(BOOL)check
           cancellationSignal:(QNUpCancellationSignal)cancellation;
 
+- (instancetype)initWithMime:(NSString *)mimeType
+         byteProgressHandler:(QNUpByteProgressHandler)progress
+                      params:(NSDictionary *)params
+              metaDataParams:(NSDictionary *)metaDataParams
+                    checkCrc:(BOOL)check
+          cancellationSignal:(QNUpCancellationSignal)cancellation;
+
 - (instancetype)initWithProgressHandler:(QNUpProgressHandler)progress;
+
+- (instancetype)initWithByteProgressHandler:(QNUpByteProgressHandler)progress;
 
 /**
  *    内部使用，默认的参数实例
