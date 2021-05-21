@@ -191,7 +191,7 @@
     }
     
     QNUploadData*loadData = [self loadData:data error:error];
-    if (error) {
+    if (*error != nil) {
         self.readError = *error;
         return nil;
     }

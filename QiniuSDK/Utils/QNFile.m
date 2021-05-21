@@ -83,7 +83,8 @@
     @try {
         [_lock lock];
         if (_data != nil) {
-            data = [_data subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
+            NSInteger realSize = MIN(size, _data.length - offset);
+            data = [_data subdataWithRange:NSMakeRange(offset, realSize)];
         } else {
             [_file seekToFileOffset:offset];
             data = [_file readDataOfLength:size];

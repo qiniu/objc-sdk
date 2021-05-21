@@ -35,7 +35,7 @@
 
 - (NSDictionary *)toDictionary {
     return @{@"sourceSize" : @(self.sourceSize),
-             @"sourceId" : self.sourceId};
+             @"sourceId" : self.sourceId ?: @""};
 }
 
 - (BOOL)hasValidResource {

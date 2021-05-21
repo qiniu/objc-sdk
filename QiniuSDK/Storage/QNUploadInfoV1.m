@@ -183,7 +183,7 @@
     }
     
     QNUploadBlock *loadBlock = [self loadBlockData:block error:error];
-    if (error) {
+    if (*error != nil) {
         self.readError = *error;
         return nil;
     }
@@ -278,7 +278,6 @@
             // 还未上传的
             data.data = [blockBytes subdataWithRange:NSMakeRange(data.offset, data.size)];
             data.state = QNUploadStateWaitToUpload;
-            return nil;;
         } else {
             // 已经上传的
             data.state = QNUploadStateComplete;
@@ -303,7 +302,7 @@
     NSMutableArray *contexts = [NSMutableArray array];
     for (QNUploadBlock *block in self.blockList) {
         if (block.context && block.context.length > 0) {
-            [contexts addObject:block];
+            [contexts addObject:block.context];
         }
     }
     return [contexts copy];
