@@ -139,6 +139,7 @@
     dictionary[@"offset"] = @(self.offset);
     dictionary[@"size"]   = @(self.size);
     dictionary[@"index"]  = @(self.index);
+    dictionary[@"md5"]    = self.md5 ?: @"";
     if (self.context) {
         dictionary[@"context"] = self.context;
     }
