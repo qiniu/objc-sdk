@@ -64,7 +64,7 @@
     info.dataSize = dataSize;
     info.blockList = blockList;
     
-    if (![type isEqualToString:kTypeValue] || [[source getId] isEqualToString:[info getSourceId]]) {
+    if (![type isEqualToString:kTypeValue] || ![[source getId] isEqualToString:[info getSourceId]]) {
         return nil;
     } else {
         return info;
@@ -145,7 +145,7 @@
     if (dictionary == nil) {
         dictionary = [NSMutableDictionary dictionary];
     }
-    [dictionary setObject:kQNUploadInfoTypeKey forKey:kTypeValue];
+    [dictionary setObject:kTypeValue forKey:kQNUploadInfoTypeKey];
     [dictionary setObject:@(self.dataSize) forKey:@"dataSize"];
     
     if (self.blockList != nil && self.blockList.count != 0) {

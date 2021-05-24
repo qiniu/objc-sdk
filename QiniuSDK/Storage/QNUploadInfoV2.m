@@ -69,11 +69,23 @@
     info.dataSize = dataSize;
     info.dataList = dataList;
     
-    if (![type isEqualToString:kTypeValue] || [[source getId] isEqualToString:[info getSourceId]]) {
+    if (![type isEqualToString:kTypeValue] || ![[source getId] isEqualToString:[info getSourceId]]) {
         return nil;
     } else {
         return info;
     }
+}
+
+- (BOOL)isValid {
+    if (![super isValid]) {
+        return false;
+    }
+    
+    if (!self.expireAt || !self.uploadId || self.uploadId.length == 0) {
+        return false;
+    }
+    
+    return self.expireAt.doubleValue > [[NSDate date] timeIntervalSince1970] - 24*3600;
 }
 
 - (BOOL)reloadSource {
@@ -146,7 +158,7 @@
     if (dictionary == nil) {
         dictionary = [NSMutableDictionary dictionary];
     }
-    [dictionary setObject:kQNUploadInfoTypeKey forKey:kTypeValue];
+    [dictionary setObject:kTypeValue forKey:kQNUploadInfoTypeKey];
     [dictionary setObject:@(self.dataSize) forKey:@"dataSize"];
     [dictionary setObject:self.expireAt ?: 0 forKey:@"expireAt"];
     [dictionary setObject:self.uploadId ?: @"" forKey:@"uploadId"];

@@ -71,10 +71,10 @@
 - (void)initData {
     self.uploadTransactions = [NSMutableArray array];
     
-    [self recoverUploadInfoFromRecord];
     if (!self.uploadInfo) {
         self.uploadInfo = [self getDefaultUploadInfo];
     }
+    [self recoverUploadInfoFromRecord];
 }
 
 - (void)switchRegion:(id <QNUploadRegion>)region {

@@ -63,7 +63,7 @@
 }
 
 - (void)setState:(QNUploadState)state {
-    switch (self.state) {
+    switch (state) {
         case QNUploadStateNeedToCheck:
         case QNUploadStateWaitToUpload:
         case QNUploadStateUploading:

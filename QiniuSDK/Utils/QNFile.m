@@ -78,14 +78,14 @@
 - (NSData *)read:(long)offset
             size:(long)size
            error:(NSError **)error {
-    
+
     NSData *data = nil;
     @try {
         [_lock lock];
-        if (_data != nil) {
+        if (_data != nil && offset < _data.length) {
             NSInteger realSize = MIN(size, _data.length - offset);
             data = [_data subdataWithRange:NSMakeRange(offset, realSize)];
-        } else {
+        } else if (_file != nil) {
             [_file seekToFileOffset:offset];
             data = [_file readDataOfLength:size];
         }

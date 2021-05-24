@@ -63,7 +63,7 @@
 }
 
 - (BOOL)isSameUploadInfo:(QNUploadInfo *)info {
-    if (info == nil || ![self.sourceId isEqualToString:info.sourceId]) {
+    if (info == nil || ((self.sourceId.length > 0 || info.sourceId.length > 0) && ![self.sourceId isEqualToString:info.sourceId])) {
         return false;
     }
     

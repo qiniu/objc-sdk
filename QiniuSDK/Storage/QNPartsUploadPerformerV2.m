@@ -100,7 +100,7 @@
     
     kQNWeakObj(transaction);
     [transaction uploadPart:uploadInfo.uploadId
-                  partIndex:data.index
+                  partIndex:[uploadInfo getPartIndexOfData:data]
                    partData:data.data
                    progress:progress
                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {

@@ -141,6 +141,13 @@
                 return;
             }
             
+            // 只有再读取结束再能知道文件大小，需要检测
+            if ([self.uploadPerformer.uploadInfo getSourceSize] == 0) {
+                QNResponseInfo *responseInfo = [QNResponseInfo responseInfoOfZeroData:@"file is empty"];
+                [self complete:responseInfo response:responseInfo.responseDictionary];
+                return;
+            }
+            
             QNLogInfo(@"key:%@ completeUpload", self.key);
             
             // 3. 组装文件
