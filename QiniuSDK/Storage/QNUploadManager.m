@@ -151,105 +151,21 @@
     });
 }
 
-- (void)putFileInternal:(id<QNFileDelegate>)file
-                    key:(NSString *)key
-                  token:(NSString *)token
-               complete:(QNUpCompletionHandler)completionHandler
-                 option:(QNUploadOption *)option {
-    [self putInternal:[QNUploadSourceFile file:file]
-                  key:key token:token
-             complete:completionHandler
-               option:option];
-}
-
-- (void)putInternal:(id<QNUploadSource>)source
-                key:(NSString *)key
-              token:(NSString *)token
-           complete:(QNUpCompletionHandler)completionHandler
-             option:(QNUploadOption *)option {
+- (void)putInputStream:(id <QNInputStream>)inputStream
+              sourceId:(NSString *)sourceId
+              fileName:(NSString *)fileName
+                   key:(NSString *)key
+                 token:(NSString *)token
+              complete:(QNUpCompletionHandler)completionHandler
+                option:(QNUploadOption *)option {
     
+    if ([QNUploadManager checkAndNotifyError:key token:token input:inputStream complete:completionHandler]) {
+        return;
+    }
+
     @autoreleasepool {
-        QNUpToken *t = [QNUpToken parse:token];
-        if (t == nil || ![t isValid]) {
-            QNResponseInfo *info = [QNResponseInfo responseInfoWithInvalidToken:@"invalid token"];
-            [QNUploadManager complete:token
-                                  key:key
-                         responseInfo:info
-                             response:nil
-                          taskMetrics:nil
-                             complete:completionHandler];
-            return;
-        }
-
-
-        QNUpTaskCompletionHandler complete = ^(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp) {
-            [QNUploadManager complete:token
-                                  key:key
-                         responseInfo:info
-                             response:resp
-                          taskMetrics:metrics
-                             complete:completionHandler];
-        };
-
-        [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone token:t];
-
-        long long sourceSize = [source getSize];
-        if (sourceSize > 0 && sourceSize <= self.config.putThreshold) {
-            NSError *error;
-            NSData *data = [source readData:sourceSize dataOffset:0 error:&error];
-            [source close];
-            if (error) {
-                QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
-                [QNUploadManager complete:token
-                                      key:key
-                             responseInfo:info
-                                 response:nil
-                              taskMetrics:nil
-                                 complete:completionHandler];
-                return;
-            }
-            
-            [self putData:data
-                 fileName:[source getFileName]
-                      key:key
-                    token:token
-                 complete:completionHandler
-                   option:option];
-            return;
-        }
-
-        NSString *recorderKey = key;
-        if (self.config.recorder != nil && self.config.recorderKeyGen != nil) {
-            recorderKey = self.config.recorderKeyGen(key, [source getId]);
-        }
-        
-        if (self.config.useConcurrentResumeUpload) {
-            QNConcurrentResumeUpload *up = [[QNConcurrentResumeUpload alloc]
-                                            initWithSource:source
-                                            key:key
-                                            token:t
-                                            option:option
-                                            configuration:self.config
-                                            recorder:self.config.recorder
-                                            recorderKey:recorderKey
-                                            completionHandler:complete];
-            QNAsyncRun(^{
-                [up run];
-            });
-        } else {
-            QNPartsUpload *up = [[QNPartsUpload alloc]
-                                 initWithSource:source
-                                 key:key
-                                 token:t
-                                 option:option
-                                 configuration:self.config
-                                 recorder:self.config.recorder
-                                 recorderKey:recorderKey
-                                 completionHandler:complete];
-            QNAsyncRun(^{
-                [up run];
-            });
-        }
+        QNUploadSourceStream *source = [QNUploadSourceStream stream:inputStream sourceId:sourceId fileName:fileName];
+        [self putInternal:source key:key token:token complete:completionHandler option:option];
     }
 }
 
@@ -366,6 +282,108 @@
         [self putFileInternal:file key:key token:token complete:completionHandler option:option];
     }
 #endif
+}
+
+- (void)putFileInternal:(id<QNFileDelegate>)file
+                    key:(NSString *)key
+                  token:(NSString *)token
+               complete:(QNUpCompletionHandler)completionHandler
+                 option:(QNUploadOption *)option {
+    [self putInternal:[QNUploadSourceFile file:file]
+                  key:key token:token
+             complete:completionHandler
+               option:option];
+}
+
+- (void)putInternal:(id<QNUploadSource>)source
+                key:(NSString *)key
+              token:(NSString *)token
+           complete:(QNUpCompletionHandler)completionHandler
+             option:(QNUploadOption *)option {
+    
+    @autoreleasepool {
+        QNUpToken *t = [QNUpToken parse:token];
+        if (t == nil || ![t isValid]) {
+            QNResponseInfo *info = [QNResponseInfo responseInfoWithInvalidToken:@"invalid token"];
+            [QNUploadManager complete:token
+                                  key:key
+                         responseInfo:info
+                             response:nil
+                          taskMetrics:nil
+                             complete:completionHandler];
+            return;
+        }
+
+
+        QNUpTaskCompletionHandler complete = ^(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp) {
+            [QNUploadManager complete:token
+                                  key:key
+                         responseInfo:info
+                             response:resp
+                          taskMetrics:metrics
+                             complete:completionHandler];
+        };
+
+        [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone token:t];
+
+        long long sourceSize = [source getSize];
+        if (sourceSize > 0 && sourceSize <= self.config.putThreshold) {
+            NSError *error;
+            NSData *data = [source readData:sourceSize dataOffset:0 error:&error];
+            [source close];
+            if (error) {
+                QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
+                [QNUploadManager complete:token
+                                      key:key
+                             responseInfo:info
+                                 response:nil
+                              taskMetrics:nil
+                                 complete:completionHandler];
+                return;
+            }
+            
+            [self putData:data
+                 fileName:[source getFileName]
+                      key:key
+                    token:token
+                 complete:completionHandler
+                   option:option];
+            return;
+        }
+
+        NSString *recorderKey = key;
+        if (self.config.recorder != nil && self.config.recorderKeyGen != nil) {
+            recorderKey = self.config.recorderKeyGen(key, [source getId]);
+        }
+        
+        if (self.config.useConcurrentResumeUpload) {
+            QNConcurrentResumeUpload *up = [[QNConcurrentResumeUpload alloc]
+                                            initWithSource:source
+                                            key:key
+                                            token:t
+                                            option:option
+                                            configuration:self.config
+                                            recorder:self.config.recorder
+                                            recorderKey:recorderKey
+                                            completionHandler:complete];
+            QNAsyncRun(^{
+                [up run];
+            });
+        } else {
+            QNPartsUpload *up = [[QNPartsUpload alloc]
+                                 initWithSource:source
+                                 key:key
+                                 token:t
+                                 option:option
+                                 configuration:self.config
+                                 recorder:self.config.recorder
+                                 recorderKey:recorderKey
+                                 completionHandler:complete];
+            QNAsyncRun(^{
+                [up run];
+            });
+        }
+    }
 }
 
 + (BOOL)checkAndNotifyError:(NSString *)key

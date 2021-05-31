@@ -7,12 +7,15 @@
 //
 
 #import "QNUploadSource.h"
+#import "QNInputStream.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface QNUploadSourceStream : NSObject <QNUploadSource>
 
-+ (instancetype)stream:(NSInputStream *)stream;
++ (instancetype)stream:(id <QNInputStream> _Nonnull)stream
+              sourceId:(NSString * _Nullable)sourceId
+              fileName:(NSString * _Nullable)fileName;
 
 @end
 

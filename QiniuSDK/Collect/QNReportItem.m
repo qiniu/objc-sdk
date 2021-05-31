@@ -110,15 +110,14 @@
         errorType = @"cannot_connect_to_host";
     } else if (self.statusCode == -1005 || self.statusCode == -1021){
         errorType = @"transmission_error";
-    } else if (self.statusCode == -1200 || self.statusCode == -1201 || self.statusCode == -1202
-               || self.statusCode == -1203 || self.statusCode == -1204 || self.statusCode == -1205
-               || self.statusCode == -1206 || self.statusCode == -9807){
+    } else if ((self.statusCode <= -1200 && self.statusCode >= -1206) || self.statusCode == -2000 || self.statusCode == -9807){
         errorType = @"ssl_error";
     } else if (self.statusCode == -1015 || self.statusCode == -1016 || self.statusCode == -1017){
         errorType = @"parse_error";
     } else if (self.statusCode == -1007 || self.statusCode == -1010 || self.statusCode == kQNMaliciousResponseError){
         errorType = @"malicious_response";
-    } else if (self.statusCode == kQNUnexpectedSysCallError || (self.statusCode > -1130 && self.statusCode <= -1100)){
+    } else if (self.statusCode == kQNUnexpectedSysCallError
+               || (self.statusCode > -1130 && self.statusCode <= -1010)){
         errorType = @"unexpected_syscall_error";
     } else if (self.statusCode == kQNRequestCancelled
                || self.statusCode == NSURLErrorCancelled){

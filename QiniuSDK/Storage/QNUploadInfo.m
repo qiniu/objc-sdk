@@ -93,7 +93,7 @@
 
 - (NSData *)readData:(NSInteger)dataSize dataOffset:(long)dataOffset error:(NSError **)error {
     if (!self.source) {
-        *error = [NSError errorWithDomain:NSStreamSOCKSErrorDomain code:kQNLocalIOError userInfo:@{@"userInfo" : @"file is not exist"}];
+        *error = [NSError errorWithDomain:NSStreamSOCKSErrorDomain code:kQNLocalIOError userInfo:@{NSLocalizedDescriptionKey : @"file is not exist"}];
         return nil;
     }
     
