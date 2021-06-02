@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNDefine.h"
 #import "QNLogUtil.h"
 #import "QNUploadBaseTest.h"
 
@@ -35,14 +36,35 @@
     }
 }
 
-- (void)uploadFileAndAssertSuccessResult:(QNTempFile *)tempFile
-                                     key:(NSString *)key
-                                  config:(QNConfiguration *)config
-                                  option:(QNUploadOption *)option{
+- (void)allFileTypeUploadAndAssertSuccessResult:(QNTempFile *)tempFile
+                                            key:(NSString *)key
+                                         config:(QNConfiguration *)config
+                                         option:(QNUploadOption *)option {
+    BOOL canRemove = tempFile.canRemove;
+    tempFile.canRemove = false;
+    tempFile.fileType = QNTempFileTypeData;
+    [self uploadAndAssertSuccessResult:tempFile key:key config:config option:option];
+    
+    tempFile.fileType = QNTempFileTypeFile;
+    [self uploadAndAssertSuccessResult:tempFile key:key config:config option:option];
+    
+    tempFile.fileType = QNTempFileTypeStream;
+    [self uploadAndAssertSuccessResult:tempFile key:key config:config option:option];
+    
+    tempFile.canRemove = canRemove;
+    tempFile.fileType = QNTempFileTypeStreamNoSize;
+    [self uploadAndAssertSuccessResult:tempFile key:key config:config option:option];
+}
+
+- (void)uploadAndAssertSuccessResult:(QNTempFile *)tempFile
+                                 key:(NSString *)key
+                              config:(QNConfiguration *)config
+                              option:(QNUploadOption *)option{
     
     __block QNResponseInfo *responseInfo = nil;
     __block NSString *keyUp = nil;
-    [self uploadFile:tempFile key:key config:config option:option complete:^(QNResponseInfo *i, NSString *k) {
+    
+    [self upload:tempFile key:key config:config option:option complete:^(QNResponseInfo *i, NSString *k) {
         
         responseInfo = i;
         keyUp = k;
@@ -51,28 +73,60 @@
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     XCTAssertTrue(responseInfo.isOK, @"response info:%@", responseInfo);
     XCTAssertTrue(responseInfo.reqId, @"response info:%@", responseInfo);
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@ key:%@", keyUp, key);
 }
 
-- (void)uploadFileAndAssertResult:(int)statusCode
-                         tempFile:(QNTempFile *)tempFile
-                              key:(NSString *)key
-                           config:(QNConfiguration *)config
-                           option:(QNUploadOption *)option{
+
+- (void)allFileTypeUploadAndAssertResult:(int)statusCode
+                                tempFile:(QNTempFile *)tempFile
+                                     key:(NSString *)key
+                                  config:(QNConfiguration *)config
+                                  option:(QNUploadOption *)option {
     
-    [self uploadFileAndAssertResult:statusCode tempFile:tempFile token:token_na0 key:key config:config option:option];
+    [self allFileTypeUploadAndAssertResult:statusCode tempFile:tempFile token:token_na0 key:key config:config option:option];
 }
 
-- (void)uploadFileAndAssertResult:(int)statusCode
-                         tempFile:(QNTempFile *)tempFile
-                            token:(NSString * _Nullable)token
-                              key:(NSString *)key
-                           config:(QNConfiguration *)config
-                           option:(QNUploadOption *)option{
+- (void)uploadAndAssertResult:(int)statusCode
+                     tempFile:(QNTempFile *)tempFile
+                          key:(NSString *)key
+                       config:(QNConfiguration *)config
+                       option:(QNUploadOption *)option{
+    
+    [self uploadAndAssertResult:statusCode tempFile:tempFile token:token_na0 key:key config:config option:option];
+}
+
+- (void)allFileTypeUploadAndAssertResult:(int)statusCode
+                                tempFile:(QNTempFile *)tempFile
+                                   token:(NSString * _Nullable)token
+                                     key:(NSString *)key
+                                  config:(QNConfiguration *)config
+                                  option:(QNUploadOption *)option {
+    
+    BOOL canRemove = tempFile.canRemove;
+    tempFile.canRemove = false;
+    tempFile.fileType = QNTempFileTypeData;
+    [self uploadAndAssertResult:statusCode tempFile:tempFile token:token key:key config:config option:option];
+    
+    tempFile.fileType = QNTempFileTypeFile;
+    [self uploadAndAssertResult:statusCode tempFile:tempFile token:token key:key config:config option:option];
+    
+    tempFile.fileType = QNTempFileTypeStream;
+    [self uploadAndAssertResult:statusCode tempFile:tempFile token:token key:key config:config option:option];
+    
+    tempFile.canRemove = canRemove;
+    tempFile.fileType = QNTempFileTypeStreamNoSize;
+    [self uploadAndAssertResult:statusCode tempFile:tempFile token:token key:key config:config option:option];
+}
+
+- (void)uploadAndAssertResult:(int)statusCode
+                     tempFile:(QNTempFile *)tempFile
+                        token:(NSString * _Nullable)token
+                          key:(NSString *)key
+                       config:(QNConfiguration *)config
+                       option:(QNUploadOption *)option {
    
     __block QNResponseInfo *responseInfo = nil;
     __block NSString *keyUp = nil;
-    [self uploadFile:tempFile token:token key:key config:config option:option complete:^(QNResponseInfo *i, NSString *k) {
+    [self upload:tempFile token:token key:key config:config option:option complete:^(QNResponseInfo *i, NSString *k) {
         
         responseInfo = i;
         keyUp = k;
@@ -80,111 +134,96 @@
     
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     XCTAssertTrue(responseInfo.statusCode == statusCode, @"response info:%@", responseInfo);
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@ key:%@", keyUp, key);
 }
 
-- (void)uploadFile:(QNTempFile *)tempFile
-               key:(NSString *)key
-            config:(QNConfiguration *)config
-            option:(QNUploadOption *)option
-          complete:(void(^)(QNResponseInfo *responseInfo, NSString *key))complete{
+- (void)upload:(QNTempFile *)tempFile
+           key:(NSString *)key
+        config:(QNConfiguration *)config
+        option:(QNUploadOption *)option
+      complete:(void(^)(QNResponseInfo *responseInfo, NSString *key))complete{
     
-    [self uploadFile:tempFile token:token_na0 key:key config:config option:option complete:complete];
+    [self upload:tempFile token:token_na0 key:key config:config option:option complete:complete];
 }
 
-- (void)uploadFile:(QNTempFile *)tempFile
-             token:(NSString *)token
-               key:(NSString *)key
-            config:(QNConfiguration *)config
-            option:(QNUploadOption *)option
-          complete:(void(^)(QNResponseInfo *responseInfo, NSString *key))complete {
+- (void)upload:(QNTempFile *)tempFile
+         token:(NSString *)token
+           key:(NSString *)key
+        config:(QNConfiguration *)config
+        option:(QNUploadOption *)option
+      complete:(void(^)(QNResponseInfo *responseInfo, NSString *key))complete {
     if (!option) {
         option = self.defaultOption;
     }
-    QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
-    [upManager putFile:tempFile.fileUrl.path key:key token:token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        
-        if (complete) {
-            complete(info, key);
-        }
-        NSLog(@"key:%@ responseInfo:%@", key, info);
-        [tempFile remove];
-    } option:option];
-}
-
-
-- (void)uploadDataAndAssertSuccessResult:(NSData *)data
-                                     key:(NSString *)key
-                                  config:(QNConfiguration *)config
-                                  option:(QNUploadOption *)option{
-    
-    __block QNResponseInfo *responseInfo = nil;
-    __block NSString *keyUp = nil;
-    [self uploadData:data key:key config:config option:option complete:^(QNResponseInfo *i, NSString *k) {
-        
-        responseInfo = i;
-        keyUp = k;
-    }];
-    
-    AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
-    XCTAssertTrue(responseInfo.isOK, @"response info:%@", responseInfo);
-    XCTAssertTrue(responseInfo.reqId, @"response info:%@", responseInfo);
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@ key:%@", keyUp, key);
-}
-
-- (void)uploadDataAndAssertResult:(int)statusCode
-                             data:(NSData *)data
-                              key:(NSString *)key
-                           config:(QNConfiguration *)config
-                           option:(QNUploadOption *)option {
-    [self uploadDataAndAssertResult:statusCode data:data token:token_na0 key:key config:config option:option];
-}
-
-- (void)uploadDataAndAssertResult:(int)statusCode
-                             data:(NSData *)data
-                            token:(NSString *)token
-                              key:(NSString *)key
-                           config:(QNConfiguration *)config
-                           option:(QNUploadOption *)option {
-    __block QNResponseInfo *responseInfo = nil;
-    __block NSString *keyUp = nil;
-    [self uploadData:data token:token key:key config:config option:option complete:^(QNResponseInfo *i, NSString *k) {
-        
-        responseInfo = i;
-        keyUp = k;
-    }];
-    
-    AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
-    XCTAssertTrue(responseInfo.statusCode == statusCode, @"response info:%@", responseInfo);
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@ key:%@", keyUp, key);
-}
-
-- (void)uploadData:(NSData *)data
-               key:(NSString *)key
-            config:(QNConfiguration *)config
-            option:(QNUploadOption *)option
-          complete:(void(^)(QNResponseInfo *responseInfo, NSString *key))complete{
-    
-    [self uploadData:data token:token_na0 key:key config:config option:option complete:complete];
-}
-
-- (void)uploadData:(NSData *)data
-             token:(NSString *)token
-               key:(NSString *)key
-            config:(QNConfiguration *)config
-            option:(QNUploadOption *)option
-          complete:(void(^)(QNResponseInfo *responseInfo, NSString *key))complete{
-    if (!option) {
-        option = self.defaultOption;
+    BOOL shouldCheckHash = YES;
+    if (tempFile.size < 1 || (config.resumeUploadVersion == QNResumeUploadVersionV2 && config.chunkSize != kQNBlockSize)) {
+        shouldCheckHash = NO;
     }
+    
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
-    [upManager putData:data key:key token:token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *response) {
-
-        if (complete) {
-            complete(info, key);
+    if (tempFile.fileType == QNTempFileTypeData) {
+        key = [NSString stringWithFormat:@"%@_data", key];
+        
+        kQNWeakSelf;
+        [upManager putData:tempFile.data key:key token:token complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
+            kQNStrongSelf;
+            XCTAssertTrue([self versionUploadKey:key responseKey:k], @"keyUp:%@ key:%@", key, k);
+            if (shouldCheckHash && info.isOK) {
+                NSString *serverHash = resp[@"hash"];
+                XCTAssertTrue([tempFile.fileHash isEqualToString:serverHash], @"hash:%@ serverHash:%@", tempFile.fileHash, serverHash);
+            }
+            
+            if (complete) {
+                complete(info, key);
+            }
+            NSLog(@"key:%@ responseInfo:%@", key, info);
+            if (tempFile.canRemove) {
+                [tempFile remove];
+            }
+        } option:option];
+    } else if (tempFile.fileType == QNTempFileTypeStream || tempFile.fileType == QNTempFileTypeStreamNoSize) {
+        if (tempFile.fileType == QNTempFileTypeStream) {
+            key = [NSString stringWithFormat:@"%@_stream_has_size", key];
+        } else {
+            key = [NSString stringWithFormat:@"%@_stream_no_size", key];
         }
-        NSLog(@"key:%@ responseInfo:%@", key, info);
-    } option:option];
+        kQNWeakSelf;
+        [upManager putInputStream:tempFile.inputStream sourceId:key size:tempFile.size fileName:key key:key token:token complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
+            kQNStrongSelf;
+            XCTAssertTrue([self versionUploadKey:key responseKey:k], @"keyUp:%@ key:%@", key, k);
+            if (shouldCheckHash && info.isOK) {
+                NSString *serverHash = resp[@"hash"];
+                XCTAssertTrue([tempFile.fileHash isEqualToString:serverHash], @"hash:%@ serverHash:%@", tempFile.fileHash, serverHash);
+            }
+            
+            if (complete) {
+                complete(info, key);
+            }
+            NSLog(@"key:%@ responseInfo:%@", key, info);
+            if (tempFile.canRemove) {
+                [tempFile remove];
+            }
+        } option:option];
+    } else {
+        key = [NSString stringWithFormat:@"%@_file", key];
+        kQNWeakSelf;
+        [upManager putFile:tempFile.fileUrl.path key:key token:token complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
+            kQNStrongSelf;
+            XCTAssertTrue([self versionUploadKey:key responseKey:k], @"keyUp:%@ key:%@", key, k);
+            if (shouldCheckHash && info.isOK) {
+                NSString *serverHash = resp[@"hash"];
+                XCTAssertTrue([tempFile.fileHash isEqualToString:serverHash], @"hash:%@ serverHash:%@", tempFile.fileHash, serverHash);
+            }
+            
+            if (complete) {
+                complete(info, key);
+            }
+            NSLog(@"key:%@ responseInfo:%@", key, info);
+            if (tempFile.canRemove) {
+                [tempFile remove];
+            }
+        } option:option];
+    }
+    
 }
 
 @end

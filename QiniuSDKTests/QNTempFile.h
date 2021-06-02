@@ -8,12 +8,26 @@
 
 #import <Foundation/Foundation.h>
 
+#import "QNInputStream.h"
+
+typedef NS_ENUM(NSInteger, QNTempFileType) {
+    QNTempFileTypeNone = 0,
+    QNTempFileTypeData,
+    QNTempFileTypeFile,
+    QNTempFileTypeStream,
+    QNTempFileTypeStreamNoSize,
+};
+
 @interface QNTempFile : NSObject
 
 @property(nonatomic, assign)BOOL canRemove;
 @property(nonatomic, assign)long long size;
 @property(nonatomic, strong)NSURL *fileUrl;
 @property(nonatomic,  copy, readonly)NSString *fileHash;
+@property(nonatomic, strong, readonly)NSInputStream *inputStream;
+@property(nonatomic, strong, readonly)NSData *data;
+
+@property(nonatomic, assign)QNTempFileType fileType;
 
 + (QNTempFile *)createTempFileWithSize:(int)size;
 + (QNTempFile *)createTempFileWithSize:(int)size

@@ -32,7 +32,7 @@
         int size = (i + 1) * 50;
         NSString *keyUp = [NSString stringWithFormat:@"complex_upload_v1_%dk", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:size * 1024 identifier:keyUp];
-        [self uploadFile:tempFile key:keyUp config:config option:nil complete:^(QNResponseInfo * _Nonnull responseInfo, NSString * _Nonnull key) {
+        [self upload:tempFile key:keyUp config:config option:nil complete:^(QNResponseInfo * _Nonnull responseInfo, NSString * _Nonnull key) {
             NSLog(@"complex_upload v1 response info: %@", responseInfo);
             @synchronized (self) {
                 if (responseInfo.isOK) {
@@ -66,7 +66,7 @@
         int size = (i + 1) * 50;
         NSString *keyUp = [NSString stringWithFormat:@"complex_100_upload_v1_%dk", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:size * 1024 identifier:keyUp];
-        [self uploadFile:tempFile key:keyUp config:config option:nil complete:^(QNResponseInfo * _Nonnull responseInfo, NSString * _Nonnull key) {
+        [self upload:tempFile key:keyUp config:config option:nil complete:^(QNResponseInfo * _Nonnull responseInfo, NSString * _Nonnull key) {
             NSLog(@"complex_100_upload v1 response info: %@", responseInfo);
             @synchronized (self) {
                 if (responseInfo.isOK || responseInfo.statusCode == 614) {
@@ -100,7 +100,7 @@
         int size = (i + 1) * 50;
         NSString *keyUp = [NSString stringWithFormat:@"complex_upload_v2_%dk", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:size * 1024 identifier:keyUp];
-        [self uploadFile:tempFile key:keyUp config:config option:nil complete:^(QNResponseInfo * _Nonnull responseInfo, NSString * _Nonnull key) {
+        [self upload:tempFile key:keyUp config:config option:nil complete:^(QNResponseInfo * _Nonnull responseInfo, NSString * _Nonnull key) {
             NSLog(@"complex_upload v2 response info: %@", responseInfo);
             @synchronized (self) {
                 if (responseInfo.isOK) {
@@ -134,7 +134,7 @@
         int size = (i + 1) * 50;
         NSString *keyUp = [NSString stringWithFormat:@"complex_100_upload_v2_%dk", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:size * 1024 identifier:keyUp];
-        [self uploadFile:tempFile key:keyUp config:config option:nil complete:^(QNResponseInfo * _Nonnull responseInfo, NSString * _Nonnull key) {
+        [self upload:tempFile key:keyUp config:config option:nil complete:^(QNResponseInfo * _Nonnull responseInfo, NSString * _Nonnull key) {
             NSLog(@"complex_100_upload v2 response info: %@", responseInfo);
             @synchronized (self) {
                 if (responseInfo.isOK || responseInfo.statusCode == 614) {

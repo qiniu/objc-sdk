@@ -40,7 +40,7 @@
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"form_switch_region_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
-        [self switchRegionTestWithFile:tempFile key:key config:config option:nil];
+        [self allFileTypeSwitchRegionTestWithFile:tempFile key:key config:config option:nil];
     }
 }
 
@@ -54,7 +54,7 @@
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"form_cancel_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
-        [self cancelTest:cancelPercent tempFile:tempFile key:key config:config option:nil];
+        [self allFileTypeCancelTest:cancelPercent tempFile:tempFile key:key config:config option:nil];
     }
 }
 
@@ -67,8 +67,7 @@
         for (NSNumber *size in sizeArray) {
             NSString *key = [NSString stringWithFormat:@"form_http_%@k", size];
             QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
-            NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
-            [self uploadDataAndAssertSuccessResult:data key:key config:config option:nil];
+            [self allFileTypeUploadAndAssertSuccessResult:tempFile key:key config:config option:nil];
         }
     }
 }
@@ -82,17 +81,16 @@
         for (NSNumber *size in sizeArray) {
             NSString *key = [NSString stringWithFormat:@"form_https_%@k", size];
             QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
-            NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
-            [self uploadDataAndAssertSuccessResult:data key:key config:config option:nil];
+            [self allFileTypeUploadAndAssertSuccessResult:tempFile key:key config:config option:nil];
         }
     }
 }
 
 - (void)testSmall {
-
+    NSString *key = @"你好:";
     QNUploadOption *opt = [[QNUploadOption alloc] initWithMime:@"text/plain" progressHandler:nil params:@{ @"x:foo" : @"bar" } checkCrc:YES cancellationSignal:nil];
-    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-    [self uploadDataAndAssertSuccessResult:data key:@"你好" config:nil option:opt];
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1 identifier:key];
+    [self allFileTypeUploadAndAssertSuccessResult:tempFile key:key config:nil option:opt];
 }
 
 // upload 100 file and calculate upload success rate
@@ -101,44 +99,38 @@
     for (int i=0; i<count; i++) {
         NSString *key = [NSString stringWithFormat:@"form_100_up_%dk", i];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1024 identifier:key];
-        NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
-        [self uploadDataAndAssertSuccessResult:data key:key config:nil option:nil];
+        [self allFileTypeUploadAndAssertSuccessResult:tempFile key:key config:nil option:nil];
     }
 }
 
 
 - (void)testUpUnAuth {
 
-    NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
+    NSString *key = @"form_no_auth";
+    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1 identifier:key];
     NSString *token = @"noAuth";
-    [self uploadDataAndAssertResult:kQNInvalidToken data:data token:token key:@"form_no_auth" config:nil option:nil];
+    [self allFileTypeUploadAndAssertResult:kQNInvalidToken tempFile:tempFile token:token key:@"form_no_auth" config:nil option:nil];
 }
 
 - (void)testNoData {
-    
-    [self uploadDataAndAssertResult:kQNZeroDataSize data:nil key:@"form_no_data" config:nil option:nil];
+    [self allFileTypeUploadAndAssertResult:kQNZeroDataSize tempFile:nil key:@"form_no_data" config:nil option:nil];
 }
 
 - (void)testNoFile {
-    
-    [self uploadFileAndAssertResult:kQNZeroDataSize tempFile:nil key:@"form_no_file" config:nil option:nil];
+    [self allFileTypeUploadAndAssertResult:kQNZeroDataSize tempFile:nil key:@"form_no_file" config:nil option:nil];
 }
 
 - (void)testNoToken {
     NSString *key = @"form_no_token";
     QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1024 identifier:key];
     tempFile.canRemove = NO;
-    NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
     
-    [self uploadFileAndAssertResult:kQNInvalidToken tempFile:tempFile token:nil key:key config:nil option:nil];
-    [self uploadDataAndAssertResult:kQNInvalidToken data:data token:nil key:key config:nil option:nil];
+    [self allFileTypeUploadAndAssertResult:kQNInvalidToken tempFile:tempFile token:nil key:key config:nil option:nil];
 
-    [self uploadFileAndAssertResult:kQNInvalidToken tempFile:tempFile token:@"" key:key config:nil option:nil];
-    [self uploadDataAndAssertResult:kQNInvalidToken data:data token:@"" key:key config:nil option:nil];
+    [self allFileTypeUploadAndAssertResult:kQNInvalidToken tempFile:tempFile token:@"" key:key config:nil option:nil];
     
     tempFile.canRemove = YES;
-    [self uploadFileAndAssertResult:kQNInvalidToken tempFile:tempFile token:@"ABC" key:key config:nil option:nil];
-    [self uploadDataAndAssertResult:kQNInvalidToken data:data token:@"ABC" key:key config:nil option:nil];
+    [self allFileTypeUploadAndAssertResult:kQNInvalidToken tempFile:tempFile token:@"ABC" key:key config:nil option:nil];
 }
 
 - (void)testNoComplete {
@@ -159,10 +151,7 @@
     
     NSString *key = @"form_no_key";
     QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1024 identifier:key];
-    NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
-    
-    [self uploadFileAndAssertSuccessResult:tempFile key:nil config:nil option:nil];
-    [self uploadDataAndAssertSuccessResult:data key:nil config:nil option:nil];
+    [self allFileTypeUploadAndAssertSuccessResult:tempFile key:nil config:nil option:nil];
 }
 
 
@@ -179,12 +168,8 @@
                                                          checkCrc:YES
                                                cancellationSignal:nil];
     NSString *file_key = @"form_custom_param_file";
-    NSString *data_key = @"form_custom_param_data";
     QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1024 identifier:file_key];
-    NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
-    
-    [self uploadFileAndAssertSuccessResult:tempFile key:file_key config:nil option:option];
-    [self uploadDataAndAssertSuccessResult:data key:data_key config:nil option:option];
+    [self allFileTypeUploadAndAssertSuccessResult:tempFile key:file_key config:nil option:option];
 }
 
 
@@ -239,9 +224,7 @@
     int size = 600;
     NSString *keyUp = [NSString stringWithFormat:@"form_convert_%dk", size];
     QNTempFile *tempFile = [QNTempFile createTempFileWithSize:size * 1024 identifier:keyUp];
-    NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
-    [self uploadFileAndAssertSuccessResult:tempFile key:keyUp config:config option:nil];
-    [self uploadDataAndAssertSuccessResult:data key:keyUp config:config option:nil];
+    [self allFileTypeUploadAndAssertSuccessResult:tempFile key:keyUp config:config option:nil];
 }
 
 //- (void)testDnsHosts {
@@ -281,9 +264,7 @@
 - (void)test0sizeData {
     NSString *key = @"form_0_size";
     QNTempFile *tempFile = [QNTempFile createTempFileWithSize:0 identifier:key];
-    NSData *data = [NSData dataWithContentsOfURL:tempFile.fileUrl];
-    [self uploadFileAndAssertResult:kQNZeroDataSize tempFile:tempFile key:nil config:nil option:nil];
-    [self uploadDataAndAssertResult:kQNZeroDataSize data:data key:nil config:nil option:nil];
+    [self allFileTypeUploadAndAssertResult:kQNZeroDataSize tempFile:tempFile key:nil config:nil option:nil];
 }
 
 @end
