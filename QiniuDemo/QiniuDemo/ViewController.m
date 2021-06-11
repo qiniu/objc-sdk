@@ -49,12 +49,12 @@ typedef NS_ENUM(NSInteger, UploadState){
     if (self.uploadState == UploadStatePrepare) {
     
 #ifdef YourToken
-//        NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource.dmg" ofType:nil];
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource.dmg" ofType:nil];
+//        NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
         
-        NSFileManager *manager = [NSFileManager defaultManager];
-        NSURL *desktopUrl = [manager URLsForDirectory:NSDesktopDirectory inDomains:NSUserDomainMask].firstObject;
-        path = [desktopUrl URLByAppendingPathComponent:@"pycharm.dmg"].path;
+//        NSFileManager *manager = [NSFileManager defaultManager];
+//        NSURL *desktopUrl = [manager URLsForDirectory:NSDesktopDirectory inDomains:NSUserDomainMask].firstObject;
+//        path = [desktopUrl URLByAppendingPathComponent:@"pycharm.dmg"].path;
         
         [self uploadImageToQNFilePath:path];
         [self changeUploadState:UploadStateUploading];

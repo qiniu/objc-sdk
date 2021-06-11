@@ -25,6 +25,8 @@
 
 @interface QNPartsUploadPerformer()
 
+@property(nonatomic, assign) BOOL isRecording;
+
 @property (nonatomic,   copy) NSString *key;
 @property (nonatomic,   copy) NSString *fileName;
 @property (nonatomic, strong) id <QNUploadSource> uploadSource;
@@ -69,6 +71,7 @@
 }
 
 - (void)initData {
+    self.isRecording = NO;
     self.uploadTransactions = [NSMutableArray array];
     
     if (!self.uploadInfo) {
@@ -107,6 +110,13 @@
 }
 
 - (void)recordUploadInfo {
+    @synchronized (self) {
+        if (self.isRecording) {
+            return;
+        }
+        self.isRecording = YES;
+    }
+    
     NSString *key = self.recorderKey;
     if (self.recorder == nil || key == nil || key.length == 0) {
         return;
@@ -122,6 +132,10 @@
         }
     }
     QNLogInfo(@"key:%@ recorderKey:%@ recordUploadInfo", self.key, self.recorderKey);
+    
+    @synchronized (self) {
+        self.isRecording = NO;
+    }
 }
 
 - (void)removeUploadInfoRecord {
