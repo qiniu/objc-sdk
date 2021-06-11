@@ -17,7 +17,7 @@
 
 - (void)setUp {
     [super setUp];
-    [QNLogUtil setLogLevel:QNLogLevelInfo];
+//    [QNLogUtil setLogLevel:QNLogLevelInfo];
     
     self.defaultOption = [[QNUploadOption alloc] initWithMime:nil
                                               progressHandler:^(NSString *key, float percent) {

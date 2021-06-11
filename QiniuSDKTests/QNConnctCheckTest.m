@@ -18,7 +18,7 @@
 @implementation QNConnctCheckTest
 
 - (void)setUp {
-    [QNLogUtil setLogLevel:QNLogLevelInfo];
+//    [QNLogUtil setLogLevel:QNLogLevelInfo];
 }
 
 - (void)tearDown {
