@@ -187,7 +187,7 @@
             if (tempFile.fileType == QNTempFileTypeStream) {
                 key = [NSString stringWithFormat:@"%@_stream_has_size", key];
             } else {
-                key = [NSString stringWithFormat:@"%@_stream_no_size", key];
+                key = [NSString stringWithFormat:@"%@_stream_none_size", key];
             }
         }
         kQNWeakSelf;
