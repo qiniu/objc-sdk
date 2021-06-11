@@ -166,10 +166,6 @@
                     }
                     return;
                 }
-
-                QNAsyncRunInMain(^{
-                    self.option.progressHandler(self.key, 1.0);
-                 });
                 [self complete:responseInfo response:response];
             }];
         }];

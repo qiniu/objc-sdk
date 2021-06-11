@@ -11,7 +11,7 @@
 
 @implementation QNUploadFlowTest
 
-- (void)allFileTypeCancelTest:(float)cancelPercent
+- (void)allFileTypeCancelTest:(long long)cancelBytes
                      tempFile:(QNTempFile *)tempFile
                           key:(NSString *)key
                        config:(QNConfiguration *)config
@@ -19,32 +19,32 @@
     BOOL canRemove = tempFile.canRemove;
     tempFile.canRemove = false;
     tempFile.fileType = QNTempFileTypeData;
-    [self cancelTest:cancelPercent tempFile:tempFile key:key config:config option:option];
+    [self cancelTest:cancelBytes tempFile:tempFile key:key config:config option:option];
     
     tempFile.fileType = QNTempFileTypeFile;
-    [self cancelTest:cancelPercent tempFile:tempFile key:key config:config option:option];
+    [self cancelTest:cancelBytes tempFile:tempFile key:key config:config option:option];
     
     tempFile.fileType = QNTempFileTypeStream;
-    [self cancelTest:cancelPercent tempFile:tempFile key:key config:config option:option];
+    [self cancelTest:cancelBytes tempFile:tempFile key:key config:config option:option];
     
     tempFile.canRemove = canRemove;
     tempFile.fileType = QNTempFileTypeStreamNoSize;
-    [self cancelTest:cancelPercent tempFile:tempFile key:key config:config option:option];
+    [self cancelTest:cancelBytes tempFile:tempFile key:key config:config option:option];
 }
 
-- (void)cancelTest:(float)cancelPercent tempFile:(QNTempFile *)tempFile key:(NSString *)key config:(QNConfiguration *)config option:(QNUploadOption *)option {
+- (void)cancelTest:(long long)cancelBytes tempFile:(QNTempFile *)tempFile key:(NSString *)key config:(QNConfiguration *)config option:(QNUploadOption *)option {
     
     if (!option) {
         option = self.defaultOption;
     }
     
     __block BOOL cancelFlag = NO;
-    QNUploadOption *cancelOption = [[QNUploadOption alloc] initWithMime:nil progressHandler:^(NSString *key, float percent) {
-        if (cancelPercent <= percent) {
+    QNUploadOption *cancelOption = [[QNUploadOption alloc] initWithMime:nil byteProgressHandler:^(NSString *key, long long uploadBytes, long long totalBytes) {
+        if (cancelBytes <= uploadBytes) {
             cancelFlag = YES;
         }
-        if (option.progressHandler) {
-            option.progressHandler(key, percent);
+        if (option.byteProgressHandler) {
+            option.byteProgressHandler(key, uploadBytes, totalBytes);
         }
     }
         params:option.params

@@ -60,7 +60,7 @@
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"resume_cancel_v1_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
-        [self allFileTypeCancelTest:cancelPercent tempFile:tempFile key:key config:config option:nil];
+        [self allFileTypeCancelTest:cancelPercent * size.longLongValue tempFile:tempFile key:key config:config option:nil];
     }
 }
 
@@ -208,7 +208,7 @@
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"resume_cancel_v2_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
-        [self allFileTypeCancelTest:cancelPercent tempFile:tempFile key:key config:config option:nil];
+        [self allFileTypeCancelTest:cancelPercent * size.longLongValue tempFile:tempFile key:key config:config option:nil];
     }
 }
 

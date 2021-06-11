@@ -13,13 +13,13 @@ NS_ASSUME_NONNULL_BEGIN
 @interface QNUploadFlowTest : QNUploadBaseTest
 
 //MARK: ----- 取消上传
-- (void)allFileTypeCancelTest:(float)cancelPercent
+- (void)allFileTypeCancelTest:(long long)cancelBytes
                      tempFile:(QNTempFile * _Nullable)tempFile
                           key:(NSString * _Nullable)key
                        config:(QNConfiguration * _Nullable)config
                        option:(QNUploadOption * _Nullable)option;
 
-- (void)cancelTest:(float)cancelPercent
+- (void)cancelTest:(long long)cancelBytes
           tempFile:(QNTempFile * _Nullable)tempFile
                key:(NSString * _Nullable)key
             config:(QNConfiguration * _Nullable)config

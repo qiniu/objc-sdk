@@ -25,8 +25,6 @@
 
 @interface QNPartsUploadPerformer()
 
-@property(nonatomic, assign) BOOL isRecording;
-
 @property (nonatomic,   copy) NSString *key;
 @property (nonatomic,   copy) NSString *fileName;
 @property (nonatomic, strong) id <QNUploadSource> uploadSource;
@@ -71,7 +69,6 @@
 }
 
 - (void)initData {
-    self.isRecording = NO;
     self.uploadTransactions = [NSMutableArray array];
     
     if (!self.uploadInfo) {
@@ -110,32 +107,24 @@
 }
 
 - (void)recordUploadInfo {
-    @synchronized (self) {
-        if (self.isRecording) {
-            return;
-        }
-        self.isRecording = YES;
-    }
-    
+
     NSString *key = self.recorderKey;
     if (self.recorder == nil || key == nil || key.length == 0) {
         return;
     }
-    NSDictionary *zoneInfo = [self.currentRegion zoneInfo].detailInfo;
-    NSDictionary *uploadInfo = [self.uploadInfo toDictionary];
-    if (zoneInfo && uploadInfo) {
-        NSDictionary *info = @{kQNRecordZoneInfoKey : zoneInfo,
-                               kQNRecordFileInfoKey : uploadInfo};
-        NSData *data = [NSJSONSerialization dataWithJSONObject:info options:NSJSONWritingPrettyPrinted error:nil];
-        if (data) {
-            [self.recorder set:key data:data];
+    @synchronized (self) {
+        NSDictionary *zoneInfo = [self.currentRegion zoneInfo].detailInfo;
+        NSDictionary *uploadInfo = [self.uploadInfo toDictionary];
+        if (zoneInfo && uploadInfo) {
+            NSDictionary *info = @{kQNRecordZoneInfoKey : zoneInfo,
+                                   kQNRecordFileInfoKey : uploadInfo};
+            NSData *data = [NSJSONSerialization dataWithJSONObject:info options:NSJSONWritingPrettyPrinted error:nil];
+            if (data) {
+                [self.recorder set:key data:data];
+            }
         }
     }
     QNLogInfo(@"key:%@ recorderKey:%@ recordUploadInfo", self.key, self.recorderKey);
-    
-    @synchronized (self) {
-        self.isRecording = NO;
-    }
 }
 
 - (void)removeUploadInfoRecord {

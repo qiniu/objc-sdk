@@ -39,6 +39,14 @@
     return _data;
 }
 
+- (long long)size {
+    if (self.fileType == QNTempFileTypeStreamNoSize) {
+        return -1;
+    } else {
+        return _size;
+    }
+}
+
 + (QNTempFile *)createTempFileWithSize:(int)size {
     
     return [self createTempFileWithSize:size name:@"file.txt"];
