@@ -44,6 +44,12 @@ NS_ASSUME_NONNULL_BEGIN
                  configuration:(QNConfiguration *)config
                    recorderKey:(NSString *)recorderKey;
 
+// 是否可以重新加载资源
+- (BOOL)couldReloadInfo;
+
+// 重新加载资源
+- (BOOL)reloadInfo;
+
 - (void)switchRegion:(id <QNUploadRegion>)region;
 
 /// 通知回调当前进度

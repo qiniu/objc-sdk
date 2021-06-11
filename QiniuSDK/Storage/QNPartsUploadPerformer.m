@@ -77,6 +77,14 @@
     [self recoverUploadInfoFromRecord];
 }
 
+- (BOOL)couldReloadInfo {
+    return [self.uploadInfo couldReloadSource];
+}
+
+- (BOOL)reloadInfo {
+    return [self.uploadInfo reloadSource];
+}
+
 - (void)switchRegion:(id <QNUploadRegion>)region {
     [self.uploadInfo clearUploadState];
     self.currentRegion = region;

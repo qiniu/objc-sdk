@@ -8,7 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "QNInputStream.h"
 #import "QNRecorderDelegate.h"
 
 @class QNResponseInfo;

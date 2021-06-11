@@ -286,7 +286,7 @@
     NSString *md5 = [dataBytes qn_md5];
     // 判断当前 block 的数据是否和实际数据吻合，不吻合则之前 block 被抛弃，重新创建 block
     if (dataBytes.length != data.size || data.md5 == nil || ![data.md5 isEqualToString:md5]) {
-        data = [[QNUploadData alloc] initWithOffset:data.offset dataSize:self.dataSize index:data.index];
+        data = [[QNUploadData alloc] initWithOffset:data.offset dataSize:dataBytes.length index:data.index];
         data.md5 = md5;
     }
 

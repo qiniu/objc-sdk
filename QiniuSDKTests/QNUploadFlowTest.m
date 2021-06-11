@@ -64,7 +64,6 @@
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     NSLog(@"responseInfo:%@", responseInfo);
     XCTAssertTrue(responseInfo.isCancelled, @"response info:%@", responseInfo);
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@, key:%@", keyUp, key);
 }
 
 //MARK: ----- 断点续传
@@ -78,7 +77,7 @@
     tempFile.canRemove = false;
     tempFile.fileType = QNTempFileTypeData;
     [self resumeUploadTest:resumePercent tempFile:tempFile key:key config:config option:option];
-    
+
     tempFile.fileType = QNTempFileTypeFile;
     [self resumeUploadTest:resumePercent tempFile:tempFile key:key config:config option:option];
     
@@ -96,10 +95,11 @@
         option = self.defaultOption;
     }
     
-    tempFile.canRemove = NO;
+    BOOL canRemove = tempFile.canRemove;
+    tempFile.canRemove = false;
     [self cancelTest:resumePercent tempFile:tempFile key:key config:config option:option];
     
-    tempFile.canRemove = YES;
+    tempFile.canRemove = canRemove;
     __block QNResponseInfo *responseInfo = nil;
     __block NSString *keyUp = nil;
     __block BOOL isSuccess = NO;
@@ -138,7 +138,6 @@
     XCTAssertTrue(isSuccess, @"response info:%@", responseInfo);
     XCTAssertTrue(responseInfo.isOK, @"response info:%@", responseInfo);
     XCTAssertTrue(responseInfo.reqId, @"response info:%@", responseInfo);
-    XCTAssertTrue([self versionUploadKey:keyUp responseKey:key], @"keyUp:%@, key:%@", keyUp, key);
 }
 
 
@@ -152,14 +151,8 @@
     tempFile.canRemove = false;
     [self switchRegionTestWithFile:tempFile key:key config:config option:option];
     
-    tempFile.fileType = QNTempFileTypeFile;
-    [self switchRegionTestWithFile:tempFile key:key config:config option:option];
-    
-    tempFile.fileType = QNTempFileTypeStream;
-    [self switchRegionTestWithFile:tempFile key:key config:config option:option];
-    
     tempFile.canRemove = canRemove;
-    tempFile.fileType = QNTempFileTypeStreamNoSize;
+    tempFile.fileType = QNTempFileTypeFile;
     [self switchRegionTestWithFile:tempFile key:key config:config option:option];
 }
 

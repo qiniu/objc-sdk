@@ -29,6 +29,7 @@
     sourceStream.sourceId = sourceId;
     sourceStream.fileName = fileName;
     sourceStream.size = size;
+    sourceStream.readOffset = 0;
     return sourceStream;
 }
 
@@ -41,7 +42,6 @@
 }
 
 - (BOOL)reloadSource {
-    self.readOffset = 0;
     return false;
 }
 
@@ -63,22 +63,111 @@
         return nil;
     }
     
-    if (dataOffset != self.readOffset) {
+    if (dataOffset < self.readOffset) {
         *error = [NSError errorWithDomain:NSCocoaErrorDomain code:kQNFileError userInfo:@{NSLocalizedDescriptionKey : @"read data error: error data offset"}];
         return nil;
     }
     
+    // 打开流
+    [self openStreamIfNeeded];
+    
+    if (dataOffset > self.readOffset) {
+        // 跳过多余的数据
+        [self streamSkipSize:dataOffset - self.readOffset error:error];
+        if (*error != nil) {
+            return nil;
+        }
+        self.readOffset = dataOffset;
+    }
+    
+    // 读取数据
     BOOL isEOF = false;
+    NSInteger sliceSize = 1024;
     NSInteger readSize = 0;
     NSMutableData *data = [NSMutableData data];
-    uint8_t buffer[1024];
     while (readSize < dataSize) {
+        NSData *sliceData = [self readDataFromStream:sliceSize error:error];
+        if (*error != nil) {
+            break;
+        }
+        
+        if (sliceData.length > 0) {
+            readSize += sliceData.length;
+            [data appendData:sliceData];
+        }
+        
+        if (sliceData.length < sliceSize) {
+            isEOF = true;
+            break;
+        }
+    }
+
+    self.readOffset += readSize;
+    
+    if (*error != nil) {
+        return nil;
+    }
+    
+    if (isEOF) {
+        self.size = self.readOffset;
+    }
+    
+    return data;
+}
+
+- (void)openStreamIfNeeded {
+    BOOL isOpening = true;
+    while (true) {
         switch (self.stream.streamStatus) {
             case NSStreamStatusNotOpen:
-                [self open];
+                [self.stream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
+                [self.stream open];
                 continue;
             case NSStreamStatusOpening:
                 continue;
+            default:
+                isOpening = false;
+                break;
+        }
+        
+        if (!isOpening) {
+            break;
+        }
+    }
+}
+
+- (void)streamSkipSize:(NSInteger)size error:(NSError **)error {
+    BOOL isEOF = false;
+    NSInteger sliceSize = 1024;
+    NSInteger readSize = 0;
+    @autoreleasepool {
+        while (readSize < size) {
+            NSData *sliceData = [self readDataFromStream:sliceSize error:error];
+            if (*error != nil) {
+                break;
+            }
+            
+            if (sliceData.length > 0) {
+                readSize += sliceData.length;
+            }
+            
+            if (sliceData.length < sliceSize) {
+                isEOF = true;
+                break;
+            }
+        }
+    }
+}
+
+// read 之前必须先 open stream
+- (NSData *)readDataFromStream:(NSInteger)dataSize error:(NSError **)error {
+    BOOL isEOF = false;
+    NSInteger readSize = 0;
+    NSMutableData *data = [NSMutableData data];
+    uint8_t buffer[dataSize];
+    while (readSize < dataSize) {
+        // 检查状态
+        switch (self.stream.streamStatus) {
             case NSStreamStatusOpen:
                 break;
             case NSStreamStatusReading:
@@ -106,12 +195,14 @@
             break;
         }
         
+        // 检查是否有数据可读
         if (!self.stream.hasBytesAvailable) {
             [NSThread sleepForTimeInterval:0.05];
             continue;
         }
         
-        NSInteger maxLength = 1024;
+        // 读取数据
+        NSInteger maxLength = dataSize;
         NSInteger length = [self.stream read:buffer maxLength:maxLength];
         *error = self.stream.streamError;
         if (*error != nil) {
@@ -123,18 +214,7 @@
             [data appendBytes:(const void *)buffer length:length];
         }
     }
-
-    self.readOffset += readSize;
-    if (isEOF) {
-        self.size = self.readOffset;
-    }
-    
-    return data;
-}
-
-- (void)open {
-    [self.stream  scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
-    [self.stream open];
+    return [data copy];
 }
 
 - (void)close {

@@ -44,10 +44,10 @@
     tempFile.canRemove = false;
     tempFile.fileType = QNTempFileTypeData;
     [self uploadAndAssertSuccessResult:tempFile key:key config:config option:option];
-    
+
     tempFile.fileType = QNTempFileTypeFile;
     [self uploadAndAssertSuccessResult:tempFile key:key config:config option:option];
-    
+
     tempFile.fileType = QNTempFileTypeStream;
     [self uploadAndAssertSuccessResult:tempFile key:key config:config option:option];
     
@@ -155,13 +155,15 @@
         option = self.defaultOption;
     }
     BOOL shouldCheckHash = YES;
-    if (tempFile.size < 1 || (config.resumeUploadVersion == QNResumeUploadVersionV2 && config.chunkSize != kQNBlockSize)) {
+    if (!key || key.length == 0 || tempFile.size < 1 || (config.resumeUploadVersion == QNResumeUploadVersionV2 && config.chunkSize != kQNBlockSize)) {
         shouldCheckHash = NO;
     }
     
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:config];
     if (tempFile.fileType == QNTempFileTypeData) {
-        key = [NSString stringWithFormat:@"%@_data", key];
+        if (key != nil && key.length != 0) {
+            key = [NSString stringWithFormat:@"%@_data", key];
+        }
         
         kQNWeakSelf;
         [upManager putData:tempFile.data key:key token:token complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
@@ -181,10 +183,12 @@
             }
         } option:option];
     } else if (tempFile.fileType == QNTempFileTypeStream || tempFile.fileType == QNTempFileTypeStreamNoSize) {
-        if (tempFile.fileType == QNTempFileTypeStream) {
-            key = [NSString stringWithFormat:@"%@_stream_has_size", key];
-        } else {
-            key = [NSString stringWithFormat:@"%@_stream_no_size", key];
+        if (key != nil && key.length != 0) {
+            if (tempFile.fileType == QNTempFileTypeStream) {
+                key = [NSString stringWithFormat:@"%@_stream_has_size", key];
+            } else {
+                key = [NSString stringWithFormat:@"%@_stream_no_size", key];
+            }
         }
         kQNWeakSelf;
         [upManager putInputStream:tempFile.inputStream sourceId:key size:tempFile.size fileName:key key:key token:token complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
@@ -204,7 +208,9 @@
             }
         } option:option];
     } else {
-        key = [NSString stringWithFormat:@"%@_file", key];
+        if (key != nil && key.length != 0) {
+            key = [NSString stringWithFormat:@"%@_file", key];
+        }
         kQNWeakSelf;
         [upManager putFile:tempFile.fileUrl.path key:key token:token complete:^(QNResponseInfo *info, NSString *k, NSDictionary *resp) {
             kQNStrongSelf;

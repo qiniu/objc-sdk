@@ -8,8 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-#import "QNInputStream.h"
-
 typedef NS_ENUM(NSInteger, QNTempFileType) {
     QNTempFileTypeNone = 0,
     QNTempFileTypeData,
