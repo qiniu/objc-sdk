@@ -97,7 +97,7 @@
     
     BOOL canRemove = tempFile.canRemove;
     tempFile.canRemove = false;
-    [self cancelTest:resumePercent tempFile:tempFile key:key config:config option:option];
+    [self cancelTest:resumePercent * tempFile.size tempFile:tempFile key:key config:config option:option];
     
     tempFile.canRemove = canRemove;
     __block QNResponseInfo *responseInfo = nil;
