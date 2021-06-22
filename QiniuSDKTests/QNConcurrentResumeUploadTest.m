@@ -106,7 +106,7 @@
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"concurrent_reupload_v1_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
-        [self allFileTypeResumeUploadTest:0.5 tempFile:tempFile key:key config:config option:nil];
+        [self allFileTypeResumeUploadTest:0.5 * 1024 * size.longLongValue tempFile:tempFile key:key config:config option:nil];
     }
 }
 
@@ -236,7 +236,7 @@
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"concurrent_reupload_v2_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
-        [self allFileTypeResumeUploadTest:0.5 tempFile:tempFile key:key config:config option:nil];
+        [self allFileTypeResumeUploadTest:0.5 * 1024 * size.longLongValue tempFile:tempFile key:key config:config option:nil];
     }
 }
 

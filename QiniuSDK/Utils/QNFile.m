@@ -85,9 +85,11 @@
         if (_data != nil && offset < _data.length) {
             NSInteger realSize = MIN(size, _data.length - offset);
             data = [_data subdataWithRange:NSMakeRange(offset, realSize)];
-        } else if (_file != nil) {
+        } else if (_file != nil && offset < _fileSize) {
             [_file seekToFileOffset:offset];
             data = [_file readDataOfLength:size];
+        } else {
+            data = [NSData data];
         }
     } @catch (NSException *exception) {
         *error = [NSError errorWithDomain:NSCocoaErrorDomain code:kQNFileError userInfo:@{NSLocalizedDescriptionKey : exception.reason}];

@@ -245,7 +245,7 @@
     
     QNUploadData *data = nil;
     for (QNUploadData *dataP in self.dataList) {
-        if ([data needToUpload]) {
+        if ([dataP needToUpload]) {
             data = dataP;
             break;
         }

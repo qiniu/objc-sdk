@@ -160,7 +160,7 @@
     QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:info[kQNRecordZoneInfoKey]];
     QNUploadInfo *recoverUploadInfo = [self getFileInfoWithDictionary:info[kQNRecordFileInfoKey]];
     
-    if (zoneInfo && self.uploadInfo && [self.uploadInfo isValid]
+    if (zoneInfo && self.uploadInfo && [recoverUploadInfo isValid]
         && [self.uploadInfo isSameUploadInfo:recoverUploadInfo]) {
         QNLogInfo(@"key:%@ recorderKey:%@ recoverUploadInfoFromRecord valid", self.key, self.recorderKey);
         

@@ -26,13 +26,13 @@ NS_ASSUME_NONNULL_BEGIN
             option:(QNUploadOption * _Nullable)option;
 
 //MARK: ----- 断点续传
-- (void)allFileTypeResumeUploadTest:(float)resumePercent
+- (void)allFileTypeResumeUploadTest:(long long)resumeSize
                            tempFile:(QNTempFile * _Nullable)tempFile
                                 key:(NSString * _Nullable)key
                              config:(QNConfiguration * _Nullable)config
                              option:(QNUploadOption * _Nullable)option;
 
-- (void)resumeUploadTest:(float)resumePercent
+- (void)resumeUploadTest:(long long)resumeSize
                 tempFile:(QNTempFile * _Nullable)tempFile
                      key:(NSString * _Nullable)key
                   config:(QNConfiguration * _Nullable)config

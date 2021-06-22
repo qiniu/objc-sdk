@@ -43,6 +43,9 @@
         if (cancelBytes <= uploadBytes) {
             cancelFlag = YES;
         }
+        if (option.progressHandler) {
+            option.progressHandler(key, uploadBytes*1.0/totalBytes);
+        }
         if (option.byteProgressHandler) {
             option.byteProgressHandler(key, uploadBytes, totalBytes);
         }
@@ -67,7 +70,7 @@
 }
 
 //MARK: ----- 断点续传
-- (void)allFileTypeResumeUploadTest:(float)resumePercent
+- (void)allFileTypeResumeUploadTest:(long long)resumeSize
                            tempFile:(QNTempFile *)tempFile
                                 key:(NSString *)key
                              config:(QNConfiguration *)config
@@ -75,55 +78,39 @@
     
     BOOL canRemove = tempFile.canRemove;
     tempFile.canRemove = false;
-    tempFile.fileType = QNTempFileTypeData;
-    [self resumeUploadTest:resumePercent tempFile:tempFile key:key config:config option:option];
-
     tempFile.fileType = QNTempFileTypeFile;
-    [self resumeUploadTest:resumePercent tempFile:tempFile key:key config:config option:option];
+    [self resumeUploadTest:resumeSize tempFile:tempFile key:key config:config option:option];
     
     tempFile.fileType = QNTempFileTypeStream;
-    [self resumeUploadTest:resumePercent tempFile:tempFile key:key config:config option:option];
+    [self resumeUploadTest:resumeSize tempFile:tempFile key:key config:config option:option];
     
     tempFile.canRemove = canRemove;
     tempFile.fileType = QNTempFileTypeStreamNoSize;
-    [self resumeUploadTest:resumePercent tempFile:tempFile key:key config:config option:option];
+    [self resumeUploadTest:resumeSize tempFile:tempFile key:key config:config option:option];
 }
 
-- (void)resumeUploadTest:(float)resumePercent tempFile:(QNTempFile *)tempFile key:(NSString *)key config:(QNConfiguration *)config option:(QNUploadOption *)option {
+- (void)resumeUploadTest:(long long)resumeSize tempFile:(QNTempFile *)tempFile key:(NSString *)key config:(QNConfiguration *)config option:(QNUploadOption *)option {
     
     if (!option) {
         option = self.defaultOption;
     }
-    
+
     BOOL canRemove = tempFile.canRemove;
     tempFile.canRemove = false;
-    [self cancelTest:resumePercent * tempFile.size tempFile:tempFile key:key config:config option:option];
+    [self cancelTest:resumeSize tempFile:tempFile key:key config:config option:option];
     
     tempFile.canRemove = canRemove;
     __block QNResponseInfo *responseInfo = nil;
     __block NSString *keyUp = nil;
     __block BOOL isSuccess = NO;
-    QNUploadOption *resumeOption = [[QNUploadOption alloc] initWithMime:option.mimeType progressHandler:^(NSString *key, float percent) {
-        float minPercent = 0;
-        float currentChunkCount = 0;
-        float chunkSize = 0;
-        if (!config.useConcurrentResumeUpload) {
-            currentChunkCount = 1;
-            chunkSize = config.chunkSize;
-        } else if (config.resumeUploadVersion == QNResumeUploadVersionV1) {
-            currentChunkCount = config.concurrentTaskCount;
-            chunkSize = 4 * 1024 * 1024;
-        } else {
-            currentChunkCount = config.concurrentTaskCount;
-            chunkSize = config.chunkSize;
-        }
-        minPercent = percent + currentChunkCount * chunkSize / [tempFile size];
-        
-        if (resumePercent <= minPercent) {
+    QNUploadOption *resumeOption = [[QNUploadOption alloc] initWithMime:option.mimeType byteProgressHandler:^(NSString *key, long long uploadBytes, long long totalBytes) {
+        if (uploadBytes <= resumeSize + 1024*1024 && uploadBytes > 100) {
             isSuccess = YES;
         }
-        if (option.progressHandler) {
-            option.progressHandler(key, percent);
+        if (option.progressHandler && totalBytes > 0) {
+            option.progressHandler(key, uploadBytes*1.0/totalBytes);
+        } else {
+            NSLog(@"== key:%@ byte sent:%lld", key, uploadBytes);
         }
     } params:option.params checkCrc:option.checkCrc cancellationSignal:option.cancellationSignal];
 

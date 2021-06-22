@@ -98,7 +98,7 @@
     }
     
     NSData *data = [self.source readData:dataSize dataOffset:dataOffset error:error];
-    if (error == nil && data != nil && (data.length == 0 || data.length != dataSize)) {
+    if (*error == nil && data != nil && (data.length == 0 || data.length != dataSize)) {
         self.sourceSize = data.length + dataOffset;
     }
     return data;
