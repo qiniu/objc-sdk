@@ -20,8 +20,8 @@
 //    [QNLogUtil setLogLevel:QNLogLevelInfo];
     
     self.defaultOption = [[QNUploadOption alloc] initWithMime:nil
-                                              progressHandler:^(NSString *key, float percent) {
-        NSLog(@"== key:%@ percent:%f", key, percent);
+                                          byteProgressHandler:^(NSString *key, long long uploadBytes, long long totalBytes) {
+        NSLog(@"== key:%@ uploadBytes:%lld totalBytes:%lld", key, uploadBytes, totalBytes);
     }
                                                        params:nil
                                                      checkCrc:YES

@@ -45,12 +45,12 @@
 }
 
 - (void)testCancel {
-    float cancelPercent = 0.1;
+    float cancelPercent = 0.02;
     
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.useHttps = YES;
     }];
-    NSArray *sizeArray = @[@2000, @3000, @4000];
+    NSArray *sizeArray = @[@4000];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"form_cancel_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
