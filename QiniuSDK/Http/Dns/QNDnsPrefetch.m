@@ -275,6 +275,8 @@
         return nil;
     }
     
+    [self clearPreHostsIfNeeded];
+    
     NSArray <QNDnsNetworkAddress *> *addressList = nil;
     @synchronized (self) {
         addressList = self.addressDictionary[host];
@@ -295,12 +297,7 @@
         return NO;
     }
     
-    NSString *localIp = [QNIP local];
-    if (localIp == nil ||
-        (self.dnsCacheInfo && ![localIp isEqualToString:self.dnsCacheInfo.localIp])) {
-
-        [self clearPreHosts];
-    }
+    [self clearPreHostsIfNeeded];
     
     self.isPrefetching = YES;
     return YES;
@@ -472,6 +469,13 @@
     [self setDnsCacheInfo:cacheInfo];
     [recorder set:localIp data:cacheData];
     return true;
+}
+
+- (void)clearPreHostsIfNeeded{
+    NSString *localIp = [QNIP local];
+    if (localIp == nil || (self.dnsCacheInfo && ![localIp isEqualToString:self.dnsCacheInfo.localIp])) {
+        [self clearPreHosts];
+    }
 }
 
 - (void)clearPreHosts{
