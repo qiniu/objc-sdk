@@ -279,11 +279,6 @@
     @synchronized (self) {
         addressList = self.addressDictionary[host];
     }
-    if (![addressList.firstObject isValid]) {
-        QNAsyncRun(^{
-            [[QNTransactionManager shared] setDnsCheckWhetherCachedValidTransactionAction];
-        });
-    }
     return addressList;
 }
 
@@ -491,8 +486,8 @@
 
     NSMutableArray *localHosts = [NSMutableArray array];
     
-    NSArray *fixedHosts = [self getFixedZoneHosts];
-    [localHosts addObjectsFromArray:fixedHosts];
+//    NSArray *fixedHosts = [self getFixedZoneHosts];
+//    [localHosts addObjectsFromArray:fixedHosts];
     
     [localHosts addObject:kQNPreQueryHost00];
     [localHosts addObject:kQNPreQueryHost01];
