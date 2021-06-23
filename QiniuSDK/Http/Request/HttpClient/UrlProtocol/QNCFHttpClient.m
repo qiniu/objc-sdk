@@ -332,7 +332,7 @@
     }
     
     kQNWeakSelf;
-    NSTimer *timer = [NSTimer timerWithTimeInterval:0.5
+    NSTimer *timer = [NSTimer timerWithTimeInterval:0.3
                                              target:weak_self
                                            selector:@selector(timerAction)
                                            userInfo:nil
