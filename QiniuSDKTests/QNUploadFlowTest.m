@@ -104,7 +104,7 @@
     __block NSString *keyUp = nil;
     __block BOOL isSuccess = NO;
     QNUploadOption *resumeOption = [[QNUploadOption alloc] initWithMime:option.mimeType byteProgressHandler:^(NSString *key, long long uploadBytes, long long totalBytes) {
-        if (uploadBytes <= resumeSize + 1024*1024 && uploadBytes > 100) {
+        if (uploadBytes > 100) {
             isSuccess = YES;
         }
         if (option.progressHandler && totalBytes > 0) {

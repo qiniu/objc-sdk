@@ -101,13 +101,14 @@
     [self.client request:request connectionProxy:self.config.proxy progress:^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
         kQNStrongSelf;
         
-        if (checkCancelHandler()) {
-            self.requestState.isUserCancel = YES;
-            [self.client cancel];
-        } else if (progress) {
+        if (progress) {
             progress(totalBytesWritten, totalBytesExpectedToWrite);
         }
         
+        if (checkCancelHandler()) {
+            self.requestState.isUserCancel = YES;
+            [self.client cancel];
+        }
     } complete:^(NSURLResponse *response, QNUploadSingleRequestMetrics *metrics, NSData * responseData, NSError * error) {
         kQNStrongSelf;
         
