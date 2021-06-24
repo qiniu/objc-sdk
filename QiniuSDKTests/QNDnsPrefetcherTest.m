@@ -55,7 +55,7 @@
 
 @implementation QNDnsPrefetcherTest
 
-#define kCustomHost @"upload.qiniup.com"
+#define kCustomHost @"uc.qbox.me"
 #define kDnsTestToken @"dns_testToken"
 - (void)setUp {
     
@@ -73,7 +73,7 @@
 
 - (void)testLocalLoad {
     
-    NSString *host = @"upload.qiniup.com";
+    NSString *host = @"uc.qbox.me";
     [kQNTransactionManager addDnsLocalLoadTransaction];
     
     QN_TEST_CASE_WAIT_TIME(5);
