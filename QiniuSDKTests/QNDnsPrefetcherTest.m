@@ -19,6 +19,7 @@
 @property(nonatomic,   copy)NSString *ipValue;
 @property(nonatomic, strong)NSNumber *ttlValue;
 @property(nonatomic, strong)NSNumber *timestampValue;
+@property(nonatomic,   copy)NSString *sourceValue;
 
 @end
 @implementation InetAddress
@@ -56,7 +57,7 @@
 @implementation QNDnsPrefetcherTest
 
 #define kCustomHost @"uc.qbox.me"
-#define kDnsTestToken @"dns_testToken"
+#define kDnsTestToken token_na0
 - (void)setUp {
     
     [kQNTransactionManager destroyResource];

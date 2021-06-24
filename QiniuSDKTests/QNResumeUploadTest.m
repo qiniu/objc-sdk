@@ -49,7 +49,7 @@
 }
 
 - (void)testCancelV1 {
-    float cancelPercent = 0.5;
+    float cancelPercent = 0.1;
     
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.resumeUploadVersion = QNResumeUploadVersionV1;
@@ -197,7 +197,7 @@
 }
 
 - (void)testCancelV2 {
-    float cancelPercent = 0.5;
+    float cancelPercent = 0.1;
     
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.resumeUploadVersion = QNResumeUploadVersionV2;
