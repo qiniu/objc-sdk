@@ -244,6 +244,7 @@
     }
     
     [self preFetchHosts:[self getLocalPreHost]];
+    NSLog(@"== local fetch:%@", self.addressDictionary);
     [self recorderDnsCache];
     [self endPreFetch];
 }

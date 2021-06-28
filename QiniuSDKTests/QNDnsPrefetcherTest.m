@@ -74,12 +74,11 @@
 
 - (void)testLocalLoad {
     
-    NSString *host = kCustomHost;
     [kQNTransactionManager addDnsLocalLoadTransaction];
     
-    AGWW_WAIT_WHILE([kQNDnsPrefetch getInetAddressByHost:host] == nil, 60 * 5);
+    AGWW_WAIT_WHILE([kQNDnsPrefetch getInetAddressByHost:kCustomHost] == nil, 60 * 5);
     
-    NSArray <id <QNIDnsNetworkAddress>> *addressList = [kQNDnsPrefetch getInetAddressByHost:host];
+    NSArray <id <QNIDnsNetworkAddress>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
     XCTAssert(addressList.count > 0, @"addressList count:%ld", addressList.count);
 }
 
