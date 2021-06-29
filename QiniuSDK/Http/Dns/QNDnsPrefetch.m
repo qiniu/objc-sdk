@@ -259,6 +259,10 @@
         return;
     }
     NSArray *hosts = [self getCurrentZoneHosts:currentZone token:token];
+    if (hosts == nil) {
+        return;
+    }
+    
     @synchronized (self) {
         [self.prefetchHosts addObjectsFromArray:hosts];
     }
