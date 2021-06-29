@@ -181,6 +181,8 @@
 @property(nonatomic, strong)QNDnsCacheInfo *dnsCacheInfo;
 /// happy的dns解析对象列表，会使用多个dns解析对象 包括系统解析
 @property(nonatomic, strong)QNDnsManager * httpDns;
+/// prefetch hosts
+@property(nonatomic, strong)NSMutableSet *prefetchHosts;
 /// 缓存DNS解析结果
 /// 线程安全：内部方法均是在同一线程执行，读写不必加锁，对外开放接口读操作 需要和内部写操作枷锁
 @property(nonatomic, strong)NSMutableDictionary <NSString *, NSArray<QNDnsNetworkAddress *>*> *addressDictionary;
@@ -242,8 +244,11 @@
     if ([self prepareToPreFetch] == NO) {
         return;
     }
-    
-    [self preFetchHosts:[self getLocalPreHost]];
+    NSArray *hosts = [self getLocalPreHost];
+    @synchronized (self) {
+        [self.prefetchHosts addObjectsFromArray:hosts];
+    }
+    [self preFetchHosts:hosts];
     [self recorderDnsCache];
     [self endPreFetch];
 }
@@ -253,7 +258,11 @@
     if ([self prepareToPreFetch] == NO) {
         return;
     }
-    [self preFetchHosts:[self getCurrentZoneHosts:currentZone token:token]];
+    NSArray *hosts = [self getCurrentZoneHosts:currentZone token:token];
+    @synchronized (self) {
+        [self.prefetchHosts addObjectsFromArray:hosts];
+    }
+    [self preFetchHosts:hosts];
     [self recorderDnsCache];
     [self endPreFetch];
 }
@@ -262,7 +271,11 @@
     if ([self prepareToPreFetch] == NO) {
         return;
     }
-    [self preFetchHosts:[self.addressDictionary allKeys]];
+    NSArray *hosts = nil;
+    @synchronized (self) {
+        hosts = [self.prefetchHosts allObjects];
+    }
+    [self preFetchHosts:hosts];
     [self recorderDnsCache];
     [self endPreFetch];
 }
@@ -609,6 +622,14 @@
     }
     return _httpDns;
 }
+
+- (NSMutableSet *)prefetchHosts {
+    if (!_prefetchHosts) {
+        _prefetchHosts = [NSMutableSet set];
+    }
+    return _prefetchHosts;
+}
+
 @end
 
 
