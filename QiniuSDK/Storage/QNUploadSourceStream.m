@@ -86,21 +86,24 @@
     NSInteger readSize = 0;
     NSMutableData *data = [NSMutableData data];
     while (readSize < dataSize) {
-        NSData *sliceData = [self readDataFromStream:sliceSize error:error];
-        if (*error != nil) {
-            break;
-        }
-        
-        if (sliceData.length > 0) {
-            readSize += sliceData.length;
-            [data appendData:sliceData];
-        }
-        
-        if (sliceData.length < sliceSize) {
-            isEOF = true;
-            break;
+        @autoreleasepool {
+            NSData *sliceData = [self readDataFromStream:sliceSize error:error];
+            if (*error != nil) {
+                break;
+            }
+            
+            if (sliceData.length > 0) {
+                readSize += sliceData.length;
+                [data appendData:sliceData];
+            }
+            
+            if (sliceData.length < sliceSize) {
+                isEOF = true;
+                break;
+            }
         }
     }
+    
 
     self.readOffset += readSize;
     
@@ -140,8 +143,8 @@
     BOOL isEOF = false;
     NSInteger sliceSize = 1024;
     NSInteger readSize = 0;
-    @autoreleasepool {
-        while (readSize < size) {
+    while (readSize < size) {
+        @autoreleasepool {
             NSData *sliceData = [self readDataFromStream:sliceSize error:error];
             if (*error != nil) {
                 break;
@@ -155,6 +158,7 @@
                 isEOF = true;
                 break;
             }
+            sliceData = nil;
         }
     }
 }

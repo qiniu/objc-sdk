@@ -92,7 +92,7 @@ typedef NS_ENUM(NSInteger, UploadState){
     
     self.token = YourToken;
     QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        builder.useConcurrentResumeUpload = YES;
+        builder.useConcurrentResumeUpload = NO;
         builder.resumeUploadVersion = QNResumeUploadVersionV1;
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] error:nil];
     }];
@@ -109,14 +109,24 @@ typedef NS_ENUM(NSInteger, UploadState){
         return weakSelf.uploadState == UploadStateCancelling;
     }];
     
-    [upManager putFile:filePath key:@"DemoResource" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//    [upManager putFile:filePath key:@"DemoResource" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//        NSLog(@"info ===== %@", info);
+//        NSLog(@"resp ===== %@", resp);
+//
+//        [weakSelf changeUploadState:UploadStatePrepare];
+//        [weakSelf alertMessage:info.message];
+//    }
+//                option:uploadOption];
+    
+    long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize];
+    NSInputStream *stream = [NSInputStream inputStreamWithFileAtPath:filePath];
+    [upManager putInputStream:stream sourceId:filePath.lastPathComponent size:fileSize fileName:filePath.lastPathComponent key:@"DemoResource_1.44G" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         NSLog(@"info ===== %@", info);
         NSLog(@"resp ===== %@", resp);
 
         [weakSelf changeUploadState:UploadStatePrepare];
         [weakSelf alertMessage:info.message];
-    }
-                option:uploadOption];
+    } option:uploadOption];
     
 //    NSURL *url = [NSURL fileURLWithPath:filePath];
 //    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
