@@ -7,6 +7,7 @@
 //
 
 #import "NSData+QNMD5.h"
+#import "QNMutableArray.h"
 #import "QNUploadInfoV1.h"
 
 #define kTypeValue @"UploadInfoV1"
@@ -15,7 +16,7 @@
 @interface QNUploadInfoV1()
 
 @property(nonatomic, assign)int dataSize;
-@property(nonatomic, strong)NSMutableArray <QNUploadBlock *> *blockList;
+@property(nonatomic, strong)QNMutableArray *blockList;
 
 @property(nonatomic, assign)BOOL isEOF;
 @property(nonatomic, strong, nullable)NSError *readError;
@@ -31,7 +32,7 @@
     } else {
         info.dataSize = configuration.chunkSize;
     }
-    info.blockList = [NSMutableArray array];
+    info.blockList = [QNMutableArray array];
     return info;
 }
 
@@ -110,17 +111,15 @@
 }
 
 - (long long)uploadSize {
-    @synchronized (self) {
-        if (self.blockList == nil || self.blockList.count == 0) {
-            return 0;
-        }
-        
-        long long uploadSize = 0;
-        for (QNUploadBlock *block in self.blockList) {
-            uploadSize += [block uploadSize];
-        }
-        return uploadSize;
+    if (self.blockList == nil || self.blockList.count == 0) {
+        return 0;
     }
+    
+    long long uploadSize = 0;
+    for (QNUploadBlock *block in self.blockList) {
+        uploadSize += [block uploadSize];
+    }
+    return uploadSize;
 }
 
 - (BOOL)isAllUploaded {
@@ -190,31 +189,29 @@
         return nil;
     }
     
-    @synchronized (self) {
-        if (loadBlock == nil) {
-            // 没有加在到 block, 也即数据源读取结束
+    if (loadBlock == nil) {
+        // 没有加在到 block, 也即数据源读取结束
+        self.isEOF = true;
+        // 有多余的 block 则移除，移除中包含 block
+        if (self.blockList.count > block.index) {
+            self.blockList = [[self.blockList subarrayWithRange:NSMakeRange(0, block.index)] mutableCopy];
+        }
+    } else {
+        // 加在到 block
+        if (loadBlock.index == self.blockList.count) {
+            // 新块：block index 等于 blockList size 则为新创建 block，需要加入 blockList
+            [self.blockList addObject:loadBlock];
+        } else if (loadBlock != block) {
+            // 更换块：重新加在了 block， 更换信息
+            [self.blockList replaceObjectAtIndex:loadBlock.index withObject:loadBlock];
+        }
+        
+        // 数据源读取结束，块读取大小小于预期，读取结束
+        if (loadBlock.size < kBlockSize) {
             self.isEOF = true;
-            // 有多余的 block 则移除，移除中包含 block
-            if (self.blockList.count > block.index) {
-                self.blockList = [[self.blockList subarrayWithRange:NSMakeRange(0, block.index)] mutableCopy];
-            }
-        } else {
-            // 加在到 block
-            if (loadBlock.index == self.blockList.count) {
-                // 新块：block index 等于 blockList size 则为新创建 block，需要加入 blockList
-                [self.blockList addObject:loadBlock];
-            } else if (loadBlock != block) {
-                // 更换块：重新加在了 block， 更换信息
-                [self.blockList replaceObjectAtIndex:loadBlock.index withObject:loadBlock];
-            }
-            
-            // 数据源读取结束，块读取大小小于预期，读取结束
-            if (loadBlock.size < kBlockSize) {
-                self.isEOF = true;
-                // 有多余的 block 则移除，移除中不包含 block
-                if (self.blockList.count > block.index + 1) {
-                    self.blockList = [[self.blockList subarrayWithRange:NSMakeRange(0, block.index + 1)] mutableCopy];
-                }
+            // 有多余的 block 则移除，移除中不包含 block
+            if (self.blockList.count > block.index + 1) {
+                self.blockList = [[self.blockList subarrayWithRange:NSMakeRange(0, block.index + 1)] mutableCopy];
             }
         }
     }

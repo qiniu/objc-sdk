@@ -97,7 +97,10 @@
         return nil;
     }
     
-    NSData *data = [self.source readData:dataSize dataOffset:dataOffset error:error];
+    NSData *data = nil;
+    @synchronized (self.source) {
+        data = [self.source readData:dataSize dataOffset:dataOffset error:error];
+    }
     if (*error == nil && data != nil && (data.length == 0 || data.length != dataSize)) {
         self.sourceSize = data.length + dataOffset;
     }
