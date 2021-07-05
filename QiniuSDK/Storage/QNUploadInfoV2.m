@@ -49,7 +49,7 @@
     
     NSArray *dataInfoList = dictionary[@"dataList"];
     
-    NSMutableArray <QNUploadData *> *dataList = [NSMutableArray array];
+    QNMutableArray *dataList = [QNMutableArray array];
     if ([dataInfoList isKindOfClass:[NSArray class]]) {
         for (int i = 0; i < dataInfoList.count; i++) {
             NSDictionary *dataInfo = dataInfoList[i];

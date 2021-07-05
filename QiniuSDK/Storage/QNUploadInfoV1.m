@@ -46,7 +46,7 @@
     NSString *type = dictionary[kQNUploadInfoTypeKey];
     NSArray *blockInfoList = dictionary[@"blockList"];
     
-    NSMutableArray <QNUploadBlock *> *blockList = [NSMutableArray array];
+    QNMutableArray *blockList = [QNMutableArray array];
     if ([blockInfoList isKindOfClass:[NSArray class]]) {
         for (int i = 0; i < blockInfoList.count; i++) {
             NSDictionary *blockInfo = blockInfoList[i];
