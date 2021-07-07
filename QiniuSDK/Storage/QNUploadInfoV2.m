@@ -112,15 +112,15 @@
         return;
     }
     
-    for (QNUploadData *data in self.dataList) {
+    [self.dataList enumerateObjectsUsingBlock:^(QNUploadData *data, NSUInteger idx, BOOL * _Nonnull stop) {
         [data clearUploadState];
-    }
+    }];
 }
 
 - (void)checkInfoStateAndUpdate {
-    for (QNUploadData *data in self.dataList) {
+    [self.dataList enumerateObjectsUsingBlock:^(QNUploadData *data, NSUInteger idx, BOOL * _Nonnull stop) {
         [data checkStateAndUpdate];
-    }
+    }];
 }
 
 - (long long)uploadSize {
@@ -128,10 +128,10 @@
         return 0;
     }
     
-    long long uploadSize = 0;
-    for (QNUploadData *data in self.dataList) {
+    __block long long uploadSize = 0;
+    [self.dataList enumerateObjectsUsingBlock:^(QNUploadData *data, NSUInteger idx, BOOL * _Nonnull stop) {
         uploadSize += [data uploadSize];
-    }
+    }];
     return uploadSize;
 }
 
@@ -145,12 +145,11 @@
     }
     
     BOOL isAllUploaded = true;
-    for (QNUploadData *data in self.dataList) {
+    [self.dataList enumerateObjectsUsingBlock:^(QNUploadData *data, NSUInteger idx, BOOL * _Nonnull stop) {
         if (!data.isUploaded) {
-            isAllUploaded = false;
-            break;
+            *stop = true;
         }
-    }
+    }];
     return isAllUploaded;
 }
 
@@ -166,9 +165,9 @@
     
     if (self.dataList != nil && self.dataList.count != 0) {
         NSMutableArray *blockInfoList = [NSMutableArray array];
-        for (QNUploadData *data in self.dataList) {
+        [self.dataList enumerateObjectsUsingBlock:^(QNUploadData *data, NSUInteger idx, BOOL * _Nonnull stop) {
             [blockInfoList addObject:[data toDictionary]];
-        }
+        }];
         [dictionary setObject:[blockInfoList copy] forKey:@"dataList"];
     }
     
@@ -244,13 +243,13 @@
         return nil;
     }
     
-    QNUploadData *data = nil;
-    for (QNUploadData *dataP in self.dataList) {
+    __block QNUploadData *data = nil;
+    [self.dataList enumerateObjectsUsingBlock:^(QNUploadData *dataP, NSUInteger idx, BOOL * _Nonnull stop) {
         if ([dataP needToUpload]) {
             data = dataP;
-            break;
+            *stop = true;
         }
-    }
+    }];
     
     return data;
 }
@@ -307,12 +306,12 @@
     }
     
     NSMutableArray *infoArray = [NSMutableArray array];
-    for (QNUploadData *data in self.dataList) {
+    [self.dataList enumerateObjectsUsingBlock:^(QNUploadData *data, NSUInteger idx, BOOL * _Nonnull stop) {
         if (data.state == QNUploadStateComplete && data.etag != nil) {
             [infoArray addObject:@{@"etag" : data.etag,
                                    @"partNumber" : @([self getPartIndexOfData:data])}];
         }
-    }
+    }];
     
     return [infoArray copy];
 }

@@ -99,15 +99,15 @@
         return;
     }
     
-    for (QNUploadBlock *block in self.blockList) {
+    [self.blockList enumerateObjectsUsingBlock:^(QNUploadBlock *block, NSUInteger idx, BOOL * _Nonnull stop) {
         [block clearUploadState];
-    }
+    }];
 }
 
 - (void)checkInfoStateAndUpdate {
-    for (QNUploadBlock *block in self.blockList) {
+    [self.blockList enumerateObjectsUsingBlock:^(QNUploadBlock *block, NSUInteger idx, BOOL * _Nonnull stop) {
         [block checkInfoStateAndUpdate];
-    }
+    }];
 }
 
 - (long long)uploadSize {
@@ -115,10 +115,10 @@
         return 0;
     }
     
-    long long uploadSize = 0;
-    for (QNUploadBlock *block in self.blockList) {
+    __block long long uploadSize = 0;
+    [self.blockList enumerateObjectsUsingBlock:^(QNUploadBlock *block, NSUInteger idx, BOOL * _Nonnull stop) {
         uploadSize += [block uploadSize];
-    }
+    }];
     return uploadSize;
 }
 
@@ -131,13 +131,13 @@
         return true;
     }
     
-    BOOL isAllUploaded = true;
-    for (QNUploadBlock *block in self.blockList) {
+    __block BOOL isAllUploaded = true;
+    [self.blockList enumerateObjectsUsingBlock:^(QNUploadBlock *block, NSUInteger idx, BOOL * _Nonnull stop) {
         if (!block.isCompleted) {
             isAllUploaded = false;
-            break;
+            *stop = true;
         }
-    }
+    }];
     return isAllUploaded;
 }
 
@@ -151,9 +151,9 @@
     
     if (self.blockList != nil && self.blockList.count != 0) {
         NSMutableArray *blockInfoList = [NSMutableArray array];
-        for (QNUploadBlock *block in self.blockList) {
+        [self.blockList enumerateObjectsUsingBlock:^(QNUploadBlock *block, NSUInteger idx, BOOL * _Nonnull stop) {
             [blockInfoList addObject:[block toDictionary]];
-        }
+        }];
         [dictionary setObject:[blockInfoList copy] forKey:@"blockList"];
     }
     
@@ -224,14 +224,14 @@
         return nil;
     }
     
-    QNUploadBlock *block = nil;
-    for (QNUploadBlock *blockP in self.blockList) {
+    __block QNUploadBlock *block = nil;
+    [self.blockList enumerateObjectsUsingBlock:^(QNUploadBlock *blockP, NSUInteger idx, BOOL * _Nonnull stop) {
         QNUploadData *data = [blockP nextUploadDataWithoutCheckData];
         if (data != nil) {
             block = blockP;
-            break;
+            *stop = true;
         }
-    }
+    }];
     return block;
 }
 
@@ -301,11 +301,11 @@
     }
     
     NSMutableArray *contexts = [NSMutableArray array];
-    for (QNUploadBlock *block in self.blockList) {
+    [self.blockList enumerateObjectsUsingBlock:^(QNUploadBlock *block, NSUInteger idx, BOOL * _Nonnull stop) {
         if (block.context && block.context.length > 0) {
             [contexts addObject:block.context];
         }
-    }
+    }];
     return [contexts copy];
 }
 
