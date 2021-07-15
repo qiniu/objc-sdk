@@ -9,6 +9,7 @@
 #import "Configure.h" // 测试参数配置，暂时只有token，可删除
 #import "ViewController.h"
 #import "QNTransactionManager.h"
+#import <Photos/Photos.h>
 
 typedef NS_ENUM(NSInteger, UploadState){
     UploadStatePrepare,
@@ -48,8 +49,14 @@ typedef NS_ENUM(NSInteger, UploadState){
     if (self.uploadState == UploadStatePrepare) {
     
 #ifdef YourToken
-//        NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource.dmg" ofType:nil];
-        NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
+        NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource.dmg" ofType:nil];
+        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
+        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1.44G.zip" ofType:nil];
+        
+//        NSFileManager *manager = [NSFileManager defaultManager];
+//        NSURL *desktopUrl = [manager URLsForDirectory:NSDesktopDirectory inDomains:NSUserDomainMask].firstObject;
+//        path = [desktopUrl URLByAppendingPathComponent:@"pycharm.dmg"].path;
+        
         [self uploadImageToQNFilePath:path];
         [self changeUploadState:UploadStateUploading];
 #else
@@ -85,8 +92,8 @@ typedef NS_ENUM(NSInteger, UploadState){
     
     self.token = YourToken;
     QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        builder.useConcurrentResumeUpload = YES;
-        builder.resumeUploadVersion = QNResumeUploadVersionV2;
+        builder.useConcurrentResumeUpload = NO;
+        builder.resumeUploadVersion = QNResumeUploadVersionV1;
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] error:nil];
     }];
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:configuration];
@@ -102,14 +109,36 @@ typedef NS_ENUM(NSInteger, UploadState){
         return weakSelf.uploadState == UploadStateCancelling;
     }];
     
-    [upManager putFile:filePath key:@"DemoResource" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//    [upManager putFile:filePath key:@"DemoResource" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//        NSLog(@"info ===== %@", info);
+//        NSLog(@"resp ===== %@", resp);
+//
+//        [weakSelf changeUploadState:UploadStatePrepare];
+//        [weakSelf alertMessage:info.message];
+//    }
+//                option:uploadOption];
+    
+    long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize];
+    NSInputStream *stream = [NSInputStream inputStreamWithFileAtPath:filePath];
+    [upManager putInputStream:stream sourceId:filePath.lastPathComponent size:fileSize fileName:filePath.lastPathComponent key:@"DemoResource_1.44G" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         NSLog(@"info ===== %@", info);
         NSLog(@"resp ===== %@", resp);
-        
+
         [weakSelf changeUploadState:UploadStatePrepare];
         [weakSelf alertMessage:info.message];
-    }
-                option:uploadOption];
+    } option:uploadOption];
+    
+//    NSURL *url = [NSURL fileURLWithPath:filePath];
+//    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
+//    PHAsset *asset = fetchResult.firstObject;
+//    [upManager putPHAsset:asset key:@"DemoResource" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//        NSLog(@"info ===== %@", info);
+//        NSLog(@"resp ===== %@", resp);
+//
+//        [weakSelf changeUploadState:UploadStatePrepare];
+//        [weakSelf alertMessage:info.message];
+//    }
+//                option:uploadOption];
 }
 
 - (void)gotoImageLibrary {

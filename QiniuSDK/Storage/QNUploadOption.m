@@ -57,6 +57,10 @@ static NSString *mime(NSString *mimeType) {
     return [self initWithMime:nil progressHandler:progress params:nil checkCrc:NO cancellationSignal:nil];
 }
 
+- (instancetype)initWithByteProgressHandler:(QNUpByteProgressHandler)progress {
+    return [self initWithMime:nil byteProgressHandler:progress params:nil checkCrc:NO cancellationSignal:nil];
+}
+
 - (instancetype)initWithMime:(NSString *)mimeType
              progressHandler:(QNUpProgressHandler)progress
                       params:(NSDictionary *)params
@@ -68,6 +72,19 @@ static NSString *mime(NSString *mimeType) {
                metaDataParams:nil
                      checkCrc:check
            cancellationSignal:cancel];
+}
+
+- (instancetype)initWithMime:(NSString *)mimeType
+         byteProgressHandler:(QNUpByteProgressHandler)progress
+                      params:(NSDictionary *)params
+                    checkCrc:(BOOL)check
+          cancellationSignal:(QNUpCancellationSignal)cancellation {
+    return [self initWithMime:mimeType
+          byteProgressHandler:progress
+                       params:params
+               metaDataParams:nil
+                     checkCrc:check
+           cancellationSignal:cancellation];
 }
 
 - (instancetype)initWithMime:(NSString *)mimeType
@@ -90,8 +107,28 @@ static NSString *mime(NSString *mimeType) {
     return self;
 }
 
+- (instancetype)initWithMime:(NSString *)mimeType
+         byteProgressHandler:(QNUpByteProgressHandler)progress
+                      params:(NSDictionary *)params
+              metaDataParams:(NSDictionary *)metaDataParams
+                    checkCrc:(BOOL)check
+          cancellationSignal:(QNUpCancellationSignal)cancellation {
+    if (self = [super init]) {
+        _mimeType = mime(mimeType);
+        _byteProgressHandler = progress != nil ? progress : ^(NSString *key, long long uploadBytes, long long totalBytes) {};
+        _params = [QNUploadOption filterParam:params];
+        _metaDataParam = [QNUploadOption filterMetaDataParam:metaDataParams];
+        _checkCrc = check;
+        _cancellationSignal = cancellation != nil ? cancellation : ^BOOL() {
+            return NO;
+        };
+    }
+
+    return self;
+}
+
 + (instancetype)defaultOptions {
-    return [[QNUploadOption alloc] initWithMime:nil progressHandler:nil params:nil checkCrc:NO cancellationSignal:nil];
+    return [[QNUploadOption alloc] initWithMime:nil byteProgressHandler:nil params:nil checkCrc:NO cancellationSignal:nil];
 }
 
 @end

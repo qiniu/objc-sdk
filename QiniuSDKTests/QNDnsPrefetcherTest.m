@@ -19,6 +19,7 @@
 @property(nonatomic,   copy)NSString *ipValue;
 @property(nonatomic, strong)NSNumber *ttlValue;
 @property(nonatomic, strong)NSNumber *timestampValue;
+@property(nonatomic,   copy)NSString *sourceValue;
 
 @end
 @implementation InetAddress
@@ -55,8 +56,8 @@
 
 @implementation QNDnsPrefetcherTest
 
-#define kCustomHost @"upload.qiniup.com"
-#define kDnsTestToken @"dns_testToken"
+#define kCustomHost @"api.qiniu.com"
+#define kDnsTestToken token_na0
 - (void)setUp {
     
     [kQNTransactionManager destroyResource];
@@ -73,12 +74,11 @@
 
 - (void)testLocalLoad {
     
-    NSString *host = @"upload.qiniup.com";
     [kQNTransactionManager addDnsLocalLoadTransaction];
     
-    QN_TEST_CASE_WAIT_TIME(5);
-
-    NSArray <id <QNIDnsNetworkAddress>> *addressList = [kQNDnsPrefetch getInetAddressByHost:host];
+    AGWW_WAIT_WHILE([kQNDnsPrefetch getInetAddressByHost:kCustomHost] == nil, 60 * 5);
+    
+    NSArray <id <QNIDnsNetworkAddress>> *addressList = [kQNDnsPrefetch getInetAddressByHost:kCustomHost];
     XCTAssert(addressList.count > 0, @"addressList count:%ld", addressList.count);
 }
 

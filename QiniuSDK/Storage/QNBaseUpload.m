@@ -19,7 +19,7 @@
 @property (nonatomic,   copy) NSString *key;
 @property (nonatomic,   copy) NSString *fileName;
 @property (nonatomic, strong) NSData *data;
-@property (nonatomic, strong) id <QNFileDelegate> file;
+@property (nonatomic, strong) id <QNUploadSource> uploadSource;
 @property (nonatomic, strong) QNUpToken *token;
 @property (nonatomic,   copy) NSString *identifier;
 @property (nonatomic, strong) QNUploadOption *option;
@@ -37,15 +37,15 @@
 
 @implementation QNBaseUpload
 
-- (instancetype)initWithFile:(id<QNFileDelegate>)file
-                         key:(NSString *)key
-                       token:(QNUpToken *)token
-                      option:(QNUploadOption *)option
-               configuration:(QNConfiguration *)config
-                    recorder:(id<QNRecorderDelegate>)recorder
-                 recorderKey:(NSString *)recorderKey
-           completionHandler:(QNUpTaskCompletionHandler)completionHandler{
-    return [self initWithFile:file data:nil fileName:[[file path] lastPathComponent] key:key token:token option:option configuration:config recorder:recorder recorderKey:recorderKey completionHandler:completionHandler];
+- (instancetype)initWithSource:(id<QNUploadSource>)uploadSource
+                           key:(NSString *)key
+                         token:(QNUpToken *)token
+                        option:(QNUploadOption *)option
+                 configuration:(QNConfiguration *)config
+                      recorder:(id<QNRecorderDelegate>)recorder
+                   recorderKey:(NSString *)recorderKey
+             completionHandler:(QNUpTaskCompletionHandler)completionHandler{
+    return [self initWithSource:uploadSource data:nil fileName:[uploadSource getFileName] key:key token:token option:option configuration:config recorder:recorder recorderKey:recorderKey completionHandler:completionHandler];
 }
 
 - (instancetype)initWithData:(NSData *)data
@@ -55,21 +55,21 @@
                       option:(QNUploadOption *)option
                configuration:(QNConfiguration *)config
            completionHandler:(QNUpTaskCompletionHandler)completionHandler{
-    return [self initWithFile:nil data:data fileName:fileName key:key token:token option:option configuration:config recorder:nil recorderKey:nil completionHandler:completionHandler];
+    return [self initWithSource:nil data:data fileName:fileName key:key token:token option:option configuration:config recorder:nil recorderKey:nil completionHandler:completionHandler];
 }
 
-- (instancetype)initWithFile:(id<QNFileDelegate>)file
-                        data:(NSData *)data
-                    fileName:(NSString *)fileName
-                         key:(NSString *)key
-                       token:(QNUpToken *)token
-                      option:(QNUploadOption *)option
-               configuration:(QNConfiguration *)config
-                    recorder:(id<QNRecorderDelegate>)recorder
-                 recorderKey:(NSString *)recorderKey
-           completionHandler:(QNUpTaskCompletionHandler)completionHandler{
+- (instancetype)initWithSource:(id<QNUploadSource>)uploadSource
+                          data:(NSData *)data
+                      fileName:(NSString *)fileName
+                           key:(NSString *)key
+                         token:(QNUpToken *)token
+                        option:(QNUploadOption *)option
+                 configuration:(QNConfiguration *)config
+                      recorder:(id<QNRecorderDelegate>)recorder
+                   recorderKey:(NSString *)recorderKey
+             completionHandler:(QNUpTaskCompletionHandler)completionHandler{
     if (self = [super init]) {
-        _file = file;
+        _uploadSource = uploadSource;
         _data = data;
         _fileName = fileName ?: @"?";
         _key = key;

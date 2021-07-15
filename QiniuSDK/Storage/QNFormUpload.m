@@ -9,11 +9,12 @@
 #import "QNLogUtil.h"
 #import "QNFormUpload.h"
 #import "QNResponseInfo.h"
+#import "QNUpProgress.h"
 #import "QNRequestTransaction.h"
 
 @interface QNFormUpload ()
 
-@property (nonatomic) float previousPercent;
+@property(nonatomic, strong)QNUpProgress *progress;
 
 @property(nonatomic, strong)QNRequestTransaction *uploadTransaction;
 
@@ -35,21 +36,7 @@
     kQNWeakSelf;
     void(^progressHandler)(long long totalBytesWritten, long long totalBytesExpectedToWrite) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
         kQNStrongSelf;
-        
-        if (self.option.progressHandler) {
-            float percent = (float)totalBytesWritten / (float)totalBytesExpectedToWrite;
-            if (percent > 0.95) {
-                percent = 0.95;
-            }
-            if (percent > self.previousPercent) {
-                self.previousPercent = percent;
-            } else {
-                percent = self.previousPercent;
-            }
-            QNAsyncRunInMain(^{
-                self.option.progressHandler(self.key, percent);
-            });
-        }
+        [self.progress progress:self.key uploadBytes:totalBytesWritten totalBytes:totalBytesExpectedToWrite];
     };
  
     [self.uploadTransaction uploadFormData:self.data
@@ -67,11 +54,16 @@
             return;
         }
         
-        QNAsyncRunInMain(^{
-            self.option.progressHandler(self.key, 1.0);
-        });
+        [self.progress notifyDone:self.key totalBytes:self.data.length];
         [self complete:responseInfo response:response];
     }];
+}
+
+- (QNUpProgress *)progress {
+    if (_progress == nil) {
+        _progress = [QNUpProgress progress:self.option.progressHandler byteProgress:self.option.byteProgressHandler];
+    }
+    return _progress;
 }
 
 @end

@@ -12,11 +12,12 @@
 #import "QNZoneInfo.h"
 #import "QNUploadOption.h"
 #import "QNConfiguration.h"
-#import "QNFileDelegate.h"
+#import "QNUploadInfo.h"
 #import "QNUploadRegionInfo.h"
 #import "QNRecorderDelegate.h"
 #import "QNUploadDomainRegion.h"
 #import "QNPartsUploadPerformer.h"
+#import "QNUpProgress.h"
 #import "QNRequestTransaction.h"
 
 #define kQNRecordFileInfoKey @"recordFileInfo"
@@ -26,7 +27,7 @@
 
 @property (nonatomic,   copy) NSString *key;
 @property (nonatomic,   copy) NSString *fileName;
-@property (nonatomic, strong) id <QNFileDelegate> file;
+@property (nonatomic, strong) id <QNUploadSource> uploadSource;
 @property (nonatomic, strong) QNUpToken *token;
 
 @property (nonatomic, strong) QNUploadOption *option;
@@ -37,23 +38,23 @@
 @property (nonatomic, strong) NSNumber *recoveredFrom;
 @property (nonatomic, strong) id <QNUploadRegion> targetRegion;
 @property (nonatomic, strong) id <QNUploadRegion> currentRegion;
-@property (nonatomic, strong) QNUploadFileInfo *fileInfo;
+@property (nonatomic, strong) QNUploadInfo *uploadInfo;
 
-@property(nonatomic, assign) double previousPercent;
-@property(nonatomic, strong)NSMutableArray <QNRequestTransaction *> *uploadTransactions;
+@property(nonatomic, strong) QNUpProgress *progress;
+@property(nonatomic, strong) NSMutableArray <QNRequestTransaction *> *uploadTransactions;
 
 @end
 @implementation QNPartsUploadPerformer
 
-- (instancetype)initWithFile:(id<QNFileDelegate>)file
-                    fileName:(NSString *)fileName
-                         key:(NSString *)key
-                       token:(QNUpToken *)token
-                      option:(QNUploadOption *)option
-               configuration:(QNConfiguration *)config
-                 recorderKey:(NSString *)recorderKey {
+- (instancetype)initWithSource:(id<QNUploadSource>)uploadSource
+                      fileName:(NSString *)fileName
+                           key:(NSString *)key
+                         token:(QNUpToken *)token
+                        option:(QNUploadOption *)option
+                 configuration:(QNConfiguration *)config
+                   recorderKey:(NSString *)recorderKey {
     if (self = [super init]) {
-        _file = file;
+        _uploadSource = uploadSource;
         _fileName = fileName;
         _key = key;
         _token = token;
@@ -70,14 +71,22 @@
 - (void)initData {
     self.uploadTransactions = [NSMutableArray array];
     
-    [self recoverUploadInfoFromRecord];
-    if (!self.fileInfo) {
-        self.fileInfo = [self getDefaultUploadFileInfo];
+    if (!self.uploadInfo) {
+        self.uploadInfo = [self getDefaultUploadInfo];
     }
+    [self recoverUploadInfoFromRecord];
+}
+
+- (BOOL)couldReloadInfo {
+    return [self.uploadInfo couldReloadSource];
+}
+
+- (BOOL)reloadInfo {
+    return [self.uploadInfo reloadSource];
 }
 
 - (void)switchRegion:(id <QNUploadRegion>)region {
-    [self.fileInfo clearUploadState];
+    [self.uploadInfo clearUploadState];
     self.currentRegion = region;
     self.recoveredFrom = nil;
     if (!self.targetRegion) {
@@ -85,34 +94,34 @@
     }
 }
 
-- (void)notifyProgress {
-    float percent = self.fileInfo.progress;
-    if (percent > 0.95) {
-        percent = 0.95;
+- (void)notifyProgress:(BOOL)isCompleted {
+    if (self.uploadInfo == nil) {
+        return;
     }
-    if (percent > self.previousPercent) {
-        self.previousPercent = percent;
+    
+    if (isCompleted) {
+        [self.progress notifyDone:self.key totalBytes:[self.uploadInfo getSourceSize]];
     } else {
-        percent = self.previousPercent;
+        [self.progress progress:self.key uploadBytes:[self.uploadInfo uploadSize] totalBytes:[self.uploadInfo getSourceSize]];
     }
-    QNAsyncRunInMain(^{
-        self.option.progressHandler(self.key, percent);
-    });
 }
 
 - (void)recordUploadInfo {
+
     NSString *key = self.recorderKey;
     if (self.recorder == nil || key == nil || key.length == 0) {
         return;
     }
-    NSDictionary *zoneInfo = [self.currentRegion zoneInfo].detailInfo;
-    NSDictionary *fileInfo = [self.fileInfo toDictionary];
-    if (zoneInfo && fileInfo) {
-        NSDictionary *info = @{kQNRecordZoneInfoKey : zoneInfo,
-                               kQNRecordFileInfoKey : fileInfo};
-        NSData *data = [NSJSONSerialization dataWithJSONObject:info options:NSJSONWritingPrettyPrinted error:nil];
-        if (data) {
-            [self.recorder set:key data:data];
+    @synchronized (self) {
+        NSDictionary *zoneInfo = [self.currentRegion zoneInfo].detailInfo;
+        NSDictionary *uploadInfo = [self.uploadInfo toDictionary];
+        if (zoneInfo && uploadInfo) {
+            NSDictionary *info = @{kQNRecordZoneInfoKey : zoneInfo,
+                                   kQNRecordFileInfoKey : uploadInfo};
+            NSData *data = [NSJSONSerialization dataWithJSONObject:info options:NSJSONWritingPrettyPrinted error:nil];
+            if (data) {
+                [self.recorder set:key data:data];
+            }
         }
     }
     QNLogInfo(@"key:%@ recorderKey:%@ recordUploadInfo", self.key, self.recorderKey);
@@ -121,7 +130,7 @@
 - (void)removeUploadInfoRecord {
     
     self.recoveredFrom = nil;
-    [self.fileInfo clearUploadState];
+    [self.uploadInfo clearUploadState];
     [self.recorder del:self.recorderKey];
     QNLogInfo(@"key:%@ recorderKey:%@ removeUploadInfoRecord", self.key, self.recorderKey);
 }
@@ -149,19 +158,20 @@
     }
 
     QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:info[kQNRecordZoneInfoKey]];
-    QNUploadFileInfo *fileInfo = [self getFileInfoWithDictionary:info[kQNRecordFileInfoKey]];
+    QNUploadInfo *recoverUploadInfo = [self getFileInfoWithDictionary:info[kQNRecordFileInfoKey]];
     
-    if (zoneInfo && fileInfo && ![fileInfo isEmpty]
-        && fileInfo.size == self.file.size && fileInfo.modifyTime == self.file.modifyTime) {
+    if (zoneInfo && self.uploadInfo && [recoverUploadInfo isValid]
+        && [self.uploadInfo isSameUploadInfo:recoverUploadInfo]) {
         QNLogInfo(@"key:%@ recorderKey:%@ recoverUploadInfoFromRecord valid", self.key, self.recorderKey);
         
-        self.fileInfo = fileInfo;
+        [recoverUploadInfo checkInfoStateAndUpdate];
+        self.uploadInfo = recoverUploadInfo;
         
         QNUploadDomainRegion *region = [[QNUploadDomainRegion alloc] init];
         [region setupRegionData:zoneInfo];
         self.currentRegion = region;
         self.targetRegion = region;
-        self.recoveredFrom = @(fileInfo.progress * fileInfo.size);
+        self.recoveredFrom = @([recoverUploadInfo uploadSize]);
     } else {
         QNLogInfo(@"key:%@ recorderKey:%@ recoverUploadInfoFromRecord invalid", self.key, self.recorderKey);
         
@@ -193,11 +203,11 @@
     }
 }
 
-- (QNUploadFileInfo *)getFileInfoWithDictionary:(NSDictionary *)fileInfoDictionary {
+- (QNUploadInfo *)getFileInfoWithDictionary:(NSDictionary *)fileInfoDictionary {
     return nil;
 }
 
-- (QNUploadFileInfo *)getDefaultUploadFileInfo {
+- (QNUploadInfo *)getDefaultUploadInfo {
     return nil;
 }
 
@@ -213,5 +223,12 @@
 - (void)completeUpload:(void (^)(QNResponseInfo * _Nullable,
                                  QNUploadRegionRequestMetrics * _Nullable,
                                  NSDictionary * _Nullable))completeHandler {}
+
+- (QNUpProgress *)progress {
+    if (_progress == nil) {
+        _progress = [QNUpProgress progress:self.option.progressHandler byteProgress:self.option.byteProgressHandler];
+    }
+    return _progress;
+}
 
 @end

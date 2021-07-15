@@ -30,7 +30,7 @@
 typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDictionary *resp);
 
 /**
-   管理上传的类，可以生成一次，持续使用，不必反复创建。
+ 管理上传的类，可以生成一次，持续使用，不必反复创建。
  */
 @interface QNUploadManager : NSObject
 
@@ -93,6 +93,28 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
           token:(NSString *)token
        complete:(QNUpCompletionHandler)completionHandler
          option:(QNUploadOption *)option;
+
+
+/**
+ *    上传数据流
+ *
+ *    @param inputStream 数据流
+ *    @param sourceId 数据 id; 用于断点续传的标识
+ *    @param size 流大小，主要用来计算上传进度，不能预知大小传 -1
+ *    @param fileName 文件名
+ *    @param key 上传到云存储的key，为nil时表示是由七牛生成
+ *    @param token 上传需要的token, 由服务器生成
+ *    @param completionHandler 上传完成后的回调函数
+ *    @param option 上传时传入的可选参数
+ */
+- (void)putInputStream:(NSInputStream *)inputStream
+              sourceId:(NSString *)sourceId
+                  size:(long long)size
+              fileName:(NSString *)fileName
+                   key:(NSString *)key
+                 token:(NSString *)token
+              complete:(QNUpCompletionHandler)completionHandler
+                option:(QNUploadOption *)option;
 
 /**
  *    上传文件

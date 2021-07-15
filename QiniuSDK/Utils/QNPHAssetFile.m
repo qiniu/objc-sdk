@@ -22,9 +22,9 @@
 
 @property (nonatomic, strong) NSData *assetData;
 
-@property (nonatomic, strong) NSURL *assetURL;
-
-@property (nonatomic, readonly) NSString *filepath;
+// file path 可能是导出的 file path，并不是真正的 filePath, 导出的文件在上传结束会被删掉，并不是真正有效的文件路径。
+@property(nonatomic, assign)BOOL hasRealFilePath;
+@property (nonatomic, copy) NSString *filePath;
 
 @property (nonatomic) NSFileHandle *file;
 
@@ -43,11 +43,12 @@
         }
         _fileModifyTime = t;
         _phAsset = phAsset;
-        _filepath = [self getInfo];
+        [self getInfo];
+        
         _lock = [[NSLock alloc] init];
-        if (PHAssetMediaTypeVideo == self.phAsset.mediaType) {
+        if (self.assetData == nil && self.filePath != nil) {
             NSError *error2 = nil;
-            NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:_filepath error:&error2];
+            NSDictionary *fileAttr = [[NSFileManager defaultManager] attributesOfItemAtPath:self.filePath error:&error2];
             if (error2 != nil) {
                 if (error != nil) {
                     *error = error2;
@@ -58,15 +59,15 @@
             NSFileHandle *f = nil;
             NSData *d = nil;
             if (_fileSize > 16 * 1024 * 1024) {
-                f = [NSFileHandle fileHandleForReadingAtPath:_filepath];
+                f = [NSFileHandle fileHandleForReadingAtPath:self.filePath];
                 if (f == nil) {
                     if (error != nil) {
-                        *error = [[NSError alloc] initWithDomain:_filepath code:kQNFileError userInfo:nil];
+                        *error = [[NSError alloc] initWithDomain:self.filePath code:kQNFileError userInfo:nil];
                     }
                     return self;
                 }
             } else {
-                d = [NSData dataWithContentsOfFile:_filepath options:NSDataReadingMappedIfSafe error:&error2];
+                d = [NSData dataWithContentsOfFile:self.filePath options:NSDataReadingMappedIfSafe error:&error2];
                 if (error2 != nil) {
                     if (error != nil) {
                         *error = error2;
@@ -112,12 +113,12 @@
         if (_file != nil) {
             [_file closeFile];
         }
-        [[NSFileManager defaultManager] removeItemAtPath:_filepath error:nil];
+        [[NSFileManager defaultManager] removeItemAtPath:self.filePath error:nil];
     }
 }
 
 - (NSString *)path {
-    return _filepath;
+    return self.hasRealFilePath ? self.filePath : nil;
 }
 
 - (int64_t)modifyTime {
@@ -128,56 +129,86 @@
     return _fileSize;
 }
 
-- (NSString *)getInfo {
-    __block NSString *filePath = nil;
+- (void)getInfo {
     if (PHAssetMediaTypeImage == self.phAsset.mediaType) {
-        PHImageRequestOptions *options = [PHImageRequestOptions new];
-        options.version = PHImageRequestOptionsVersionCurrent;
-        options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
-        options.resizeMode = PHImageRequestOptionsResizeModeNone;
-        //不支持icloud上传
-        options.networkAccessAllowed = NO;
-        options.synchronous = YES;
-
-        [[PHImageManager defaultManager] requestImageDataForAsset:self.phAsset
-                                                          options:options
-                                                    resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-                                                        self.assetData = imageData;
-                                                        self.fileSize = imageData.length;
-                                                        self.assetURL = [NSURL URLWithString:self.phAsset.localIdentifier];
-                                                        filePath = self.assetURL.path;
-                                                    }];
+        [self getImageInfo];
     } else if (PHAssetMediaTypeVideo == self.phAsset.mediaType) {
-        NSArray *assetResources = [PHAssetResource assetResourcesForAsset:self.phAsset];
-        PHAssetResource *resource;
-        for (PHAssetResource *assetRes in assetResources) {
-            if (assetRes.type == PHAssetResourceTypePairedVideo || assetRes.type == PHAssetResourceTypeVideo) {
-                resource = assetRes;
-            }
-        }
-        NSString *fileName = @"tempAssetVideo.mov";
-        if (resource.originalFilename) {
-            fileName = resource.originalFilename;
-        }
-        PHAssetResourceRequestOptions *options = [PHAssetResourceRequestOptions new];
-        //不支持icloud上传
-        options.networkAccessAllowed = NO;
-
-        NSString *PATH_VIDEO_FILE = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
-        [[NSFileManager defaultManager] removeItemAtPath:PATH_VIDEO_FILE error:nil];
+        // 1. 获取 video url
+        [self getVideoInfo];
         
-        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-        [[PHAssetResourceManager defaultManager] writeDataForAssetResource:resource toFile:[NSURL fileURLWithPath:PATH_VIDEO_FILE] options:options completionHandler:^(NSError *_Nullable error) {
-            if (error) {
-                filePath = nil;
-            } else {
-                filePath = PATH_VIDEO_FILE;
-            }
-            dispatch_semaphore_signal(semaphore);
-        }];
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+        // 2. video url 获取失败则导出文件
+        if (self.filePath == nil) {
+            [self exportAssert];
+        }
+    } else {
+        [self exportAssert];
     }
-    return filePath;
+}
+
+- (void)getImageInfo {
+    PHImageRequestOptions *options = [PHImageRequestOptions new];
+    options.version = PHImageRequestOptionsVersionCurrent;
+    options.deliveryMode = PHImageRequestOptionsDeliveryModeHighQualityFormat;
+    options.resizeMode = PHImageRequestOptionsResizeModeNone;
+    //不支持icloud上传
+    options.networkAccessAllowed = NO;
+    options.synchronous = YES;
+
+    [[PHImageManager defaultManager] requestImageDataForAsset:self.phAsset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+        self.assetData = imageData;
+        self.fileSize = imageData.length;
+        self.hasRealFilePath = NO;
+    }];
+}
+
+- (void)getVideoInfo {
+    PHVideoRequestOptions *options = [[PHVideoRequestOptions alloc] init];
+    options.version = PHVideoRequestOptionsVersionCurrent;
+    options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
+    //不支持icloud上传
+    options.networkAccessAllowed = NO;
+
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    [[PHImageManager defaultManager] requestAVAssetForVideo:self.phAsset options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
+        if ([asset isKindOfClass:[AVURLAsset class]]) {
+            self.filePath = [(AVURLAsset *)asset URL].absoluteString;
+            self.hasRealFilePath = YES;
+        }
+        dispatch_semaphore_signal(semaphore);
+    }];
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+}
+
+- (void)exportAssert {
+    NSArray *assetResources = [PHAssetResource assetResourcesForAsset:self.phAsset];
+    PHAssetResource *resource;
+    for (PHAssetResource *assetRes in assetResources) {
+        if (assetRes.type == PHAssetResourceTypePairedVideo || assetRes.type == PHAssetResourceTypeVideo) {
+            resource = assetRes;
+        }
+    }
+    NSString *fileName = [NSString stringWithFormat:@"tempAsset-%@.mov", [NSDate date]];
+    if (resource.originalFilename) {
+        fileName = resource.originalFilename;
+    }
+    PHAssetResourceRequestOptions *options = [PHAssetResourceRequestOptions new];
+    //不支持icloud上传
+    options.networkAccessAllowed = NO;
+
+    NSString *PATH_VIDEO_FILE = [NSTemporaryDirectory() stringByAppendingPathComponent:fileName];
+    [[NSFileManager defaultManager] removeItemAtPath:PATH_VIDEO_FILE error:nil];
+    
+    dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    [[PHAssetResourceManager defaultManager] writeDataForAssetResource:resource toFile:[NSURL fileURLWithPath:PATH_VIDEO_FILE] options:options completionHandler:^(NSError *_Nullable error) {
+        if (error) {
+            self.filePath = nil;
+        } else {
+            self.filePath = PATH_VIDEO_FILE;
+        }
+        self.hasRealFilePath = NO;
+        dispatch_semaphore_signal(semaphore);
+    }];
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
 }
 
 @end

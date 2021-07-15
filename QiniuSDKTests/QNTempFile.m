@@ -11,6 +11,8 @@
 
 @interface QNTempFile()
 
+@property(nonatomic, strong)NSInputStream *inputStream;
+@property(nonatomic, strong)NSData *data;
 @property(nonatomic,  copy)NSString *fileHash;
 
 @end
@@ -21,6 +23,28 @@
         _canRemove = YES;
     }
     return self;
+}
+
+- (NSInputStream *)inputStream {
+    if (_inputStream == nil || _inputStream.streamStatus == NSStreamStatusClosed) {
+        _inputStream = [NSInputStream inputStreamWithURL:self.fileUrl];
+    }
+    return _inputStream;
+}
+
+- (NSData *)data {
+    if (_data == nil) {
+        _data = [NSData dataWithContentsOfURL:self.fileUrl];
+    }
+    return _data;
+}
+
+- (long long)size {
+    if (self.fileType == QNTempFileTypeStreamNoSize) {
+        return -1;
+    } else {
+        return _size;
+    }
 }
 
 + (QNTempFile *)createTempFileWithSize:(int)size {
@@ -110,6 +134,5 @@
         [[NSFileManager defaultManager] removeItemAtURL:self.fileUrl error:&error];
     }
 }
-
 
 @end
