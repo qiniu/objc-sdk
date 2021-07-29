@@ -187,7 +187,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property(nonatomic, strong)NSArray <NSString *> *connectCheckURLStrings;
 
 /**
- *  是否开启网络连接状态检测
+ *  是否开启网络连接状态检测，默认：开启
  */
 @property(nonatomic, assign)BOOL connectCheckEnable;
 

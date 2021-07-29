@@ -159,6 +159,10 @@
 }
 
 - (BOOL)shouldCheckConnect:(QNResponseInfo *)responseInfo {
+    if (!kQNGlobalConfiguration.connectCheckEnable) {
+        return NO;
+    }
+    
     return responseInfo.statusCode == kQNNetworkError ||
     responseInfo.statusCode == -1001 /* NSURLErrorTimedOut */ ||
     responseInfo.statusCode == -1003 /* NSURLErrorCannotFindHost */ ||
@@ -254,7 +258,9 @@
     
     [item setReportValue:requestMetricsP.httpVersion forKey:QNReportRequestKeyHttpVersion];
 
-    if (requestMetricsP.connectCheckMetrics) {
+    if (!kQNGlobalConfiguration.connectCheckEnable) {
+        [item setReportValue:@"not enable" forKey:QNReportRequestKeyNetworkMeasuring];
+    } else if (requestMetricsP.connectCheckMetrics) {
         QNUploadSingleRequestMetrics *metrics = requestMetricsP.connectCheckMetrics;
         NSString *connectCheckDuration = [NSString stringWithFormat:@"%.2lf", [metrics.totalElapsedTime doubleValue]];
         NSString *connectCheckStatusCode = @"";
