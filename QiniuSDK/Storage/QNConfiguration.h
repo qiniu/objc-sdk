@@ -187,6 +187,11 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property(nonatomic, strong)NSArray <NSString *> *connectCheckURLStrings;
 
 /**
+ *  是否开启网络连接状态检测
+ */
+@property(nonatomic, assign)BOOL connectCheckEnable;
+
+/**
  *  网络连接状态检测HEAD请求超时，默认：3s
  */
 @property(nonatomic, assign)NSTimeInterval connectCheckTimeout;
