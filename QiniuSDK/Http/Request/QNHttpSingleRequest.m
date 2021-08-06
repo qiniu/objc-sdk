@@ -188,13 +188,13 @@
 - (void)updateHostNetworkStatus:(QNResponseInfo *)responseInfo
                          server:(id <QNUploadServer>)server
                  requestMetrics:(QNUploadSingleRequestMetrics *)requestMetrics{
-    long long byte = requestMetrics.bytesSend.longLongValue;
-    if (requestMetrics.startDate && requestMetrics.endDate && byte >= 1024 * 1024) {
-        double second = [requestMetrics.endDate timeIntervalSinceDate:requestMetrics.startDate];
-        if (second > 0) {
-            int speed = (int)(byte / second);
+    long long bytes = requestMetrics.bytesSend.longLongValue;
+    if (requestMetrics.startDate && requestMetrics.endDate && bytes >= 1024 * 1024) {
+        double duration = [requestMetrics.endDate timeIntervalSinceDate:requestMetrics.startDate] * 1000;
+        NSNumber *speed = [QNUtils calculateSpeed:bytes totalTime:duration];
+        if (speed) {
             NSString *type = [QNNetworkStatusManager getNetworkStatusType:server.host ip:server.ip];
-            [kQNNetworkStatusManager updateNetworkStatus:type speed:speed];
+            [kQNNetworkStatusManager updateNetworkStatus:type speed:(int)(speed.longValue / 1000)];
         }
     }
 }
