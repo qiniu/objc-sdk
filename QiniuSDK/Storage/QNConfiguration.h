@@ -153,9 +153,16 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property(nonatomic, assign)UInt32 dnsRepreHostNum;
 
 /**
- *   dns预取缓存时间  单位：秒
+ *   dns 预取, ip 默认有效时间  单位：秒 默认：120
+ *   只有在 dns 预取未返回 ttl 时使用
  */
 @property(nonatomic, assign)UInt32 dnsCacheTime;
+
+/**
+ *   dns预取缓存最大有效时间  单位：秒 默认 1800
+ *   当 dns 缓存 ip 过期并未刷新时，只要在 dnsCacheMaxTTL 时间内仍有效。
+ */
+@property(nonatomic, assign)UInt32 dnsCacheMaxTTL;
 
 /**
  *   自定义DNS解析客户端host

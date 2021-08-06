@@ -255,7 +255,6 @@
     }
     [item setReportValue:kQNDnsPrefetch.lastPrefetchedErrorMessage forKey:QNReportRequestKeyPrefetchedErrorMessage];
     
-    
     [item setReportValue:requestMetricsP.httpVersion forKey:QNReportRequestKeyHttpVersion];
 
     if (!kQNGlobalConfiguration.connectCheckEnable) {
