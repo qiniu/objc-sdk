@@ -88,6 +88,23 @@
     return ret;
 }
 
++ (NSNumber *)dateDuration:(NSDate *)startDate endDate:(NSDate *)endDate {
+    if (startDate && endDate) {
+        double time = [endDate timeIntervalSinceDate:startDate] * 1000;
+        return @(time);
+    } else {
+        return nil;
+    }
+}
+
++ (NSNumber *)calculateSpeed:(long long)bytes totalTime:(long long)totalTime {
+    if (bytes < 0 || totalTime == 0) {
+        return nil;
+    }
+    long speed = bytes * 1000 / totalTime;
+    return @(speed);
+}
+
 + (NSString *)getIpType:(NSString *)ip host:(NSString *)host{
     
     NSString *type = host;

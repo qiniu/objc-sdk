@@ -11,76 +11,84 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface QNUploadSingleRequestMetrics : NSObject
+@interface QNUploadMetrics : NSObject
 
-// 请求的 httpVersion
-@property(nonatomic,  copy)NSString *httpVersion;
-
-// 只有进行网络检测才会有 connectCheckMetrics
-@property (nullable , strong) QNUploadSingleRequestMetrics *connectCheckMetrics;
-
-// 错误信息
-@property (nullable , strong) NSError *error;
-
-@property (nonatomic, copy) NSURLRequest *request;
-@property (nullable , copy) NSURLResponse *response;
-
-@property (nullable, copy) NSDate *startDate;
-@property (nullable, copy) NSDate *endDate;
-@property (nonatomic, strong, readonly) NSNumber *totalElapsedTime;
-
-@property (nullable, copy) NSDate *domainLookupStartDate;
-@property (nullable, copy) NSDate *domainLookupEndDate;
-@property (nonatomic, strong, readonly) NSNumber *totalDnsTime;
-
-@property (nullable, copy) NSDate *connectStartDate;
-@property (nullable, copy) NSDate *connectEndDate;
-@property (nonatomic, strong, readonly) NSNumber *totalConnectTime;
-
-@property (nullable, copy) NSDate *secureConnectionStartDate;
-@property (nullable, copy) NSDate *secureConnectionEndDate;
-@property (nonatomic, strong, readonly) NSNumber *totalSecureConnectTime;
-
-@property (nullable, copy) NSDate *requestStartDate;
-@property (nullable, copy) NSDate *requestEndDate;
-@property (nonatomic, strong, readonly) NSNumber *totalRequestTime;
-
-@property (nonatomic, strong, readonly) NSNumber *totalWaitTime;
-
-@property (nullable, copy) NSDate *responseStartDate;
-@property (nullable, copy) NSDate *responseEndDate;
-@property (nonatomic, strong, readonly) NSNumber *totalResponseTime;
-
-@property (assign) int64_t countOfRequestHeaderBytesSent;
-@property (assign) int64_t countOfRequestBodyBytesSent;
-
-@property (assign) int64_t countOfResponseHeaderBytesReceived;
-@property (assign) int64_t countOfResponseBodyBytesReceived;
-
-@property (nullable, copy) NSString *localAddress;
-@property (nullable, copy) NSNumber *localPort;
-@property (nullable, copy) NSString *remoteAddress;
-@property (nullable, copy) NSNumber *remotePort;
-
-@property (nonatomic, strong, readonly) NSNumber *totalBytes;
-@property (nonatomic, strong, readonly) NSNumber *bytesSend;
+@property (nonatomic, nullable, strong, readonly) NSDate *startDate;
+@property (nonatomic, nullable, strong, readonly) NSDate *endDate;
+@property (nonatomic, nullable, strong, readonly) NSNumber *totalElapsedTime;
 
 //MARK:-- 构造
 + (instancetype)emptyMetrics;
 
+- (void)start;
+- (void)end;
+
 @end
 
 
-@interface QNUploadRegionRequestMetrics : NSObject
+@interface QNUploadSingleRequestMetrics : QNUploadMetrics
 
-@property (nonatomic, strong, readonly) NSNumber *totalElapsedTime;
+// 请求的 httpVersion
+@property (nonatomic,  copy)NSString *httpVersion;
+
+// 只有进行网络检测才会有 connectCheckMetrics
+@property (nonatomic, nullable , strong) QNUploadSingleRequestMetrics *connectCheckMetrics;
+
+// 错误信息
+@property (nonatomic, nullable , strong) NSError *error;
+
+@property (nonatomic, nullable, copy) NSURLRequest *request;
+@property (nonatomic, nullable, copy) NSURLResponse *response;
+
+@property (nonatomic, nullable, copy) NSDate *domainLookupStartDate;
+@property (nonatomic, nullable, copy) NSDate *domainLookupEndDate;
+@property (nonatomic, nullable, strong, readonly) NSNumber *totalDnsTime;
+
+@property (nonatomic, nullable, copy) NSDate *connectStartDate;
+@property (nonatomic, nullable, copy) NSDate *connectEndDate;
+@property (nonatomic, nullable, strong, readonly) NSNumber *totalConnectTime;
+
+@property (nonatomic, nullable, copy) NSDate *secureConnectionStartDate;
+@property (nonatomic, nullable, copy) NSDate *secureConnectionEndDate;
+@property (nonatomic, nullable, strong, readonly) NSNumber *totalSecureConnectTime;
+
+@property (nonatomic, nullable, copy) NSDate *requestStartDate;
+@property (nonatomic, nullable, copy) NSDate *requestEndDate;
+@property (nonatomic, nullable, strong, readonly) NSNumber *totalRequestTime;
+
+@property (nonatomic, nullable, strong, readonly) NSNumber *totalWaitTime;
+
+@property (nonatomic, nullable, copy) NSDate *responseStartDate;
+@property (nonatomic, nullable, copy) NSDate *responseEndDate;
+@property (nonatomic, nullable, strong, readonly) NSNumber *totalResponseTime;
+
+@property (nonatomic, assign) int64_t countOfRequestHeaderBytesSent;
+@property (nonatomic, assign) int64_t countOfRequestBodyBytesSent;
+
+@property (nonatomic, assign) int64_t countOfResponseHeaderBytesReceived;
+@property (nonatomic, assign) int64_t countOfResponseBodyBytesReceived;
+
+@property (nonatomic, nullable, copy) NSString *localAddress;
+@property (nonatomic, nullable, copy) NSNumber *localPort;
+@property (nonatomic, nullable, copy) NSString *remoteAddress;
+@property (nonatomic, nullable, copy) NSNumber *remotePort;
+
+@property (nonatomic, strong, readonly) NSNumber *totalBytes;
+@property (nonatomic, strong, readonly) NSNumber *bytesSend;
+@property (nonatomic, strong, readonly) NSNumber *perceptiveSpeed;
+
+
+@end
+
+
+@interface QNUploadRegionRequestMetrics : QNUploadMetrics
+
 @property (nonatomic, strong, readonly) NSNumber *requestCount;
 @property (nonatomic, strong, readonly) NSNumber *bytesSend;
 @property (nonatomic, strong, readonly) id <QNUploadRegion> region;
 @property (nonatomic,   copy, readonly) NSArray<QNUploadSingleRequestMetrics *> *metricsList;
 
 //MARK:-- 构造
-+ (instancetype)emptyMetrics;
 - (instancetype)initWithRegion:(id <QNUploadRegion>)region;
 
 - (void)addMetricsList:(NSArray <QNUploadSingleRequestMetrics *> *)metricsList;
@@ -89,16 +97,12 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-@interface QNUploadTaskMetrics : NSObject
+@interface QNUploadTaskMetrics : QNUploadMetrics
 
-@property (nonatomic, strong, readonly) NSNumber *totalElapsedTime;
 @property (nonatomic, strong, readonly) NSNumber *requestCount;
 @property (nonatomic, strong, readonly) NSNumber *bytesSend;
 @property (nonatomic, strong, readonly) NSNumber *regionCount;
 @property (nonatomic, strong) NSArray<id <QNUploadRegion>> *regions;
-
-//MARK:-- 构造
-+ (instancetype)emptyMetrics;
 
 - (void)addMetrics:(QNUploadRegionRequestMetrics *)metrics;
 

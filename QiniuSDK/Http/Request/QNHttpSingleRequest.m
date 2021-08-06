@@ -267,13 +267,17 @@
         if (metrics.response) {
             connectCheckStatusCode = [NSString stringWithFormat:@"%ld", (long)((NSHTTPURLResponse *)metrics.response).statusCode];
         } else if (metrics.error) {
-            connectCheckStatusCode = [NSString stringWithFormat:@"%ld", metrics.error.code];
+            connectCheckStatusCode = [NSString stringWithFormat:@"%ld", (long)metrics.error.code];
         }
         NSString *networkMeasuring = [NSString stringWithFormat:@"duration:%@ status_code:%@",connectCheckDuration, connectCheckStatusCode];
         [item setReportValue:networkMeasuring forKey:QNReportRequestKeyNetworkMeasuring];
     }
     
-
+    // 成功统计速度
+    if (info.isOK) {
+        [item setReportValue:requestMetricsP.perceptiveSpeed forKey:QNReportRequestKeyPerceptiveSpeed];
+    }
+    
     [kQNReporter reportItem:item token:self.token.token];
 }
 

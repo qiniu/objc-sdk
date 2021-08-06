@@ -31,7 +31,7 @@ connectionProxy:(NSDictionary *)connectionProxy
     self.request = request;
     self.requestMetrics = [QNUploadSingleRequestMetrics emptyMetrics];
     self.requestMetrics.remoteAddress = request.qn_ip;
-    self.requestMetrics.startDate = [NSDate date];
+    [self.requestMetrics start];
     
     self.responseData = [NSMutableData data];
     self.progress = progress;
@@ -64,12 +64,10 @@ connectionProxy:(NSDictionary *)connectionProxy
 }
 
 - (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didCompleteWithError:(nullable NSError *)error {
-    self.requestMetrics.endDate = [NSDate date];
+    [self.requestMetrics end];
     self.requestMetrics.request = task.currentRequest;
     self.requestMetrics.response = task.response;
     self.requestMetrics.error = error;
-    self.requestMetrics.countOfResponseBodyBytesReceived = task.response.expectedContentLength;
-    self.requestMetrics.countOfRequestHeaderBytesSent = [NSString stringWithFormat:@"%@", task.currentRequest.allHTTPHeaderFields].length;
     self.complete(task.response, self.requestMetrics,self.responseData, error);
     
     [session finishTasksAndInvalidate];
@@ -103,10 +101,19 @@ connectionProxy:(NSDictionary *)connectionProxy
     }
     
 #if __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000
-    if (@available(iOS 13.0, *)) {
+    if (@available(iOS 13.0, macOS 10.15, *)) {
         if (transactionMetrics.remoteAddress) {
             self.requestMetrics.remoteAddress = transactionMetrics.remoteAddress;
             self.requestMetrics.remotePort = transactionMetrics.remotePort;
+        }
+        if (transactionMetrics.countOfRequestHeaderBytesSent > 0) {
+            self.requestMetrics.countOfRequestHeaderBytesSent = transactionMetrics.countOfRequestHeaderBytesSent;
+        }
+        if (transactionMetrics.countOfResponseHeaderBytesReceived > 0) {
+            self.requestMetrics.countOfResponseHeaderBytesReceived = transactionMetrics.countOfResponseHeaderBytesReceived;
+        }
+        if (transactionMetrics.countOfResponseBodyBytesReceived > 0) {
+            self.requestMetrics.countOfResponseBodyBytesReceived = transactionMetrics.countOfResponseBodyBytesReceived;
         }
     }
 #endif
@@ -124,6 +131,7 @@ connectionProxy:(NSDictionary *)connectionProxy
     }
 }
 
+/*
 - (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust
                   forDomain:(NSString *)domain {
 
@@ -136,9 +144,15 @@ connectionProxy:(NSDictionary *)connectionProxy
     
     SecTrustSetPolicies(serverTrust, (__bridge CFArrayRef)policies);
 
-    SecTrustResultType result;
-    SecTrustEvaluate(serverTrust, &result);
-    return (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed);
+    if (@available(iOS 13.0, macOS 10.14, *)) {
+        CFErrorRef error = NULL;
+        BOOL ret = SecTrustEvaluateWithError(serverTrust, &error);
+        return ret && (error == nil);
+    } else {
+        SecTrustResultType result;
+        SecTrustEvaluate(serverTrust, &result);
+        return (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed);
+    }
 }
 
 - (void)URLSession:(NSURLSession *)session
@@ -168,5 +182,5 @@ didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge
 
     completionHandler(disposition,credential);
 }
-
+*/
 @end

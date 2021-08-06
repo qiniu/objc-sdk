@@ -95,7 +95,7 @@
         return NO;
     }
     NSTimeInterval currentTimestamp = [[NSDate date] timeIntervalSince1970];
-    return currentTimestamp > self.timestampValue.doubleValue + self.ttlValue.doubleValue;
+    return currentTimestamp < (self.timestampValue.doubleValue + self.ttlValue.doubleValue);
 }
 
 - (NSString *)toJsonInfo{
@@ -657,6 +657,7 @@
             [kQNDnsPrefetch localFetch];
         }];
         [[QNTransactionManager shared] addTransaction:transaction];
+        [self setDnsCheckWhetherCachedValidTransactionAction];
     });
 }
 

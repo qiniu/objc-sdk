@@ -116,7 +116,7 @@
     __block BOOL hasCallback = false;
     
     QNUploadSingleRequestMetrics *timeoutMetric = [QNUploadSingleRequestMetrics emptyMetrics];
-    timeoutMetric.startDate = [NSDate date];
+    [timeoutMetric start];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * kQNGlobalConfiguration.connectCheckTimeout), [self checkQueue], ^{
         @synchronized (self) {
             if (hasCallback) {
@@ -124,7 +124,7 @@
             }
             hasCallback = true;
         }
-        timeoutMetric.endDate = [NSDate date];
+        [timeoutMetric end];
         timeoutMetric.error = [NSError errorWithDomain:@"com.qiniu.NetworkCheck" code:NSURLErrorTimedOut userInfo:nil];
         complete(nil);
     });

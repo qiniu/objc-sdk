@@ -204,6 +204,7 @@ NSString * const QNReportRequestKeyPrefetchedDnsSource = @"prefetched_dns_source
 NSString * const QNReportRequestKeyPrefetchedBefore = @"prefetched_before";
 NSString * const QNReportRequestKeyPrefetchedErrorMessage = @"prefetched_error_message";
 NSString * const QNReportRequestKeyNetworkMeasuring = @"network_measuring";
+NSString * const QNReportRequestKeyPerceptiveSpeed = @"perceptive_speed";
 
 //MARK:-- 分块上传统计⽇志
 NSString * const QNReportBlockKeyLogType = @"log_type";
@@ -224,6 +225,7 @@ NSString * const QNReportBlockKeyOsName = @"os_name";
 NSString * const QNReportBlockKeyOsVersion = @"os_version";
 NSString * const QNReportBlockKeySDKName = @"sdk_name";
 NSString * const QNReportBlockKeySDKVersion = @"sdk_version";
+NSString * const QNReportBlockKeyPerceptiveSpeed = @"perceptive_speed";
 
 
 //MARK:-- 上传质量统计
@@ -243,3 +245,4 @@ NSString * const QNReportQualityKeyOsName = @"os_name";
 NSString * const QNReportQualityKeyOsVersion = @"os_version";
 NSString * const QNReportQualityKeySDKName = @"sdk_name";
 NSString * const QNReportQualityKeySDKVersion = @"sdk_version";
+NSString * const QNReportQualityKeyPerceptiveSpeed = @"perceptive_speed";

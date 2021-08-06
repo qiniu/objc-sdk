@@ -98,6 +98,8 @@
 }
 
 - (void)run {
+    [self.metrics start];
+    
     kQNWeakSelf;
     [_config.zone preQuery:self.token on:^(int code, QNResponseInfo *responseInfo, QNUploadRegionRequestMetrics *metrics) {
         kQNStrongSelf;
@@ -125,13 +127,17 @@
 }
 
 - (void)startToUpload{
+    self.currentRegionRequestMetrics = [[QNUploadRegionRequestMetrics alloc] initWithRegion:[self getCurrentRegion]];
+    [self.currentRegionRequestMetrics start];
 }
 
 - (BOOL)switchRegionAndUpload{
     if (self.currentRegionRequestMetrics) {
+        [self.currentRegionRequestMetrics end];
         [self.metrics addMetrics:self.currentRegionRequestMetrics];
         self.currentRegionRequestMetrics = nil;
     }
+    
     BOOL isSwitched = [self switchRegion];
     if (isSwitched) {
         [self startToUpload];
@@ -152,6 +158,10 @@
 
 - (void)complete:(QNResponseInfo *)info
         response:(NSDictionary *)response{
+    
+    [self.metrics end];
+    [self.currentRegionRequestMetrics end];
+    
     if (self.currentRegionRequestMetrics) {
         [self.metrics addMetrics:self.currentRegionRequestMetrics];
     }
