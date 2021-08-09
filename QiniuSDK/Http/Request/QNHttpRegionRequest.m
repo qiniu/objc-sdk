@@ -61,6 +61,7 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
    complete:(QNRegionRequestCompleteHandler)complete{
     
     self.requestMetrics = [[QNUploadRegionRequestMetrics alloc] initWithRegion:self.region];
+    [self.requestMetrics start];
     [self performRequest:[self getNextServer:nil]
                   action:action
                  headers:headers
@@ -79,6 +80,7 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
     complete:(QNRegionRequestCompleteHandler)complete{
     
     self.requestMetrics = [[QNUploadRegionRequestMetrics alloc] initWithRegion:self.region];
+    [self.requestMetrics start];
     [self performRequest:[self getNextServer:nil]
                   action:action
                  headers:headers
@@ -98,6 +100,7 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
    complete:(QNRegionRequestCompleteHandler)complete{
     
     self.requestMetrics = [[QNUploadRegionRequestMetrics alloc] initWithRegion:self.region];
+    [self.requestMetrics start];
     [self performRequest:[self getNextServer:nil]
                   action:action
                  headers:headers
@@ -197,7 +200,8 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
 - (void)complete:(QNResponseInfo *)responseInfo
         response:(NSDictionary *)response
         complete:(QNRegionRequestCompleteHandler)completionHandler {
-
+    [self.requestMetrics end];
+    
     if (completionHandler) {
         completionHandler(responseInfo, self.requestMetrics, response);
     }

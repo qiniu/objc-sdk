@@ -484,8 +484,8 @@
     } else if ([source isKindOfClass:[NSData class]]) {
         fileSize = [(NSData *)source length];
     }
-    if (fileSize > 0 && taskMetrics.totalElapsedTime) {
-        NSNumber *speed = [QNUtils calculateSpeed:fileSize totalTime:taskMetrics.totalElapsedTime];
+    if (responseInfo.isOK && fileSize > 0 && taskMetrics.totalElapsedTime) {
+        NSNumber *speed = [QNUtils calculateSpeed:fileSize totalTime:taskMetrics.totalElapsedTime.longLongValue];
         [item setReportValue:speed forKey:QNReportQualityKeyPerceptiveSpeed];
     }
     

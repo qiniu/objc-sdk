@@ -74,7 +74,6 @@
     
     __block int completeCount = 0;
     __block BOOL isCompleted = false;
-    __block BOOL isConnected = false;
     kQNWeakSelf;
     NSArray *allHosts = [kQNGlobalConfiguration.connectCheckURLStrings copy];
     for (NSString *host in allHosts) {
@@ -84,9 +83,6 @@
             BOOL isHostConnected = [self isConnected:metrics];
             @synchronized (self) {
                 completeCount += 1;
-            }
-            if (isHostConnected) {
-                isConnected = YES;
             }
             if (isHostConnected || completeCount == allHosts.count) {
                 @synchronized (self) {

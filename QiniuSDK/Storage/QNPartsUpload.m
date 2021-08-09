@@ -245,12 +245,14 @@
 
 
 - (void)complete:(QNResponseInfo *)info response:(NSDictionary *)response{
-    [self reportBlock];
     [self.uploadSource close];
     if ([self shouldRemoveUploadInfoRecord:info]) {
         [self.uploadPerformer removeUploadInfoRecord];
     }
+    
     [super complete:info response:response];
+    
+    [self reportBlock];
 }
 
 - (BOOL)shouldRemoveUploadInfoRecord:(QNResponseInfo *)info {
