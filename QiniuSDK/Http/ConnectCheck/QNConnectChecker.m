@@ -122,7 +122,7 @@
         }
         [timeoutMetric end];
         timeoutMetric.error = [NSError errorWithDomain:@"com.qiniu.NetworkCheck" code:NSURLErrorTimedOut userInfo:nil];
-        complete(nil);
+        complete(timeoutMetric);
     });
     
     QNUploadSystemClient *client = [[QNUploadSystemClient alloc] init];

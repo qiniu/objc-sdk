@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, UploadState){
     
 #ifdef YourToken
         NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource.dmg" ofType:nil];
-        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
+        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_6M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1.44G.zip" ofType:nil];
         
 //        NSFileManager *manager = [NSFileManager defaultManager];
@@ -90,6 +90,7 @@ typedef NS_ENUM(NSInteger, UploadState){
 
 - (void)uploadImageToQNFilePath:(NSString *)filePath {
     
+    NSString *key = [NSString stringWithFormat:@"iOS_Demo_%@", [NSDate date]];
     self.token = YourToken;
     QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.useConcurrentResumeUpload = NO;
@@ -120,7 +121,7 @@ typedef NS_ENUM(NSInteger, UploadState){
     
     long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize];
     NSInputStream *stream = [NSInputStream inputStreamWithFileAtPath:filePath];
-    [upManager putInputStream:stream sourceId:filePath.lastPathComponent size:fileSize fileName:filePath.lastPathComponent key:@"DemoResource_1.44G" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+    [upManager putInputStream:stream sourceId:filePath.lastPathComponent size:fileSize fileName:filePath.lastPathComponent key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         NSLog(@"info ===== %@", info);
         NSLog(@"resp ===== %@", resp);
 
@@ -131,7 +132,7 @@ typedef NS_ENUM(NSInteger, UploadState){
 //    NSURL *url = [NSURL fileURLWithPath:filePath];
 //    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
 //    PHAsset *asset = fetchResult.firstObject;
-//    [upManager putPHAsset:asset key:@"DemoResource" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//    [upManager putPHAsset:asset key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
 //        NSLog(@"info ===== %@", info);
 //        NSLog(@"resp ===== %@", resp);
 //
