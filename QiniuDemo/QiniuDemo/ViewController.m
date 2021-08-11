@@ -90,6 +90,8 @@ typedef NS_ENUM(NSInteger, UploadState){
 
 - (void)uploadImageToQNFilePath:(NSString *)filePath {
     
+    kQNGlobalConfiguration.isDnsOpen = false;
+    
     NSString *key = [NSString stringWithFormat:@"iOS_Demo_%@", [NSDate date]];
     self.token = YourToken;
     QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
@@ -119,27 +121,62 @@ typedef NS_ENUM(NSInteger, UploadState){
 //    }
 //                option:uploadOption];
     
-    long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize];
-    NSInputStream *stream = [NSInputStream inputStreamWithFileAtPath:filePath];
-    [upManager putInputStream:stream sourceId:filePath.lastPathComponent size:fileSize fileName:filePath.lastPathComponent key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        NSLog(@"info ===== %@", info);
-        NSLog(@"resp ===== %@", resp);
-
-        [weakSelf changeUploadState:UploadStatePrepare];
-        [weakSelf alertMessage:info.message];
-    } option:uploadOption];
-    
-//    NSURL *url = [NSURL fileURLWithPath:filePath];
-//    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
-//    PHAsset *asset = fetchResult.firstObject;
-//    [upManager putPHAsset:asset key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//    long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize];
+//    NSInputStream *stream = [NSInputStream inputStreamWithFileAtPath:filePath];
+//    [upManager putInputStream:stream sourceId:filePath.lastPathComponent size:fileSize fileName:filePath.lastPathComponent key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
 //        NSLog(@"info ===== %@", info);
 //        NSLog(@"resp ===== %@", resp);
 //
 //        [weakSelf changeUploadState:UploadStatePrepare];
 //        [weakSelf alertMessage:info.message];
-//    }
-//                option:uploadOption];
+//    } option:uploadOption];
+    
+//    NSURL *url = [NSURL fileURLWithPath:filePath];
+//    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
+    PHAsset *asset = [self getPHAssert];
+    [upManager putPHAsset:asset key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+        NSLog(@"info ===== %@", info);
+        NSLog(@"resp ===== %@", resp);
+
+        [weakSelf changeUploadState:UploadStatePrepare];
+        [weakSelf alertMessage:info.message];
+    }
+                option:uploadOption];
+}
+
+- (PHAsset *)getPHAssert {
+    
+    PHFetchOptions *option = [[PHFetchOptions alloc] init];
+    option.predicate = [NSPredicate predicateWithFormat:@"mediaType == %ld",PHAssetMediaTypeVideo];
+    option.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
+    
+    __block PHAsset *phAsset = nil;
+    //fetchAssetCollectionsWithType
+    PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+    for (PHAssetCollection *collection in smartAlbums) {
+        // 有可能是PHCollectionList类的的对象，过滤掉
+        if (![collection isKindOfClass:[PHAssetCollection class]]) continue;
+        // 过滤空相册
+        if (collection.estimatedAssetCount <= 0) continue;
+
+        PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:option];
+        
+        [fetchResult enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
+            
+            phAsset = (PHAsset *)obj;
+            //可通过此PHAsset用下边方法分别获取时常、地址及缩略图
+            
+            if (phAsset) {
+                *stop = true;
+            }
+        }];
+        
+        if (phAsset) {
+            break;
+        }
+    }
+    
+    return phAsset;
 }
 
 - (void)gotoImageLibrary {

@@ -171,7 +171,7 @@
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     [[PHImageManager defaultManager] requestAVAssetForVideo:self.phAsset options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
         if ([asset isKindOfClass:[AVURLAsset class]]) {
-            self.filePath = [(AVURLAsset *)asset URL].absoluteString;
+            self.filePath = [[(AVURLAsset *)asset URL] path];
             self.hasRealFilePath = YES;
         }
         dispatch_semaphore_signal(semaphore);
