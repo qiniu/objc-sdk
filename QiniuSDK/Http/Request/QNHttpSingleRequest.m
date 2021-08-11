@@ -258,7 +258,7 @@
     [item setReportValue:requestMetricsP.httpVersion forKey:QNReportRequestKeyHttpVersion];
 
     if (!kQNGlobalConfiguration.connectCheckEnable) {
-        [item setReportValue:@"not enable" forKey:QNReportRequestKeyNetworkMeasuring];
+        [item setReportValue:@"disable" forKey:QNReportRequestKeyNetworkMeasuring];
     } else if (requestMetricsP.connectCheckMetrics) {
         QNUploadSingleRequestMetrics *metrics = requestMetricsP.connectCheckMetrics;
         NSString *connectCheckDuration = [NSString stringWithFormat:@"%.2lf", [metrics.totalElapsedTime doubleValue]];
