@@ -159,6 +159,10 @@
 }
 
 - (BOOL)shouldCheckConnect:(QNResponseInfo *)responseInfo {
+    if (!kQNGlobalConfiguration.connectCheckEnable) {
+        return NO;
+    }
+    
     return responseInfo.statusCode == kQNNetworkError ||
     responseInfo.statusCode == -1001 /* NSURLErrorTimedOut */ ||
     responseInfo.statusCode == -1003 /* NSURLErrorCannotFindHost */ ||
@@ -184,13 +188,13 @@
 - (void)updateHostNetworkStatus:(QNResponseInfo *)responseInfo
                          server:(id <QNUploadServer>)server
                  requestMetrics:(QNUploadSingleRequestMetrics *)requestMetrics{
-    long long byte = requestMetrics.bytesSend.longLongValue;
-    if (requestMetrics.startDate && requestMetrics.endDate && byte >= 1024 * 1024) {
-        double second = [requestMetrics.endDate timeIntervalSinceDate:requestMetrics.startDate];
-        if (second > 0) {
-            int speed = (int)(byte / second);
+    long long bytes = requestMetrics.bytesSend.longLongValue;
+    if (requestMetrics.startDate && requestMetrics.endDate && bytes >= 1024 * 1024) {
+        double duration = [requestMetrics.endDate timeIntervalSinceDate:requestMetrics.startDate] * 1000;
+        NSNumber *speed = [QNUtils calculateSpeed:bytes totalTime:duration];
+        if (speed) {
             NSString *type = [QNNetworkStatusManager getNetworkStatusType:server.host ip:server.ip];
-            [kQNNetworkStatusManager updateNetworkStatus:type speed:speed];
+            [kQNNetworkStatusManager updateNetworkStatus:type speed:(int)(speed.longValue / 1000)];
         }
     }
 }
@@ -214,7 +218,7 @@
     [item setReportValue:info.reqId forKey:QNReportRequestKeyRequestId];
     [item setReportValue:requestMetricsP.request.qn_domain forKey:QNReportRequestKeyHost];
     [item setReportValue:requestMetricsP.remoteAddress forKey:QNReportRequestKeyRemoteIp];
-    [item setReportValue:requestMetricsP.localPort forKey:QNReportRequestKeyPort];
+    [item setReportValue:requestMetricsP.remotePort forKey:QNReportRequestKeyPort];
     [item setReportValue:self.requestInfo.bucket forKey:QNReportRequestKeyTargetBucket];
     [item setReportValue:self.requestInfo.key forKey:QNReportRequestKeyTargetKey];
     [item setReportValue:requestMetricsP.totalElapsedTime forKey:QNReportRequestKeyTotalElapsedTime];
@@ -251,23 +255,28 @@
     }
     [item setReportValue:kQNDnsPrefetch.lastPrefetchedErrorMessage forKey:QNReportRequestKeyPrefetchedErrorMessage];
     
-    
     [item setReportValue:requestMetricsP.httpVersion forKey:QNReportRequestKeyHttpVersion];
 
-    if (requestMetricsP.connectCheckMetrics) {
+    if (!kQNGlobalConfiguration.connectCheckEnable) {
+        [item setReportValue:@"disable" forKey:QNReportRequestKeyNetworkMeasuring];
+    } else if (requestMetricsP.connectCheckMetrics) {
         QNUploadSingleRequestMetrics *metrics = requestMetricsP.connectCheckMetrics;
         NSString *connectCheckDuration = [NSString stringWithFormat:@"%.2lf", [metrics.totalElapsedTime doubleValue]];
         NSString *connectCheckStatusCode = @"";
         if (metrics.response) {
             connectCheckStatusCode = [NSString stringWithFormat:@"%ld", (long)((NSHTTPURLResponse *)metrics.response).statusCode];
         } else if (metrics.error) {
-            connectCheckStatusCode = [NSString stringWithFormat:@"%ld", metrics.error.code];
+            connectCheckStatusCode = [NSString stringWithFormat:@"%ld", (long)metrics.error.code];
         }
         NSString *networkMeasuring = [NSString stringWithFormat:@"duration:%@ status_code:%@",connectCheckDuration, connectCheckStatusCode];
         [item setReportValue:networkMeasuring forKey:QNReportRequestKeyNetworkMeasuring];
     }
     
-
+    // 成功统计速度
+    if (info.isOK) {
+        [item setReportValue:requestMetricsP.perceptiveSpeed forKey:QNReportRequestKeyPerceptiveSpeed];
+    }
+    
     [kQNReporter reportItem:item token:self.token.token];
 }
 

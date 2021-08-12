@@ -6,9 +6,35 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNUtils.h"
 #import "QNUploadRequestMetrics.h"
 #import "NSURLRequest+QNRequest.h"
 #import "QNZoneInfo.h"
+
+@interface QNUploadMetrics()
+
+@property (nullable, strong) NSDate *startDate;
+@property (nullable, strong) NSDate *endDate;
+
+@end
+@implementation QNUploadMetrics
+//MARK:-- 构造
++ (instancetype)emptyMetrics {
+    return [[self alloc] init];
+}
+
+- (NSNumber *)totalElapsedTime{
+    return [QNUtils dateDuration:self.startDate endDate:self.endDate];
+}
+
+- (void)start {
+    self.startDate = [NSDate date];
+}
+
+- (void)end {
+    self.endDate = [NSDate date];
+}
+@end
 
 @interface QNUploadSingleRequestMetrics()
 @end
@@ -43,6 +69,16 @@
     NSInteger bodyLength = [request.qn_getHttpBody length];
     _totalBytes = @(headerLength + bodyLength);
     _request = [newRequest copy];
+}
+
+- (void)setResponse:(NSURLResponse *)response {
+    if (_countOfRequestBodyBytesSent <= 0) {
+        _countOfRequestBodyBytesSent = response.expectedContentLength;
+    }
+    if (_countOfResponseHeaderBytesReceived <= 0 && [response isKindOfClass:[NSHTTPURLResponse class]]) {
+        _countOfResponseHeaderBytesReceived = [NSString stringWithFormat:@"%@", [(NSHTTPURLResponse *)response allHeaderFields]].length;
+    }
+    _response = [response copy];
 }
 
 - (NSNumber *)totalElapsedTime{
@@ -88,13 +124,18 @@
 }
 
 - (NSNumber *)timeFromStartDate:(NSDate *)startDate toEndDate:(NSDate *)endDate{
-    if (startDate && endDate) {
-        double time = [endDate timeIntervalSinceDate:startDate] * 1000;
-        return @(time);
-    } else {
+    return [QNUtils dateDuration:startDate endDate:endDate];
+}
+
+- (NSNumber *)perceptiveSpeed {
+    int64_t size = self.bytesSend.longLongValue + _countOfResponseHeaderBytesReceived + _countOfResponseBodyBytesReceived;
+    if (size == 0 || self.totalElapsedTime == nil) {
         return nil;
     }
+    
+    return [QNUtils calculateSpeed:size totalTime:self.totalElapsedTime.longLongValue];
 }
+
 @end
 
 
@@ -117,18 +158,6 @@
         _metricsListInter = [NSMutableArray array];
     }
     return self;
-}
-
-- (NSNumber *)totalElapsedTime{
-    if (self.metricsList) {
-        double time = 0;
-        for (QNUploadSingleRequestMetrics *metrics in self.metricsList) {
-            time += metrics.totalElapsedTime.doubleValue;
-        }
-        return time > 0 ? @(time) : nil;
-    } else {
-        return nil;
-    }
 }
 
 - (NSNumber *)requestCount{

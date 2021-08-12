@@ -14,6 +14,7 @@
 		31304CA525628E97001034D2 /* image.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 31304CA225628E97001034D2 /* image.jpg */; };
 		3152B913268C4EC3004705AA /* UploadResource_1.44G.zip in Resources */ = {isa = PBXBuildFile; fileRef = 3152B912268C4EC3004705AA /* UploadResource_1.44G.zip */; };
 		318191AB2531516F00D18536 /* UploadResource.dmg in Resources */ = {isa = PBXBuildFile; fileRef = 318191AA2531516F00D18536 /* UploadResource.dmg */; };
+		31B188E426C365F0006046CC /* UploadResource_6M.zip in Resources */ = {isa = PBXBuildFile; fileRef = 31B188E326C365F0006046CC /* UploadResource_6M.zip */; };
 		93D230241C86D7F700434F6D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D230231C86D7F700434F6D /* main.m */; };
 		93D230271C86D7F700434F6D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D230261C86D7F700434F6D /* AppDelegate.m */; };
 		93D2302A1C86D7F700434F6D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D230291C86D7F700434F6D /* ViewController.m */; };
@@ -51,6 +52,7 @@
 		318191AA2531516F00D18536 /* UploadResource.dmg */ = {isa = PBXFileReference; lastKnownFileType = file; path = UploadResource.dmg; sourceTree = "<group>"; };
 		318191AF25315F3500D18536 /* Configure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Configure.h; sourceTree = "<group>"; };
 		3189882026469145003CCA68 /* QiniuDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QiniuDemo.entitlements; sourceTree = "<group>"; };
+		31B188E326C365F0006046CC /* UploadResource_6M.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = UploadResource_6M.zip; sourceTree = "<group>"; };
 		6B9BC5A8D93F988C1240E05F /* libPods-QiniuDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		93D2301F1C86D7F700434F6D /* QiniuDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QiniuDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93D230231C86D7F700434F6D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 		318191A92531516F00D18536 /* DemoTestResource */ = {
 			isa = PBXGroup;
 			children = (
+				31B188E326C365F0006046CC /* UploadResource_6M.zip */,
 				3152B912268C4EC3004705AA /* UploadResource_1.44G.zip */,
 				31304CA225628E97001034D2 /* image.jpg */,
 				31304CA025628E97001034D2 /* image.png */,
@@ -311,6 +314,7 @@
 				3152B913268C4EC3004705AA /* UploadResource_1.44G.zip in Resources */,
 				93D2302D1C86D7F700434F6D /* Main.storyboard in Resources */,
 				31304CA525628E97001034D2 /* image.jpg in Resources */,
+				31B188E426C365F0006046CC /* UploadResource_6M.zip in Resources */,
 				31304CA325628E97001034D2 /* image.png in Resources */,
 				31304CA425628E97001034D2 /* UploadResource_49M.zip in Resources */,
 			);

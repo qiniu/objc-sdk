@@ -23,6 +23,7 @@
 @implementation QNFormUpload
 
 - (void)startToUpload {
+    [super startToUpload];
     
     QNLogInfo(@"key:%@ form上传", self.key);
     

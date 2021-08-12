@@ -122,6 +122,7 @@
         QNResponseInfo *info = [QNResponseInfo responseInfoWithInvalidToken:@"invalid token"];
         [QNUploadManager complete:token
                               key:key
+                           source:data
                      responseInfo:info
                          response:nil
                       taskMetrics:nil
@@ -134,6 +135,7 @@
     QNUpTaskCompletionHandler complete = ^(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp) {
         [QNUploadManager complete:token
                               key:key
+                           source:data
                      responseInfo:info
                          response:resp
                       taskMetrics:metrics
@@ -187,6 +189,7 @@
             QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
             [QNUploadManager complete:token
                                   key:key
+                               source:nil
                          responseInfo:info
                              response:nil
                           taskMetrics:nil
@@ -216,6 +219,7 @@
             QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
             [QNUploadManager complete:token
                                   key:key
+                               source:nil
                          responseInfo:info
                              response:nil
                           taskMetrics:nil
@@ -246,6 +250,7 @@
             QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
             [QNUploadManager complete:token
                                   key:key
+                               source:nil
                          responseInfo:info
                              response:nil
                           taskMetrics:nil
@@ -274,6 +279,7 @@
             QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
             [QNUploadManager complete:token
                                   key:key
+                               source:nil
                          responseInfo:info
                              response:nil
                           taskMetrics:nil
@@ -308,6 +314,7 @@
             QNResponseInfo *info = [QNResponseInfo responseInfoWithInvalidToken:@"invalid token"];
             [QNUploadManager complete:token
                                   key:key
+                               source:source
                          responseInfo:info
                              response:nil
                           taskMetrics:nil
@@ -319,6 +326,7 @@
         QNUpTaskCompletionHandler complete = ^(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp) {
             [QNUploadManager complete:token
                                   key:key
+                               source:source
                          responseInfo:info
                              response:resp
                           taskMetrics:metrics
@@ -336,6 +344,7 @@
                 QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
                 [QNUploadManager complete:token
                                       key:key
+                                   source:source
                              responseInfo:info
                                  response:nil
                               taskMetrics:nil
@@ -409,6 +418,7 @@
     if (info != nil) {
         [QNUploadManager complete:token
                               key:key
+                           source:nil
                      responseInfo:info
                          response:nil
                       taskMetrics:nil
@@ -421,12 +431,13 @@
 
 + (void)complete:(NSString *)token
              key:(NSString *)key
+          source:(NSObject *)source
     responseInfo:(QNResponseInfo *)responseInfo
         response:(NSDictionary *)response
      taskMetrics:(QNUploadTaskMetrics *)taskMetrics
         complete:(QNUpCompletionHandler)completionHandler {
-
-    [QNUploadManager reportQuality:key responseInfo:responseInfo taskMetrics:taskMetrics token:token];
+    
+    [QNUploadManager reportQuality:key source:source responseInfo:responseInfo taskMetrics:taskMetrics token:token];
     
     QNAsyncRunInMain(^{
         if (completionHandler) {
@@ -438,6 +449,7 @@
 
 //MARK:-- 统计quality日志
 + (void)reportQuality:(NSString *)key
+               source:(NSObject *)source
          responseInfo:(QNResponseInfo *)responseInfo
           taskMetrics:(QNUploadTaskMetrics *)taskMetrics
                 token:(NSString *)token{
@@ -465,6 +477,18 @@
     [item setReportValue:responseInfo.requestReportErrorType forKey:QNReportQualityKeyErrorType];
     NSString *errorDesc = responseInfo.requestReportErrorType ? responseInfo.message : nil;
     [item setReportValue:errorDesc forKey:QNReportQualityKeyErrorDescription];
+    
+    long long fileSize = -1;
+    if ([source conformsToProtocol:@protocol(QNUploadSource)]) {
+        fileSize = [(id <QNUploadSource>)source getSize];
+    } else if ([source isKindOfClass:[NSData class]]) {
+        fileSize = [(NSData *)source length];
+    }
+    [item setReportValue:@(fileSize) forKey:QNReportQualityKeyFileSize];
+    if (responseInfo.isOK && fileSize > 0 && taskMetrics.totalElapsedTime) {
+        NSNumber *speed = [QNUtils calculateSpeed:fileSize totalTime:taskMetrics.totalElapsedTime.longLongValue];
+        [item setReportValue:speed forKey:QNReportQualityKeyPerceptiveSpeed];
+    }
     
     [kQNReporter reportItem:item token:token];
 }

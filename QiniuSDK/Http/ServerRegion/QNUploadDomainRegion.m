@@ -20,6 +20,7 @@
 #import "QNUploadServerNetworkStatus.h"
 
 @interface QNUploadIpGroup : NSObject
+@property(nonatomic, assign)int ipIndex;
 @property(nonatomic,   copy, readonly)NSString *groupType;
 @property(nonatomic, strong, readonly)NSArray <id <QNIDnsNetworkAddress> > *ipList;
 @end
@@ -29,6 +30,7 @@
     if (self = [super init]) {
         _groupType = groupType;
         _ipList = ipList;
+        _ipIndex = -1;
     }
     return self;
 }
@@ -36,7 +38,10 @@
     if (!self.ipList || self.ipList.count == 0) {
         return nil;
     } else {
-        return self.ipList[arc4random()%self.ipList.count];
+        if (_ipIndex < 0 || _ipIndex > (self.ipList.count - 1)) {
+            _ipIndex = arc4random()%self.ipList.count;
+        }
+        return self.ipList[_ipIndex];
     }
 }
 @end

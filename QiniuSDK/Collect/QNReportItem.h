@@ -90,7 +90,7 @@ extern NSString *const QNReportRequestKeyPrefetchedDnsSource;
 extern NSString *const QNReportRequestKeyPrefetchedBefore;
 extern NSString *const QNReportRequestKeyPrefetchedErrorMessage;
 extern NSString *const QNReportRequestKeyNetworkMeasuring;
-
+extern NSString *const QNReportRequestKeyPerceptiveSpeed;
 
 //MARK:-- 分块上传统计⽇志
 extern NSString *const QNReportBlockKeyLogType;
@@ -111,6 +111,7 @@ extern NSString *const QNReportBlockKeyOsName;
 extern NSString *const QNReportBlockKeyOsVersion;
 extern NSString *const QNReportBlockKeySDKName;
 extern NSString *const QNReportBlockKeySDKVersion;
+extern NSString *const QNReportBlockKeyPerceptiveSpeed;
 
 //MARK:-- 上传质量统计
 extern NSString *const QNReportQualityKeyLogType;
@@ -122,6 +123,7 @@ extern NSString *const QNReportQualityKeyTotalElapsedTime;
 extern NSString *const QNReportQualityKeyRequestsCount;
 extern NSString *const QNReportQualityKeyRegionsCount;
 extern NSString *const QNReportQualityKeyBytesSent;
+extern NSString *const QNReportQualityKeyFileSize;
 extern NSString *const QNReportQualityKeyCloudType;
 extern NSString *const QNReportQualityKeyErrorType;
 extern NSString *const QNReportQualityKeyErrorDescription;
@@ -129,6 +131,6 @@ extern NSString *const QNReportQualityKeyOsName;
 extern NSString *const QNReportQualityKeyOsVersion;
 extern NSString *const QNReportQualityKeySDKName;
 extern NSString *const QNReportQualityKeySDKVersion;
-
+extern NSString *const QNReportQualityKeyPerceptiveSpeed;
 
 NS_ASSUME_NONNULL_END

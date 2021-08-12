@@ -90,12 +90,22 @@
     }
 }
 
+/// 过了 ttl 时间则需要刷新
+- (BOOL)needRefresh{
+    if (!self.timestampValue || !self.ipValue || self.ipValue.length == 0) {
+        return NO;
+    }
+    NSTimeInterval currentTimestamp = [[NSDate date] timeIntervalSince1970];
+    return currentTimestamp > (self.timestampValue.doubleValue + self.ttlValue.doubleValue);
+}
+
+/// 只要在最大 ttl 时间内，即为有效
 - (BOOL)isValid{
     if (!self.timestampValue || !self.ipValue || self.ipValue.length == 0) {
         return NO;
     }
     NSTimeInterval currentTimestamp = [[NSDate date] timeIntervalSince1970];
-    return currentTimestamp > self.timestampValue.doubleValue + self.ttlValue.doubleValue;
+    return currentTimestamp < (self.timestampValue.doubleValue + kQNGlobalConfiguration.dnsCacheMaxTTL);
 }
 
 - (NSString *)toJsonInfo{
@@ -298,7 +308,12 @@
     @synchronized (self) {
         addressList = self.addressDictionary[host];
     }
-    return addressList;
+    
+    if (addressList && addressList.count > 0 && [addressList.firstObject isValid]) {
+        return addressList;
+    } else {
+        return nil;
+    }
 }
 
 //MARK: --
@@ -376,7 +391,7 @@
     }
     
     NSArray<QNDnsNetworkAddress *>* preAddressList = self.addressDictionary[preHost];
-    if (preAddressList && [preAddressList.firstObject isValid]) {
+    if (preAddressList && ![preAddressList.firstObject needRefresh]) {
         return YES;
     }
     
@@ -657,6 +672,7 @@
             [kQNDnsPrefetch localFetch];
         }];
         [[QNTransactionManager shared] addTransaction:transaction];
+        [self setDnsCheckWhetherCachedValidTransactionAction];
     });
 }
 

@@ -87,10 +87,12 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     _dnsCacheDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches/Dns"];
     _dnsRepreHostNum = 2;
     _dnsCacheTime = kQNDefaultDnsCacheTime;
+    _dnsCacheMaxTTL = 10*60;
 
     _globalHostFrozenTime = 10;
     _partialHostFrozenTime = 5*60;
     
+    _connectCheckEnable = YES;
     _connectCheckTimeout = 3;
     _connectCheckURLStrings = @[@"https://www.qiniu.com", @"https://www.baidu.com", @"https://www.google.com"];
 }
@@ -104,7 +106,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
         _zone = [[QNAutoZone alloc] init];
         _chunkSize = 2 * 1024 * 1024;
         _putThreshold = 4 * 1024 * 1024;
-        _retryMax = 1;
+        _retryMax = 0;
         _timeoutInterval = 90;
         _retryInterval = 0.5;
 

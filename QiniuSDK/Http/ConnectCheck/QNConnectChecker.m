@@ -27,6 +27,15 @@
     return singleFlight;
 }
 
++ (dispatch_queue_t)checkQueue {
+    static dispatch_queue_t queue;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        queue = dispatch_queue_create("com.qiniu.NetworkCheckQueue", DISPATCH_QUEUE_CONCURRENT);
+    });
+    return queue;
+}
+
 + (BOOL)isConnected:(QNUploadSingleRequestMetrics *)metrics {
     return metrics && ((NSHTTPURLResponse *)metrics.response).statusCode > 99;
 }
@@ -65,7 +74,6 @@
     
     __block int completeCount = 0;
     __block BOOL isCompleted = false;
-    __block BOOL isConnected = false;
     kQNWeakSelf;
     NSArray *allHosts = [kQNGlobalConfiguration.connectCheckURLStrings copy];
     for (NSString *host in allHosts) {
@@ -75,9 +83,6 @@
             BOOL isHostConnected = [self isConnected:metrics];
             @synchronized (self) {
                 completeCount += 1;
-            }
-            if (isHostConnected) {
-                isConnected = YES;
             }
             if (isHostConnected || completeCount == allHosts.count) {
                 @synchronized (self) {
@@ -104,8 +109,30 @@
     request.HTTPMethod = @"HEAD";
     request.timeoutInterval = kQNGlobalConfiguration.connectCheckTimeout;
     
+    __block BOOL hasCallback = false;
+    
+    QNUploadSingleRequestMetrics *timeoutMetric = [QNUploadSingleRequestMetrics emptyMetrics];
+    [timeoutMetric start];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, NSEC_PER_SEC * kQNGlobalConfiguration.connectCheckTimeout), [self checkQueue], ^{
+        @synchronized (self) {
+            if (hasCallback) {
+                return;
+            }
+            hasCallback = true;
+        }
+        [timeoutMetric end];
+        timeoutMetric.error = [NSError errorWithDomain:@"com.qiniu.NetworkCheck" code:NSURLErrorTimedOut userInfo:nil];
+        complete(timeoutMetric);
+    });
+    
     QNUploadSystemClient *client = [[QNUploadSystemClient alloc] init];
     [client request:request connectionProxy:nil progress:nil complete:^(NSURLResponse *response, QNUploadSingleRequestMetrics * metrics, NSData * _Nullable data, NSError * error) {
+        @synchronized (self) {
+            if (hasCallback) {
+                return;
+            }
+            hasCallback = true;
+        }
         QNLogInfo(@"== checkHost:%@ responseInfo:%@", host, response);
         complete(metrics);
     }];

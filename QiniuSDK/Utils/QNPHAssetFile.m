@@ -59,10 +59,10 @@
             NSFileHandle *f = nil;
             NSData *d = nil;
             if (_fileSize > 16 * 1024 * 1024) {
-                f = [NSFileHandle fileHandleForReadingAtPath:self.filePath];
+                f = [NSFileHandle fileHandleForReadingFromURL:[NSURL fileURLWithPath:self.filePath] error:error];
                 if (f == nil) {
                     if (error != nil) {
-                        *error = [[NSError alloc] initWithDomain:self.filePath code:kQNFileError userInfo:nil];
+                        *error = [[NSError alloc] initWithDomain:self.filePath code:kQNFileError userInfo:[*error userInfo]];
                     }
                     return self;
                 }
@@ -113,7 +113,10 @@
         if (_file != nil) {
             [_file closeFile];
         }
-        [[NSFileManager defaultManager] removeItemAtPath:self.filePath error:nil];
+        // 如果是导出的 file 删除
+        if (!self.hasRealFilePath && self.filePath) {
+            [[NSFileManager defaultManager] removeItemAtPath:self.filePath error:nil];
+        }
     }
 }
 
@@ -133,8 +136,8 @@
     if (PHAssetMediaTypeImage == self.phAsset.mediaType) {
         [self getImageInfo];
     } else if (PHAssetMediaTypeVideo == self.phAsset.mediaType) {
-        // 1. 获取 video url
-        [self getVideoInfo];
+        // 1. 获取 video url 在此处打断点 debug 时 file path 有效，去除断点不进行 debug file path 无效，所以取消这种方式。
+        // [self getVideoInfo];
         
         // 2. video url 获取失败则导出文件
         if (self.filePath == nil) {
@@ -167,11 +170,11 @@
     options.deliveryMode = PHVideoRequestOptionsDeliveryModeHighQualityFormat;
     //不支持icloud上传
     options.networkAccessAllowed = NO;
-
+    
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     [[PHImageManager defaultManager] requestAVAssetForVideo:self.phAsset options:options resultHandler:^(AVAsset * _Nullable asset, AVAudioMix * _Nullable audioMix, NSDictionary * _Nullable info) {
         if ([asset isKindOfClass:[AVURLAsset class]]) {
-            self.filePath = [(AVURLAsset *)asset URL].absoluteString;
+            self.filePath = [[(AVURLAsset *)asset URL] path];
             self.hasRealFilePath = YES;
         }
         dispatch_semaphore_signal(semaphore);

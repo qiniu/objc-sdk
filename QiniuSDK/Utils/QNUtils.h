@@ -49,6 +49,15 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param string escape string
 + (NSString *)formEscape:(NSString *)string;
 
+/// 两个时间的时间段 单位：毫秒
++ (NSNumber *)dateDuration:(NSDate *)startDate endDate:(NSDate *)endDate;
+
+/// 计算 上传 或 下载 速度 单位：B/s
+/// @param bytes 单位： B
+/// @param totalTime  单位：ms
+/// @return 速度
++ (NSNumber *)calculateSpeed:(long long)bytes totalTime:(long long)totalTime;
+
 /// 根据ip和host来确定IP的类型，host可为空
 /// @param ip ip
 /// @param host host

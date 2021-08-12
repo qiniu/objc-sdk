@@ -245,12 +245,14 @@
 
 
 - (void)complete:(QNResponseInfo *)info response:(NSDictionary *)response{
-    [self reportBlock];
     [self.uploadSource close];
     if ([self shouldRemoveUploadInfoRecord:info]) {
         [self.uploadPerformer removeUploadInfoRecord];
     }
+    
     [super complete:info response:response];
+    
+    [self reportBlock];
 }
 
 - (BOOL)shouldRemoveUploadInfoRecord:(QNResponseInfo *)info {
@@ -276,6 +278,12 @@
     [item setReportValue:@([QNUtils getCurrentProcessID]) forKey:QNReportBlockKeyPid];
     [item setReportValue:@([QNUtils getCurrentThreadID]) forKey:QNReportBlockKeyTid];
     
+    // 统计当前 region 上传速度 文件大小 / 总耗时
+    if (self.uploadDataErrorResponseInfo == nil && [self.uploadSource getSize] > 0 && [metrics totalElapsedTime] > 0) {
+        NSNumber *speed = [QNUtils calculateSpeed:[self.uploadSource getSize] totalTime:[metrics totalElapsedTime].longLongValue];
+        [item setReportValue:speed forKey:QNReportBlockKeyPerceptiveSpeed];
+    }
+
     if (self.config.resumeUploadVersion == QNResumeUploadVersionV1) {
         [item setReportValue:@(1) forKey:QNReportBlockKeyUpApiVersion];
     } else {
