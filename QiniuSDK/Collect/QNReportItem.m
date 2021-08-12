@@ -238,6 +238,7 @@ NSString * const QNReportQualityKeyTotalElapsedTime = @"total_elapsed_time";
 NSString * const QNReportQualityKeyRequestsCount = @"requests_count";
 NSString * const QNReportQualityKeyRegionsCount = @"regions_count";
 NSString * const QNReportQualityKeyBytesSent = @"bytes_sent";
+NSString * const QNReportQualityKeyFileSize = @"file_size";
 NSString * const QNReportQualityKeyCloudType = @"cloud_type";
 NSString * const QNReportQualityKeyErrorType = @"error_type";
 NSString * const QNReportQualityKeyErrorDescription = @"error_description";

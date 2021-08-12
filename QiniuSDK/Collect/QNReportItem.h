@@ -123,6 +123,7 @@ extern NSString *const QNReportQualityKeyTotalElapsedTime;
 extern NSString *const QNReportQualityKeyRequestsCount;
 extern NSString *const QNReportQualityKeyRegionsCount;
 extern NSString *const QNReportQualityKeyBytesSent;
+extern NSString *const QNReportQualityKeyFileSize;
 extern NSString *const QNReportQualityKeyCloudType;
 extern NSString *const QNReportQualityKeyErrorType;
 extern NSString *const QNReportQualityKeyErrorDescription;
