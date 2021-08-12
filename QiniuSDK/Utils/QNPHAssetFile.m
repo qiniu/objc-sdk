@@ -136,8 +136,8 @@
     if (PHAssetMediaTypeImage == self.phAsset.mediaType) {
         [self getImageInfo];
     } else if (PHAssetMediaTypeVideo == self.phAsset.mediaType) {
-        // 1. 获取 video url
-//        [self getVideoInfo];
+        // 1. 获取 video url 在此处打断点 debug 时 file path 有效，去除断点不进行 debug file path 无效，所以取消这种方式。
+        // [self getVideoInfo];
         
         // 2. video url 获取失败则导出文件
         if (self.filePath == nil) {

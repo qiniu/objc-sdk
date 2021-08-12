@@ -31,6 +31,7 @@ connectionProxy:(NSDictionary *)connectionProxy
     self.request = request;
     self.requestMetrics = [QNUploadSingleRequestMetrics emptyMetrics];
     self.requestMetrics.remoteAddress = request.qn_ip;
+    self.requestMetrics.remotePort = request.qn_isHttps ? @443 : @80;
     [self.requestMetrics start];
     
     self.responseData = [NSMutableData data];

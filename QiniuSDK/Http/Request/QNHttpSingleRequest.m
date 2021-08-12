@@ -218,7 +218,7 @@
     [item setReportValue:info.reqId forKey:QNReportRequestKeyRequestId];
     [item setReportValue:requestMetricsP.request.qn_domain forKey:QNReportRequestKeyHost];
     [item setReportValue:requestMetricsP.remoteAddress forKey:QNReportRequestKeyRemoteIp];
-    [item setReportValue:requestMetricsP.localPort forKey:QNReportRequestKeyPort];
+    [item setReportValue:requestMetricsP.remotePort forKey:QNReportRequestKeyPort];
     [item setReportValue:self.requestInfo.bucket forKey:QNReportRequestKeyTargetBucket];
     [item setReportValue:self.requestInfo.key forKey:QNReportRequestKeyTargetKey];
     [item setReportValue:requestMetricsP.totalElapsedTime forKey:QNReportRequestKeyTotalElapsedTime];
