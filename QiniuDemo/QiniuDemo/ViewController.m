@@ -50,6 +50,8 @@ typedef NS_ENUM(NSInteger, UploadState){
     
 #ifdef YourToken
         NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource.dmg" ofType:nil];
+        path = [[NSBundle mainBundle] pathForResource:@"image.png" ofType:nil];
+        path = [[NSBundle mainBundle] pathForResource:@"image.jpg" ofType:nil];
         path = [[NSBundle mainBundle] pathForResource:@"UploadResource_6M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1.44G.zip" ofType:nil];
         
@@ -90,12 +92,13 @@ typedef NS_ENUM(NSInteger, UploadState){
 
 - (void)uploadImageToQNFilePath:(NSString *)filePath {
     
-    kQNGlobalConfiguration.isDnsOpen = false;
+//    kQNGlobalConfiguration.isDnsOpen = false;
+    
     
     NSString *key = [NSString stringWithFormat:@"iOS_Demo_%@", [NSDate date]];
     self.token = YourToken;
     QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        builder.useConcurrentResumeUpload = NO;
+        builder.useConcurrentResumeUpload = true;
         builder.resumeUploadVersion = QNResumeUploadVersionV2;
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] error:nil];
     }];
@@ -121,27 +124,27 @@ typedef NS_ENUM(NSInteger, UploadState){
 //    }
 //                option:uploadOption];
     
-//    long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize];
-//    NSInputStream *stream = [NSInputStream inputStreamWithFileAtPath:filePath];
-//    [upManager putInputStream:stream sourceId:filePath.lastPathComponent size:fileSize fileName:filePath.lastPathComponent key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-//        NSLog(@"info ===== %@", info);
-//        NSLog(@"resp ===== %@", resp);
-//
-//        [weakSelf changeUploadState:UploadStatePrepare];
-//        [weakSelf alertMessage:info.message];
-//    } option:uploadOption];
-    
-//    NSURL *url = [NSURL fileURLWithPath:filePath];
-//    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
-    PHAsset *asset = [self getPHAssert];
-    [upManager putPHAsset:asset key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+    long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize];
+    NSInputStream *stream = [NSInputStream inputStreamWithFileAtPath:filePath];
+    [upManager putInputStream:stream sourceId:filePath.lastPathComponent size:fileSize fileName:filePath.lastPathComponent key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         NSLog(@"info ===== %@", info);
         NSLog(@"resp ===== %@", resp);
 
         [weakSelf changeUploadState:UploadStatePrepare];
         [weakSelf alertMessage:info.message];
-    }
-                option:uploadOption];
+    } option:uploadOption];
+    
+//    NSURL *url = [NSURL fileURLWithPath:filePath];
+//    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
+//    PHAsset *asset = [self getPHAssert];
+//    [upManager putPHAsset:asset key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//        NSLog(@"info ===== %@", info);
+//        NSLog(@"resp ===== %@", resp);
+//
+//        [weakSelf changeUploadState:UploadStatePrepare];
+//        [weakSelf alertMessage:info.message];
+//    }
+//                option:uploadOption];
 }
 
 - (PHAsset *)getPHAssert {
