@@ -1,7 +1,7 @@
 #Changelog
 ## 8.3.1(2021-08-11)
 ## 优化
-- 对 DNS 域名预解析缓存增加缓存有效期，默认 10 分钟，支持手动修改 kQNGlobalConfiguration.dnsCacheMaxTTL 的大小，单位为 s
+- 对 DNS 域名预解析缓存增加缓存有效期，默认 10 分钟，支持手动修改有效期时长，kQNGlobalConfiguration.dnsCacheMaxTTL 单位为 s
 - 优化网络检测，支持关闭
 - 优化打点日志信息
 
