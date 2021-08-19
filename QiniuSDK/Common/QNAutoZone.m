@@ -83,6 +83,7 @@
 
 @interface QNAutoZone()
 
+@property(nonatomic, strong)NSArray *ucHosts;
 @property(nonatomic, strong)NSMutableDictionary *cache;
 @property(nonatomic, strong)NSLock *lock;
 @property(nonatomic, strong)NSMutableArray <QNRequestTransaction *> *transactions;
@@ -97,6 +98,12 @@
         singleFlight = [[QNSingleFlight alloc] init];
     });
     return singleFlight;
+}
+
++ (instancetype)zoneWithUcHosts:(NSArray *)ucHosts {
+    QNAutoZone *zone = [[self alloc] init];
+    zone.ucHosts = [ucHosts copy];
+    return zone;
 }
 
 - (instancetype)init{
@@ -194,8 +201,13 @@
 }
 
 - (QNRequestTransaction *)createUploadRequestTransaction:(QNUpToken *)token{
-    
-    QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithHosts:@[kQNPreQueryHost00, kQNPreQueryHost01]
+    NSArray *hosts = nil;
+    if (self.ucHosts && self.ucHosts.count > 0) {
+        hosts = [self.ucHosts copy];
+    } else {
+        hosts = @[kQNPreQueryHost00, kQNPreQueryHost01];
+    }
+    QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithHosts:hosts
                                                                            regionId:QNZoneInfoEmptyRegionId
                                                                               token:token];
     [self.lock lock];

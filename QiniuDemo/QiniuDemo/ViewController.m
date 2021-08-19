@@ -93,15 +93,26 @@ typedef NS_ENUM(NSInteger, UploadState){
 - (void)uploadImageToQNFilePath:(NSString *)filePath {
     
 //    kQNGlobalConfiguration.isDnsOpen = false;
-    
+    kQNGlobalConfiguration.connectCheckEnable = false;
+    kQNGlobalConfiguration.dnsCacheMaxTTL = 600;
+    kQNGlobalConfiguration.partialHostFrozenTime = 20*60;
     
     NSString *key = [NSString stringWithFormat:@"iOS_Demo_%@", [NSDate date]];
     self.token = YourToken;
+
     QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.timeoutInterval = 90;
+        builder.retryMax = 1;
+        
         builder.useConcurrentResumeUpload = true;
         builder.resumeUploadVersion = QNResumeUploadVersionV2;
+        builder.putThreshold = 6*1024*1024;
+        builder.chunkSize = 2*1024*1024;
+        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload.qbox.me"]];
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] error:nil];
     }];
+    
+    
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:configuration];
     
     __weak typeof(self) weakSelf = self;
@@ -124,6 +135,7 @@ typedef NS_ENUM(NSInteger, UploadState){
 //    }
 //                option:uploadOption];
     
+    NSDate *startData = [NSDate date];
     long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize];
     NSInputStream *stream = [NSInputStream inputStreamWithFileAtPath:filePath];
     [upManager putInputStream:stream sourceId:filePath.lastPathComponent size:fileSize fileName:filePath.lastPathComponent key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
@@ -131,7 +143,7 @@ typedef NS_ENUM(NSInteger, UploadState){
         NSLog(@"resp ===== %@", resp);
 
         [weakSelf changeUploadState:UploadStatePrepare];
-        [weakSelf alertMessage:info.message];
+        [weakSelf alertMessage:[NSString stringWithFormat:@"%@ \n duration:%f", info.message, [[NSDate date] timeIntervalSinceDate:startData]]];
     } option:uploadOption];
     
 //    NSURL *url = [NSURL fileURLWithPath:filePath];
