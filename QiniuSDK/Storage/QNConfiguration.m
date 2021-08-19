@@ -106,7 +106,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
         _zone = [[QNAutoZone alloc] init];
         _chunkSize = 2 * 1024 * 1024;
         _putThreshold = 4 * 1024 * 1024;
-        _retryMax = 0;
+        _retryMax = 1;
         _timeoutInterval = 90;
         _retryInterval = 0.5;
 
