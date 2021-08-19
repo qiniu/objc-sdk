@@ -143,7 +143,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
 }
 
 - (BOOL)isValid {
-    return [self.zonesInfo count] > 0;
+    return [self.zonesInfo count] > 0 && [self.zonesInfo.firstObject isValid];
 }
 
 @end
