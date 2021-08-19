@@ -41,7 +41,8 @@ extern NSString *const QNZoneInfoEmptyRegionId;
 
 @interface QNZonesInfo : NSObject
 
-@property (readonly) BOOL isValid;
+@property (nonatomic, assign, readonly) BOOL isTemporary;
+@property (nonatomic, assign, readonly) BOOL isValid;
 @property (nonatomic, strong, readonly) NSArray<QNZoneInfo *> *zonesInfo;
 
 /// 根据键值对构造对象 【内部使用】
@@ -49,6 +50,8 @@ extern NSString *const QNZoneInfoEmptyRegionId;
 + (instancetype)infoWithDictionary:(NSDictionary *)dictionary;
 
 - (instancetype)initWithZonesInfo:(NSArray<QNZoneInfo *> *)zonesInfo;
+// 临时 Zones，不建议长期使用
+- (instancetype)initWithTemporaryZonesInfo:(NSArray<QNZoneInfo *> *)zonesInfo;
 
 @end
 

@@ -118,6 +118,15 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
     return self;
 }
 
+- (instancetype)initWithTemporaryZonesInfo:(NSArray<QNZoneInfo *> *)zonesInfo {
+    self = [super init];
+    if (self) {
+        _zonesInfo = zonesInfo;
+        _isTemporary = true;
+    }
+    return self;
+}
+
 + (instancetype)infoWithDictionary:(NSDictionary *)dictionary {
     
     NSArray *hosts = dictionary[@"hosts"];

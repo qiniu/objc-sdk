@@ -123,8 +123,7 @@
     return zonesInfo;
 }
 
-- (void)preQuery:(QNUpToken *)token
-              on:(QNPrequeryReturn)ret {
+- (void)preQuery:(QNUpToken *)token on:(QNPrequeryReturn)ret {
     
     if (token == nil || ![token isValid]) {
         ret(-1, [QNResponseInfo responseInfoWithInvalidToken:@"invalid token"], nil);
@@ -146,7 +145,8 @@
         }
     }
     
-    if (zonesInfo != nil && zonesInfo.isValid) {
+    // 临时的 zonesInfo 仅能使用一次
+    if (zonesInfo != nil && zonesInfo.isValid && !zonesInfo.isTemporary) {
         ret(0, [QNResponseInfo successResponse], nil);
         return;
     }
