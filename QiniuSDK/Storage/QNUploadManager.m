@@ -459,12 +459,13 @@
     
     QNReportItem *item = [QNReportItem item];
     [item setReportValue:QNReportLogTypeQuality forKey:QNReportQualityKeyLogType];
+    [item setReportValue:taskMetricsP.upType forKey:QNReportQualityKeyUpType];
     [item setReportValue:@([[NSDate date] timeIntervalSince1970]) forKey:QNReportQualityKeyUpTime];
     [item setReportValue:responseInfo.qualityResult forKey:QNReportQualityKeyResult];
     [item setReportValue:upToken.bucket forKey:QNReportQualityKeyTargetBucket];
     [item setReportValue:key forKey:QNReportQualityKeyTargetKey];
     [item setReportValue:taskMetricsP.totalElapsedTime forKey:QNReportQualityKeyTotalElapsedTime];
-    [item setReportValue:taskMetricsP.totalElapsedTime forKey:QNReportQualityKeyTotalElapsedTime];
+    [item setReportValue:taskMetricsP.ucQueryMetrics.totalElapsedTime forKey:QNReportQualityKeyUcQueryElapsedTime];
     [item setReportValue:taskMetricsP.requestCount forKey:QNReportQualityKeyRequestsCount];
     [item setReportValue:taskMetricsP.regionCount forKey:QNReportQualityKeyRegionsCount];
     [item setReportValue:taskMetricsP.bytesSend forKey:QNReportQualityKeyBytesSent];

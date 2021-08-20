@@ -108,7 +108,7 @@ typedef NS_ENUM(NSInteger, UploadState){
         builder.resumeUploadVersion = QNResumeUploadVersionV2;
         builder.putThreshold = 6*1024*1024;
         builder.chunkSize = 2*1024*1024;
-        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload.qbox.me"]];
+//        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload.qbox.me"]];
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] error:nil];
     }];
     

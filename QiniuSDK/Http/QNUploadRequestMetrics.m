@@ -205,6 +205,7 @@
 
 @interface QNUploadTaskMetrics()
 
+@property (nonatomic,   copy) NSString *upType;
 @property (nonatomic,   copy) NSMutableDictionary<NSString *, QNUploadRegionRequestMetrics *> *metricsInfo;
 
 @end
@@ -212,6 +213,12 @@
 
 + (instancetype)emptyMetrics{
     QNUploadTaskMetrics *metrics = [[QNUploadTaskMetrics alloc] init];
+    return metrics;
+}
+
++ (instancetype)taskMetrics:(NSString *)upType {
+    QNUploadTaskMetrics *metrics = [self emptyMetrics];
+    metrics.upType = upType;
     return metrics;
 }
 
@@ -274,6 +281,11 @@
     } else {
         return @(0);
     }
+}
+
+- (void)setUcQueryMetrics:(QNUploadRegionRequestMetrics *)ucQueryMetrics {
+    _ucQueryMetrics = ucQueryMetrics;
+    [self addMetrics:ucQueryMetrics];
 }
 
 - (void)addMetrics:(QNUploadRegionRequestMetrics *)metrics{

@@ -115,11 +115,13 @@ extern NSString *const QNReportBlockKeyPerceptiveSpeed;
 
 //MARK:-- 上传质量统计
 extern NSString *const QNReportQualityKeyLogType;
+extern NSString *const QNReportQualityKeyUpType;
 extern NSString *const QNReportQualityKeyUpTime;
 extern NSString *const QNReportQualityKeyResult;
 extern NSString *const QNReportQualityKeyTargetBucket;
 extern NSString *const QNReportQualityKeyTargetKey;
 extern NSString *const QNReportQualityKeyTotalElapsedTime;
+extern NSString *const QNReportQualityKeyUcQueryElapsedTime;
 extern NSString *const QNReportQualityKeyRequestsCount;
 extern NSString *const QNReportQualityKeyRegionsCount;
 extern NSString *const QNReportQualityKeyBytesSent;

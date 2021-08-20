@@ -15,6 +15,7 @@
 #import "QNResponseInfo.h"
 #import "QNFixedZone.h"
 #import "QNSingleFlight.h"
+#import "QNUploadRequestMetrics.h"
 
 
 @interface QNAutoZoneCache : NSObject
@@ -130,8 +131,10 @@
         return;
     }
     
-    NSString *cacheKey = token.index;
+    QNUploadRegionRequestMetrics *cacheMetrics = [QNUploadRegionRequestMetrics emptyMetrics];
+    [cacheMetrics start];
     
+    NSString *cacheKey = token.index;
     [_lock lock];
     QNZonesInfo *zonesInfo = [_cache objectForKey:cacheKey];
     [_lock unlock];
@@ -147,7 +150,8 @@
     
     // 临时的 zonesInfo 仅能使用一次
     if (zonesInfo != nil && zonesInfo.isValid && !zonesInfo.isTemporary) {
-        ret(0, [QNResponseInfo successResponse], nil);
+        [cacheMetrics end];
+        ret(0, [QNResponseInfo successResponse], cacheMetrics);
         return;
     }
     

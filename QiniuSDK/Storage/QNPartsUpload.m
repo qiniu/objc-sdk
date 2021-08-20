@@ -299,4 +299,12 @@
     [kQNReporter reportItem:item token:self.token.token];
 }
 
+- (NSString *)upType {
+    if (self.config.resumeUploadVersion == QNResumeUploadVersionV1) {
+        return QNUploadUpTypeResumableV1;
+    } else {
+        return QNUploadUpTypeResumableV2;
+    }
+}
+
 @end

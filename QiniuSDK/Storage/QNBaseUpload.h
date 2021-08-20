@@ -19,10 +19,15 @@
 #import "QNUploadSource.h"
 #import "QNUploadRequestMetrics.h"
 
+extern NSString *const QNUploadUpTypeForm;
+extern NSString *const QNUploadUpTypeResumableV1;
+extern NSString *const QNUploadUpTypeResumableV2;
+
 typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp);
 
 @interface QNBaseUpload : NSObject
 
+@property (nonatomic,   copy, readonly) NSString *upType;
 @property (nonatomic,   copy, readonly) NSString *key;
 @property (nonatomic,   copy, readonly) NSString *fileName;
 @property (nonatomic, strong, readonly) NSData *data;

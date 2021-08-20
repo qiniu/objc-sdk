@@ -67,4 +67,7 @@
     return _progress;
 }
 
+- (NSString *)upType {
+    return QNUploadUpTypeForm;
+}
 @end

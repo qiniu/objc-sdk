@@ -230,11 +230,13 @@ NSString * const QNReportBlockKeyPerceptiveSpeed = @"perceptive_speed";
 
 //MARK:-- 上传质量统计
 NSString * const QNReportQualityKeyLogType = @"log_type";
+NSString * const QNReportQualityKeyUpType = @"up_type";
 NSString * const QNReportQualityKeyUpTime = @"up_time";
 NSString * const QNReportQualityKeyResult = @"result";
 NSString * const QNReportQualityKeyTargetBucket = @"target_bucket";
 NSString * const QNReportQualityKeyTargetKey = @"target_key";
 NSString * const QNReportQualityKeyTotalElapsedTime = @"total_elapsed_time";
+NSString * const QNReportQualityKeyUcQueryElapsedTime = @"uc_query_elapsed_time";
 NSString * const QNReportQualityKeyRequestsCount = @"requests_count";
 NSString * const QNReportQualityKeyRegionsCount = @"regions_count";
 NSString * const QNReportQualityKeyBytesSent = @"bytes_sent";

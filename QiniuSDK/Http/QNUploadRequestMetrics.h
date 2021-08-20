@@ -99,10 +99,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNUploadTaskMetrics : QNUploadMetrics
 
+@property (nonatomic,   copy, readonly) NSString *upType;
 @property (nonatomic, strong, readonly) NSNumber *requestCount;
 @property (nonatomic, strong, readonly) NSNumber *bytesSend;
 @property (nonatomic, strong, readonly) NSNumber *regionCount;
+
+@property (nonatomic, strong) QNUploadRegionRequestMetrics *ucQueryMetrics;
 @property (nonatomic, strong) NSArray<id <QNUploadRegion>> *regions;
+
++ (instancetype)taskMetrics:(NSString *)upType;
 
 - (void)addMetrics:(QNUploadRegionRequestMetrics *)metrics;
 
