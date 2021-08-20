@@ -300,6 +300,10 @@
 }
 
 - (NSString *)upType {
+    if (self.config == nil) {
+        return nil;
+    }
+    
     if (self.config.resumeUploadVersion == QNResumeUploadVersionV1) {
         return QNUploadUpTypeResumableV1;
     } else {
