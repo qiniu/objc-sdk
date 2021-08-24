@@ -199,7 +199,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property(nonatomic, assign)BOOL connectCheckEnable;
 
 /**
- *  网络连接状态检测HEAD请求超时，默认：3s
+ *  网络连接状态检测HEAD请求超时，默认：2s
  */
 @property(nonatomic, assign)NSTimeInterval connectCheckTimeout;
 
