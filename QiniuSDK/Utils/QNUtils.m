@@ -111,9 +111,9 @@
     if (!ip || ip.length == 0) {
         return type;
     }
-    if ([ip containsString:@":"]) {
+    if ([ip rangeOfString:@":"].location != NSNotFound) {
         type = [self getIPV6StringType:ip host:host];
-    } else if ([ip containsString:@"."]){
+    } else if ([ip rangeOfString:@"."].location != NSNotFound){
         type = [self getIPV4StringType:ip host:host];
     }
     return type;
@@ -124,16 +124,8 @@
     NSArray *ipNumberStrings = [ipv4String componentsSeparatedByString:@"."];
     if (ipNumberStrings.count == 4) {
         NSInteger firstNumber = [ipNumberStrings.firstObject integerValue];
-        if (firstNumber > 0 && firstNumber < 127) {
-            type = [NSString stringWithFormat:@"%@-%ld", @"ipv4-A", (long)firstNumber];
-        } else if (firstNumber > 127 && firstNumber <= 191) {
-            NSInteger secondNumber = [ipNumberStrings[1] integerValue];
-            type = [NSString stringWithFormat:@"%@-%ld-%ld", @"ipv4-B", (long)firstNumber, (long)secondNumber];
-        } else if (firstNumber > 191 && firstNumber <= 223) {
-            NSInteger secondNumber = [ipNumberStrings[1] integerValue];
-            NSInteger thirdNumber = [ipNumberStrings[2] integerValue];
-            type = [NSString stringWithFormat:@"%@-%ld-%ld-%ld", @"ipv4-C", (long)firstNumber, (long)secondNumber, (long)thirdNumber];
-        }
+        NSInteger secondNumber = [ipNumberStrings[1] integerValue];
+        type = [NSString stringWithFormat:@"%ld.%ld",(long)firstNumber, (long)secondNumber];
     }
     type = [NSString stringWithFormat:@"%@-%@", host ?:@"", type];
     return type;
