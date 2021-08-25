@@ -125,7 +125,7 @@
     if (ipNumberStrings.count == 4) {
         NSInteger firstNumber = [ipNumberStrings.firstObject integerValue];
         NSInteger secondNumber = [ipNumberStrings[1] integerValue];
-        type = [NSString stringWithFormat:@"%ld.%ld",(long)firstNumber, (long)secondNumber];
+        type = [NSString stringWithFormat:@"%ld-%ld",(long)firstNumber, (long)secondNumber];
     }
     type = [NSString stringWithFormat:@"%@-%@", host ?:@"", type];
     return type;
