@@ -201,10 +201,13 @@ NSString * const QNReportRequestKeyHttpClient = @"http_client";
 NSString * const QNReportRequestKeyNetworkType = @"network_type";
 NSString * const QNReportRequestKeySignalStrength = @"signal_strength";
 NSString * const QNReportRequestKeyPrefetchedDnsSource = @"prefetched_dns_source";
+NSString * const QNReportRequestKeyDnsSource = @"dns_source";
+NSString * const QNReportRequestKeyDnsErrorMessage = @"dns_error_message";
 NSString * const QNReportRequestKeyPrefetchedBefore = @"prefetched_before";
 NSString * const QNReportRequestKeyPrefetchedErrorMessage = @"prefetched_error_message";
 NSString * const QNReportRequestKeyNetworkMeasuring = @"network_measuring";
 NSString * const QNReportRequestKeyPerceptiveSpeed = @"perceptive_speed";
+NSString * const QNReportRequestKeyHijacking = @"hijacking";
 
 //MARK:-- 分块上传统计⽇志
 NSString * const QNReportBlockKeyLogType = @"log_type";

@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
                                  responseInfo:(QNResponseInfo *)responseInfo
                                  freezeServer:(id <QNUploadServer> _Nullable)freezeServer;
 
+- (void)updateIpListFormHost:(NSString *)host;
+
 @end
 
 NS_ASSUME_NONNULL_END

@@ -84,10 +84,17 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 }
 - (void)setupData{
     _isDnsOpen = YES;
+    _dnsPrefetchTimeout = 3;
     _dnsCacheDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches/Dns"];
     _dnsRepreHostNum = 2;
     _dnsCacheTime = kQNDefaultDnsCacheTime;
     _dnsCacheMaxTTL = 10*60;
+    
+    _dohEnable = true;
+    _dohServers = @[@"https://223.6.6.6/dns-query", @"https://8.8.8.8/dns-query"];
+    _udpDnsEnable = true;
+    _udpDnsServers = @[@"223.5.5.5", @"114.114.114.114", @"1.1.1.1", @"8.8.8.8"];
+    
 
     _globalHostFrozenTime = 10;
     _partialHostFrozenTime = 5*60;
@@ -97,6 +104,13 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     _connectCheckURLStrings = @[@"https://www.qiniu.com", @"https://www.baidu.com", @"https://www.google.com"];
 }
 
+- (BOOL)isDohEnable {
+    return _dohEnable && (_dohServers.count > 0) ;
+}
+
+- (BOOL)isUdpDnsEnable {
+    return _udpDnsEnable && (_udpDnsServers.count > 0) ;
+}
 @end
 
 @implementation QNConfigurationBuilder

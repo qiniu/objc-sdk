@@ -25,6 +25,11 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param host 域名
 - (NSArray <id <QNIDnsNetworkAddress> > *)getInetAddressByHost:(NSString *)host;
 
+/// 通过安全的方式预取 dns
+- (NSString *)prefetchHostBySafeDns:(NSString *)host error:(NSError **)error;
+
+- (void)clearDnsCache:(NSError **)error;
+
 @end
 
 

@@ -112,7 +112,13 @@
     }
 }
 
-- (void)createIpGroupList{
+- (void)clearIpGroupList {
+    @synchronized (self) {
+        self.ipGroupList = nil;
+    }
+}
+
+- (void)createIpGroupList {
 
     @synchronized (self) {
         if (self.ipGroupList && self.ipGroupList.count > 0) {
@@ -214,6 +220,15 @@
         [domainDictionary setObject:domain forKey:host];
     }
     return [domainDictionary copy];
+}
+
+- (void)updateIpListFormHost:(NSString *)host {
+    if (host == nil) {
+        return;
+    }
+    
+    [self.domainDictionary[host] clearIpGroupList];
+    [self.oldDomainDictionary[host] clearIpGroupList];
 }
 
 - (id<QNUploadServer> _Nullable)getNextServer:(QNUploadRequestState *)requestState

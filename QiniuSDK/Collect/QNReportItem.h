@@ -87,10 +87,13 @@ extern NSString *const QNReportRequestKeyHttpClient;
 extern NSString *const QNReportRequestKeyNetworkType;
 extern NSString *const QNReportRequestKeySignalStrength;
 extern NSString *const QNReportRequestKeyPrefetchedDnsSource;
+extern NSString *const QNReportRequestKeyDnsSource;
+extern NSString *const QNReportRequestKeyDnsErrorMessage;
 extern NSString *const QNReportRequestKeyPrefetchedBefore;
 extern NSString *const QNReportRequestKeyPrefetchedErrorMessage;
 extern NSString *const QNReportRequestKeyNetworkMeasuring;
 extern NSString *const QNReportRequestKeyPerceptiveSpeed;
+extern NSString *const QNReportRequestKeyHijacking;
 
 //MARK:-- 分块上传统计⽇志
 extern NSString *const QNReportBlockKeyLogType;

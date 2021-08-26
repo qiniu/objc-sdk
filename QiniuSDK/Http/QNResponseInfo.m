@@ -212,7 +212,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 
 - (BOOL)isNotQiniu {
     // reqId is nill means the server is not qiniu
-    return _reqId == nil || _xlog == nil;
+    return (_statusCode == kQNMaliciousResponseError) || (_statusCode > 0 && (_reqId == nil || _xlog == nil));
 }
 
 - (BOOL)isOK {

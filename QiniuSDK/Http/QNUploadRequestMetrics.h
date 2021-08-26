@@ -26,10 +26,20 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+#define kQNMetricsRequestHijacked @"forsure"
+#define kQNMetricsRequestMaybeHijacked @"maybe"
+
 @interface QNUploadSingleRequestMetrics : QNUploadMetrics
 
 // 请求的 httpVersion
 @property (nonatomic,  copy)NSString *httpVersion;
+
+// 请求是否劫持
+@property (nonatomic,   copy)NSString *hijacked;
+@property (nonatomic, assign, readonly)BOOL isForsureHijacked;
+@property (nonatomic, assign, readonly)BOOL isMaybeHijacked;
+@property (nonatomic,   copy) NSString *syncDnsSource;
+@property (nonatomic, strong) NSError *syncDnsError;
 
 // 只有进行网络检测才会有 connectCheckMetrics
 @property (nonatomic, nullable , strong) QNUploadSingleRequestMetrics *connectCheckMetrics;

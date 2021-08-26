@@ -20,7 +20,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param directory 路径
 /// @param perror 构造错误时，会有值
 + (instancetype _Nullable)dnsCacheFile:(NSString *)directory
-                                 error:(NSError **)perror;
+                                 error:(NSError **)error;
+
+- (void)clearCache:(NSError **)error;
 
 @end
 

@@ -12,6 +12,7 @@
 
 #import "QiniuSDK.h"
 
+#import "QNDnsPrefetch.h"
 #import "QNTempFile.h"
 #import "QNTestConfig.h"
 
@@ -80,6 +81,8 @@
 
 
 - (void)testHttpsV1 {
+    [kQNDnsPrefetch clearDnsCache:nil];
+    
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.resumeUploadVersion = QNResumeUploadVersionV1;
         builder.useConcurrentResumeUpload = NO;

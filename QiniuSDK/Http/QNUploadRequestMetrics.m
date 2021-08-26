@@ -81,6 +81,14 @@
     _response = [response copy];
 }
 
+- (BOOL)isForsureHijacked {
+    return [self.hijacked isEqualToString:kQNMetricsRequestHijacked];
+}
+
+- (BOOL)isMaybeHijacked {
+    return [self.hijacked isEqualToString:kQNMetricsRequestMaybeHijacked];
+}
+
 - (NSNumber *)totalElapsedTime{
     return [self timeFromStartDate:self.startDate
                          toEndDate:self.endDate];

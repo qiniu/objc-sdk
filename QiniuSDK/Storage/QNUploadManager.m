@@ -30,6 +30,8 @@
 #import <CoreServices/CoreServices.h>
 #endif
 
+#import "QNUploadManager.h"
+
 #import "QNAsyncRun.h"
 #import "QNConfiguration.h"
 #import "QNCrc32.h"

@@ -119,6 +119,7 @@
         QNResponseInfo *responseInfo = nil;
         if (checkCancelHandler()) {
             responseInfo = [QNResponseInfo cancelResponse];
+            [self reportRequest:responseInfo server:server requestMetrics:metrics];
             [self complete:responseInfo server:server response:nil requestMetrics:metrics complete:complete];
             return;
         }
@@ -134,14 +135,30 @@
                                                                response:(NSHTTPURLResponse *)response
                                                                    body:responseData
                                                                   error:error];
-        if ([self shouldCheckConnect:responseInfo]) {
+        BOOL hijacked = responseInfo.isNotQiniu;
+        if (hijacked) {
+            metrics.hijacked = kQNMetricsRequestHijacked;
+            NSError *err = nil;
+            [kQNDnsPrefetch prefetchHostBySafeDns:server.host error:&err];
+            metrics.syncDnsError = err;
+        }
+        
+        if (!hijacked && [self shouldCheckConnect:responseInfo]) {
+            // 网络状态检测
             QNUploadSingleRequestMetrics *connectCheckMetrics = [QNConnectChecker check];
             metrics.connectCheckMetrics = connectCheckMetrics;
             if (![QNConnectChecker isConnected:connectCheckMetrics]) {
                 NSString *message = [NSString stringWithFormat:@"check origin statusCode:%d error:%@", responseInfo.statusCode, responseInfo.error];
                 responseInfo = [QNResponseInfo errorResponseInfo:NSURLErrorNotConnectedToInternet errorDesc:message];
+            } else if (!kQNIsDnsSourceCustom(server.source) && !kQNIsDnsSourceDoh(server.source) && !kQNIsDnsSourceDnsPod(server.source)) {
+                metrics.hijacked = kQNMetricsRequestMaybeHijacked;
+                NSError *err = nil;
+                [kQNDnsPrefetch prefetchHostBySafeDns:server.host error:&err];
+                metrics.syncDnsError = err;
             }
         }
+        
+        [self reportRequest:responseInfo server:server requestMetrics:metrics];
         
         QNLogInfo(@"key:%@ response:%@", self.requestInfo.key, responseInfo);
         if (shouldRetry(responseInfo, responseDic)
@@ -178,7 +195,6 @@
     requestMetrics:(QNUploadSingleRequestMetrics *)requestMetrics
           complete:(QNSingleRequestCompleteHandler)complete {
     [self updateHostNetworkStatus:responseInfo server:server requestMetrics:requestMetrics];
-    [self reportRequest:responseInfo server:server requestMetrics:requestMetrics];
     if (complete) {
         complete(responseInfo, [self.requestMetricsList copy], response);
     }
@@ -271,6 +287,10 @@
         NSString *networkMeasuring = [NSString stringWithFormat:@"duration:%@ status_code:%@",connectCheckDuration, connectCheckStatusCode];
         [item setReportValue:networkMeasuring forKey:QNReportRequestKeyNetworkMeasuring];
     }
+    // 劫持标记
+    [item setReportValue:requestMetricsP.hijacked forKey:QNReportRequestKeyHijacking];
+    [item setReportValue:requestMetricsP.syncDnsSource forKey:QNReportRequestKeyDnsSource];
+    [item setReportValue:[requestMetricsP.syncDnsError description] forKey:QNReportRequestKeyDnsErrorMessage];
     
     // 成功统计速度
     if (info.isOK) {

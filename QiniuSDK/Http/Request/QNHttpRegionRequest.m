@@ -171,9 +171,14 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
         
         [self.requestMetrics addMetricsList:metrics];
         
-        if (shouldRetry(responseInfo, response)
+        BOOL hijacked = metrics.lastObject.isMaybeHijacked || metrics.lastObject.isForsureHijacked;
+        if (hijacked) {
+            [self.region updateIpListFormHost:server.host];
+        }
+        
+        if ((shouldRetry(responseInfo, response)
             && self.config.allowBackupHost
-            && responseInfo.couldRegionRetry) {
+            && responseInfo.couldRegionRetry) || hijacked) {
             
             id <QNUploadServer> newServer = [self getNextServer:responseInfo];
             if (newServer) {
@@ -194,7 +199,6 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
             [self complete:responseInfo response:response complete:complete];
         }
     }];
-    
 }
 
 - (void)complete:(QNResponseInfo *)responseInfo
