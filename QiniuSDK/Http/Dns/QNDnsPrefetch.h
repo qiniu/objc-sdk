@@ -49,4 +49,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#define kQNDnsSourceDoh @"doh"
+#define kQNDnsSourceUdp @"dns"
+#define kQNDnsSourceDnspod @"dnspod"
+#define kQNDnsSourceSystem @"system"
+#define kQNDnsSourceCustom @"customized"
+#define kQNDnsSourceNone @"none"
+
+BOOL kQNIsDnsSourceDoh(NSString * _Nullable source);
+BOOL kQNIsDnsSourceUdp(NSString * _Nullable source);
+BOOL kQNIsDnsSourceDnsPod(NSString * _Nullable source);
+BOOL kQNIsDnsSourceSystem(NSString * _Nullable source);
+BOOL kQNIsDnsSourceCustom(NSString * _Nullable source);
+
 NS_ASSUME_NONNULL_END

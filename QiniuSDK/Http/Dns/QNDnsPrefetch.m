@@ -157,17 +157,17 @@
 }
 - (NSString *)sourceValue{
     if (self.source == QNRecordSourceSystem) {
-        return @"system";
+        return kQNDnsSourceSystem;
     } else if (self.source == QNRecordSourceDoh) {
-        return [NSString stringWithFormat:@"doh<%@>", self.server];
+        return [NSString stringWithFormat:@"%@<%@>", kQNDnsSourceDoh, self.server];
     } else if (self.source == QNRecordSourceUdp) {
-        return [NSString stringWithFormat:@"dns<%@>", self.server];
+        return [NSString stringWithFormat:@"%@<%@>", kQNDnsSourceUdp, self.server];
     } else if (self.source == QNRecordSourceDnspodEnterprise) {
-        return @"dnspod enterprise";
+        return kQNDnsSourceDnspod;
     } else if (self.ipValue == nil || self.ipValue.length == 0) {
-        return @"none";
+        return kQNDnsSourceNone;
     } else {
-        return @"customized";
+        return kQNDnsSourceCustom;
     }
 }
 @end
@@ -378,7 +378,7 @@
         return nil;
     }
     
-    QNDohResolver *dohResolver = [QNDohResolver resolverWithServers:kQNGlobalConfiguration.dohServers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsPrefetchTimeout];
+    QNDohResolver *dohResolver = [QNDohResolver resolverWithServers:kQNGlobalConfiguration.dohServers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsResolveTimeout];
     QNInternalDns *doh = [QNInternalDns dnsWithResolver:dohResolver];
     nextFetchHosts = [self preFetchHosts:nextFetchHosts dns:doh error:&err];
     if (error != nil) {
@@ -435,7 +435,7 @@
     
     // doh
     if (kQNGlobalConfiguration.dohEnable) {
-        QNDohResolver *dohResolver = [QNDohResolver resolverWithServers:kQNGlobalConfiguration.dohServers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsPrefetchTimeout];
+        QNDohResolver *dohResolver = [QNDohResolver resolverWithServers:kQNGlobalConfiguration.dohServers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsResolveTimeout];
         QNInternalDns *doh = [QNInternalDns dnsWithResolver:dohResolver];
         nextFetchHosts = [self preFetchHosts:nextFetchHosts dns:doh error:error];
         if (nextFetchHosts.count == 0) {
@@ -445,7 +445,7 @@
     
     // udp
     if (kQNGlobalConfiguration.udpDnsEnable) {
-        QNDnsUdpResolver *udpDnsResolver = [QNDnsUdpResolver resolverWithServerIPs:kQNGlobalConfiguration.udpDnsServers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsPrefetchTimeout];
+        QNDnsUdpResolver *udpDnsResolver = [QNDnsUdpResolver resolverWithServerIPs:kQNGlobalConfiguration.udpDnsServers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsResolveTimeout];
         QNInternalDns *udpDns = [QNInternalDns dnsWithResolver:udpDnsResolver];
         [self preFetchHosts:nextFetchHosts dns:udpDns error:error];
     }
@@ -839,3 +839,23 @@
 }
 
 @end
+
+BOOL kQNIsDnsSourceDoh(NSString * _Nullable source) {
+    return [source containsString:kQNDnsSourceDoh];
+}
+
+BOOL kQNIsDnsSourceUdp(NSString * _Nullable source) {
+    return [source containsString:kQNDnsSourceUdp];
+}
+
+BOOL kQNIsDnsSourceDnsPod(NSString * _Nullable source) {
+    return [source containsString:kQNDnsSourceDnspod];
+}
+
+BOOL kQNIsDnsSourceSystem(NSString * _Nullable source) {
+    return [source containsString:kQNDnsSourceSystem];
+}
+
+BOOL kQNIsDnsSourceCustom(NSString * _Nullable source) {
+    return [source containsString:kQNDnsSourceCustom];
+}

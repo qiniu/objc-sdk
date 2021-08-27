@@ -84,7 +84,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 }
 - (void)setupData{
     _isDnsOpen = YES;
-    _dnsPrefetchTimeout = 3;
+    _dnsResolveTimeout = 2;
     _dnsCacheDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches/Dns"];
     _dnsRepreHostNum = 2;
     _dnsCacheTime = kQNDefaultDnsCacheTime;

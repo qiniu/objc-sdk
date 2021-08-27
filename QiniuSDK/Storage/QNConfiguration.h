@@ -153,9 +153,9 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property(nonatomic, assign)UInt32 dnsRepreHostNum;
 
 /**
- *   dns 预取超时，单位：秒
+ *   dns 预取超时，单位：秒  默认：2
  */
-@property(nonatomic, assign)int dnsPrefetchTimeout;
+@property(nonatomic, assign)int dnsResolveTimeout;
 
 /**
  *   dns 预取, ip 默认有效时间  单位：秒 默认：120
@@ -199,7 +199,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 /**
  *  使用 doh 预取时的 server 数组；当对某个 Host 使用 Doh 预取时，会使用 dohServers 进行并发预取
  *  当 dohEnable 开启时，doh 预取才会生效
- *  默认：@[@"https://223.5.5.5/"]
+ *  默认：@[@"https://223.6.6.6/dns-query", @"https://8.8.8.8/dns-query"];
  *  注意：如果使用 ip，需保证服务证书与 IP 绑定，避免 sni 问题
  */
 @property(nonatomic,   copy) NSArray <NSString *> *dohServers;
