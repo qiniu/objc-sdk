@@ -139,7 +139,7 @@
         if (hijacked) {
             metrics.hijacked = kQNMetricsRequestHijacked;
             NSError *err = nil;
-            [kQNDnsPrefetch prefetchHostBySafeDns:server.host error:&err];
+            metrics.syncDnsSource = [kQNDnsPrefetch prefetchHostBySafeDns:server.host error:&err];
             metrics.syncDnsError = err;
         }
         
