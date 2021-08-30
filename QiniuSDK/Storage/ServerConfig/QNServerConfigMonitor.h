@@ -10,9 +10,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface QNServerConfiguration : NSObject
+@interface QNServerConfigMonitor : NSObject
 
+@property(nonatomic,  copy)NSString *token;
 
+// 开始监控
+- (void)startMonitor;
+
+// 停止监控
+- (void)endMonitor;
 
 @end
 

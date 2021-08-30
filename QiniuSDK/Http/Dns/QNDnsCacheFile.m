@@ -34,6 +34,9 @@
         NSError *error;
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSString *filePath = [self pathOfKey:key];
+        if ([fileManager fileExistsAtPath:filePath]) {
+            [fileManager removeItemAtPath:filePath error:&error];
+        }
         [fileManager createFileAtPath:filePath contents:value attributes:nil];
         return error;
     }
