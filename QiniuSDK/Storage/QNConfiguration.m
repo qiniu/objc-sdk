@@ -92,10 +92,8 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     
     _dohEnable = true;
     _dohIpv4Servers = @[@"https://223.6.6.6/dns-query", @"https://8.8.8.8/dns-query"];
-    _dohIpv6Servers = @[@"https://2400:3200::1/dns-query", @"https://2001:4860:4860::8888/dns-query"];
     _udpDnsEnable = true;
     _udpDnsIpv4Servers = @[@"223.5.5.5", @"114.114.114.114", @"1.1.1.1", @"8.8.8.8"];
-    _udpDnsIpv6Servers = @[@"2400:3200::1", @"2400:3200:baba::1", @"2001:4860:4860::8888", @"2001:4860:4860::8844"];
     
 
     _globalHostFrozenTime = 10;

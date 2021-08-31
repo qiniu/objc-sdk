@@ -441,19 +441,19 @@
     }
     
     // 系统
-    nextFetchHosts = [self preFetchHosts:nextFetchHosts dns:self.systemDns error:error];
-    if (nextFetchHosts.count == 0) {
-        return;
-    }
+//    nextFetchHosts = [self preFetchHosts:nextFetchHosts dns:self.systemDns error:error];
+//    if (nextFetchHosts.count == 0) {
+//        return;
+//    }
     
     // doh
     if (kQNGlobalConfiguration.dohEnable) {
-        QNDohResolver *dohResolver = [QNDohResolver resolverWithServers:kQNGlobalConfiguration.dohIpv4Servers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsResolveTimeout];
-        QNInternalDns *doh = [QNInternalDns dnsWithResolver:dohResolver];
-        nextFetchHosts = [self preFetchHosts:nextFetchHosts dns:doh error:error];
-        if (nextFetchHosts.count == 0) {
-            return;
-        }
+//        QNDohResolver *dohResolver = [QNDohResolver resolverWithServers:kQNGlobalConfiguration.dohIpv4Servers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsResolveTimeout];
+//        QNInternalDns *doh = [QNInternalDns dnsWithResolver:dohResolver];
+//        nextFetchHosts = [self preFetchHosts:nextFetchHosts dns:doh error:error];
+//        if (nextFetchHosts.count == 0) {
+//            return;
+//        }
         
         if ([QNIP isIpV6FullySupported]) {
             QNDohResolver *dohResolver = [QNDohResolver resolverWithServers:kQNGlobalConfiguration.dohIpv6Servers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsResolveTimeout];

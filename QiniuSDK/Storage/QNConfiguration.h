@@ -194,7 +194,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 /**
  *  使用 udp 进行 Dns 预取时的 server ipv6 数组；当对某个 Host 使用 udp 进行 Dns 预取时，会使用 udpDnsIps 进行并发预取
  *  当 udpDnsEnable 开启时，使用 udp 进行 Dns 预取方式才会生效
- *  默认：@[@"2400:3200::1", @"2400:3200:baba::1", @"2001:4860:4860::8888", @"2001:4860:4860::8844"]
+ *  默认：nil
  */
 @property(nonatomic,   copy) NSArray <NSString *> *udpDnsIpv6Servers;
 
@@ -214,7 +214,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 /**
  *  使用 doh 预取时的 server 数组；当对某个 Host 使用 Doh 预取时，会使用 dohServers 进行并发预取
  *  当 dohEnable 开启时，doh 预取才会生效
- *  默认：@[@"https://2400:3200::1/dns-query", @"https://2001:4860:4860::8888/dns-query"];
+ *  默认：nil
  *  注意：如果使用 ip，需保证服务证书与 IP 绑定，避免 sni 问题
  */
 @property(nonatomic,   copy) NSArray <NSString *> *dohIpv6Servers;
