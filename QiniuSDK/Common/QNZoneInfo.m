@@ -43,7 +43,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
         mainHosts = nil;
     }
     
-    QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:@{@"ttl" : @(86400*1000),
+    QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:@{@"ttl" : @(-1),
                                                                 @"region" : regionId ?: QNZoneInfoEmptyRegionId,
                                                                 @"up" : @{@"domains" : mainHosts ?: @[],
                                                                           @"old" : oldHosts ?: @[]},
@@ -99,6 +99,10 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
 }
 
 - (BOOL)isValid{
+    if (self.ttl < 0) {
+        return true;
+    }
+    
     NSDate *currentDate = [NSDate date];
     return self.ttl > [currentDate timeIntervalSinceDate:self.buildDate];
 }
@@ -118,15 +122,6 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
     return self;
 }
 
-- (instancetype)initWithTemporaryZonesInfo:(NSArray<QNZoneInfo *> *)zonesInfo {
-    self = [super init];
-    if (self) {
-        _zonesInfo = zonesInfo;
-        _isTemporary = true;
-    }
-    return self;
-}
-
 + (instancetype)infoWithDictionary:(NSDictionary *)dictionary {
     
     NSArray *hosts = dictionary[@"hosts"];
@@ -140,6 +135,10 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
         }
     }
     return [[[self class] alloc] initWithZonesInfo:zonesInfo];
+}
+
+- (void)toTemporary {
+    _isTemporary = true;
 }
 
 - (BOOL)isValid {

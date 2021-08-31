@@ -185,11 +185,18 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property(nonatomic, assign)BOOL udpDnsEnable;
 
 /**
- *  使用 udp 进行 Dns 预取时的 server ip 数组；当对某个 Host 使用 udp 进行 Dns 预取时，会使用 udpDnsIps 进行并发预取
+ *  使用 udp 进行 Dns 预取时的 server ipv4 数组；当对某个 Host 使用 udp 进行 Dns 预取时，会使用 udpDnsIps 进行并发预取
  *  当 udpDnsEnable 开启时，使用 udp 进行 Dns 预取方式才会生效
  *  默认：@[@"223.5.5.5", @"114.114.114.114", @"1.1.1.1", @"208.67.222.222"]
  */
-@property(nonatomic,   copy) NSArray <NSString *> *udpDnsServers;
+@property(nonatomic,   copy) NSArray <NSString *> *udpDnsIpv4Servers;
+
+/**
+ *  使用 udp 进行 Dns 预取时的 server ipv6 数组；当对某个 Host 使用 udp 进行 Dns 预取时，会使用 udpDnsIps 进行并发预取
+ *  当 udpDnsEnable 开启时，使用 udp 进行 Dns 预取方式才会生效
+ *  默认：@[@"2400:3200::1", @"2400:3200:baba::1", @"2001:4860:4860::8888", @"2001:4860:4860::8844"]
+ */
+@property(nonatomic,   copy) NSArray <NSString *> *udpDnsIpv6Servers;
 
 /**
  * 是否使用 doh 预取，默认开启
@@ -202,7 +209,15 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  *  默认：@[@"https://223.6.6.6/dns-query", @"https://8.8.8.8/dns-query"];
  *  注意：如果使用 ip，需保证服务证书与 IP 绑定，避免 sni 问题
  */
-@property(nonatomic,   copy) NSArray <NSString *> *dohServers;
+@property(nonatomic,   copy) NSArray <NSString *> *dohIpv4Servers;
+
+/**
+ *  使用 doh 预取时的 server 数组；当对某个 Host 使用 Doh 预取时，会使用 dohServers 进行并发预取
+ *  当 dohEnable 开启时，doh 预取才会生效
+ *  默认：@[@"https://2400:3200::1/dns-query", @"https://2001:4860:4860::8888/dns-query"];
+ *  注意：如果使用 ip，需保证服务证书与 IP 绑定，避免 sni 问题
+ */
+@property(nonatomic,   copy) NSArray <NSString *> *dohIpv6Servers;
 
 /**
  *   Host全局冻结时间  单位：秒   默认：10  推荐范围：[5 ~ 30]

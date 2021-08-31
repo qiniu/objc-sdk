@@ -23,7 +23,7 @@
 @end
 @implementation QNAutoZoneCache
 
-+ (instancetype)share{
++ (instancetype)share {
     static QNAutoZoneCache *cache = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -37,7 +37,7 @@
     self.cache = [NSMutableDictionary dictionary];
 }
 
-- (void)cache:(NSDictionary *)zonesInfo forKey:(NSString *)cacheKey{
+- (void)cache:(QNZonesInfo *)zonesInfo forKey:(NSString *)cacheKey{
     
     if (!cacheKey || [cacheKey isEqualToString:@""]) {
         return;
@@ -58,16 +58,21 @@
         return nil;
     }
     
-    NSDictionary *zonesInfoDic = nil;
+    QNZonesInfo *zonesInfo = nil;
     @synchronized (self) {
-        zonesInfoDic = self.cache[cacheKey];
+        zonesInfo = self.cache[cacheKey];
     }
     
-    if (zonesInfoDic == nil) {
-        return nil;
+    return zonesInfo;
+}
+
+- (void)clearCache {
+    @synchronized (self) {
+        for (NSString *key in self.cache.allKeys) {
+            QNZonesInfo *info = self.cache[key];
+            [info toTemporary];
+        }
     }
-    
-    return [QNZonesInfo infoWithDictionary:zonesInfoDic];
 }
 
 @end
@@ -105,6 +110,10 @@
     QNAutoZone *zone = [[self alloc] init];
     zone.ucHosts = [ucHosts copy];
     return zone;
+}
+
++ (void)clearCache {
+    [[QNAutoZoneCache share] clearCache];
 }
 
 - (instancetype)init{
@@ -188,7 +197,7 @@
             [self.lock lock];
             [self.cache setValue:zonesInfo forKey:cacheKey];
             [self.lock unlock];
-            [[QNAutoZoneCache share] cache:response forKey:cacheKey];
+            [[QNAutoZoneCache share] cache:zonesInfo forKey:cacheKey];
             ret(0, responseInfo, metrics);
         } else {
             if (responseInfo.isConnectionBroken) {

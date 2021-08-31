@@ -101,7 +101,8 @@
     }
     
     QNFixedZone *fixedZone = [[QNFixedZone alloc] init];
-    fixedZone.zonesInfo = [[QNZonesInfo alloc] initWithTemporaryZonesInfo:[zoneInfoArray copy]];
+    fixedZone.zonesInfo = [[QNZonesInfo alloc] initWithZonesInfo:[zoneInfoArray copy]];
+    [fixedZone.zonesInfo toTemporary];
     return fixedZone;
 }
 

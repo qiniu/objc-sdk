@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic,  copy)NSString *token;
 
++ (instancetype)share;
+
 // 开始监控
 - (void)startMonitor;
 
