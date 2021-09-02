@@ -89,11 +89,14 @@
     NSData *data = nil;
     @try {
         [_lock lock];
-        if (_assetData != nil) {
-            data = [_assetData subdataWithRange:NSMakeRange(offset, (unsigned int)size)];
-        } else {
+        if (_assetData != nil && offset < _assetData.length) {
+            NSInteger realSize = MIN(size, _assetData.length - offset);
+            data = [_assetData subdataWithRange:NSMakeRange(offset, realSize)];
+        } else if (_file != nil && offset < _fileSize) {
             [_file seekToFileOffset:offset];
             data = [_file readDataOfLength:size];
+        } else {
+            data = [NSData data];
         }
     } @catch (NSException *exception) {
         *error = [NSError errorWithDomain:NSCocoaErrorDomain code:kQNFileError userInfo:@{NSLocalizedDescriptionKey : exception.reason}];
@@ -157,11 +160,30 @@
     options.networkAccessAllowed = NO;
     options.synchronous = YES;
 
-    [[PHImageManager defaultManager] requestImageDataForAsset:self.phAsset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
-        self.assetData = imageData;
-        self.fileSize = imageData.length;
-        self.hasRealFilePath = NO;
-    }];
+#if TARGET_OS_MACCATALYST
+    if (@available(macOS 10.15, *)) {
+        [[PHImageManager defaultManager] requestImageDataAndOrientationForAsset:self.phAsset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, CGImagePropertyOrientation orientation, NSDictionary *info) {
+            self.assetData = imageData;
+            self.fileSize = imageData.length;
+            self.hasRealFilePath = NO;
+        }];
+    }
+#else
+    if (@available(iOS 13, *)) {
+        [[PHImageManager defaultManager] requestImageDataAndOrientationForAsset:self.phAsset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, CGImagePropertyOrientation orientation, NSDictionary *info) {
+            self.assetData = imageData;
+            self.fileSize = imageData.length;
+            self.hasRealFilePath = NO;
+        }];
+    } else {
+        [[PHImageManager defaultManager] requestImageDataForAsset:self.phAsset options:options resultHandler:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+            self.assetData = imageData;
+            self.fileSize = imageData.length;
+            self.hasRealFilePath = NO;
+        }];
+    }
+#endif
+    
 }
 
 - (void)getVideoInfo {

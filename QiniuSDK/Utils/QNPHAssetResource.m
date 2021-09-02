@@ -62,11 +62,16 @@ enum {
     NSData *data = nil;
     @try {
         [_lock lock];
-        NSRange subRange = NSMakeRange(offset, size);
         if (!self.assetData) {
             self.assetData = [self fetchDataFromAsset:self.phAssetResource error:error];
         }
-        data = [self.assetData subdataWithRange:subRange];
+        
+        if (_assetData != nil && offset < _assetData.length) {
+            NSInteger realSize = MIN(size, _assetData.length - offset);
+            data = [_assetData subdataWithRange:NSMakeRange(offset, realSize)];
+        } else {
+            data = [NSData data];
+        }
     } @catch (NSException *exception) {
         *error = [NSError errorWithDomain:NSCocoaErrorDomain code:kQNFileError userInfo:@{NSLocalizedDescriptionKey : exception.reason}];
         NSLog(@"read file failed reason: %@ \n%@", exception.reason, exception.callStackSymbols);
