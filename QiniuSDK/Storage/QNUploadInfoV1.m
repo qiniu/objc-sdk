@@ -174,10 +174,10 @@
         }
         
         // 从资源中读取新的 block 进行上传
-        long blockOffset = 0;
+        long long blockOffset = 0;
         if (self.blockList.count > 0) {
             QNUploadBlock *lastBlock = self.blockList[self.blockList.count - 1];
-            blockOffset = lastBlock.offset + lastBlock.size;
+            blockOffset = lastBlock.offset + (long long)(lastBlock.size);
         }
 
         block = [[QNUploadBlock alloc] initWithOffset:blockOffset blockSize:kBlockSize dataSize:self.dataSize index:self.blockList.count];

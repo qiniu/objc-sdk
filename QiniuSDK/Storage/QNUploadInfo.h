@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param dataSize 读取数据大小
 /// @param dataOffset 数据偏移量
 /// @param error 读取时的错误信息
-- (NSData *)readData:(NSInteger)dataSize dataOffset:(long)dataOffset error:(NSError **)error;
+- (NSData *)readData:(NSInteger)dataSize dataOffset:(long long)dataOffset error:(NSError **)error;
 
 /// 关闭流
 - (void)close;

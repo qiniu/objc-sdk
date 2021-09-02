@@ -38,7 +38,7 @@
     return [[self.file path] lastPathComponent];
 }
 
-- (long)getSize {
+- (long long)getSize {
     return [self.file size];
 }
 
