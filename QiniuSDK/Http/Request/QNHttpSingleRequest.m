@@ -181,12 +181,15 @@
     }
     
     return responseInfo.statusCode == kQNNetworkError ||
-    responseInfo.statusCode == -1001 /* NSURLErrorTimedOut */ ||
+    responseInfo.statusCode == NSURLErrorTimedOut /* NSURLErrorTimedOut */ ||
     responseInfo.statusCode == -1003 /* NSURLErrorCannotFindHost */ ||
     responseInfo.statusCode == -1004 /* NSURLErrorCannotConnectToHost */ ||
     responseInfo.statusCode == -1005 /* NSURLErrorNetworkConnectionLost */ ||
     responseInfo.statusCode == -1006 /* NSURLErrorDNSLookupFailed */ ||
-    responseInfo.statusCode == -1009 /* NSURLErrorNotConnectedToInternet */;
+    responseInfo.statusCode == -1009 /* NSURLErrorNotConnectedToInternet */  ||
+    responseInfo.statusCode == -1200 /* NSURLErrorSecureConnectionFailed */  ||
+    responseInfo.statusCode == -1204 /* NSURLErrorServerCertificateNotYetValid */  ||
+    responseInfo.statusCode == -1205 /* NSURLErrorClientCertificateRejected */;
 }
 
 - (void)complete:(QNResponseInfo *)responseInfo
