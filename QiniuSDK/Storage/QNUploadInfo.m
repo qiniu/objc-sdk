@@ -12,7 +12,7 @@
 @interface QNUploadInfo()
 
 @property(nonatomic,  copy)NSString *sourceId;
-@property(nonatomic, assign)long sourceSize;
+@property(nonatomic, assign)long long sourceSize;
 @property(nonatomic,  copy)NSString *fileName;
 
 @property(nonatomic, strong)id <QNUploadSource> source;
@@ -58,7 +58,7 @@
     return [self.source getId];
 }
 
-- (long)getSourceSize {
+- (long long)getSourceSize {
     return [self.source getSize];
 }
 
@@ -91,7 +91,7 @@
 - (void)checkInfoStateAndUpdate {
 }
 
-- (NSData *)readData:(NSInteger)dataSize dataOffset:(long)dataOffset error:(NSError **)error {
+- (NSData *)readData:(NSInteger)dataSize dataOffset:(long long)dataOffset error:(NSError **)error {
     if (!self.source) {
         *error = [NSError errorWithDomain:NSStreamSOCKSErrorDomain code:kQNLocalIOError userInfo:@{NSLocalizedDescriptionKey : @"file is not exist"}];
         return nil;

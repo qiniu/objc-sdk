@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
  *
  * @return 资源大小
  */
-- (long)getSize;
+- (long long)getSize;
 
 /**
  * 读取数据

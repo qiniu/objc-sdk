@@ -150,13 +150,29 @@ typedef NS_ENUM(NSInteger, UploadState){
 //    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
 //    PHAsset *asset = [self getPHAssert];
 //    [upManager putPHAsset:asset key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+
+//    long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize];
+//    NSInputStream *stream = [NSInputStream inputStreamWithFileAtPath:filePath];
+//    [upManager putInputStream:stream sourceId:filePath.lastPathComponent size:fileSize fileName:filePath.lastPathComponent key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+
 //        NSLog(@"info ===== %@", info);
 //        NSLog(@"resp ===== %@", resp);
 //
 //        [weakSelf changeUploadState:UploadStatePrepare];
 //        [weakSelf alertMessage:info.message];
-//    }
-//                option:uploadOption];
+//    } option:uploadOption];
+    
+    NSURL *url = [NSURL fileURLWithPath:filePath];
+    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
+    PHAsset *asset = [self getPHAssert];
+    [upManager putPHAsset:asset key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+        NSLog(@"info ===== %@", info);
+        NSLog(@"resp ===== %@", resp);
+
+        [weakSelf changeUploadState:UploadStatePrepare];
+        [weakSelf alertMessage:info.message];
+    }
+                option:uploadOption];
 }
 
 - (PHAsset *)getPHAssert {
