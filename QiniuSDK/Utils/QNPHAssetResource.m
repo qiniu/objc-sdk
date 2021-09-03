@@ -55,7 +55,7 @@ enum {
     return self;
 }
 
-- (NSData *)read:(long)offset
+- (NSData *)read:(long long)offset
             size:(long)size
            error:(NSError **)error {
     
@@ -67,8 +67,8 @@ enum {
         }
         
         if (_assetData != nil && offset < _assetData.length) {
-            NSInteger realSize = MIN(size, _assetData.length - offset);
-            data = [_assetData subdataWithRange:NSMakeRange(offset, realSize)];
+            NSUInteger realSize = MIN((NSUInteger)size, _assetData.length - (NSUInteger)offset);
+            data = [_assetData subdataWithRange:NSMakeRange((NSUInteger)offset, realSize)];
         } else {
             data = [NSData data];
         }

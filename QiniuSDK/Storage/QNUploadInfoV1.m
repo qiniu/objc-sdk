@@ -277,7 +277,7 @@
     for (QNUploadData *data in block.uploadDataList) {
         if (data.state != QNUploadStateComplete) {
             // 还未上传的
-            data.data = [blockBytes subdataWithRange:NSMakeRange(data.offset, data.size)];
+            data.data = [blockBytes subdataWithRange:NSMakeRange((NSUInteger)data.offset, (NSUInteger)data.size)];
             data.state = QNUploadStateWaitToUpload;
         } else {
             // 已经上传的

@@ -42,7 +42,7 @@
     return [self.file size];
 }
 
-- (NSData *)readData:(NSInteger)dataSize dataOffset:(long)dataOffset error:(NSError *__autoreleasing  _Nullable *)error {
+- (NSData *)readData:(NSInteger)dataSize dataOffset:(long long)dataOffset error:(NSError *__autoreleasing  _Nullable *)error {
     return [self.file read:dataOffset size:dataSize error:error];
 }
 

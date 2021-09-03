@@ -55,8 +55,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * 读取数据
- * 1. 返回 byte[] 可能为空，但不会为 null；
- * 2. 当 byte[] 大小和 dataSize 不同时，则源数据已经读取结束
+ * 1. 返回 NSData 可能为空，但不会为 null；
+ * 2. 当 NSData 大小和 dataSize 不同时，则源数据已经读取结束
  * 3. 读取异常时抛出 error
  * 4. 仅支持串行调用，且 dataOffset 依次递增
  *
@@ -65,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param error 异常时的错误信息
  * @return 数据
  */
-- (NSData *)readData:(NSInteger)dataSize dataOffset:(long)dataOffset error:(NSError **)error;
+- (NSData *)readData:(NSInteger)dataSize dataOffset:(long long)dataOffset error:(NSError **)error;
 
 /**
  * 关闭流

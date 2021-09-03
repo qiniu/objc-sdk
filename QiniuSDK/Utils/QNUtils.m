@@ -101,7 +101,7 @@
     if (bytes < 0 || totalTime == 0) {
         return nil;
     }
-    long speed = bytes * 1000 / totalTime;
+    long long speed = bytes * 1000 / totalTime;
     return @(speed);
 }
 

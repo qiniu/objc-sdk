@@ -75,7 +75,7 @@
     return self;
 }
 
-- (NSData *)read:(long)offset
+- (NSData *)read:(long long)offset
             size:(long)size
            error:(NSError **)error {
 
@@ -83,8 +83,8 @@
     @try {
         [_lock lock];
         if (_data != nil && offset < _data.length) {
-            NSInteger realSize = MIN(size, _data.length - offset);
-            data = [_data subdataWithRange:NSMakeRange(offset, realSize)];
+            NSUInteger realSize = MIN((NSUInteger)size, _data.length - ((NSUInteger)offset));
+            data = [_data subdataWithRange:NSMakeRange((NSUInteger)offset, realSize)];
         } else if (_file != nil && offset < _fileSize) {
             [_file seekToFileOffset:offset];
             data = [_file readDataOfLength:size];

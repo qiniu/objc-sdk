@@ -22,7 +22,7 @@
  *
  *    @return 数据
  */
-- (NSData *)read:(long)offset
+- (NSData *)read:(long long)offset
             size:(long)size
            error:(NSError **)error;
 

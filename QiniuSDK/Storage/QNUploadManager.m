@@ -340,7 +340,7 @@
         long long sourceSize = [source getSize];
         if (sourceSize > 0 && sourceSize <= self.config.putThreshold) {
             NSError *error;
-            NSData *data = [source readData:sourceSize dataOffset:0 error:&error];
+            NSData *data = [source readData:(NSInteger)sourceSize dataOffset:0 error:&error];
             [source close];
             if (error) {
                 QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
