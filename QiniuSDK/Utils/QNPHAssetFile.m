@@ -135,6 +135,10 @@
     return _fileSize;
 }
 
+- (NSString *)fileType {
+    return @"PHAsset";
+}
+
 - (void)getInfo {
     if (PHAssetMediaTypeImage == self.phAsset.mediaType) {
         [self getImageInfo];

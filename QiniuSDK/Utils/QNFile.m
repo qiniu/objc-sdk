@@ -122,4 +122,7 @@
     return _fileSize;
 }
 
+- (NSString *)fileType {
+    return @"File";
+}
 @end

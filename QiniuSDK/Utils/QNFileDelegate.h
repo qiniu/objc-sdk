@@ -59,4 +59,7 @@
  */
 - (int64_t)size;
 
+@optional
+- (NSString *)fileType;
+
 @end

@@ -82,6 +82,10 @@
 - (int64_t)size {
     return _fileSize;
 }
+
+- (NSString *)fileType {
+    return @"ALAsset";
+}
 @end
 #endif
 #endif

@@ -72,6 +72,10 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)close;
 
+@optional
+// 上传源类型
+- (NSString *)sourceType;
+
 @end
 
 #define kQNUnknownSourceSize (-1)

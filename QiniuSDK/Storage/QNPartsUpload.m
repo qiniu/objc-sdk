@@ -304,10 +304,14 @@
         return nil;
     }
     
+    NSString *sourceType = @"";
+    if ([self.uploadSource respondsToSelector:@selector(sourceType)]) {
+        sourceType = [self.uploadSource sourceType];
+    }
     if (self.config.resumeUploadVersion == QNResumeUploadVersionV1) {
-        return QNUploadUpTypeResumableV1;
+        return [NSString stringWithFormat:@"%@<%@>",QNUploadUpTypeResumableV1, sourceType];
     } else {
-        return QNUploadUpTypeResumableV2;
+        return [NSString stringWithFormat:@"%@<%@>",QNUploadUpTypeResumableV2, sourceType];
     }
 }
 

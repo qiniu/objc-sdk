@@ -100,6 +100,10 @@ enum {
     return _fileSize;
 }
 
+- (NSString *)fileType {
+    return @"PHAssetResource";
+}
+
 - (void)getInfo {
     if (!_hasGotInfo) {
         _hasGotInfo = YES;

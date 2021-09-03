@@ -50,4 +50,11 @@
     [self.file close];
 }
 
+- (NSString *)sourceType {
+    if ([self.file respondsToSelector:@selector(fileType)]) {
+        return self.file.fileType;
+    } else {
+        return @"SourceFile";
+    }
+}
 @end
