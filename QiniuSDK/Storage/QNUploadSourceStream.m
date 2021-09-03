@@ -49,7 +49,7 @@
     return self.fileName;
 }
 
-- (long)getSize {
+- (long long)getSize {
     if (self.size > kQNUnknownSourceSize) {
         return self.size;
     } else {
