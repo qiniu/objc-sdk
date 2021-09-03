@@ -38,6 +38,9 @@
     QNUpToken *t = [QNUpToken parse:token_na0];
     // This is an example of a functional test case.
     XCTAssert(t != nil, @"token was nil");
+    XCTAssert(t.isValid, @"token was invalid");
+    XCTAssert([t isValidForDuration:5*60], @"token was invalid for 5*60");
+    XCTAssert([t isValidBeforeDate:[NSDate date]], @"token was invalid");
     XCTAssert(!t.hasReturnUrl, @"token has return url");
 }
 

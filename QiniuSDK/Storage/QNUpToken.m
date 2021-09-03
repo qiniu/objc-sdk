@@ -9,6 +9,9 @@
 #import "QNUrlSafeBase64.h"
 #import "QNUpToken.h"
 
+#define kQNPolicyKeyScope @"scope"
+#define kQNPolicyKeyDeadline @"deadline"
+#define kQNPolicyKeyReturnUrl @"returnUrl"
 @interface QNUpToken ()
 
 - (instancetype)init:(NSDictionary *)policy token:(NSString *)token;
@@ -22,7 +25,8 @@
         _token = token;
         _access = [self getAccess];
         _bucket = [self getBucket:policy];
-        _hasReturnUrl = (policy[@"returnUrl"] != nil);
+        _deadline = [policy[kQNPolicyKeyDeadline] longValue];
+        _hasReturnUrl = (policy[kQNPolicyKeyReturnUrl] != nil);
     }
 
     return self;
@@ -36,7 +40,7 @@
 
 - (NSString *)getBucket:(NSDictionary *)info {
 
-    NSString *scope = [info objectForKey:@"scope"];
+    NSString *scope = [info objectForKey:kQNPolicyKeyScope];
     if (!scope || [scope isKindOfClass:[NSNull class]]) {
         return @"";
     }
@@ -64,7 +68,7 @@
     
     NSError *tmp = nil;
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&tmp];
-    if (tmp != nil || dict[@"scope"] == nil || dict[@"deadline"] == nil) {
+    if (tmp != nil || dict[kQNPolicyKeyScope] == nil || dict[kQNPolicyKeyDeadline] == nil) {
         return nil;
     }
     return [[QNUpToken alloc] init:dict token:token];
@@ -76,6 +80,18 @@
 
 - (BOOL)isValid {
     return _access && _access.length > 0 && _bucket && _bucket.length > 0;
+}
+
+- (BOOL)isValidForDuration:(long)duration {
+    NSDate *date = [NSDate dateWithTimeIntervalSinceNow:duration];
+    return [self isValidBeforeDate:date];
+}
+
+- (BOOL)isValidBeforeDate:(NSDate *)date {
+    if (date == nil) {
+        return NO;
+    }
+    return [date timeIntervalSince1970] < self.deadline;
 }
 
 @end
