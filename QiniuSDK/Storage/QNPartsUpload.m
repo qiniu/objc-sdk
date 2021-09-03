@@ -278,6 +278,8 @@
     [item setReportValue:@([QNUtils getCurrentProcessID]) forKey:QNReportBlockKeyPid];
     [item setReportValue:@([QNUtils getCurrentThreadID]) forKey:QNReportBlockKeyTid];
     
+    [item setReportValue:metrics.metricsList.lastObject.hijacked forKey:QNReportBlockKeyHijacking];
+    
     // 统计当前 region 上传速度 文件大小 / 总耗时
     if (self.uploadDataErrorResponseInfo == nil && [self.uploadSource getSize] > 0 && [metrics totalElapsedTime] > 0) {
         NSNumber *speed = [QNUtils calculateSpeed:[self.uploadSource getSize] totalTime:[metrics totalElapsedTime].longLongValue];

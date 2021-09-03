@@ -115,6 +115,7 @@ extern NSString *const QNReportBlockKeyOsVersion;
 extern NSString *const QNReportBlockKeySDKName;
 extern NSString *const QNReportBlockKeySDKVersion;
 extern NSString *const QNReportBlockKeyPerceptiveSpeed;
+extern NSString *const QNReportBlockKeyHijacking;
 
 //MARK:-- 上传质量统计
 extern NSString *const QNReportQualityKeyLogType;
@@ -137,5 +138,6 @@ extern NSString *const QNReportQualityKeyOsVersion;
 extern NSString *const QNReportQualityKeySDKName;
 extern NSString *const QNReportQualityKeySDKVersion;
 extern NSString *const QNReportQualityKeyPerceptiveSpeed;
+extern NSString *const QNReportQualityKeyHijacking;
 
 NS_ASSUME_NONNULL_END

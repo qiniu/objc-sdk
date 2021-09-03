@@ -229,6 +229,7 @@ NSString * const QNReportBlockKeyOsVersion = @"os_version";
 NSString * const QNReportBlockKeySDKName = @"sdk_name";
 NSString * const QNReportBlockKeySDKVersion = @"sdk_version";
 NSString * const QNReportBlockKeyPerceptiveSpeed = @"perceptive_speed";
+NSString * const QNReportBlockKeyHijacking = @"hijacking";
 
 
 //MARK:-- 上传质量统计
@@ -252,3 +253,4 @@ NSString * const QNReportQualityKeyOsVersion = @"os_version";
 NSString * const QNReportQualityKeySDKName = @"sdk_name";
 NSString * const QNReportQualityKeySDKVersion = @"sdk_version";
 NSString * const QNReportQualityKeyPerceptiveSpeed = @"perceptive_speed";
+NSString * const QNReportQualityKeyHijacking = @"hijacking";

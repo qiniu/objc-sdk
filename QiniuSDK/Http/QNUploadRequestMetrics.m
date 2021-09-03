@@ -168,6 +168,12 @@
     return self;
 }
 
+- (QNUploadSingleRequestMetrics *)lastMetrics {
+    @synchronized (self) {
+        return self.metricsListInter.lastObject;
+    }
+}
+
 - (NSNumber *)requestCount{
     if (self.metricsList) {
         return @(self.metricsList.count);
@@ -214,7 +220,8 @@
 @interface QNUploadTaskMetrics()
 
 @property (nonatomic,   copy) NSString *upType;
-@property (nonatomic,   copy) NSMutableDictionary<NSString *, QNUploadRegionRequestMetrics *> *metricsInfo;
+@property (nonatomic,   copy) NSMutableArray<NSString *> *metricsKeys;
+@property (nonatomic, strong) NSMutableDictionary<NSString *, QNUploadRegionRequestMetrics *> *metricsInfo;
 
 @end
 @implementation QNUploadTaskMetrics
@@ -232,11 +239,25 @@
 
 - (instancetype)init{
     if (self = [super init]) {
+        _metricsKeys = [NSMutableArray array];
         _metricsInfo = [NSMutableDictionary dictionary];
     }
     return self;
 }
 
+- (QNUploadRegionRequestMetrics *)lastMetrics {
+    if (self.metricsKeys.count < 1) {
+        return nil;
+    }
+    
+    @synchronized (self) {
+        NSString *key = self.metricsKeys.lastObject;
+        if (key == nil) {
+            return nil;
+        }
+        return self.metricsInfo[key];
+    }
+}
 - (NSNumber *)totalElapsedTime{
     NSDictionary *metricsInfo = [self syncCopyMetricsInfo];
     if (metricsInfo) {
@@ -306,6 +327,7 @@
         if (metricsOld) {
             [metricsOld addMetrics:metrics];
         } else {
+            [self.metricsKeys addObject:regionId];
             self.metricsInfo[regionId] = metrics;
         }
     }

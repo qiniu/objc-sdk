@@ -481,6 +481,8 @@
     NSString *errorDesc = responseInfo.requestReportErrorType ? responseInfo.message : nil;
     [item setReportValue:errorDesc forKey:QNReportQualityKeyErrorDescription];
     
+    [item setReportValue:taskMetricsP.lastMetrics.lastMetrics.hijacked forKey:QNReportBlockKeyHijacking];
+    
     long long fileSize = -1;
     if ([source conformsToProtocol:@protocol(QNUploadSource)]) {
         fileSize = [(id <QNUploadSource>)source getSize];
