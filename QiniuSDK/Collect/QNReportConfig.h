@@ -21,9 +21,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, getter=isReportEnable) BOOL reportEnable;
 
 /**
- *  每次上传时间间隔  单位：分钟  默认为10分钟
+ *  每次上传时间间隔  单位：分钟  默认为0.5分钟
  */
-@property (nonatomic, assign) uint32_t interval;
+@property (nonatomic, assign) double interval;
 
 /**
  *  记录文件大于 uploadThreshold 会触发上传，单位：字节  默认为4 * 1024

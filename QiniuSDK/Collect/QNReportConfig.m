@@ -25,7 +25,7 @@
     self = [super init];
     if (self) {
         _reportEnable = YES;
-        _interval = 10;
+        _interval = 0.5;
         _serverHost = @"uplog.qbox.me";
         _recordDirectory = [NSString stringWithFormat:@"%@/report", [QNUtils sdkCacheDirectory]];
         _maxRecordFileSize = 2 * 1024 * 1024;

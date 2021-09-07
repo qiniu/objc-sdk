@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign, readonly)NSInteger after;
 /// 事务内容
 @property(nonatomic,   copy, readonly)void(^action)(void);
+/// 是否正在执行
+@property(nonatomic, assign, readonly)BOOL isExecuting;
 
 /// MARK: -- 构造方法
 /// 普通事务，事务体仅仅执行一次
