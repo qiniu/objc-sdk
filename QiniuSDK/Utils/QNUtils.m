@@ -162,7 +162,7 @@
         indexReal--;
     }
     NSString *numberInfo = [[ipNumberStringsReal subarrayWithRange:NSMakeRange(0, 4)] componentsJoinedByString:@"-"];
-    return [NSString stringWithFormat:@"%@-%@-%@", host ?:@"", @"IPV6-", numberInfo];
+    return [NSString stringWithFormat:@"%@-%@-%@", host ?:@"", @"ipv6", numberInfo];
 }
 
 @end
