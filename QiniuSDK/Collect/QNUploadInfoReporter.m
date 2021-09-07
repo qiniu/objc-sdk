@@ -5,7 +5,7 @@
 //  Created by WorkSpace_Sun on 2019/6/24.
 //  Copyright © 2019 Qiniu. All rights reserved.
 //
-
+#import "QNZoneInfo.h"
 #import "QNUploadInfoReporter.h"
 #import "QNResponseInfo.h"
 #import "QNFile.h"
@@ -15,17 +15,21 @@
 #import "QNVersion.h"
 #import "QNReportConfig.h"
 #import "NSData+QNGZip.h"
+#import "QNRequestTransaction.h"
 
 @interface QNUploadInfoReporter ()
 
 @property (nonatomic, strong) QNReportConfig *config;
 @property (nonatomic, assign) NSTimeInterval lastReportTime;
-@property (nonatomic, strong) NSFileManager *fileManager;
 @property (nonatomic, strong) NSString *recorderFilePath;
-@property (nonatomic, strong) dispatch_queue_t recordQueue;
-@property (nonatomic, strong) dispatch_semaphore_t semaphore;
+@property (nonatomic, strong) NSString *recorderTempFilePath;
 @property (nonatomic, copy) NSString *X_Log_Client_Id;
 
+@property (nonatomic, strong) QNRequestTransaction *transaction;
+@property (nonatomic, assign) BOOL isReporting;
+
+@property (nonatomic, strong) dispatch_queue_t recordQueue;
+@property (nonatomic, strong) dispatch_semaphore_t semaphore;
 @end
 
 @implementation QNUploadInfoReporter
@@ -47,17 +51,22 @@
         _config = [QNReportConfig sharedInstance];
         _lastReportTime = 0;
         _recorderFilePath = [NSString stringWithFormat:@"%@/%@", _config.recordDirectory, @"qiniu.log"];
-        _fileManager = [NSFileManager defaultManager];
+        _recorderTempFilePath = [NSString stringWithFormat:@"%@/%@", _config.recordDirectory, @"qiniuTemp.log"];
         _recordQueue = dispatch_queue_create("com.qiniu.reporter", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
 
 - (void)clean {
-    
-    if ([_fileManager fileExistsAtPath:_recorderFilePath]) {
+    [self cleanRecorderFile];
+    [self cleanTempRecorderFile];
+}
+
+- (void)cleanRecorderFile {
+    NSFileManager *manager = [NSFileManager defaultManager];
+    if ([manager fileExistsAtPath:_recorderFilePath]) {
         NSError *error = nil;
-        [_fileManager removeItemAtPath:_recorderFilePath error:&error];
+        [manager removeItemAtPath:_recorderFilePath error:&error];
         if (error) {
             NSLog(@"remove recorder file failed: %@", error);
             return;
@@ -65,8 +74,19 @@
     }
 }
 
+- (void)cleanTempRecorderFile {
+    NSFileManager *manager = [NSFileManager defaultManager];
+    if ([manager fileExistsAtPath:_recorderTempFilePath]) {
+        NSError *error = nil;
+        [manager removeItemAtPath:_recorderTempFilePath error:&error];
+        if (error) {
+            NSLog(@"remove recorder temp file failed: %@", error);
+            return;
+        }
+    }
+}
+
 - (BOOL)checkReportAvailable {
-    
     if (!_config.isReportEnable) {
         return NO;
     }
@@ -164,6 +184,52 @@
             dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
         }
     }
+}
+
+- (void)reportToServerIfNeeded:(NSString *)tokenString {
+    if (tokenString == nil) {
+        return;
+    }
+    QNUpToken *token = [QNUpToken parse:tokenString];
+    if (!token.isValid) {
+        return;
+    }
+    
+    self.isReporting = YES;
+    QNRequestTransaction *transaction = [self createUploadRequestTransaction:token];
+    [transaction queryUploadHosts:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        if (responseInfo.isOK) {
+            self.lastReportTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970];
+            if (!self.X_Log_Client_Id) {
+                self.X_Log_Client_Id = responseInfo.responseHeader[@"x-log-client-id"];
+            }
+            [self cleanTempRecorderFile];
+        } else {
+            NSLog(@"upload info report failed: %@", responseInfo);
+        }
+        
+        self.isReporting = NO;
+        [self destroyUploadRequestTransaction:transaction];
+    }];
+}
+
+- (QNRequestTransaction *)createUploadRequestTransaction:(QNUpToken *)token{
+    if (self.config.serverURL) {
+        
+    }
+    NSArray *hosts = nil;
+    if (self.config.serverHost) {
+        hosts = @[self.config.serverHost];
+    }
+    QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithHosts:hosts
+                                                                           regionId:QNZoneInfoEmptyRegionId
+                                                                              token:token];
+    self.transaction = transaction;
+    return transaction;
+}
+
+- (void)destroyUploadRequestTransaction:(QNRequestTransaction *)transaction{
+    self.transaction = nil;
 }
 
 @end

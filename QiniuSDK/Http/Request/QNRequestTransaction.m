@@ -439,6 +439,38 @@
     }];
 }
 
+- (void)reportLog:(NSData *)logData
+      logClientId:(NSString *)logClientId
+         complete:(QNRequestTransactionCompleteHandler)complete {
+    
+    self.requestInfo.requestType = QNUploadRequestTypeUpLog;
+    NSString *token = [NSString stringWithFormat:@"UpToken %@", self.token.token];
+    NSMutableDictionary *header = [NSMutableDictionary dictionary];
+    header[@"Authorization"] = token;
+    header[@"Content-Type"] = @"application/json";
+    header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
+    
+    NSString *action = @"/log/4?compressed=gzip";
+    
+    if (logClientId) {
+        header[@"X-Log-Client-Id"] = logClientId;
+    }
+    
+    BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
+        return (BOOL)(!responseInfo.isOK);
+    };
+    
+    [self.regionRequest post:action
+                     headers:header
+                        body:logData
+                 shouldRetry:shouldRetry
+                    progress:nil
+                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+
+        complete(responseInfo, metrics, response);
+    }];
+}
+
 - (NSString *)resumeV2EncodeKey:(NSString *)key{
     NSString *encodeKey = nil;
     if (!self.key) {

@@ -46,6 +46,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy, readonly) NSString *serverURL;
 
 /**
+ *  信息上报服务器地址 host
+ */
+@property (nonatomic, copy, readonly) NSString *serverHost;
+
+/**
  *  信息上报请求超时时间  单位：秒  默认为10秒
  */
 @property (nonatomic, assign, readonly) NSTimeInterval timeoutInterval;

@@ -136,6 +136,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
             
             int statusCode = (int)[response statusCode];
             NSDictionary *headers = [response allHeaderFields];
+            _responseHeader = [headers copy];
             _statusCode = statusCode;
             _reqId = headers[@"x-reqid"];
             _xlog = headers[@"x-log"];
