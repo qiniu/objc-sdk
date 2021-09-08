@@ -15,6 +15,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
 
 @property(nonatomic, strong) NSDate *buildDate;
 
+@property(nonatomic,   copy)NSString *regionId;
 @property(nonatomic, assign) long ttl;
 @property(nonatomic, assign)BOOL http3Enabled;
 @property(nonatomic, strong)NSArray<NSString *> *domains;
@@ -107,6 +108,20 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
     return self.ttl > [currentDate timeIntervalSinceDate:self.buildDate];
 }
 
+- (id)copyWithZone:(NSZone *)zone {
+    QNZoneInfo *zoneInfo = [[QNZoneInfo allocWithZone:zone] init];
+    zoneInfo.ttl = self.ttl;
+    zoneInfo.buildDate = self.buildDate;
+    zoneInfo.http3Enabled = self.http3Enabled;
+    zoneInfo.regionId = self.regionId;
+    zoneInfo.domains = [self.domains copy];
+    zoneInfo.old_domains = [self.old_domains copy];
+    zoneInfo.allHosts = [self.allHosts copy];
+    zoneInfo.detailInfo = [self.detailInfo copy];
+    return zoneInfo;
+}
+
+
 @end
 
 @interface QNZonesInfo()
@@ -143,6 +158,16 @@ NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
 
 - (BOOL)isValid {
     return [self.zonesInfo count] > 0 && [self.zonesInfo.firstObject isValid];
+}
+
+- (id)copyWithZone:(NSZone *)zone {
+    NSMutableArray *zonesInfoArray = [NSMutableArray array];
+    for (QNZoneInfo *info in self.zonesInfo) {
+        [zonesInfoArray addObject:[info copy]];
+    }
+    QNZonesInfo *zonesInfo = [[QNZonesInfo allocWithZone:zone] init];
+    zonesInfo.zonesInfo = [zonesInfoArray copy];
+    return zonesInfo;
 }
 
 @end

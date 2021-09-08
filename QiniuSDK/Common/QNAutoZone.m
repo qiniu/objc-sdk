@@ -129,6 +129,7 @@
     if (token == nil) return nil;
     [self.lock lock];
     QNZonesInfo *zonesInfo = [_cache objectForKey:[token index]];
+    zonesInfo = [zonesInfo copy];
     [self.lock unlock];
     return zonesInfo;
 }
