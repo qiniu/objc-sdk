@@ -141,7 +141,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
             _reqId = headers[@"x-reqid"];
             _xlog = headers[@"x-log"];
             _xvia = headers[@"x-via"] ?: headers[@"x-px"] ?: headers[@"fw-via"];
-            if (_statusCode == 200 && (_reqId == nil || _xlog == nil)) {
+            if (_statusCode == 200 && _reqId == nil && _xlog == nil) {
                 _statusCode = kQNMaliciousResponseError;
                 _message = @"this is a malicious response";
                 _responseDictionary = nil;
@@ -213,11 +213,11 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 
 - (BOOL)isNotQiniu {
     // reqId is nill means the server is not qiniu
-    return (_statusCode == kQNMaliciousResponseError) || (_statusCode > 0 && (_reqId == nil || _xlog == nil));
+    return (_statusCode == kQNMaliciousResponseError) || (_statusCode > 0 && _reqId == nil && _xlog == nil);
 }
 
 - (BOOL)isOK {
-    return (_statusCode >= 200 && _statusCode < 300) && _error == nil && _reqId != nil && _xlog != nil;
+    return (_statusCode >= 200 && _statusCode < 300) && _error == nil && (_reqId != nil || _xlog != nil);
 }
 
 - (BOOL)couldRetry {
