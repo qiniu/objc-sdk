@@ -471,6 +471,52 @@
     }];
 }
 
+- (void)serverConfig:(QNRequestTransactionCompleteHandler)complete {
+    
+    self.requestInfo.requestType = QNUploadRequestTypeServerConfig;
+    NSMutableDictionary *header = [NSMutableDictionary dictionary];
+    header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
+    
+    NSString *action = [NSString stringWithFormat:@"/v1/sdk/config?sdk_name=%@&sdk_version=%@", [QNUtils sdkLanguage], [QNUtils sdkVersion]];
+    
+    BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
+        return (BOOL)(!responseInfo.isOK);
+    };
+    
+    [self.regionRequest post:action
+                     headers:header
+                        body:nil
+                 shouldRetry:shouldRetry
+                    progress:nil
+                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+
+        complete(responseInfo, metrics, response);
+    }];
+}
+
+- (void)serverUserConfig:(QNRequestTransactionCompleteHandler)complete {
+    
+    self.requestInfo.requestType = QNUploadRequestTypeServerUserConfig;
+    NSMutableDictionary *header = [NSMutableDictionary dictionary];
+    header[@"User-Agent"] = [kQNUserAgent getUserAgent:self.token.token];
+    
+    NSString *action = [NSString stringWithFormat:@"/v1/sdk/config/user?ak=%@&sdk_name=%@&sdk_version=%@", self.token.access, [QNUtils sdkLanguage], [QNUtils sdkVersion]];
+    
+    BOOL (^shouldRetry)(QNResponseInfo *, NSDictionary *) = ^(QNResponseInfo * responseInfo, NSDictionary * response){
+        return (BOOL)(!responseInfo.isOK);
+    };
+    
+    [self.regionRequest post:action
+                     headers:header
+                        body:nil
+                 shouldRetry:shouldRetry
+                    progress:nil
+                    complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+
+        complete(responseInfo, metrics, response);
+    }];
+}
+
 - (NSString *)resumeV2EncodeKey:(NSString *)key{
     NSString *encodeKey = nil;
     if (!self.key) {

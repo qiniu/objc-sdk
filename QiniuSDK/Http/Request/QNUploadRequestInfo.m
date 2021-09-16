@@ -24,4 +24,6 @@ NSString * const QNUploadRequestTypeMkfile = @"mkfile";
 NSString * const QNUploadRequestTypeInitParts = @"init_parts";
 NSString * const QNUploadRequestTypeUploadPart = @"upload_part";
 NSString * const QNUploadRequestTypeCompletePart = @"complete_part";
+NSString * const QNUploadRequestTypeServerConfig = @"server_config";
+NSString * const QNUploadRequestTypeServerUserConfig = @"server_user_config";
 NSString * const QNUploadRequestTypeUpLog = @"uplog";

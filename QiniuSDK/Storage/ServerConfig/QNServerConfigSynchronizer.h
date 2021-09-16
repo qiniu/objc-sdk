@@ -13,8 +13,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNServerConfigSynchronizer : NSObject
 
-+ (QNServerConfig *)getServerConfigFromServer;
-+ (QNServerUserConfig *)getServerUserConfigFromServer;
+@property(class, nonatomic, strong)NSString *token;
+
++ (void)getServerConfigFromServer:(void(^)(QNServerConfig *config))complete;
++ (void)getServerUserConfigFromServer:(void(^)(QNServerUserConfig *config))complete;
 
 @end
 

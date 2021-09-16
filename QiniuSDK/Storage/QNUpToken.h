@@ -20,6 +20,8 @@
 @property (readonly) BOOL isValid;
 @property (readonly) BOOL hasReturnUrl;
 
++ (instancetype)getInvalidToken;
+
 - (NSString *)index;
 
 /// 是否在未来 duration 分钟内有效

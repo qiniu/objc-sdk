@@ -104,7 +104,7 @@
 
 - (void)report:(NSString *)jsonString token:(NSString *)token {
     
-    if (![self checkReportAvailable] || !jsonString) {
+    if (![self checkReportAvailable] || !jsonString || !token || token.length == 0) {
         return;
     }
     

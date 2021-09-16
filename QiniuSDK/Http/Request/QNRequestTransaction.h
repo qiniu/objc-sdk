@@ -87,6 +87,16 @@ typedef void(^QNRequestTransactionCompleteHandler)(QNResponseInfo * _Nullable re
       logClientId:(NSString *)logClientId
          complete:(QNRequestTransactionCompleteHandler)complete;
 
+/**
+ * 获取服务端配置
+ */
+- (void)serverConfig:(QNRequestTransactionCompleteHandler)complete;
+
+/**
+ * 获取服务端针对某个用户的配置
+ */
+- (void)serverUserConfig:(QNRequestTransactionCompleteHandler)complete;
+
 @end
 
 NS_ASSUME_NONNULL_END

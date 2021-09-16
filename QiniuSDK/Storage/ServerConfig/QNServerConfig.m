@@ -15,7 +15,7 @@
 @implementation QNServerRegionConfig
 + (instancetype)config:(NSDictionary *)info {
     QNServerRegionConfig *config = [[QNServerRegionConfig alloc] init];
-    config.clearId = [info[@"config"] longValue];
+    config.clearId = [info[@"clear_id"] longValue];
     config.clearCache = [info[@"clear_cache"] longValue];
     return config;
 }
@@ -63,7 +63,7 @@
 + (instancetype)config:(NSDictionary *)info {
     QNServerDnsConfig *config = [[QNServerDnsConfig alloc] init];
     config.enable = info[@"enable"];
-    config.clearId = [info[@"config"] longValue];
+    config.clearId = [info[@"clear_id"] longValue];
     config.clearCache = [info[@"clear_cache"] longValue];
     config.dohConfig = [QNServerDohConfig config:info[@"doh"]];
     config.udpConfig = [QNServerUdpDnsConfig config:info[@"udp"]];
@@ -96,7 +96,7 @@
 }
 
 - (BOOL)isValid {
-    return [[NSDate date] timeIntervalSince1970] > (self.timestamp + self.ttl);
+    return [[NSDate date] timeIntervalSince1970] < (self.timestamp + self.ttl);
 }
 
 @end

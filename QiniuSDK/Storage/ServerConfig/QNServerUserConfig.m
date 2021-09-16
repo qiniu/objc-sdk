@@ -34,7 +34,7 @@
 }
 
 - (BOOL)isValid {
-    return [[NSDate date] timeIntervalSince1970] > (self.timestamp + self.ttl);
+    return [[NSDate date] timeIntervalSince1970] < (self.timestamp + self.ttl);
 }
 
 @end

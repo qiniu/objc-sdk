@@ -20,6 +20,12 @@
 
 @implementation QNUpToken
 
++ (instancetype)getInvalidToken {
+    QNUpToken *token = [[QNUpToken alloc] init];
+    token->_deadline = -1;
+    return token;
+}
+
 - (instancetype)init:(NSDictionary *)policy token:(NSString *)token {
     if (self = [super init]) {
         _token = token;

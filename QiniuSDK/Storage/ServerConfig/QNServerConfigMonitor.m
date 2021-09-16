@@ -40,73 +40,88 @@
 
 // 开始监控
 - (void)startMonitor {
-    BOOL isExist = [kQNTransactionManager existTransactionsForName:kQNServerConfigTransactionKey];
-    if (isExist) {
-        return;
+    @synchronized (self) {
+        BOOL isExist = [kQNTransactionManager existTransactionsForName:kQNServerConfigTransactionKey];
+        if (isExist) {
+            return;
+        }
+        
+        kQNWeakSelf;
+        QNTransaction *transaction = [QNTransaction timeTransaction:kQNServerConfigTransactionKey after:0 interval:10 action:^{
+            kQNStrongSelf;
+            [self monitor];
+        }];
+        [kQNTransactionManager addTransaction:transaction];
     }
-    
-    kQNWeakSelf;
-    QNTransaction *transaction = [QNTransaction timeTransaction:kQNServerConfigTransactionKey after:0 interval:10 action:^{
-        kQNStrongSelf;
-        [self monitor];
-    }];
-    [kQNTransactionManager addTransaction:transaction];
 }
 
 // 停止监控
 - (void)endMonitor {
-    NSArray *transactions = [kQNTransactionManager transactionsForName:kQNServerConfigTransactionKey];
-    for (QNTransaction *transaction in transactions) {
-        [kQNTransactionManager removeTransaction:transaction];
+    @synchronized (self) {
+        NSArray *transactions = [kQNTransactionManager transactionsForName:kQNServerConfigTransactionKey];
+        for (QNTransaction *transaction in transactions) {
+            [kQNTransactionManager removeTransaction:transaction];
+        }
     }
 }
 
 - (void)monitor {
     if (!self.cache.config.isValid) {
-        QNServerConfig *config = [QNServerConfigSynchronizer getServerConfigFromServer];
-        // 清理 region 缓存
-        [QNAutoZone clearCache];
-        
-        // dns 配置
-        if (config.dnsConfig.enable) {
-            kQNGlobalConfiguration.isDnsOpen = [config.dnsConfig.enable boolValue];
-        }
-        // 清理 dns 缓存
-        if (config.regionConfig.clearId > self.cache.config.regionConfig.clearId &&
-            config.regionConfig.clearCache) {
-            [kQNDnsPrefetch clearDnsCache:nil];
-        }
-        // udp 配置
-        if (config.dnsConfig.udpConfig.enable) {
-            kQNGlobalConfiguration.udpDnsEnable = [config.dnsConfig.udpConfig.enable boolValue];
-            if ([config.dnsConfig.udpConfig.ipv4Server isKindOfClass:[NSArray class]]) {
-                kQNGlobalConfiguration.udpDnsIpv4Servers = [config.dnsConfig.udpConfig.ipv4Server copy];
+        [QNServerConfigSynchronizer getServerConfigFromServer:^(QNServerConfig * _Nonnull config) {
+            // 清理 region 缓存
+            if (self.cache.config.regionConfig &&
+                config.regionConfig.clearId > self.cache.config.regionConfig.clearId &&
+                config.regionConfig.clearCache) {
+                [QNAutoZone clearCache];
             }
-            if ([config.dnsConfig.udpConfig.ipv6Server isKindOfClass:[NSArray class]]) {
-                kQNGlobalConfiguration.udpDnsIpv6Servers = [config.dnsConfig.udpConfig.ipv6Server copy];
+            
+            // dns 配置
+            if (config.dnsConfig.enable) {
+                kQNGlobalConfiguration.isDnsOpen = [config.dnsConfig.enable boolValue];
             }
-        }
-        // doh 配置
-        if (config.dnsConfig.dohConfig.enable) {
-            kQNGlobalConfiguration.dohEnable = [config.dnsConfig.dohConfig.enable boolValue];
-            if ([config.dnsConfig.dohConfig.ipv4Server isKindOfClass:[NSArray class]]) {
-                kQNGlobalConfiguration.dohIpv4Servers = [config.dnsConfig.dohConfig.ipv4Server copy];
+            
+            // 清理 dns 缓存
+            if (self.cache.config.dnsConfig &&
+                config.dnsConfig.clearId > self.cache.config.dnsConfig.clearId &&
+                config.dnsConfig.clearCache) {
+                [kQNDnsPrefetch clearDnsCache:nil];
             }
-            if ([config.dnsConfig.dohConfig.ipv6Server isKindOfClass:[NSArray class]]) {
-                kQNGlobalConfiguration.dohIpv6Servers = [config.dnsConfig.dohConfig.ipv6Server copy];
+            
+            // udp 配置
+            if (config.dnsConfig.udpConfig.enable) {
+                BOOL enable = [config.dnsConfig.udpConfig.enable boolValue];
+                kQNGlobalConfiguration.udpDnsEnable = enable;
+                if (enable && [config.dnsConfig.udpConfig.ipv4Server isKindOfClass:[NSArray class]]) {
+                    kQNGlobalConfiguration.udpDnsIpv4Servers = [config.dnsConfig.udpConfig.ipv4Server copy];
+                }
+                if (enable && [config.dnsConfig.udpConfig.ipv6Server isKindOfClass:[NSArray class]]) {
+                    kQNGlobalConfiguration.udpDnsIpv6Servers = [config.dnsConfig.udpConfig.ipv6Server copy];
+                }
             }
-        }
-        
-        self.cache.config = config;
+            
+            // doh 配置
+            if (config.dnsConfig.dohConfig.enable) {
+                BOOL enable = [config.dnsConfig.dohConfig.enable boolValue];
+                kQNGlobalConfiguration.dohEnable = enable;
+                if (enable && [config.dnsConfig.dohConfig.ipv4Server isKindOfClass:[NSArray class]]) {
+                    kQNGlobalConfiguration.dohIpv4Servers = [config.dnsConfig.dohConfig.ipv4Server copy];
+                }
+                if (enable && [config.dnsConfig.dohConfig.ipv6Server isKindOfClass:[NSArray class]]) {
+                    kQNGlobalConfiguration.dohIpv6Servers = [config.dnsConfig.dohConfig.ipv6Server copy];
+                }
+            }
+            
+            self.cache.config = config;
+        }];
     }
     
     if (!self.cache.userConfig.isValid) {
-        QNServerUserConfig *config = [QNServerConfigSynchronizer getServerUserConfigFromServer];
-        
-        if (config.networkCheckEnable) {
-            kQNGlobalConfiguration.connectCheckEnable = [config.networkCheckEnable boolValue];
-        }
-        self.cache.userConfig = config;
+        [QNServerConfigSynchronizer getServerUserConfigFromServer:^(QNServerUserConfig * _Nonnull config) {
+            if (config.networkCheckEnable) {
+                kQNGlobalConfiguration.connectCheckEnable = [config.networkCheckEnable boolValue];
+            }
+            self.cache.userConfig = config;
+        }];
     }
 }
 
