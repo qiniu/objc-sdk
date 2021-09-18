@@ -20,11 +20,20 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+@interface QNServerDnsServer : NSObject
+
+@property(nonatomic, assign, readonly)NSNumber *enable;
+@property(nonatomic,   copy, readonly)NSArray <NSString *> *server;
+
++ (instancetype)config:(NSDictionary *)info;
+
+@end
+
 @interface QNServerDohConfig : NSObject
 
 @property(nonatomic, assign, readonly)NSNumber *enable;
-@property(nonatomic,   copy, readonly)NSArray <NSString *> *ipv4Server;
-@property(nonatomic,   copy, readonly)NSArray <NSString *> *ipv6Server;
+@property(nonatomic,   copy, readonly)QNServerDnsServer *ipv4Server;
+@property(nonatomic,   copy, readonly)QNServerDnsServer *ipv6Server;
 
 + (instancetype)config:(NSDictionary *)info;
 
@@ -34,8 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
 @interface QNServerUdpDnsConfig : NSObject
 
 @property(nonatomic, assign, readonly)NSNumber *enable;
-@property(nonatomic,   copy, readonly)NSArray <NSString *> *ipv4Server;
-@property(nonatomic,   copy, readonly)NSArray <NSString *> *ipv6Server;
+@property(nonatomic,   copy, readonly)QNServerDnsServer *ipv4Server;
+@property(nonatomic,   copy, readonly)QNServerDnsServer *ipv6Server;
 
 + (instancetype)config:(NSDictionary *)info;
 

@@ -89,26 +89,29 @@
             
             // udp 配置
             if (config.dnsConfig.udpConfig.enable) {
-                BOOL enable = [config.dnsConfig.udpConfig.enable boolValue];
-                kQNGlobalConfiguration.udpDnsEnable = enable;
-                if (enable && [config.dnsConfig.udpConfig.ipv4Server isKindOfClass:[NSArray class]]) {
-                    kQNGlobalConfiguration.udpDnsIpv4Servers = [config.dnsConfig.udpConfig.ipv4Server copy];
-                }
-                if (enable && [config.dnsConfig.udpConfig.ipv6Server isKindOfClass:[NSArray class]]) {
-                    kQNGlobalConfiguration.udpDnsIpv6Servers = [config.dnsConfig.udpConfig.ipv6Server copy];
-                }
+                kQNGlobalConfiguration.udpDnsEnable = [config.dnsConfig.udpConfig.enable boolValue];
+            }
+            
+            if (config.dnsConfig.udpConfig.ipv4Server.enable &&
+                [config.dnsConfig.udpConfig.ipv4Server.server isKindOfClass:[NSArray class]]) {
+                kQNGlobalConfiguration.udpDnsIpv4Servers = [config.dnsConfig.udpConfig.ipv4Server.server copy];
+            }
+            if (config.dnsConfig.udpConfig.ipv6Server.enable &&
+                [config.dnsConfig.udpConfig.ipv6Server.server isKindOfClass:[NSArray class]]) {
+                kQNGlobalConfiguration.udpDnsIpv6Servers = [config.dnsConfig.udpConfig.ipv6Server.server copy];
             }
             
             // doh 配置
             if (config.dnsConfig.dohConfig.enable) {
-                BOOL enable = [config.dnsConfig.dohConfig.enable boolValue];
-                kQNGlobalConfiguration.dohEnable = enable;
-                if (enable && [config.dnsConfig.dohConfig.ipv4Server isKindOfClass:[NSArray class]]) {
-                    kQNGlobalConfiguration.dohIpv4Servers = [config.dnsConfig.dohConfig.ipv4Server copy];
-                }
-                if (enable && [config.dnsConfig.dohConfig.ipv6Server isKindOfClass:[NSArray class]]) {
-                    kQNGlobalConfiguration.dohIpv6Servers = [config.dnsConfig.dohConfig.ipv6Server copy];
-                }
+                kQNGlobalConfiguration.dohEnable = [config.dnsConfig.dohConfig.enable boolValue];
+            }
+            if (config.dnsConfig.dohConfig.ipv4Server.enable &&
+                [config.dnsConfig.dohConfig.ipv4Server.server isKindOfClass:[NSArray class]]) {
+                kQNGlobalConfiguration.dohIpv4Servers = [config.dnsConfig.dohConfig.ipv4Server.server copy];
+            }
+            if (config.dnsConfig.dohConfig.ipv6Server.enable &&
+                [config.dnsConfig.dohConfig.ipv6Server.server isKindOfClass:[NSArray class]]) {
+                kQNGlobalConfiguration.dohIpv6Servers = [config.dnsConfig.dohConfig.ipv6Server.server copy];
             }
             
             self.cache.config = config;

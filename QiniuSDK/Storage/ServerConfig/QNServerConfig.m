@@ -21,32 +21,49 @@
 }
 @end
 
+@interface QNServerDnsServer()
+@property(nonatomic, assign)NSNumber *enable;
+@property(nonatomic,   copy)NSArray <NSString *> *server;
+@end
+@implementation QNServerDnsServer
++ (instancetype)config:(NSDictionary *)info {
+    QNServerDnsServer *config = [[QNServerDnsServer alloc] init];
+    config.enable = info[@"enable"];
+    if (info[@"ip"] && [info[@"ip"] isKindOfClass:[NSArray class]]) {
+        config.server = info[@"ip"];
+    } else {
+        config.server = info[@"url"];
+    }
+    return config;
+}
+@end
+
 @interface QNServerDohConfig()
 @property(nonatomic, assign)NSNumber *enable;
-@property(nonatomic,   copy)NSArray <NSString *> *ipv4Server;
-@property(nonatomic,   copy)NSArray <NSString *> *ipv6Server;
+@property(nonatomic,   copy)QNServerDnsServer *ipv4Server;
+@property(nonatomic,   copy)QNServerDnsServer *ipv6Server;
 @end
 @implementation QNServerDohConfig
 + (instancetype)config:(NSDictionary *)info {
     QNServerDohConfig *config = [[QNServerDohConfig alloc] init];
     config.enable = info[@"enable"];
-    config.ipv4Server = info[@"ipv4"];
-    config.ipv6Server = info[@"ipv6"];
+    config.ipv4Server = [QNServerDnsServer config:info[@"ipv4"]];
+    config.ipv6Server = [QNServerDnsServer config:info[@"ipv6"]];
     return config;
 }
 @end
 
 @interface QNServerUdpDnsConfig()
 @property(nonatomic, assign)NSNumber *enable;
-@property(nonatomic,   copy)NSArray <NSString *> *ipv4Server;
-@property(nonatomic,   copy)NSArray <NSString *> *ipv6Server;
+@property(nonatomic,   copy)QNServerDnsServer *ipv4Server;
+@property(nonatomic,   copy)QNServerDnsServer *ipv6Server;
 @end
 @implementation QNServerUdpDnsConfig
 + (instancetype)config:(NSDictionary *)info {
     QNServerUdpDnsConfig *config = [[QNServerUdpDnsConfig alloc] init];
     config.enable = info[@"enable"];
-    config.ipv4Server = info[@"ipv4"];
-    config.ipv6Server = info[@"ipv6"];
+    config.ipv4Server = [QNServerDnsServer config:info[@"ipv4"]];
+    config.ipv6Server = [QNServerDnsServer config:info[@"ipv6"]];
     return config;
 }
 @end
