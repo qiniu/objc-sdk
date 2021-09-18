@@ -18,6 +18,7 @@
 
 @interface QNServerConfigMonitor()
 
+@property(nonatomic, assign)BOOL enable;
 @property(nonatomic, strong)QNServerConfigCache *cache;
 
 @end
@@ -33,30 +34,46 @@
 
 - (instancetype)init {
     if (self = [super init]) {
+        _enable = true;
         _cache = [[QNServerConfigCache alloc] init];
     }
     return self;
 }
 
++ (BOOL)enable {
+    return [[QNServerConfigMonitor share] enable];
+}
+
++ (void)setEnable:(BOOL)enable {
+    [QNServerConfigMonitor share].enable = enable;
+}
+
+// 配置 token
++ (void)setToken:(NSString *)token {
+    QNServerConfigSynchronizer.token = token;
+}
+
 // 开始监控
-- (void)startMonitor {
++ (void)startMonitor {
+    if (![QNServerConfigMonitor share].enable) {
+        return;
+    }
+    
     @synchronized (self) {
         BOOL isExist = [kQNTransactionManager existTransactionsForName:kQNServerConfigTransactionKey];
         if (isExist) {
             return;
         }
         
-        kQNWeakSelf;
         QNTransaction *transaction = [QNTransaction timeTransaction:kQNServerConfigTransactionKey after:0 interval:10 action:^{
-            kQNStrongSelf;
-            [self monitor];
+            [[QNServerConfigMonitor share] monitor];
         }];
         [kQNTransactionManager addTransaction:transaction];
     }
 }
 
 // 停止监控
-- (void)endMonitor {
++ (void)endMonitor {
     @synchronized (self) {
         NSArray *transactions = [kQNTransactionManager transactionsForName:kQNServerConfigTransactionKey];
         for (QNTransaction *transaction in transactions) {
@@ -66,8 +83,16 @@
 }
 
 - (void)monitor {
+    if (!self.enable) {
+        return;
+    }
+    
     if (!self.cache.config.isValid) {
         [QNServerConfigSynchronizer getServerConfigFromServer:^(QNServerConfig * _Nonnull config) {
+            if (config == nil) {
+                return;
+            }
+            
             // 清理 region 缓存
             if (self.cache.config.regionConfig &&
                 config.regionConfig.clearId > self.cache.config.regionConfig.clearId &&
@@ -136,6 +161,10 @@
     
     if (!self.cache.userConfig.isValid) {
         [QNServerConfigSynchronizer getServerUserConfigFromServer:^(QNServerUserConfig * _Nonnull config) {
+            if (config == nil) {
+                return;
+            }
+            
             if (config.networkCheckEnable) {
                 kQNGlobalConfiguration.connectCheckEnable = [config.networkCheckEnable boolValue];
             }
