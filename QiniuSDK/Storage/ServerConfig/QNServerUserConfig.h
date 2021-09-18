@@ -15,7 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign, readonly)BOOL isValid;
 @property(nonatomic, assign, readonly)long ttl;
 @property(nonatomic, strong, readonly)NSNumber *http3Enable;
-@property(nonatomic, strong, readonly)NSNumber *retryMax;
 @property(nonatomic, strong, readonly)NSNumber *networkCheckEnable;
 
 @property(nonatomic, strong, readonly)NSDictionary *info;

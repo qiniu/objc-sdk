@@ -24,7 +24,6 @@
     config.info = [info copy];
     config.ttl = [info[@"ttl"] longValue];
     config.http3Enable = info[@"http3"][@"enabled"];
-    config.retryMax = info[@"retryMax"];
     config.networkCheckEnable = info[@"network_check"][@"enabled"];
     
     if (config.ttl < 10) {
