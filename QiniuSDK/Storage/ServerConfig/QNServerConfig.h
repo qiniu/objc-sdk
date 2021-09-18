@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface QNServerDnsServer : NSObject
 
 @property(nonatomic, assign, readonly)NSNumber *enable;
-@property(nonatomic,   copy, readonly)NSArray <NSString *> *server;
+@property(nonatomic,   copy, readonly)NSArray <NSString *> *servers;
 
 + (instancetype)config:(NSDictionary *)info;
 

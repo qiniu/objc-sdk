@@ -93,12 +93,20 @@
             }
             
             if (config.dnsConfig.udpConfig.ipv4Server.enable &&
-                [config.dnsConfig.udpConfig.ipv4Server.server isKindOfClass:[NSArray class]]) {
-                kQNGlobalConfiguration.udpDnsIpv4Servers = [config.dnsConfig.udpConfig.ipv4Server.server copy];
+                [config.dnsConfig.udpConfig.ipv4Server.servers isKindOfClass:[NSArray class]]) {
+                if ([config.dnsConfig.udpConfig.ipv4Server.enable boolValue]) {
+                    kQNGlobalConfiguration.udpDnsIpv4Servers = [config.dnsConfig.udpConfig.ipv4Server.servers copy];
+                } else {
+                    kQNGlobalConfiguration.udpDnsIpv4Servers = @[];
+                }
             }
             if (config.dnsConfig.udpConfig.ipv6Server.enable &&
-                [config.dnsConfig.udpConfig.ipv6Server.server isKindOfClass:[NSArray class]]) {
-                kQNGlobalConfiguration.udpDnsIpv6Servers = [config.dnsConfig.udpConfig.ipv6Server.server copy];
+                [config.dnsConfig.udpConfig.ipv6Server.servers isKindOfClass:[NSArray class]]) {
+                if ([config.dnsConfig.udpConfig.ipv6Server.enable boolValue]) {
+                    kQNGlobalConfiguration.udpDnsIpv6Servers = [config.dnsConfig.udpConfig.ipv6Server.servers copy];
+                } else {
+                    kQNGlobalConfiguration.udpDnsIpv6Servers = @[];
+                }
             }
             
             // doh 配置
@@ -106,12 +114,20 @@
                 kQNGlobalConfiguration.dohEnable = [config.dnsConfig.dohConfig.enable boolValue];
             }
             if (config.dnsConfig.dohConfig.ipv4Server.enable &&
-                [config.dnsConfig.dohConfig.ipv4Server.server isKindOfClass:[NSArray class]]) {
-                kQNGlobalConfiguration.dohIpv4Servers = [config.dnsConfig.dohConfig.ipv4Server.server copy];
+                [config.dnsConfig.dohConfig.ipv4Server.servers isKindOfClass:[NSArray class]]) {
+                if ([config.dnsConfig.dohConfig.ipv4Server.enable boolValue]) {
+                    kQNGlobalConfiguration.dohIpv4Servers = [config.dnsConfig.dohConfig.ipv4Server.servers copy];
+                } else {
+                    kQNGlobalConfiguration.dohIpv4Servers = @[];
+                }
             }
             if (config.dnsConfig.dohConfig.ipv6Server.enable &&
-                [config.dnsConfig.dohConfig.ipv6Server.server isKindOfClass:[NSArray class]]) {
-                kQNGlobalConfiguration.dohIpv6Servers = [config.dnsConfig.dohConfig.ipv6Server.server copy];
+                [config.dnsConfig.dohConfig.ipv6Server.servers isKindOfClass:[NSArray class]]) {
+                if ([config.dnsConfig.dohConfig.ipv6Server.enable boolValue]) {
+                    kQNGlobalConfiguration.dohIpv6Servers = [config.dnsConfig.dohConfig.ipv6Server.servers copy];
+                } else {
+                    kQNGlobalConfiguration.dohIpv6Servers = @[];
+                }
             }
             
             self.cache.config = config;

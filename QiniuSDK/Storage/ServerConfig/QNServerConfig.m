@@ -23,16 +23,16 @@
 
 @interface QNServerDnsServer()
 @property(nonatomic, assign)NSNumber *enable;
-@property(nonatomic,   copy)NSArray <NSString *> *server;
+@property(nonatomic,   copy)NSArray <NSString *> *servers;
 @end
 @implementation QNServerDnsServer
 + (instancetype)config:(NSDictionary *)info {
     QNServerDnsServer *config = [[QNServerDnsServer alloc] init];
     config.enable = info[@"enable"];
     if (info[@"ip"] && [info[@"ip"] isKindOfClass:[NSArray class]]) {
-        config.server = info[@"ip"];
+        config.servers = info[@"ip"];
     } else {
-        config.server = info[@"url"];
+        config.servers = info[@"url"];
     }
     return config;
 }
