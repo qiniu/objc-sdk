@@ -16,6 +16,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, strong)QNServerConfig *config;
 @property(nonatomic, strong)QNServerUserConfig *userConfig;
 
+- (QNServerConfig *)getConfigFromDisk;
+- (void)saveConfigToDisk:(QNServerConfig *)config;
+
+- (QNServerUserConfig *)getUserConfigFromDisk;
+- (void)saveUserConfigToDisk:(QNServerUserConfig *)config;
+
 @end
 
 NS_ASSUME_NONNULL_END

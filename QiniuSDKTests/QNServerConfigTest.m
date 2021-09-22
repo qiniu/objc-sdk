@@ -6,10 +6,12 @@
 //  Copyright © 2021 Qiniu. All rights reserved.
 //
 
+#import "QNTestConfig.h"
 #import "QNServerConfigCache.h"
 #import "QNServerConfigMonitor.h"
 #import "QNServerConfigSynchronizer.h"
 #import <XCTest/XCTest.h>
+#import <AGAsyncTestHelper.h>
 
 @interface QNServerConfigTest : XCTestCase
 
@@ -25,8 +27,14 @@
     // Put teardown code here. This method is called after the invocation of each test method in the class.
 }
 
+- (void)testMonitor {
+    [QNServerConfigMonitor startMonitor];
+    QNServerConfigMonitor.token = token_na0;
+    AGWW_WAIT_WHILE(true, 30);
+}
+
 - (void)testServerConfigModel {
-    NSString *serverConfigJsonString = @"";
+    NSString *serverConfigJsonString = @"{\"region\":{\"clear_id\":10,\"clear_cache\":true},\"dns\":{\"clear_id\":10,\"clear_cache\":true,\"doh\":{\"enable\":true,\"ipv4\":{\"override_default\":true,\"urls\":[\"https://223.5.5.5/dns-query\"]},\"ipv6\":{\"override_default\":true,\"urls\":[\"https://FFAE::EEEE/dns-query\"]}},\"udp\":{\"enable\":true,\"ipv4\":{\"ips\":[\"223.5.5.5\",\"1.1.1.1\"],\"override_default\":true},\"ipv6\":{\"ips\":[\"FFAE::EEEE\"],\"override_default\":true}}},\"ttl\":86400}";
     NSDictionary *serverConfigInfo = [NSJSONSerialization JSONObjectWithData:[serverConfigJsonString dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableLeaves error:nil];
     QNServerConfig *serverConfig = [QNServerConfig config:serverConfigInfo];
     XCTAssertTrue(serverConfig != nil, "server config was nil");
@@ -45,7 +53,7 @@
     XCTAssertTrue(serverConfig.regionConfig.clearId > 0, "server config region config clearId was nil");
     
     
-    NSString *serverUserConfigJsonString = @"";
+    NSString *serverUserConfigJsonString = @"{\"ttl\":86400,\"http3\":{\"enabled\":true},\"network_check\":{\"enabled\":true}}";
     NSDictionary *serverUserConfigInfo = [NSJSONSerialization JSONObjectWithData:[serverUserConfigJsonString dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableLeaves error:nil];
     QNServerUserConfig *serverUserConfig = [QNServerUserConfig config:serverUserConfigInfo];
     XCTAssertTrue(serverUserConfig != nil, "server user config was nil");

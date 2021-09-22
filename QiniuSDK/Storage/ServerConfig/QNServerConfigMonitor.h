@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic, assign, class)BOOL enable;
 
+@property(class, nonatomic, strong)NSString *token;
+
 // 开始监控
 + (void)startMonitor;
 
