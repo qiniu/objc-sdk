@@ -15,6 +15,7 @@
 
 
 static NSString *Token = nil;
+static NSArray <NSString *> *Servers = nil;
 static QNRequestTransaction *serverConfigTransaction = nil;
 static QNRequestTransaction *serverUserConfigTransaction = nil;
 
@@ -101,7 +102,10 @@ static QNRequestTransaction *serverUserConfigTransaction = nil;
             return nil;
         }
         
-        NSArray *hosts = @[kQNPreQueryHost00, kQNPreQueryHost01];
+        NSArray *hosts = Servers;
+        if (hosts == nil) {
+            hosts = @[kQNPreQueryHost00, kQNPreQueryHost01];
+        }
         QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithHosts:hosts
                                                                                regionId:QNZoneInfoEmptyRegionId
                                                                                   token:token];
@@ -122,6 +126,14 @@ static QNRequestTransaction *serverUserConfigTransaction = nil;
 
 + (NSString *)token {
     return Token;
+}
+
++ (void)setServers:(NSArray<NSString *> *)servers {
+    Servers = [servers copy];
+}
+
++ (NSArray<NSString *> *)servers {
+    return Servers;
 }
 
 @end

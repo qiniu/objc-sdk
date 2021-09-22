@@ -22,26 +22,26 @@
 @end
 
 @interface QNServerDnsServer()
-@property(nonatomic, assign)NSNumber *enable;
-@property(nonatomic,   copy)NSArray <NSString *> *servers;
+@property(nonatomic, assign)BOOL isOverride;
+@property(nonatomic, strong)NSArray <NSString *> *servers;
 @end
 @implementation QNServerDnsServer
 + (instancetype)config:(NSDictionary *)info {
     QNServerDnsServer *config = [[QNServerDnsServer alloc] init];
-    config.enable = info[@"enable"];
-    if (info[@"ip"] && [info[@"ip"] isKindOfClass:[NSArray class]]) {
-        config.servers = info[@"ip"];
-    } else {
-        config.servers = info[@"url"];
+    config.isOverride = [info[@"override_default"] boolValue];
+    if (info[@"ips"] && [info[@"ips"] isKindOfClass:[NSArray class]]) {
+        config.servers = info[@"ips"];
+    } else if ([info[@"urls"] isKindOfClass:[NSArray class]]){
+        config.servers = info[@"urls"];
     }
     return config;
 }
 @end
 
 @interface QNServerDohConfig()
-@property(nonatomic, assign)NSNumber *enable;
-@property(nonatomic,   copy)QNServerDnsServer *ipv4Server;
-@property(nonatomic,   copy)QNServerDnsServer *ipv6Server;
+@property(nonatomic, strong)NSNumber *enable;
+@property(nonatomic, strong)QNServerDnsServer *ipv4Server;
+@property(nonatomic, strong)QNServerDnsServer *ipv6Server;
 @end
 @implementation QNServerDohConfig
 + (instancetype)config:(NSDictionary *)info {
@@ -54,9 +54,9 @@
 @end
 
 @interface QNServerUdpDnsConfig()
-@property(nonatomic, assign)NSNumber *enable;
-@property(nonatomic,   copy)QNServerDnsServer *ipv4Server;
-@property(nonatomic,   copy)QNServerDnsServer *ipv6Server;
+@property(nonatomic, strong)NSNumber *enable;
+@property(nonatomic, strong)QNServerDnsServer *ipv4Server;
+@property(nonatomic, strong)QNServerDnsServer *ipv6Server;
 @end
 @implementation QNServerUdpDnsConfig
 + (instancetype)config:(NSDictionary *)info {

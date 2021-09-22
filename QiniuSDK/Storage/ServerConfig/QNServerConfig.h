@@ -22,8 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNServerDnsServer : NSObject
 
-@property(nonatomic, assign, readonly)NSNumber *enable;
-@property(nonatomic,   copy, readonly)NSArray <NSString *> *servers;
+@property(nonatomic, assign, readonly)BOOL isOverride;
+@property(nonatomic, strong, readonly)NSArray <NSString *> *servers;
 
 + (instancetype)config:(NSDictionary *)info;
 
@@ -31,9 +31,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNServerDohConfig : NSObject
 
-@property(nonatomic, assign, readonly)NSNumber *enable;
-@property(nonatomic,   copy, readonly)QNServerDnsServer *ipv4Server;
-@property(nonatomic,   copy, readonly)QNServerDnsServer *ipv6Server;
+@property(nonatomic, strong, readonly)NSNumber *enable;
+@property(nonatomic, strong, readonly)QNServerDnsServer *ipv4Server;
+@property(nonatomic, strong, readonly)QNServerDnsServer *ipv6Server;
 
 + (instancetype)config:(NSDictionary *)info;
 
@@ -42,9 +42,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNServerUdpDnsConfig : NSObject
 
-@property(nonatomic, assign, readonly)NSNumber *enable;
-@property(nonatomic,   copy, readonly)QNServerDnsServer *ipv4Server;
-@property(nonatomic,   copy, readonly)QNServerDnsServer *ipv6Server;
+@property(nonatomic, strong, readonly)NSNumber *enable;
+@property(nonatomic, strong, readonly)QNServerDnsServer *ipv4Server;
+@property(nonatomic, strong, readonly)QNServerDnsServer *ipv6Server;
 
 + (instancetype)config:(NSDictionary *)info;
 
@@ -53,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNServerDnsConfig : NSObject
 
-@property(nonatomic, assign, readonly)NSNumber *enable;
+@property(nonatomic, strong, readonly)NSNumber *enable;
 @property(nonatomic, assign, readonly)long clearId;
 @property(nonatomic, assign, readonly)BOOL clearCache;
 @property(nonatomic, strong, readonly)QNServerUdpDnsConfig *udpConfig;

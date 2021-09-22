@@ -71,6 +71,10 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 @end
 
 @interface QNGlobalConfiguration()
+@property(nonatomic, strong)NSArray *defaultDohIpv4Servers;
+@property(nonatomic, strong)NSArray *defaultDohIpv6Servers;
+@property(nonatomic, strong)NSArray *defaultUdpDnsIpv4Servers;
+@property(nonatomic, strong)NSArray *defaultUdpDnsIpv6Servers;
 @end
 @implementation QNGlobalConfiguration
 + (instancetype)shared{
@@ -91,11 +95,11 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     _dnsCacheMaxTTL = 10*60;
     
     _dohEnable = true;
-    _dohIpv4Servers = @[@"https://223.6.6.6/dns-query", @"https://8.8.8.8/dns-query"];
-    _udpDnsEnable = true;
-    _udpDnsIpv4Servers = @[@"223.5.5.5", @"114.114.114.114", @"1.1.1.1", @"8.8.8.8"];
+    _defaultDohIpv4Servers = @[@"https://223.6.6.6/dns-query", @"https://8.8.8.8/dns-query"];
     
-
+    _udpDnsEnable = true;
+    _defaultUdpDnsIpv4Servers = @[@"223.5.5.5", @"114.114.114.114", @"1.1.1.1", @"8.8.8.8"];
+    
     _globalHostFrozenTime = 10;
     _partialHostFrozenTime = 5*60;
     
@@ -106,6 +110,38 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 
 - (BOOL)isDohEnable {
     return _dohEnable && (_dohIpv4Servers.count > 0) ;
+}
+
+- (NSArray<NSString *> *)dohIpv4Servers {
+    if (_dohIpv4Servers) {
+        return _dohIpv4Servers;
+    } else {
+        return _defaultDohIpv4Servers;
+    }
+}
+
+- (NSArray<NSString *> *)dohIpv6Servers {
+    if (_dohIpv6Servers) {
+        return _dohIpv6Servers;
+    } else {
+        return _defaultDohIpv6Servers;
+    }
+}
+
+- (NSArray<NSString *> *)udpDnsIpv4Servers {
+    if (_udpDnsIpv4Servers) {
+        return _udpDnsIpv4Servers;
+    } else {
+        return _defaultUdpDnsIpv4Servers;
+    }
+}
+
+- (NSArray<NSString *> *)udpDnsIpv6Servers {
+    if (_udpDnsIpv6Servers) {
+        return _udpDnsIpv6Servers;
+    } else {
+        return _defaultUdpDnsIpv6Servers;
+    }
 }
 
 - (BOOL)isUdpDnsEnable {
