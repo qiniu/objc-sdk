@@ -70,7 +70,7 @@
 
 
 @interface QNServerDnsConfig()
-@property(nonatomic, assign)NSNumber *enable;
+@property(nonatomic, strong)NSNumber *enable;
 @property(nonatomic, assign)long clearId;
 @property(nonatomic, assign)BOOL clearCache;
 @property(nonatomic, strong)QNServerUdpDnsConfig *udpConfig;
@@ -100,8 +100,6 @@
 
 + (instancetype)config:(NSDictionary *)info {
     QNServerConfig *config = [[QNServerConfig alloc] init];
-    config.info = [info copy];
-    config.timestamp = [[NSDate date] timeIntervalSince1970];
     config.ttl = [info[@"ttl"] longValue];
     config.regionConfig = [QNServerRegionConfig config:info[@"region"]];
     config.dnsConfig = [QNServerDnsConfig config:info[@"dns"]];
@@ -109,6 +107,16 @@
     if (config.ttl < 10) {
         config.ttl = 10;
     }
+    
+    NSMutableDictionary *mutableInfo = [info mutableCopy];
+    if (info[@"timestamp"] != nil) {
+        config.timestamp = [info[@"timestamp"] doubleValue];
+    }
+    if (config.timestamp == 0) {
+        config.timestamp = [[NSDate date] timeIntervalSince1970];
+        mutableInfo[@"timestamp"] = @(config.timestamp);
+    }
+    config.info = [mutableInfo copy];
     return config;
 }
 

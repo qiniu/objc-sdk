@@ -20,8 +20,6 @@
 
 + (instancetype)config:(NSDictionary *)info {
     QNServerUserConfig *config = [[QNServerUserConfig alloc] init];
-    config.timestamp = [[NSDate date] timeIntervalSince1970];
-    config.info = [info copy];
     config.ttl = [info[@"ttl"] longValue];
     config.http3Enable = info[@"http3"][@"enabled"];
     config.networkCheckEnable = info[@"network_check"][@"enabled"];
@@ -29,6 +27,16 @@
     if (config.ttl < 10) {
         config.ttl = 10;
     }
+    
+    NSMutableDictionary *mutableInfo = [info mutableCopy];
+    if (info[@"timestamp"] != nil) {
+        config.timestamp = [info[@"timestamp"] doubleValue];
+    }
+    if (config.timestamp == 0) {
+        config.timestamp = [[NSDate date] timeIntervalSince1970];
+        mutableInfo[@"timestamp"] = @(config.timestamp);
+    }
+    config.info = [mutableInfo copy];
     return config;
 }
 
