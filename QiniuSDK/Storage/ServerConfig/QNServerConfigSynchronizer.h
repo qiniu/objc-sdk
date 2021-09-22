@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface QNServerConfigSynchronizer : NSObject
 
 @property(class, nonatomic, strong)NSString *token;
-@property(class, nonatomic, strong)NSArray <NSString *> *servers;
+@property(class, nonatomic, strong)NSArray <NSString *> *hosts;
 
 + (void)getServerConfigFromServer:(void(^)(QNServerConfig *config))complete;
 + (void)getServerUserConfigFromServer:(void(^)(QNServerUserConfig *config))complete;
