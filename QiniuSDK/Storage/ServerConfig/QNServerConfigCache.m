@@ -30,7 +30,10 @@
 
 //MARK: --- config
 - (QNServerConfig *)getConfigFromDisk {
-    NSData *data = [self.recorder get:kQNServerConfigDiskKey];
+    NSData *data = nil;
+    @synchronized (self) {
+        data = [self.recorder get:kQNServerConfigDiskKey];
+    }
     if (data == nil) {
         return nil;
     }
@@ -38,7 +41,9 @@
     NSError *error = nil;
     NSDictionary *info = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&error];
     if (error != nil || ![info isKindOfClass:[NSDictionary class]]) {
-        [self.recorder del:kQNServerConfigDiskKey];
+        @synchronized (self) {
+            [self.recorder del:kQNServerConfigDiskKey];
+        }
         return nil;
     }
     return [QNServerConfig config:info];
@@ -50,21 +55,29 @@
     }
     NSData *data = [NSJSONSerialization dataWithJSONObject:config.info options:NSJSONWritingPrettyPrinted error:nil];
     if (data) {
-        [self.recorder set:kQNServerConfigDiskKey data:data];
+        @synchronized (self) {
+            [self.recorder set:kQNServerConfigDiskKey data:data];
+        }
     }
 }
 
 //MARK: --- user config
 - (QNServerUserConfig *)getUserConfigFromDisk {
-    NSData *data = [self.recorder get:kQNServerUserConfigDiskKey];
+    NSData *data = nil;
+    @synchronized (self) {
+        data = [self.recorder get:kQNServerUserConfigDiskKey];
+    }
     if (data == nil) {
         return nil;
     }
 
     NSError *error = nil;
     NSDictionary *info = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&error];
+    
     if (error != nil || ![info isKindOfClass:[NSDictionary class]]) {
-        [self.recorder del:kQNServerUserConfigDiskKey];
+        @synchronized (self) {
+            [self.recorder del:kQNServerUserConfigDiskKey];
+        }
         return nil;
     }
     return [QNServerUserConfig config:info];
@@ -76,7 +89,9 @@
     }
     NSData *data = [NSJSONSerialization dataWithJSONObject:config.info options:NSJSONWritingPrettyPrinted error:nil];
     if (data) {
-        [self.recorder set:kQNServerUserConfigDiskKey data:data];
+        @synchronized (self) {
+            [self.recorder set:kQNServerUserConfigDiskKey data:data];
+        }
     }
 }
 

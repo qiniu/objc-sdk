@@ -118,6 +118,7 @@
             }
             [self handleServerConfig:config];
             self.cache.config = config;
+            [self.cache saveConfigToDisk:config];
         }];
     }
     
@@ -134,6 +135,7 @@
             }
             [self handleServerUserConfig:config];
             self.cache.userConfig = config;
+            [self.cache saveUserConfigToDisk:config];
         }];
     }
 }
