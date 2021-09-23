@@ -135,7 +135,8 @@
                                                                response:(NSHTTPURLResponse *)response
                                                                    body:responseData
                                                                   error:error];
-        BOOL hijacked = responseInfo.isNotQiniu;
+        BOOL isSafeDnsSource = kQNIsDnsSourceCustom(server.source) || kQNIsDnsSourceDoh(server.source) || kQNIsDnsSourceDnsPod(server.source);
+        BOOL hijacked = responseInfo.isNotQiniu && !isSafeDnsSource;
         if (hijacked) {
             metrics.hijacked = kQNMetricsRequestHijacked;
             NSError *err = nil;
@@ -150,7 +151,7 @@
             if (![QNConnectChecker isConnected:connectCheckMetrics]) {
                 NSString *message = [NSString stringWithFormat:@"check origin statusCode:%d error:%@", responseInfo.statusCode, responseInfo.error];
                 responseInfo = [QNResponseInfo errorResponseInfo:NSURLErrorNotConnectedToInternet errorDesc:message];
-            } else if (!kQNIsDnsSourceCustom(server.source) && !kQNIsDnsSourceDoh(server.source) && !kQNIsDnsSourceDnsPod(server.source)) {
+            } else if (!isSafeDnsSource) {
                 metrics.hijacked = kQNMetricsRequestMaybeHijacked;
                 NSError *err = nil;
                 [kQNDnsPrefetch prefetchHostBySafeDns:server.host error:&err];

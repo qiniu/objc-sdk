@@ -89,9 +89,13 @@
     }
     
     // Host未解析出IP时:
-    if (condition == nil || condition(self.host, nil, nil)) {
+    QNUploadServer *hostServer = [QNUploadServer server:self.host
+                                                     ip:nil
+                                                 source:nil
+                                       ipPrefetchedTime:nil];
+    if (condition == nil || condition(self.host, nil, hostServer)) {
         // 未解析时，没有可比性，直接返回自身，自身即为最优
-        server = [QNUploadServer server:self.host ip:nil source:nil ipPrefetchedTime:nil];
+        server = hostServer;
     }
     
     return server;
