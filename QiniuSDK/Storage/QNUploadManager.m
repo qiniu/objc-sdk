@@ -47,6 +47,7 @@
 #import "QNUploadOption.h"
 #import "QNReportItem.h"
 
+#import "QNServerConfigMonitor.h"
 #import "QNDnsPrefetch.h"
 #import "QNZone.h"
 
@@ -84,6 +85,7 @@
         }
         _config = config;
         [[QNTransactionManager shared] addDnsLocalLoadTransaction];
+        [QNServerConfigMonitor startMonitor];
     }
     return self;
 }
@@ -132,6 +134,7 @@
         return;
     }
     
+    QNServerConfigMonitor.token = token;
     [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone token:t];
     
     QNUpTaskCompletionHandler complete = ^(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp) {
@@ -335,6 +338,7 @@
                              complete:completionHandler];
         };
 
+        QNServerConfigMonitor.token = token;
         [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone token:t];
 
         long long sourceSize = [source getSize];
