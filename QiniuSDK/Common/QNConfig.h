@@ -11,3 +11,4 @@
 //MARK: -- 内部布置 尽量不要修改
 #define kQNPreQueryHost00 @"uc.qbox.me"
 #define kQNPreQueryHost01 @"api.qiniu.com"
+#define kQNUpLogHost @"uplog.qbox.me"

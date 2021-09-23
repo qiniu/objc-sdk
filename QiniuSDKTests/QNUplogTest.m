@@ -8,6 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #import <AGAsyncTestHelper.h>
+#import "QNDnsPrefetch.h"
 #import "QNConfiguration.h"
 #import "QNTestConfig.h"
 #import "QNReportItem.h"
@@ -30,7 +31,15 @@
 
 - (void)testUplog{
     
-    kQNGlobalConfiguration.isDnsOpen = NO;
+    [[QNTransactionManager shared] addDnsLocalLoadTransaction];
+    
+    while (true) {
+        NSArray *ips = [kQNDnsPrefetch getInetAddressByHost:@"uplog.qbox.me"];
+        if (ips != nil && ips.count > 0) {
+            break;
+        }
+        sleep(1);
+    }
     
     QNReportItem *item = [QNReportItem item];
     [item setReportValue:QNReportLogTypeRequest forKey:QNReportRequestKeyLogType];
@@ -87,7 +96,7 @@
     
     [kQNReporter reportItem:item token:token_na0];
     
-//    AGWW_WAIT_WHILE(YES, 50);
+//    AGWW_WAIT_WHILE(YES, 5 * 60);
 }
 
 

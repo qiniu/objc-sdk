@@ -16,6 +16,7 @@
 
 @property(nonatomic, strong)NSMutableURLRequest *request;
 @property(nonatomic, assign)BOOL isReadResponseHeader;
+@property(nonatomic, assign)BOOL isReadResponseBody;
 @property(nonatomic, assign)BOOL isInputStreamEvaluated;
 @property(nonatomic, strong)NSInputStream *inputStream;
 @property(nonatomic, strong)NSRunLoop *inputStreamRunLoop;
@@ -162,6 +163,13 @@
 }
 
 - (void)inputStreamGetAndNotifyHttpResponse{
+    @synchronized (self) {
+        if (self.isReadResponseHeader) {
+            return;
+        }
+        self.isReadResponseHeader = YES;
+    }
+    
 
     CFReadStreamRef readStream = (__bridge CFReadStreamRef)self.inputStream;
     CFHTTPMessageRef httpMessage = (CFHTTPMessageRef)CFReadStreamCopyProperty(readStream, kCFStreamPropertyHTTPResponseHeader);
@@ -183,6 +191,12 @@
 }
 
 - (void)inputStreamGetAndNotifyHttpData{
+    @synchronized (self) {
+        if (self.isReadResponseBody) {
+            return;
+        }
+        self.isReadResponseBody = YES;
+    }
     
     UInt8 buffer[16 * 1024];
     UInt8 *buf = NULL;
@@ -274,11 +288,7 @@
                     [self evaluateInputStreamServerTrust];
                 }
                 
-                if (self.isReadResponseHeader == NO) {
-                    self.isReadResponseHeader = YES;
-                    [self inputStreamGetAndNotifyHttpResponse];
-                }
-                
+                [self inputStreamGetAndNotifyHttpResponse];
                 [self inputStreamGetAndNotifyHttpData];
             }
                 break;
@@ -294,6 +304,10 @@
                 if ([self shouldInputStreamRedirect]) {
                     [self inputStreamRedirect];
                 } else {
+                    
+                    [self inputStreamGetAndNotifyHttpResponse];
+                    [self inputStreamGetAndNotifyHttpData];
+                    
                     [self endProgress: NO];
                     [self inputStreamDidLoadHttpResponse];
                 }

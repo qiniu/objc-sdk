@@ -95,4 +95,11 @@
     }
 }
 
+- (void)removeConfigCache {
+    @synchronized (self) {
+        [self.recorder del:kQNServerConfigDiskKey];
+        [self.recorder del:kQNServerUserConfigDiskKey];
+    }
+}
+
 @end

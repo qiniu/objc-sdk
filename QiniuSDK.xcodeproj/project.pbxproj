@@ -1049,7 +1049,6 @@
 			isa = PBXGroup;
 			children = (
 				DF1E81A91CC893D600E32E44 /* Info.plist */,
-				31A74BC926E8A89C001EC948 /* QNUplogTest.m */,
 				FDEA88651DAC10D000D037E5 /* QNAutoZoneTest.m */,
 				DF2CDE7019DAE90300CE01FB /* QNBase64Test.m */,
 				3142419B2449547B00BD9A21 /* QNCFHttpClientTest.m */,
@@ -1065,6 +1064,7 @@
 				CC251374244EE717003F4C65 /* QNPipelineTest.m */,
 				DF3C504919DD7D9F000F548F /* QNResumeUploadTest.m */,
 				31FD09232487506300217848 /* QNRetryTest.m */,
+				317211E426FAD36400EF0947 /* QNServerConfigTest.m */,
 				DFF525381A64079B00D02BA1 /* QNSessionTest.m */,
 				3177B70D25A3194D00C56293 /* QNSingleFlightTest.m */,
 				CC2513C12455C141003F4C65 /* QNTempFile.h */,
@@ -1079,11 +1079,11 @@
 				311ADD21257748A700A6E15E /* QNUploadFlowTest.h */,
 				311ADD22257748A700A6E15E /* QNUploadFlowTest.m */,
 				31304CBB256767F0001034D2 /* QNUploadServerFreezeManagerTest.m */,
+				31A74BC926E8A89C001EC948 /* QNUplogTest.m */,
 				DF437CDE1B243A2C0099587B /* QNUpTokenTest.m */,
 				31C2EEEB242DEF6A00713A33 /* QNUtilTest.m */,
 				3149445D24470B9E00386F16 /* XCTestCase+QNTest.h */,
 				3149445E24470B9E00386F16 /* XCTestCase+QNTest.m */,
-				317211E426FAD36400EF0947 /* QNServerConfigTest.m */,
 			);
 			path = QiniuSDKTests;
 			sourceTree = SOURCE_ROOT;

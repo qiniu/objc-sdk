@@ -100,6 +100,10 @@
     }
 }
 
++ (void)removeConfigCache {
+    [[QNServerConfigMonitor share].cache removeConfigCache];
+}
+
 - (void)monitor {
     if (!self.enable) {
         return;

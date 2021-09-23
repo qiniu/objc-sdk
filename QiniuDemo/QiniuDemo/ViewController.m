@@ -102,11 +102,13 @@ typedef NS_ENUM(NSInteger, UploadState){
 
 - (void)uploadImageToQNFilePath:(NSString *)filePath {
     
-    kQNGlobalConfiguration.isDnsOpen = false;
-    kQNGlobalConfiguration.connectCheckEnable = false;
+//    kQNGlobalConfiguration.isDnsOpen = false;
+//    kQNGlobalConfiguration.connectCheckEnable = false;
     kQNGlobalConfiguration.dnsCacheMaxTTL = 600;
     kQNGlobalConfiguration.partialHostFrozenTime = 20*60;
     kQNGlobalConfiguration.dns = self;
+    
+    [QNServerConfigMonitor removeConfigCache];
     
     NSString *key = [NSString stringWithFormat:@"iOS_Demo_%@", [NSDate date]];
     self.token = YourToken;
@@ -137,25 +139,25 @@ typedef NS_ENUM(NSInteger, UploadState){
         return weakSelf.uploadState == UploadStateCancelling;
     }];
     
-//    [upManager putFile:filePath key:@"DemoResource" token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-//        NSLog(@"info ===== %@", info);
-//        NSLog(@"resp ===== %@", resp);
-//
-//        [weakSelf changeUploadState:UploadStatePrepare];
-//        [weakSelf alertMessage:info.message];
-//    }
-//                option:uploadOption];
-    
-    NSDate *startData = [NSDate date];
-    long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize];
-    NSInputStream *stream = [NSInputStream inputStreamWithFileAtPath:filePath];
-    [upManager putInputStream:stream sourceId:filePath.lastPathComponent size:fileSize fileName:filePath.lastPathComponent key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+    [upManager putFile:filePath key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
         NSLog(@"info ===== %@", info);
         NSLog(@"resp ===== %@", resp);
 
         [weakSelf changeUploadState:UploadStatePrepare];
-        [weakSelf alertMessage:[NSString stringWithFormat:@"%@ \n duration:%f", info.message, [[NSDate date] timeIntervalSinceDate:startData]]];
-    } option:uploadOption];
+        [weakSelf alertMessage:info.message];
+    }
+                option:uploadOption];
+    
+//    NSDate *startData = [NSDate date];
+//    long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize];
+//    NSInputStream *stream = [NSInputStream inputStreamWithFileAtPath:filePath];
+//    [upManager putInputStream:stream sourceId:filePath.lastPathComponent size:fileSize fileName:filePath.lastPathComponent key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//        NSLog(@"info ===== %@", info);
+//        NSLog(@"resp ===== %@", resp);
+//
+//        [weakSelf changeUploadState:UploadStatePrepare];
+//        [weakSelf alertMessage:[NSString stringWithFormat:@"%@ \n duration:%f", info.message, [[NSDate date] timeIntervalSinceDate:startData]]];
+//    } option:uploadOption];
     
 //    NSURL *url = [NSURL fileURLWithPath:filePath];
 //    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
@@ -273,12 +275,11 @@ typedef NS_ENUM(NSInteger, UploadState){
 
 
 - (void)alertMessage:(NSString *)message{
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:message
-                                                    message:@""
-                                                   delegate:nil
-                                          cancelButtonTitle:@"OK!"
-                                          otherButtonTitles:nil];
-    [alert show];
+//    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" message:message preferredStyle:UIAlertControllerStyleAlert];
+//    [alert addAction:[UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+//    }]];
+//    [self presentViewController:alert animated:YES completion:nil];
+    NSLog(@"=== alert:%@", message);
 }
 
 - (NSArray<id<QNIDnsNetworkAddress>> *)lookup:(NSString *)host {
@@ -287,12 +288,6 @@ typedef NS_ENUM(NSInteger, UploadState){
         DnsItem *item = [[DnsItem alloc] init];
         item.hostValue = host;
         item.ipValue = @"180.101.136.19";
-        item.sourceValue = @"custom";
-        [array addObject:item];
-    } else if ([host containsString:@"qbox.me"]) {
-        DnsItem *item = [[DnsItem alloc] init];
-        item.hostValue = host;
-        item.ipValue = @"49.7.22.215";
         item.sourceValue = @"custom";
         [array addObject:item];
     }

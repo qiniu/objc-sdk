@@ -336,7 +336,7 @@
     
     // 2. http2 冻结
     // 2.1 无法连接到Host || Host不可用， 局部冻结
-    if (!responseInfo.canConnectToHost || responseInfo.isHostUnavailable) {
+    if (responseInfo.isNotQiniu || !responseInfo.canConnectToHost || responseInfo.isHostUnavailable) {
         QNLogInfo(@"partial freeze server host:%@ ip:%@", freezeServer.host, freezeServer.ip);
         self.hasFreezeHost = YES;
         [self.partialHttp2Freezer freezeType:frozenType frozenTime:kQNGlobalConfiguration.partialHostFrozenTime];

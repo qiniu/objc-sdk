@@ -22,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (QNServerUserConfig *)getUserConfigFromDisk;
 - (void)saveUserConfigToDisk:(QNServerUserConfig *)config;
 
+- (void)removeConfigCache;
+
 @end
 
 NS_ASSUME_NONNULL_END

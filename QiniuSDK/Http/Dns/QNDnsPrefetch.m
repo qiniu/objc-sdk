@@ -72,8 +72,10 @@
         if ([address respondsToSelector:@selector(ttlValue)] && [address ttlValue]) {
             dic[@"ttlValue"] = [address ttlValue];
         }
-        if ([address respondsToSelector:@selector(source)] && [address sourceValue]) {
+        if ([address respondsToSelector:@selector(sourceValue)] && [address sourceValue]) {
             dic[@"sourceValue"] = [address sourceValue];
+        } else {
+            dic[@"sourceValue"] = kQNDnsSourceCustom;
         }
         if ([address respondsToSelector:@selector(timestampValue)] && [address timestampValue]) {
             dic[@"timestampValue"] = [address timestampValue];
@@ -188,13 +190,13 @@
     return interDns;
 }
 - (NSArray < id <QNIDnsNetworkAddress> > *)lookup:(NSString *)host error:(NSError **)error {
-    NSArray <QNRecord *>* records = nil;
     if (self.dns) {
-        records = [self.dns lookup:host];
+        return [self.dns lookup:host];
     } else if (self.resolver) {
-        records = [self.resolver query:[[QNDomain alloc] init:host] networkInfo:nil error:error];
+        NSArray <QNRecord *>* records = [self.resolver query:[[QNDomain alloc] init:host] networkInfo:nil error:error];
+        return [self filterRecords:records];
     }
-    return [self filterRecords:records];
+    return nil;
 }
 - (NSArray <QNRecord *>*)filterRecords:(NSArray <QNRecord *>*)records {
     NSMutableArray <QNRecord *> *newRecords = [NSMutableArray array];
@@ -554,7 +556,7 @@
         return NO;
     }
     
-    NSMutableDictionary *newAddressDictionary = [NSMutableDictionary dictionary];
+    NSMutableDictionary *records = [NSMutableDictionary dictionary];
     for (NSString *key in dataDic.allKeys) {
         NSArray *ips = dataDic[key];
         if ([ips isKindOfClass:[NSArray class]]) {
@@ -571,12 +573,12 @@
             }
             
             if (addressList.count > 0) {
-                newAddressDictionary[key] = [addressList copy];
+                records[key] = [addressList copy];
             }
         }
     }
     @synchronized (self) {
-        self.addressDictionary = newAddressDictionary;
+        [self.addressDictionary setValuesForKeysWithDictionary:records];
     }
     return NO;
 }
@@ -651,11 +653,9 @@
 
     NSMutableArray *localHosts = [NSMutableArray array];
     
-//    NSArray *fixedHosts = [self getFixedZoneHosts];
-//    [localHosts addObjectsFromArray:fixedHosts];
-    
     [localHosts addObject:kQNPreQueryHost00];
     [localHosts addObject:kQNPreQueryHost01];
+    [localHosts addObject:kQNUpLogHost];
     
     return [localHosts copy];
 }

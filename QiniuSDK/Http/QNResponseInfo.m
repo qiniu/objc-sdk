@@ -5,7 +5,7 @@
 //  Created by bailong on 14/10/2.
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
-
+#import "QNErrorCode.h"
 #import "QNResponseInfo.h"
 #import "QNUserAgent.h"
 #import "QNUtils.h"
@@ -229,7 +229,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
         || _statusCode == 608 || _statusCode == 612 || _statusCode == 614 || _statusCode == 616
         || _statusCode == 619 || _statusCode == 630 || _statusCode == 631 || _statusCode == 640
         || _statusCode == 701
-        || (_statusCode < -1 && _statusCode > -1000)) {
+        || (_statusCode != kQNLocalIOError && _statusCode != kQNUnexpectedSysCallError && _statusCode < -1 && _statusCode > -1000)) {
         return NO;
     } else {
         return YES;

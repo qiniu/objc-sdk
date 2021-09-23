@@ -8,8 +8,8 @@
 
 #import "QNZoneInfo.h"
 
-NSString * const QNZoneInfoSDKDefaultIOHost = @"sdkDefaultIOHost";
-NSString * const QNZoneInfoEmptyRegionId = @"sdkEmptyRegionId";
+NSString * const QNZoneInfoSDKDefaultIOHost = @"default_io_host";
+NSString * const QNZoneInfoEmptyRegionId = @"none";
 
 @interface QNZoneInfo()
 

@@ -25,6 +25,9 @@ NS_ASSUME_NONNULL_BEGIN
 // 配置 token
 + (void)setToken:(NSString *)token;
 
+// 移除缓存
++ (void)removeConfigCache;
+
 @end
 
 NS_ASSUME_NONNULL_END
