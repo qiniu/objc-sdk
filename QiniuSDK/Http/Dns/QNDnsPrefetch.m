@@ -650,44 +650,9 @@
 
 //MARK: -- 获取预取hosts
 - (NSArray <NSString *> *)getLocalPreHost{
-
     NSMutableArray *localHosts = [NSMutableArray array];
-    
-    [localHosts addObject:kQNPreQueryHost00];
-    [localHosts addObject:kQNPreQueryHost01];
     [localHosts addObject:kQNUpLogHost];
-    
     return [localHosts copy];
-}
-
-- (NSArray <NSString *> *)getAllPreHost:(QNZone *)currentZone
-                                  token:(QNUpToken *)token{
-    
-    NSMutableSet *set = [NSMutableSet set];
-    NSMutableArray *fetchHosts = [NSMutableArray array];
-    
-    NSArray *fixedHosts = [self getFixedZoneHosts];
-    [fetchHosts addObjectsFromArray:fixedHosts];
-    
-    NSArray *autoHosts = [self getCurrentZoneHosts:currentZone token:token];
-    [fetchHosts addObjectsFromArray:autoHosts];
-    
-    [fetchHosts addObject:kQNPreQueryHost00];
-    [fetchHosts addObject:kQNPreQueryHost01];
-    
-    NSArray *cacheHost = [self getCacheHosts];
-    [fetchHosts addObjectsFromArray:cacheHost];
-    
-    NSMutableArray *fetchHostsFiltered = [NSMutableArray array];
-    for (NSString *host in fetchHosts) {
-        NSInteger countBeforeAdd = set.count;
-        [set addObject:host];
-        NSInteger countAfterAdd = set.count;
-        if (countBeforeAdd < countAfterAdd) {
-            [fetchHostsFiltered addObject:host];
-        }
-    }
-    return [fetchHostsFiltered copy];
 }
 
 - (NSArray <NSString *> *)getCurrentZoneHosts:(QNZone *)currentZone
@@ -709,18 +674,6 @@
         }
     }
     return [autoHosts copy];
-}
-
-- (NSArray <NSString *> *)getFixedZoneHosts{
-    NSMutableArray *localHosts = [NSMutableArray array];
-    QNFixedZone *fixedZone = [QNFixedZone localsZoneInfo];
-    QNZonesInfo *zonesInfo = [fixedZone getZonesInfoWithToken:nil];
-    for (QNZoneInfo *zoneInfo in zonesInfo.zonesInfo) {
-        if (zoneInfo.allHosts) {
-            [localHosts addObjectsFromArray:zoneInfo.allHosts];
-        }
-    }
-    return [localHosts copy];
 }
 
 - (NSArray <NSString *> *)getCacheHosts{
