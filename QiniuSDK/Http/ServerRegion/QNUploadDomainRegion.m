@@ -168,6 +168,7 @@
 @property(atomic   , assign)BOOL isAllFrozen;
 // 局部http2冻结管理对象
 @property(nonatomic, strong)QNUploadServerFreezeManager *partialHttp2Freezer;
+@property(nonatomic, strong)QNUploadServerFreezeManager *partialHttp3Freezer;
 @property(nonatomic, strong)NSArray <NSString *> *domainHostList;
 @property(nonatomic, strong)NSDictionary <NSString *, QNUploadServerDomain *> *domainDictionary;
 @property(nonatomic, strong)NSArray <NSString *> *oldDomainHostList;
@@ -253,7 +254,7 @@
                 // 1.1 剔除冻结对象
                 NSString *frozenType = QNUploadFrozenType(host, filterServer.ip);
                 BOOL isFrozen = [QNUploadServerFreezeUtil isType:frozenType
-                                          frozenByFreezeManagers:@[kQNUploadGlobalHttp3Freezer]];
+                                          frozenByFreezeManagers:@[self.partialHttp2Freezer, kQNUploadGlobalHttp3Freezer]];
                 if (isFrozen) {
                     return NO;
                 }
@@ -327,6 +328,11 @@
     NSString *frozenType = QNUploadFrozenType(freezeServer.host, freezeServer.ip);
     // 1. http3 冻结
     if (kQNIsHttp3(freezeServer.httpVersion)) {
+        if (responseInfo.isNotQiniu) {
+            self.hasFreezeHost = YES;
+            [self.partialHttp3Freezer freezeType:frozenType frozenTime:kQNGlobalConfiguration.partialHostFrozenTime];
+        }
+        
         if (!responseInfo.canConnectToHost || responseInfo.isHostUnavailable) {
             self.hasFreezeHost = YES;
             [kQNUploadGlobalHttp3Freezer freezeType:frozenType frozenTime:kQNUploadHttp3FrozenTime];
@@ -365,6 +371,13 @@
         _partialHttp2Freezer = [[QNUploadServerFreezeManager alloc] init];
     }
     return _partialHttp2Freezer;
+}
+
+- (QNUploadServerFreezeManager *)partialHttp3Freezer{
+    if (!_partialHttp3Freezer) {
+        _partialHttp3Freezer = [[QNUploadServerFreezeManager alloc] init];
+    }
+    return _partialHttp3Freezer;
 }
 
 @end
