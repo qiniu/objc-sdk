@@ -102,7 +102,7 @@ typedef NS_ENUM(NSInteger, UploadState){
 
 - (void)uploadImageToQNFilePath:(NSString *)filePath {
     
-//    kQNGlobalConfiguration.isDnsOpen = false;
+    kQNGlobalConfiguration.isDnsOpen = false;
 //    kQNGlobalConfiguration.connectCheckEnable = false;
     kQNGlobalConfiguration.dnsCacheMaxTTL = 600;
     kQNGlobalConfiguration.partialHostFrozenTime = 20*60;
@@ -121,7 +121,7 @@ typedef NS_ENUM(NSInteger, UploadState){
         builder.resumeUploadVersion = QNResumeUploadVersionV2;
         builder.putThreshold = 6*1024*1024;
         builder.chunkSize = 2*1024*1024;
-        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload.qbox.me"]];
+        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[@"up-z0.qbox.me", /*@"upload.qbox.me"*/]];
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] error:nil];
     }];
     
@@ -288,6 +288,12 @@ typedef NS_ENUM(NSInteger, UploadState){
         DnsItem *item = [[DnsItem alloc] init];
         item.hostValue = host;
         item.ipValue = @"180.101.136.19";
+        item.sourceValue = @"custom";
+        [array addObject:item];
+    } else if ([host containsString:@"up-z0.qbox.me"]) {
+        DnsItem *item = [[DnsItem alloc] init];
+        item.hostValue = host;
+        item.ipValue = @"180.101.136.28";
         item.sourceValue = @"custom";
         [array addObject:item];
     }

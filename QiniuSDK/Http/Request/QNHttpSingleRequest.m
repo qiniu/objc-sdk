@@ -182,6 +182,7 @@
     }
     
     return responseInfo.statusCode == kQNNetworkError ||
+    responseInfo.statusCode == kQNUnexpectedSysCallError || // CF 内部部分错误码 归结到了调用错误
     responseInfo.statusCode == NSURLErrorTimedOut /* NSURLErrorTimedOut */ ||
     responseInfo.statusCode == -1003 /* NSURLErrorCannotFindHost */ ||
     responseInfo.statusCode == -1004 /* NSURLErrorCannotConnectToHost */ ||
