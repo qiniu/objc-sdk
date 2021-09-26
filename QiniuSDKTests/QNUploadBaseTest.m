@@ -17,7 +17,7 @@
 
 - (void)setUp {
     [super setUp];
-    [QNLogUtil setLogLevel:QNLogLevelInfo];
+//    [QNLogUtil setLogLevel:QNLogLevelInfo];
     
     self.defaultOption = [[QNUploadOption alloc] initWithMime:nil
                                           byteProgressHandler:^(NSString *key, long long uploadBytes, long long totalBytes) {
