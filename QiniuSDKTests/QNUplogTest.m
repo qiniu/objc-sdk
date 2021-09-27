@@ -31,6 +31,7 @@
 
 - (void)testUplog{
     
+    kQNGlobalConfiguration.isDnsOpen = YES;
     [[QNTransactionManager shared] addDnsLocalLoadTransaction];
     
     while (true) {
