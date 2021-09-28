@@ -34,11 +34,16 @@
     kQNGlobalConfiguration.isDnsOpen = YES;
     [[QNTransactionManager shared] addDnsLocalLoadTransaction];
     
+    NSString *host = @"uplog.qbox.me";
     while (true) {
-        NSArray *ips = [kQNDnsPrefetch getInetAddressByHost:@"uplog.qbox.me"];
+        NSArray *ips = [kQNDnsPrefetch getInetAddressByHost:host];
         if (ips != nil && ips.count > 0) {
             break;
         }
+        
+        NSError *err = nil;
+        [kQNDnsPrefetch prefetchHostBySafeDns:host error:&err];
+        NSLog(@"testUplog err:%@", err);
         sleep(1);
     }
     
