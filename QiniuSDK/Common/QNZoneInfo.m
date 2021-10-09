@@ -125,6 +125,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
 @end
 
 @interface QNZonesInfo()
+@property (nonatomic, assign) BOOL isTemporary;
 @property (nonatomic, strong) NSArray<QNZoneInfo *> *zonesInfo;
 @end
 @implementation QNZonesInfo
@@ -167,6 +168,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
     }
     QNZonesInfo *zonesInfo = [[QNZonesInfo allocWithZone:zone] init];
     zonesInfo.zonesInfo = [zonesInfoArray copy];
+    zonesInfo.isTemporary = self.isTemporary;
     return zonesInfo;
 }
 
