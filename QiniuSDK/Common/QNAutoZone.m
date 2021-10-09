@@ -39,16 +39,23 @@
 
 - (void)cache:(QNZonesInfo *)zonesInfo forKey:(NSString *)cacheKey{
     
-    if (!cacheKey || [cacheKey isEqualToString:@""]) {
+    if (!cacheKey || [cacheKey isEqualToString:@""] || zonesInfo == nil) {
         return;
     }
     
     @synchronized (self) {
-        if (zonesInfo) {
-            self.cache[cacheKey] = zonesInfo;
-        } else {
-            [self.cache removeObjectForKey:cacheKey];
-        }
+        self.cache[cacheKey] = zonesInfo;
+    }
+}
+
+- (QNZonesInfo *)cacheForKey:(NSString *)cacheKey{
+    
+    if (!cacheKey || [cacheKey isEqualToString:@""]) {
+        return nil;
+    }
+    
+    @synchronized (self) {
+        return self.cache[cacheKey];
     }
 }
 
@@ -90,8 +97,8 @@
 @interface QNAutoZone()
 
 @property(nonatomic, strong)NSArray *ucHosts;
-@property(nonatomic, strong)NSMutableDictionary *cache;
-@property(nonatomic, strong)NSLock *lock;
+//@property(nonatomic, strong)NSMutableDictionary *cache;
+//@property(nonatomic, strong)NSLock *lock;
 @property(nonatomic, strong)NSMutableArray <QNRequestTransaction *> *transactions;
 
 @end
@@ -118,8 +125,8 @@
 
 - (instancetype)init{
     if (self = [super init]) {
-        _cache = [NSMutableDictionary new];
-        _lock = [NSLock new];
+//        _cache = [NSMutableDictionary new];
+//        _lock = [NSLock new];
         _transactions = [NSMutableArray array];
     }
     return self;
@@ -127,10 +134,10 @@
 
 - (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token {
     if (token == nil) return nil;
-    [self.lock lock];
-    QNZonesInfo *zonesInfo = [_cache objectForKey:[token index]];
+//    [self.lock lock];
+    QNZonesInfo *zonesInfo = [[QNAutoZoneCache share] cacheForKey:[token index]];
     zonesInfo = [zonesInfo copy];
-    [self.lock unlock];
+//    [self.lock unlock];
     return zonesInfo;
 }
 
@@ -145,18 +152,19 @@
     [cacheMetrics start];
     
     NSString *cacheKey = token.index;
-    [_lock lock];
-    QNZonesInfo *zonesInfo = [_cache objectForKey:cacheKey];
-    [_lock unlock];
+//    [_lock lock];
+    QNZonesInfo *zonesInfo = [[QNAutoZoneCache share] zonesInfoForKey:cacheKey];
+//    [_cache objectForKey:cacheKey];
+//    [_lock unlock];
     
-    if (zonesInfo == nil) {
-        zonesInfo = [[QNAutoZoneCache share] zonesInfoForKey:cacheKey];
-        if (zonesInfo && zonesInfo.isValid) {
-            [self.lock lock];
-            [self.cache setValue:zonesInfo forKey:cacheKey];
-            [self.lock unlock];
-        }
-    }
+//    if (zonesInfo == nil) {
+//        zonesInfo = [[QNAutoZoneCache share] zonesInfoForKey:cacheKey];
+//        if (zonesInfo && zonesInfo.isValid) {
+//            [self.lock lock];
+//            [self.cache setValue:zonesInfo forKey:cacheKey];
+//            [self.lock unlock];
+//        }
+//    }
     
     // 临时的 zonesInfo 仅能使用一次
     if (zonesInfo != nil && zonesInfo.isValid && !zonesInfo.isTemporary) {
@@ -187,17 +195,16 @@
         }];
         
     } complete:^(id  _Nullable value, NSError * _Nullable error) {
-        kQNStrongSelf;
-        
+//        kQNStrongSelf;
         QNResponseInfo *responseInfo = [(QNUCQuerySingleFlightValue *)value responseInfo];
         NSDictionary *response = [(QNUCQuerySingleFlightValue *)value response];
         QNUploadRegionRequestMetrics *metrics = [(QNUCQuerySingleFlightValue *)value metrics];
 
         if (responseInfo && responseInfo.isOK) {
             QNZonesInfo *zonesInfo = [QNZonesInfo infoWithDictionary:response];
-            [self.lock lock];
-            [self.cache setValue:zonesInfo forKey:cacheKey];
-            [self.lock unlock];
+//            [self.lock lock];
+//            [self.cache setValue:zonesInfo forKey:cacheKey];
+//            [self.lock unlock];
             [[QNAutoZoneCache share] cache:zonesInfo forKey:cacheKey];
             ret(0, responseInfo, metrics);
         } else {
@@ -205,9 +212,10 @@
                 ret(kQNNetworkError, responseInfo, metrics);
             } else {
                 QNZonesInfo *zonesInfo = [[QNFixedZone localsZoneInfo] getZonesInfoWithToken:token];
-                [self.lock lock];
-                [self.cache setValue:zonesInfo forKey:cacheKey];
-                [self.lock unlock];
+                [[QNAutoZoneCache share] cache:zonesInfo forKey:cacheKey];
+//                [self.lock lock];
+//                [self.cache setValue:zonesInfo forKey:cacheKey];
+//                [self.lock unlock];
                 ret(0, responseInfo, metrics);
             }
         }
@@ -224,17 +232,17 @@
     QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithHosts:hosts
                                                                            regionId:QNZoneInfoEmptyRegionId
                                                                               token:token];
-    [self.lock lock];
-    [self.transactions addObject:transaction];
-    [self.lock unlock];
+    @synchronized (self) {
+        [self.transactions addObject:transaction];
+    }
     return transaction;
 }
 
 - (void)destroyUploadRequestTransaction:(QNRequestTransaction *)transaction{
     if (transaction) {
-        [self.lock lock];
-        [self.transactions removeObject:transaction];
-        [self.lock unlock];
+        @synchronized (self) {
+            [self.transactions removeObject:transaction];
+        }
     }
 }
 
