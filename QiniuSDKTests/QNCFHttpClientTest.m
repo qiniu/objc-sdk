@@ -142,7 +142,7 @@
 //MARK: --
 - (void)request:(NSURLRequest *)request{
     self.client = [[QNCFHttpClient alloc] init];
-    [self.client request:request connectionProxy:@{@"HTTPSProxy":@"aaa", @"HTTPSPort":@80} progress:^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+    [self.client request:request server:nil connectionProxy:@{@"HTTPSProxy":@"aaa", @"HTTPSPort":@80} progress:^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
         NSLog(@"progress written:%lld total:%lld", totalBytesWritten, totalBytesExpectedToWrite);
     } complete:^(NSURLResponse * _Nullable response, QNUploadSingleRequestMetrics * _Nullable metrics, NSData * _Nullable data, NSError * _Nullable error) {
         if (error) {
