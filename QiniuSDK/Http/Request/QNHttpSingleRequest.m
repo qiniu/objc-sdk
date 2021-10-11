@@ -25,6 +25,7 @@
 
 #import "QNReportItem.h"
 
+#import "QNCFHttpClient.h"
 #import "QNUploadSystemClient.h"
 #import "NSURLRequest+QNRequest.h"
 
@@ -82,7 +83,12 @@
     if (kQNIsHttp3(server.httpVersion)) {
         self.client = [[QNUploadSystemClient alloc] init];
     } else {
-        self.client = [[QNUploadSystemClient alloc] init];
+        if ([self shouldUseCFClient:request]) {
+            self.client = [[QNCFHttpClient alloc] init];
+        } else {
+            self.client = [[QNUploadSystemClient alloc] init];
+        }
+        
     }
     
     kQNWeakSelf;
@@ -205,6 +211,15 @@
     }
 }
 
+- (BOOL)shouldUseCFClient:(NSURLRequest *)request {
+    if ([request qn_isQiNiuRequest] && request.qn_ip.length > 0
+        && ([request.URL.absoluteString hasPrefix:@"https://"])) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
 //MARK:-- 统计网络状态
 - (void)updateHostNetworkStatus:(QNResponseInfo *)responseInfo
                          server:(id <QNUploadServer>)server
@@ -301,6 +316,8 @@
     if (info.isOK) {
         [item setReportValue:requestMetricsP.perceptiveSpeed forKey:QNReportRequestKeyPerceptiveSpeed];
     }
+    
+    [item setReportValue:self.client.clientId forKey:QNReportRequestKeyHttpClient];
     
     [kQNReporter reportItem:item token:self.token.token];
 }

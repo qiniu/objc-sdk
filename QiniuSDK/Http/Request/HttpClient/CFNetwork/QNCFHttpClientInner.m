@@ -8,13 +8,14 @@
 
 #import "QNErrorCode.h"
 #import "QNDefine.h"
-#import "QNCFHttpClient.h"
+#import "QNCFHttpClientInner.h"
 #import "NSURLRequest+QNRequest.h"
 #import <sys/errno.h>
 
-@interface QNCFHttpClient()<NSStreamDelegate>
+@interface QNCFHttpClientInner()<NSStreamDelegate>
 
 @property(nonatomic, strong)NSMutableURLRequest *request;
+@property(nonatomic, strong)NSDictionary *connectionProxy;
 @property(nonatomic, assign)BOOL isReadResponseHeader;
 @property(nonatomic, assign)BOOL isReadResponseBody;
 @property(nonatomic, assign)BOOL isInputStreamEvaluated;
@@ -27,20 +28,19 @@
 @property(nonatomic, assign)int64_t totalBytesExpectedToSend; // 总大小
 
 @end
-@implementation QNCFHttpClient
+@implementation QNCFHttpClientInner
 
-+ (instancetype)client:(NSURLRequest *)request{
++ (instancetype)client:(NSURLRequest *)request connectionProxy:(nonnull NSDictionary *)connectionProxy{
     if (!request) {
         return nil;
     }
-    
-    QNCFHttpClient *client = [[QNCFHttpClient alloc] init];
+    QNCFHttpClientInner *client = [[QNCFHttpClientInner alloc] init];
+    client.connectionProxy = connectionProxy;
     [client setup:request];
     return client;
 }
 
 - (void)setup:(NSURLRequest *)request{
-    
     @autoreleasepool {
         self.request = [request mutableCopy];
         NSInputStream *inputStream = [self createInputStream:self.request];
@@ -53,7 +53,6 @@
         [self setupProgress];
         
         self.inputStream = inputStream;
-        
     }
 }
 
@@ -91,7 +90,6 @@
         CFHTTPMessageSetHeaderFieldValue(request, headerFieldP, headerFieldValueP);
     }
     
-
     NSData *httpBody = [self.request qn_getHttpBody];
     if (httpBody) {
         CFDataRef bodyData = (__bridge CFDataRef) httpBody;
@@ -99,6 +97,15 @@
     }
     
     CFReadStreamRef readStream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, request);
+    if (self.connectionProxy) {
+        for (NSString *key in self.connectionProxy.allKeys) {
+            NSObject *value = self.connectionProxy[key];
+            if (key.length > 0) {
+                CFReadStreamSetProperty(readStream, (__bridge CFTypeRef _Null_unspecified)key, (__bridge CFTypeRef _Null_unspecified)(value));
+            }
+        }
+    }
+    
     NSInputStream *inputStream = (__bridge_transfer NSInputStream *) readStream;
     
     CFRelease(request);
@@ -213,7 +220,6 @@
 }
 
 - (void)inputStreamDidLoadHttpResponse{
-    
     [self delegate_didFinish];
 }
 
@@ -279,13 +285,12 @@
     @autoreleasepool {
         switch (eventCode) {
             case NSStreamEventHasBytesAvailable:{
+                if ([self shouldEvaluateInputStreamServerTrust]) {
+                    [self evaluateInputStreamServerTrust];
+                }
                 
                 if (![self isInputStreamHttpResponseHeaderComplete]) {
                     break;
-                }
-                
-                if ([self shouldEvaluateInputStreamServerTrust]) {
-                    [self evaluateInputStreamServerTrust];
                 }
                 
                 [self inputStreamGetAndNotifyHttpResponse];
@@ -297,7 +302,6 @@
             case NSStreamEventErrorOccurred:{
                 [self endProgress: YES];
                 [self delegate_onError:[self translateCFNetworkErrorIntoUrlError:[self.inputStream streamError]]];
-                [self closeInputStream];
             }
                 break;
             case NSStreamEventEndEncountered:{

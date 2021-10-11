@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol QNCFHttpClientDelegate <NSObject>
+@protocol QNCFHttpClientInnerDelegate <NSObject>
 
 - (void)redirectedToRequest:(NSURLRequest *)request
            redirectResponse:(NSURLResponse *)redirectResponse;
@@ -32,13 +32,14 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend;
 
 @end
 
-@interface QNCFHttpClient : NSObject
+@interface QNCFHttpClientInner : NSObject
 
 @property(nonatomic, strong, readonly)NSMutableURLRequest *request;
+@property(nonatomic, strong, readonly)NSDictionary *connectionProxy;
 
-@property(nonatomic, weak)id <QNCFHttpClientDelegate> delegate;
+@property(nonatomic, weak)id <QNCFHttpClientInnerDelegate> delegate;
 
-+ (instancetype)client:(NSURLRequest *)request;
++ (instancetype)client:(NSURLRequest *)request connectionProxy:(NSDictionary *)connectionProxy;
 
 - (void)startLoading;
 

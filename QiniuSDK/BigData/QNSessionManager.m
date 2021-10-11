@@ -13,7 +13,6 @@
 
 #import "QNResponseInfo.h"
 #import "NSURLRequest+QNRequest.h"
-#import "QNURLProtocol.h"
 
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 
@@ -88,7 +87,6 @@ didCompleteWithError:(nullable NSError *)error {
         _proxyDict = proxyDict;
         _sessionArray = [NSMutableArray array];
 
-        [QNURLProtocol registerProtocol];
         _lock = [[NSLock alloc] init];
     }
     return self;
@@ -120,7 +118,7 @@ didCompleteWithError:(nullable NSError *)error {
     [request setValue:nil forHTTPHeaderField:@"Accept-Language"];
     
     QNSessionDelegateHandler *delegate = [[QNSessionDelegateHandler alloc] init];
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration qn_sessionConfiguration];
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     configuration.connectionProxyDictionary = _proxyDict ? _proxyDict : nil;
 
     __block NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:delegate delegateQueue:_delegateQueue];
@@ -220,7 +218,7 @@ withIdentifier:(NSString *)identifier
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:URL];
         request.qn_domain = URL.host;
         QNSessionDelegateHandler *delegate = [[QNSessionDelegateHandler alloc] init];
-        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration qn_sessionConfiguration];
+        NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
         __block NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration delegate:delegate delegateQueue:self.delegateQueue];
         NSURLSessionDataTask *dataTask = [session dataTaskWithRequest:request];
         delegate.cancelBlock = nil;

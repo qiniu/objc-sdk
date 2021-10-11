@@ -9,7 +9,6 @@
 #import "QNUploadSystemClient.h"
 #import "QNUserAgent.h"
 #import "NSURLRequest+QNRequest.h"
-#import "QNURLProtocol.h"
 
 @interface QNUploadSystemClient()<NSURLSessionDelegate>
 
@@ -22,6 +21,10 @@
 
 @end
 @implementation QNUploadSystemClient
+
+- (NSString *)clientId {
+    return @"NSURLSession";
+}
 
 - (void)request:(NSURLRequest *)request
 connectionProxy:(NSDictionary *)connectionProxy
@@ -38,7 +41,7 @@ connectionProxy:(NSDictionary *)connectionProxy
     self.progress = progress;
     self.complete = complete;
     
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration qn_sessionConfiguration];
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     if (connectionProxy) {
         configuration.connectionProxyDictionary = connectionProxy;
     }

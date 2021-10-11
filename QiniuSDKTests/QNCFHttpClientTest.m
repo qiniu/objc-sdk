@@ -12,7 +12,7 @@
 #import <XCTest/XCTest.h>
 #import "XCTestCase+QNTest.h"
 
-@interface QNCFHttpClientTest : XCTestCase <QNCFHttpClientDelegate>
+@interface QNCFHttpClientTest : XCTestCase
 
 @property(nonatomic, strong)QNCFHttpClient *client;
 
@@ -141,61 +141,21 @@
 
 //MARK: --
 - (void)request:(NSURLRequest *)request{
-    self.client = [QNCFHttpClient client:request];
-    self.client.delegate = self;
-    [self requestStart];
-}
-
-- (void)requestStart{
-    [self.client startLoading];
+    self.client = [[QNCFHttpClient alloc] init];
+    [self.client request:request connectionProxy:@{@"HTTPSProxy":@"aaa", @"HTTPSPort":@80} progress:^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+        NSLog(@"progress written:%lld total:%lld", totalBytesWritten, totalBytesExpectedToWrite);
+    } complete:^(NSURLResponse * _Nullable response, QNUploadSingleRequestMetrics * _Nullable metrics, NSData * _Nullable data, NSError * _Nullable error) {
+        if (error) {
+            XCTAssertTrue(error == nil, "error:%@", error);
+        }
+        
+        NSString *responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"responseString:%@", responseString);
+        XCTAssertTrue([(NSHTTPURLResponse * )response statusCode] == 200, "response:%@", response);
+        QN_TEST_CASE_CONTINUE
+    }];
     QN_TEST_CASE_WAIT
 }
 
-- (void)requestComplete{
-    [self.client stopLoading];
-    QN_TEST_CASE_CONTINUE
-}
-
-//MARK: -- delegate
-- (void)didFinish {
-    [self.client stopLoading];
-    [self requestComplete];
-}
-
-- (void)didLoadData:(nonnull NSData *)data {
-    [self requestComplete];
-    
-    NSObject *content = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:nil];
-    if (!content) {
-        content = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-    }
-    NSLog(@"content: %@", content);
-}
-
-- (void)didSendBodyData:(int64_t)bytesSent totalBytesSent:(int64_t)totalBytesSent totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend {
-    
-}
-
-- (BOOL)evaluateServerTrust:(nonnull SecTrustRef)serverTrust forDomain:(nonnull NSString *)domain {
-    return YES;
-}
-
-- (void)onError:(nonnull NSError *)error {
-    [self requestComplete];
-}
-
-- (void)onReceiveResponse:(nonnull NSURLResponse *)response {
-    NSHTTPURLResponse *responseP = (NSHTTPURLResponse *)response;
-    NSString *responseInfo = [NSString stringWithFormat:@"statusCode: %ld \r\n header: %@", responseP.statusCode, responseP.allHeaderFields];
-    NSLog(@"responseInfo: %@", responseInfo);
-    XCTAssert(responseP.statusCode == 200, @"response: %@", responseInfo);
-}
-
-- (void)redirectedToRequest:(nonnull NSURLRequest *)request redirectResponse:(nonnull NSURLResponse *)redirectResponse {
-
-    NSHTTPURLResponse *responseP = (NSHTTPURLResponse *)redirectResponse;
-    NSLog(@"statusCode: %ld \r\n header: %@", responseP.statusCode, responseP.allHeaderFields);
-    [self requestComplete];
-}
 
 @end
