@@ -32,6 +32,7 @@ connectionProxy:(NSDictionary *)connectionProxy
        progress:(void (^)(long long, long long))progress
        complete:(QNRequestClientCompleteHandler)complete {
     
+    // 非 https 方可使用 IP
     if (!request.qn_isHttps && server && server.ip.length > 0 && server.host.length > 0) {
         NSString *urlString = request.URL.absoluteString;
         urlString = [urlString stringByReplacingOccurrencesOfString:server.host withString:server.ip];
@@ -44,7 +45,7 @@ connectionProxy:(NSDictionary *)connectionProxy
     }
 
     self.requestMetrics = [QNUploadSingleRequestMetrics emptyMetrics];
-    self.requestMetrics.remoteAddress = request.qn_isHttps ? nil : request.qn_ip;
+    self.requestMetrics.remoteAddress = request.qn_isHttps ? nil : server.ip;
     self.requestMetrics.remotePort = request.qn_isHttps ? @443 : @80;
     [self.requestMetrics start];
     

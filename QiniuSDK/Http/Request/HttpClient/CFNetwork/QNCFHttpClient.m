@@ -48,6 +48,8 @@
 connectionProxy:(NSDictionary *)connectionProxy
        progress:(void (^)(long long, long long))progress
        complete:(QNRequestClientCompleteHandler)complete {
+    
+    // 有 ip 才会使用
     if (server && server.ip.length > 0 && server.host.length > 0) {
         NSString *urlString = request.URL.absoluteString;
         urlString = [urlString stringByReplacingOccurrencesOfString:server.host withString:server.ip];
@@ -87,6 +89,7 @@ connectionProxy:(NSDictionary *)connectionProxy
     self.requestMetrics.response = self.response;
     [self.httpClient stopLoading];
     [self.requestMetrics end];
+    
     if (self.complete) {
         self.complete(self.response, self.requestMetrics, self.responseData, error);
     }
@@ -139,8 +142,19 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend{
     [self completeAction:error];
 }
 
-- (void)onReceiveResponse:(nonnull NSURLResponse *)response {
+- (void)onReceiveResponse:(NSURLResponse *)response httpVersion:(NSString *)httpVersion{
     self.requestMetrics.responseStartDate = [NSDate date];
+    if ([httpVersion isEqualToString:@"http/1.0"]) {
+        self.requestMetrics.httpVersion = @"1.0";
+    } else if ([httpVersion isEqualToString:@"http/1.1"]) {
+        self.requestMetrics.httpVersion = @"1.1";
+    } else if ([httpVersion isEqualToString:@"h2"]) {
+        self.requestMetrics.httpVersion = @"2";
+    } else if ([httpVersion isEqualToString:@"h3"]) {
+        self.requestMetrics.httpVersion = @"3";
+    } else {
+        self.requestMetrics.httpVersion = httpVersion;
+    }
     self.response = response;
 }
 

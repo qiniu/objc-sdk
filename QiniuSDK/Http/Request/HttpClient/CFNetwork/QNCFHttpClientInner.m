@@ -191,7 +191,7 @@
     
     if (![self isHttpRedirectStatusCode:statusCode]) {
         NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:self.request.URL statusCode:statusCode HTTPVersion:httpVersionInfo headerFields:headInfo];
-        [self delegate_onReceiveResponse:response];
+        [self delegate_onReceiveResponse:response httpVersion:httpVersionInfo];
     }
     
     CFRelease(httpMessage);
@@ -828,9 +828,9 @@
               totalBytesExpectedToSend:totalBytesExpectedToSend];
     }
 }
-- (void)delegate_onReceiveResponse:(NSURLResponse *)response{
-    if ([self.delegate respondsToSelector:@selector(onReceiveResponse:)]) {
-        [self.delegate onReceiveResponse:response];
+- (void)delegate_onReceiveResponse:(NSURLResponse *)response httpVersion:(NSString *)httpVersion{
+    if ([self.delegate respondsToSelector:@selector(onReceiveResponse:httpVersion:)]) {
+        [self.delegate onReceiveResponse:response httpVersion:httpVersion];
     }
 }
 

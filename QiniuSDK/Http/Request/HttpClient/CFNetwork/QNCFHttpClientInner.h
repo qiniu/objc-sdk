@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
          totalBytesSent:(int64_t)totalBytesSent
 totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend;
 
-- (void)onReceiveResponse:(NSURLResponse *)response;
+- (void)onReceiveResponse:(NSURLResponse *)response httpVersion:(NSString *)httpVersion;
 
 - (void)didLoadData:(NSData *)data;
 
