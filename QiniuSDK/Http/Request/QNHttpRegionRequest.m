@@ -137,22 +137,10 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
     
     self.currentServer = server;
     
-    BOOL toSkipDns = NO;
     NSString *scheme = self.config.useHttps ? @"https://" : @"http://";
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    if (serverIP && serverIP.length > 0) {
-        NSString *urlString = [NSString stringWithFormat:@"%@%@%@", scheme, serverIP, action ?: @""];
-        request.URL = [NSURL URLWithString:urlString];
-        request.qn_domain = serverHost;
-        request.qn_ip = serverIP;
-        toSkipDns = YES;
-    } else {
-        NSString *urlString = [NSString stringWithFormat:@"%@%@%@", scheme, serverHost, action ?: @""];
-        request.URL = [NSURL URLWithString:urlString];
-        request.qn_domain = serverHost;
-        request.qn_ip = nil;
-        toSkipDns = NO;
-    }
+    NSString *urlString = [NSString stringWithFormat:@"%@%@%@", scheme, serverHost, action ?: @""];
+    request.URL = [NSURL URLWithString:urlString];
     request.HTTPMethod = method;
     [request setAllHTTPHeaderFields:headers];
     [request setTimeoutInterval:self.config.timeoutInterval];

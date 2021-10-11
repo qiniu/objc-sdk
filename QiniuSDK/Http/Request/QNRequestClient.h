@@ -18,9 +18,10 @@ typedef void (^QNRequestClientCompleteHandler)(NSURLResponse * _Nullable, QNUplo
 @property(nonatomic,  copy, readonly)NSString *clientId;
 
 - (void)request:(NSURLRequest *)request
+         server:(_Nullable id <QNUploadServer>)server
 connectionProxy:(NSDictionary * _Nullable)connectionProxy
        progress:(void(^ _Nullable)(long long totalBytesWritten, long long totalBytesExpectedToWrite))progress
-       complete:(QNRequestClientCompleteHandler)complete;
+       complete:(_Nullable QNRequestClientCompleteHandler)complete;
 
 - (void)cancel;
 

@@ -44,14 +44,25 @@
 }
 
 - (void)request:(NSURLRequest *)request
+         server:(id <QNUploadServer>)server
 connectionProxy:(NSDictionary *)connectionProxy
        progress:(void (^)(long long, long long))progress
        complete:(QNRequestClientCompleteHandler)complete {
-    self.request = request;
+    if (server && server.ip.length > 0 && server.host.length > 0) {
+        NSString *urlString = request.URL.absoluteString;
+        urlString = [urlString stringByReplacingOccurrencesOfString:server.host withString:server.ip];
+        NSMutableURLRequest *requestNew = [request mutableCopy];
+        requestNew.URL = [NSURL URLWithString:urlString];
+        requestNew.qn_domain = server.host;
+        self.request = [requestNew copy];
+    } else {
+        self.request = request;
+    }
+    
     self.connectionProxy = connectionProxy;
     self.complete = complete;
     self.requestMetrics = [QNUploadSingleRequestMetrics emptyMetrics];
-    self.requestMetrics.request = request;
+    self.requestMetrics.request = self.request;
     self.requestMetrics.remoteAddress = request.qn_ip;
     self.requestMetrics.remotePort = request.qn_isHttps ? @443 : @80;
     [self.requestMetrics start];
@@ -136,7 +147,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend{
 - (void)redirectedToRequest:(nonnull NSURLRequest *)request redirectResponse:(nonnull NSURLResponse *)redirectResponse {
     if (self.redirectCount < self.maxRedirectCount) {
         [self.httpClient stopLoading];
-        [self request:request connectionProxy:self.connectionProxy progress:self.progress complete:self.complete];
+        [self request:request server:nil connectionProxy:self.connectionProxy progress:self.progress complete:self.complete];
     } else {
         [self didFinish];
     }

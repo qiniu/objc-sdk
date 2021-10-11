@@ -27,13 +27,24 @@
 }
 
 - (void)request:(NSURLRequest *)request
+         server:(id <QNUploadServer>)server
 connectionProxy:(NSDictionary *)connectionProxy
        progress:(void (^)(long long, long long))progress
        complete:(QNRequestClientCompleteHandler)complete {
     
-    self.request = request;
+    if (!request.qn_isHttps && server && server.ip.length > 0 && server.host.length > 0) {
+        NSString *urlString = request.URL.absoluteString;
+        urlString = [urlString stringByReplacingOccurrencesOfString:server.host withString:server.ip];
+        NSMutableURLRequest *requestNew = [request mutableCopy];
+        requestNew.URL = [NSURL URLWithString:urlString];
+        requestNew.qn_domain = server.host;
+        self.request = [requestNew copy];
+    } else {
+        self.request = request;
+    }
+
     self.requestMetrics = [QNUploadSingleRequestMetrics emptyMetrics];
-    self.requestMetrics.remoteAddress = request.qn_ip;
+    self.requestMetrics.remoteAddress = request.qn_isHttps ? nil : request.qn_ip;
     self.requestMetrics.remotePort = request.qn_isHttps ? @443 : @80;
     [self.requestMetrics start];
     

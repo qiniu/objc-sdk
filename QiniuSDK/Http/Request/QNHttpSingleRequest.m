@@ -88,7 +88,6 @@
         } else {
             self.client = [[QNUploadSystemClient alloc] init];
         }
-        
     }
     
     kQNWeakSelf;
@@ -104,7 +103,7 @@
 
     QNLogInfo(@"key:%@ retry:%d url:%@", self.requestInfo.key, self.currentRetryTime, request.URL);
     
-    [self.client request:request connectionProxy:self.config.proxy progress:^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
+    [self.client request:request server:server connectionProxy:self.config.proxy progress:^(long long totalBytesWritten, long long totalBytesExpectedToWrite) {
         kQNStrongSelf;
         
         if (progress) {
