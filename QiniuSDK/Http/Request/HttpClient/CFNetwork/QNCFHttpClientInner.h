@@ -32,7 +32,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend;
 
 @end
 
-@interface QNCFHttpClientInner : NSObject
+@interface QNCFHttpClientInner : NSOperation
 
 @property(nonatomic, strong, readonly)NSMutableURLRequest *request;
 @property(nonatomic, strong, readonly)NSDictionary *connectionProxy;

@@ -211,7 +211,7 @@
 }
 
 - (BOOL)shouldUseCFClient:(NSURLRequest *)request server:(id <QNUploadServer>)server {
-    if (request.qn_isQiNiuRequest && request.qn_isHttps && server.host.length > 0 && server.ip.length > 0) {
+    if (request.qn_isHttps && server.host.length > 0 && server.ip.length > 0) {
         return YES;
     } else {
         return NO;

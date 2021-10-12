@@ -12,10 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface NSURLRequest(QNRequest)
 
-/// 是否是七牛请求【内部使用】
-/// 作为是否进行请求监听的判断依据 NO，当设置了qn_domain返回YES，反之为NO
-@property(nonatomic, assign, readonly)BOOL qn_isQiNiuRequest;
-
 /// 请求id【内部使用】
 /// 只有通过设置qn_domain才会有效
 @property(nonatomic, strong, nullable, readonly)NSString *qn_identifier;

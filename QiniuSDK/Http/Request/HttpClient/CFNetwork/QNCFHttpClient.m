@@ -6,6 +6,7 @@
 //  Copyright © 2021 Qiniu. All rights reserved.
 //
 
+#import "QNAsyncRun.h"
 #import "QNCFHttpClient.h"
 #import "QNCFHttpClientInner.h"
 #import "NSURLRequest+QNRequest.h"
@@ -29,6 +30,18 @@
 
 @end
 @implementation QNCFHttpClient
+
++ (NSOperationQueue *)shareQueue {
+    
+    static NSOperationQueue *queue = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        queue = [[NSOperationQueue alloc] init];
+        queue.maxConcurrentOperationCount = 6;
+        queue.name = @"com.qiniu.cfclient";
+    });
+    return queue;
+}
 
 - (NSString *)clientId {
     return @"CFNetwork";
@@ -72,7 +85,7 @@ connectionProxy:(NSDictionary *)connectionProxy
     self.responseData = [NSMutableData data];
     self.httpClient = [QNCFHttpClientInner client:request connectionProxy:connectionProxy];
     self.httpClient.delegate = self;
-    [self.httpClient startLoading];
+    [[QNCFHttpClient shareQueue] addOperation:self.httpClient];
 }
 
 - (void)cancel {
@@ -89,7 +102,6 @@ connectionProxy:(NSDictionary *)connectionProxy
     self.requestMetrics.response = self.response;
     [self.httpClient stopLoading];
     [self.requestMetrics end];
-    
     if (self.complete) {
         self.complete(self.response, self.requestMetrics, self.responseData, error);
     }

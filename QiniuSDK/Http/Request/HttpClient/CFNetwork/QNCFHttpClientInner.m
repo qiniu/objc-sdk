@@ -14,13 +14,13 @@
 
 @interface QNCFHttpClientInner()<NSStreamDelegate>
 
+@property(nonatomic, assign)BOOL isCompleted;
 @property(nonatomic, strong)NSMutableURLRequest *request;
 @property(nonatomic, strong)NSDictionary *connectionProxy;
 @property(nonatomic, assign)BOOL isReadResponseHeader;
 @property(nonatomic, assign)BOOL isReadResponseBody;
 @property(nonatomic, assign)BOOL isInputStreamEvaluated;
 @property(nonatomic, strong)NSInputStream *inputStream;
-@property(nonatomic, strong)NSRunLoop *inputStreamRunLoop;
 
 // 上传进度
 @property(nonatomic, strong)NSTimer *progressTimer; // 进度定时器
@@ -36,41 +36,60 @@
     }
     QNCFHttpClientInner *client = [[QNCFHttpClientInner alloc] init];
     client.connectionProxy = connectionProxy;
-    [client setup:request];
+    client.request = [request mutableCopy];
     return client;
 }
 
-- (void)setup:(NSURLRequest *)request{
+- (void)main {
     @autoreleasepool {
-        self.request = [request mutableCopy];
-        NSInputStream *inputStream = [self createInputStream:self.request];
+        NSLog(@"====== cf start:%@", self);
+        [self startLoading];
         
-        NSString *host = [self.request qn_domain];
-        if ([self.request qn_isHttps]) {
-           [self setInputStreamSNI:inputStream sni:host];
+        CFRunLoopSourceContext context = {0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+        CFRunLoopSourceRef source = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &context);
+        CFRunLoopAddSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
+
+        while (!self.isCompleted) {
+            @autoreleasepool {
+                CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0e10, true);
+            }
         }
-        
-        [self setupProgress];
-        
-        self.inputStream = inputStream;
+
+        // Should never be called, but anyway
+        CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
+        CFRelease(source);
+        NSLog(@"====== cf end:%@", self);
     }
 }
 
 - (void)startLoading{
-
+    self.isCompleted = NO;
+    [self prepare];
     [self openInputStream];
     [self startProgress];
 }
 
 - (void)stopLoading{
-    
     [self closeInputStream];
     [self endProgress:YES];
+    self.isCompleted = YES;
+}
+
+- (void)prepare {
+    NSInputStream *inputStream = [self createInputStream:self.request];
+    NSString *host = [self.request qn_domain];
+    if ([self.request qn_isHttps]) {
+       [self setInputStreamSNI:inputStream sni:host];
+    }
+    
+    [self setupProgress];
+    
+    self.inputStream = inputStream;
 }
 
 //MARK: -- request -> stream
 - (NSInputStream *)createInputStream:(NSURLRequest *)urlRequest{
-    
+
     CFStringRef urlString = (__bridge CFStringRef) [urlRequest.URL absoluteString];
     CFURLRef url = CFURLCreateWithString(kCFAllocatorDefault,
                                          urlString,
@@ -97,6 +116,8 @@
     }
     
     CFReadStreamRef readStream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, request);
+    CFRelease(request);
+    
     if (self.connectionProxy) {
         for (NSString *key in self.connectionProxy.allKeys) {
             NSObject *value = self.connectionProxy[key];
@@ -107,9 +128,6 @@
     }
     
     NSInputStream *inputStream = (__bridge_transfer NSInputStream *) readStream;
-    
-    CFRelease(request);
-    
     return inputStream;
 }
 
@@ -128,21 +146,19 @@
 
 //MARK: -- stream action
 - (void)openInputStream{
-    if (!self.inputStreamRunLoop) {
-        self.inputStreamRunLoop = [NSRunLoop currentRunLoop];
+    @autoreleasepool {
+        [self.inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+        self.inputStream.delegate = self;
+        [self.inputStream open];
     }
-    [self.inputStream scheduleInRunLoop:self.inputStreamRunLoop
-                                forMode:NSRunLoopCommonModes];
-    
-    self.inputStream.delegate = self;
-    [self.inputStream open];
 }
 
 - (void)closeInputStream {
-    [self.inputStream removeFromRunLoop:self.inputStreamRunLoop forMode:NSRunLoopCommonModes];
-    [self.inputStream setDelegate:nil];
-    [self.inputStream close];
-    self.inputStream = nil;
+    @autoreleasepool {
+        [self.inputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+        [self.inputStream setDelegate:nil];
+        [self.inputStream close];
+    }
 }
 
 - (BOOL)shouldEvaluateInputStreamServerTrust{
@@ -355,8 +371,7 @@
                                            selector:@selector(timerAction)
                                            userInfo:nil
                                             repeats:YES];
-    [[NSRunLoop currentRunLoop] addTimer:timer
-                                 forMode:NSDefaultRunLoopMode];
+    [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
     
     [self timerAction];
     _progressTimer = timer;
