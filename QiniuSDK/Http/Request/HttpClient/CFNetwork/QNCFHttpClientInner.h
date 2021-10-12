@@ -41,10 +41,6 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend;
 
 + (instancetype)client:(NSURLRequest *)request connectionProxy:(NSDictionary *)connectionProxy;
 
-- (void)startLoading;
-
-- (void)stopLoading;
-
 @end
 
 NS_ASSUME_NONNULL_END

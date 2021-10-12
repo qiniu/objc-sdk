@@ -41,25 +41,23 @@
 }
 
 - (void)main {
-    @autoreleasepool {
-        NSLog(@"====== cf start:%@", self);
-        [self startLoading];
-        
-        CFRunLoopSourceContext context = {0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
-        CFRunLoopSourceRef source = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &context);
-        CFRunLoopAddSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
+    NSLog(@"====== cf start:%@", self);
+    [self startLoading];
+    
+    CFRunLoopSourceContext context = {0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+    CFRunLoopSourceRef source = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &context);
+    CFRunLoopAddSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
 
-        while (!self.isCompleted) {
-            @autoreleasepool {
-                CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0e10, true);
-            }
+    while (!self.isCompleted) {
+        @autoreleasepool {
+            CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0e10, true);
         }
-
-        // Should never be called, but anyway
-        CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
-        CFRelease(source);
-        NSLog(@"====== cf end:%@", self);
     }
+
+    // Should never be called, but anyway
+    CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
+    CFRelease(source);
+    NSLog(@"====== cf end:%@", self);
 }
 
 - (void)startLoading{
@@ -70,9 +68,16 @@
 }
 
 - (void)stopLoading{
+    if (self.isCompleted) {
+        return;
+    }
+    self.isCompleted = YES;
     [self closeInputStream];
     [self endProgress:YES];
-    self.isCompleted = YES;
+}
+
+- (void)cancel {
+    [self stopLoading];
 }
 
 - (void)prepare {
@@ -291,6 +296,7 @@
                                                          HTTPVersion:httpVersionString
                                                         headerFields:headInfo];
     
+    [self stopLoading];
     [self delegate_redirectedToRequest:request redirectResponse:response];
     
     CFRelease(responseMessage);
@@ -317,6 +323,7 @@
                 break;
             case NSStreamEventErrorOccurred:{
                 [self endProgress: YES];
+                [self stopLoading];
                 [self delegate_onError:[self translateCFNetworkErrorIntoUrlError:[self.inputStream streamError]]];
             }
                 break;
@@ -329,6 +336,7 @@
                     [self inputStreamGetAndNotifyHttpData];
                     
                     [self endProgress: NO];
+                    [self stopLoading];
                     [self inputStreamDidLoadHttpResponse];
                 }
             }

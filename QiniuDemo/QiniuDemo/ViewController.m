@@ -108,7 +108,7 @@ typedef NS_ENUM(NSInteger, UploadState){
     kQNGlobalConfiguration.partialHostFrozenTime = 20*60;
     kQNGlobalConfiguration.dns = self;
     
-    [QNServerConfigMonitor removeConfigCache];
+//    [QNServerConfigMonitor removeConfigCache];
     
     NSString *key = [NSString stringWithFormat:@"iOS_Demo_%@", [NSDate date]];
     self.token = YourToken;

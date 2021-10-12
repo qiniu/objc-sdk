@@ -37,7 +37,8 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         queue = [[NSOperationQueue alloc] init];
-        queue.maxConcurrentOperationCount = 6;
+//        queue = [NSOperationQueue mainQueue];
+//        queue.maxConcurrentOperationCount = 6;
         queue.name = @"com.qiniu.cfclient";
     });
     return queue;
@@ -85,11 +86,12 @@ connectionProxy:(NSDictionary *)connectionProxy
     self.responseData = [NSMutableData data];
     self.httpClient = [QNCFHttpClientInner client:request connectionProxy:connectionProxy];
     self.httpClient.delegate = self;
+//    [self.httpClient start];
     [[QNCFHttpClient shareQueue] addOperation:self.httpClient];
 }
 
 - (void)cancel {
-    [self.httpClient stopLoading];
+    [self.httpClient cancel];
 }
 
 - (void)completeAction:(NSError *)error {
@@ -100,7 +102,6 @@ connectionProxy:(NSDictionary *)connectionProxy
         self.hasCallBack = true;
     }
     self.requestMetrics.response = self.response;
-    [self.httpClient stopLoading];
     [self.requestMetrics end];
     if (self.complete) {
         self.complete(self.response, self.requestMetrics, self.responseData, error);
@@ -172,7 +173,6 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend{
 
 - (void)redirectedToRequest:(nonnull NSURLRequest *)request redirectResponse:(nonnull NSURLResponse *)redirectResponse {
     if (self.redirectCount < self.maxRedirectCount) {
-        [self.httpClient stopLoading];
         self.redirectCount += 1;
         [self request:request server:nil connectionProxy:self.connectionProxy progress:self.progress complete:self.complete];
     } else {
