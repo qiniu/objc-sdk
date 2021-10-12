@@ -37,7 +37,7 @@
 - (instancetype)init {
     if (self = [super init]) {
         self.redirectCount = 0;
-        self.maxRedirectCount = 30;
+        self.maxRedirectCount = 15;
         self.hasCallBack = false;
     }
     return self;
@@ -161,6 +161,7 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend{
 - (void)redirectedToRequest:(nonnull NSURLRequest *)request redirectResponse:(nonnull NSURLResponse *)redirectResponse {
     if (self.redirectCount < self.maxRedirectCount) {
         [self.httpClient stopLoading];
+        self.redirectCount += 1;
         [self request:request server:nil connectionProxy:self.connectionProxy progress:self.progress complete:self.complete];
     } else {
         [self didFinish];
