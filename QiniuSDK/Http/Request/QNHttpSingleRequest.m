@@ -83,7 +83,7 @@
     if (kQNIsHttp3(server.httpVersion)) {
         self.client = [[QNUploadSystemClient alloc] init];
     } else {
-        if ([self shouldUseCFClient:request]) {
+        if ([self shouldUseCFClient:request server:server]) {
             self.client = [[QNCFHttpClient alloc] init];
         } else {
             self.client = [[QNUploadSystemClient alloc] init];
@@ -210,9 +210,8 @@
     }
 }
 
-- (BOOL)shouldUseCFClient:(NSURLRequest *)request {
-    if ([request qn_isQiNiuRequest] && request.qn_ip.length > 0
-        && ([request.URL.absoluteString hasPrefix:@"https://"])) {
+- (BOOL)shouldUseCFClient:(NSURLRequest *)request server:(id <QNUploadServer>)server {
+    if (request.qn_isQiNiuRequest && request.qn_isHttps && server.host.length > 0 && server.ip.length > 0) {
         return YES;
     } else {
         return NO;
