@@ -12,8 +12,11 @@
 #import "NSURLRequest+QNRequest.h"
 #import <sys/errno.h>
 
+#define kQNCFHttpClientErrorDomain @"CFNetwork"
+
 @interface QNCFHttpClientInner()<NSStreamDelegate>
 
+@property(nonatomic, assign)BOOL isCallFinishOrError;
 @property(nonatomic, assign)BOOL isCompleted;
 @property(nonatomic, strong)NSMutableURLRequest *request;
 @property(nonatomic, strong)NSDictionary *connectionProxy;
@@ -37,6 +40,7 @@
     QNCFHttpClientInner *client = [[QNCFHttpClientInner alloc] init];
     client.connectionProxy = connectionProxy;
     client.request = [request mutableCopy];
+    client.isCompleted = false;
     return client;
 }
 
@@ -59,18 +63,14 @@
     [self setupProgress];
 }
 
-- (void)completeAction{
-    if (self.isCompleted) {
-        return;
-    }
-    self.isCompleted = YES;
-    
+- (void)releaseResource{
     [self endProgress:YES];
     [self closeInputStream];
 }
 
 - (void)cancel {
-    [self completeAction];
+    [self releaseResource];
+    [self delegate_onError:[self createError:NSURLErrorCancelled errorDescription:@"user cancel"]];
 }
 
 //MARK: -- request -> stream
@@ -140,11 +140,13 @@
 }
 
 - (void)closeInputStream {
-    if (self.inputStream) {
-        [self.inputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-        [self.inputStream setDelegate:nil];
-        [self.inputStream close];
-        self.inputStream = nil;
+    @synchronized (self) {
+        if (self.inputStream) {
+            [self.inputStream close];
+            [self.inputStream setDelegate:nil];
+            [self.inputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+            self.inputStream = nil;
+        }
     }
 }
 
@@ -166,9 +168,7 @@
     if ([self delegate_evaluateServerTrust:trust forDomain:host]) {
         self.isInputStreamEvaluated = YES;
     } else {
-        [self delegate_onError:[NSError errorWithDomain:@"CFNetwork SSLHandshake failed"
-                                                   code:NSURLErrorSecureConnectionFailed
-                                               userInfo:nil]];
+        [self delegate_onError:[self createError:NSURLErrorSecureConnectionFailed errorDescription:@"SSLHandshake failed"]];
     }
 }
 
@@ -220,10 +220,6 @@
     
     NSData *data = [[NSData alloc] initWithBytes:buf length:length];
     [self delegate_didLoadData:data];
-}
-
-- (void)inputStreamDidLoadHttpResponse{
-    [self delegate_didFinish];
 }
 
 - (BOOL)isInputStreamHttpResponseHeaderComplete{
@@ -278,7 +274,7 @@
                                                          HTTPVersion:httpVersionString
                                                         headerFields:headInfo];
     
-    [self completeAction];
+    [self releaseResource];
     [self delegate_redirectedToRequest:request redirectResponse:response];
     
     CFRelease(responseMessage);
@@ -304,8 +300,8 @@
             case NSStreamEventHasSpaceAvailable:
                 break;
             case NSStreamEventErrorOccurred:{
+                [self releaseResource];
                 [self endProgress: YES];
-                [self completeAction];
                 [self delegate_onError:[self translateCFNetworkErrorIntoUrlError:[self.inputStream streamError]]];
             }
                 break;
@@ -317,9 +313,9 @@
                     [self inputStreamGetAndNotifyHttpResponse];
                     [self inputStreamGetAndNotifyHttpData];
                     
+                    [self releaseResource];
                     [self endProgress: NO];
-                    [self completeAction];
-                    [self inputStreamDidLoadHttpResponse];
+                    [self delegate_didFinish];
                 }
             }
                 break;
@@ -817,6 +813,13 @@
 }
 
 - (void)delegate_onError:(NSError *)error{
+    @synchronized (self) {
+        if (self.isCallFinishOrError) {
+            return;
+        }
+        self.isCallFinishOrError = YES;
+    }
+    
     if ([self.delegate respondsToSelector:@selector(onError:)]) {
         [self.delegate onError:error];
     }
@@ -846,8 +849,29 @@
 }
 
 - (void)delegate_didFinish{
+    @synchronized (self) {
+        if (self.isCallFinishOrError) {
+            return;
+        }
+        self.isCallFinishOrError = YES;
+    }
+    
     if ([self.delegate respondsToSelector:@selector(didFinish)]) {
         [self.delegate didFinish];
+    }
+}
+
+
+// MARK: error
+- (NSError *)createError:(NSInteger)errorCode errorDescription:(NSString *)errorDescription {
+    if (errorDescription) {
+        return [NSError errorWithDomain:kQNCFHttpClientErrorDomain
+                                   code:errorCode
+                               userInfo:@{@"userInfo":errorDescription}];
+    } else {
+        return [NSError errorWithDomain:kQNCFHttpClientErrorDomain
+                                   code:NSURLErrorSecureConnectionFailed
+                               userInfo:nil];
     }
 }
 

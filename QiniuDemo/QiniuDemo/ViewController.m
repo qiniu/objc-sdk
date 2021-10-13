@@ -118,10 +118,10 @@ typedef NS_ENUM(NSInteger, UploadState){
         builder.retryMax = 1;
         
         builder.useConcurrentResumeUpload = true;
-        builder.concurrentTaskCount = 3;
+        builder.concurrentTaskCount = 6;
         builder.resumeUploadVersion = QNResumeUploadVersionV2;
         builder.putThreshold = 4*1024*1024;
-        builder.chunkSize = 2*1024*1024;
+        builder.chunkSize = 1*1024*1024;
         builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[@"up-z0.qbox.me", /*@"upload.qbox.me"*/]];
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] error:nil];
     }];

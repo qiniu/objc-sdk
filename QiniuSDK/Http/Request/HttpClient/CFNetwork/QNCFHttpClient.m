@@ -11,6 +11,7 @@
 #import "QNCFHttpClientInner.h"
 #import "NSURLRequest+QNRequest.h"
 #import "QNUploadRequestMetrics.h"
+#import "QNCFHttpThreadPool.h"
 
 @interface QNCFHttpClient() <QNCFHttpClientInnerDelegate>
 
@@ -27,39 +28,10 @@
 @property(nonatomic,  copy)QNRequestClientCompleteHandler complete;
 
 @property(nonatomic, strong)QNCFHttpClientInner *httpClient;
+@property(nonatomic, strong)QNCFHttpThread *thread;
 
 @end
 @implementation QNCFHttpClient
-
-+ (NSThread *)shareThread {
-    static NSThread *thread = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        thread = [[NSThread alloc] initWithTarget:self selector:@selector(threadAction) object:nil];
-        thread.name = @"com.qiniu.cfclient";
-        [thread start];
-    });
-    
-    return thread;
-}
-
-+ (void)threadAction {
-    @autoreleasepool {
-        CFRunLoopSourceContext context = {0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
-        CFRunLoopSourceRef source = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &context);
-        CFRunLoopAddSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
-        
-        BOOL condition = YES;
-        while (condition) {
-            @autoreleasepool {
-                CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0e10, true);
-            }
-        }
-
-        CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
-        CFRelease(source);
-    }
-}
 
 - (NSString *)clientId {
     return @"CFNetwork";
@@ -70,6 +42,7 @@
         self.redirectCount = 0;
         self.maxRedirectCount = 15;
         self.hasCallBack = false;
+        self.thread = [[QNCFHttpThreadPool shared] getOneThread];
     }
     return self;
 }
@@ -79,6 +52,8 @@
 connectionProxy:(NSDictionary *)connectionProxy
        progress:(void (^)(long long, long long))progress
        complete:(QNRequestClientCompleteHandler)complete {
+    
+    [[QNCFHttpThreadPool shared] addOperationCountOfThread:self.thread];
     
     // 有 ip 才会使用
     if (server && server.ip.length > 0 && server.host.length > 0) {
@@ -105,13 +80,16 @@ connectionProxy:(NSDictionary *)connectionProxy
     self.httpClient = [QNCFHttpClientInner client:request connectionProxy:connectionProxy];
     self.httpClient.delegate = self;
     [self.httpClient performSelector:@selector(main)
-                            onThread:[QNCFHttpClient shareThread]
+                            onThread:self.thread
                           withObject:nil
                        waitUntilDone:NO];
 }
 
 - (void)cancel {
-    [self.httpClient cancel];
+    [self.httpClient performSelector:@selector(cancel)
+                            onThread:self.thread
+                          withObject:nil
+                       waitUntilDone:NO];
 }
 
 - (void)completeAction:(NSError *)error {
@@ -123,6 +101,7 @@ connectionProxy:(NSDictionary *)connectionProxy
     }
     self.requestMetrics.response = self.response;
     [self.requestMetrics end];
+    [[QNCFHttpThreadPool shared] subtractOperationCountOfThread:self.thread];
     if (self.complete) {
         self.complete(self.response, self.requestMetrics, self.responseData, error);
     }
