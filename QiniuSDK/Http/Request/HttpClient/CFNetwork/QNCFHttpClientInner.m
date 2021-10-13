@@ -239,7 +239,7 @@
 }
 
 - (BOOL)isHttpRedirectStatusCode:(NSInteger)code{
-    if (code >= 300 && code < 400) {
+    if (code == 301 || code == 302 || code == 303 || code == 307) {
         return YES;
     } else {
         return NO;
@@ -266,9 +266,22 @@
     
     CFIndex statusCode = CFHTTPMessageGetResponseStatusCode(responseMessage);
     
+    NSDictionary *requestHeader = self.request.allHTTPHeaderFields;
+    if (statusCode == 303) {
+        NSMutableDictionary *header = [NSMutableDictionary dictionary];
+        if (requestHeader[@"User-Agent"]) {
+            header[@"User-Agent"] = requestHeader[@"User-Agent"];
+        }
+        if (requestHeader[@"Accept"]) {
+            header[@"Accept"] = requestHeader[@"Accept"];
+        }
+        requestHeader = [header copy];
+    }
+    
     NSURL *url = [NSURL URLWithString:urlString];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     request.HTTPMethod = @"GET";
+    [request setAllHTTPHeaderFields:requestHeader];
     NSURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:self.request.URL
                                                           statusCode:statusCode
                                                          HTTPVersion:httpVersionString
