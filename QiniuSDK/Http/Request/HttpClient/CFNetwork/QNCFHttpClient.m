@@ -31,17 +31,34 @@
 @end
 @implementation QNCFHttpClient
 
-+ (NSOperationQueue *)shareQueue {
-    
-    static NSOperationQueue *queue = nil;
++ (NSThread *)shareThread {
+    static NSThread *thread = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        queue = [[NSOperationQueue alloc] init];
-//        queue = [NSOperationQueue mainQueue];
-//        queue.maxConcurrentOperationCount = 6;
-        queue.name = @"com.qiniu.cfclient";
+        thread = [[NSThread alloc] initWithTarget:self selector:@selector(threadAction) object:nil];
+        thread.name = @"com.qiniu.cfclient";
+        [thread start];
     });
-    return queue;
+    
+    return thread;
+}
+
++ (void)threadAction {
+    @autoreleasepool {
+        CFRunLoopSourceContext context = {0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
+        CFRunLoopSourceRef source = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &context);
+        CFRunLoopAddSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
+        
+        BOOL condition = YES;
+        while (condition) {
+            @autoreleasepool {
+                CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0e10, true);
+            }
+        }
+
+        CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
+        CFRelease(source);
+    }
 }
 
 - (NSString *)clientId {
@@ -76,6 +93,7 @@ connectionProxy:(NSDictionary *)connectionProxy
     }
     
     self.connectionProxy = connectionProxy;
+    self.progress = progress;
     self.complete = complete;
     self.requestMetrics = [QNUploadSingleRequestMetrics emptyMetrics];
     self.requestMetrics.request = self.request;
@@ -86,8 +104,10 @@ connectionProxy:(NSDictionary *)connectionProxy
     self.responseData = [NSMutableData data];
     self.httpClient = [QNCFHttpClientInner client:request connectionProxy:connectionProxy];
     self.httpClient.delegate = self;
-//    [self.httpClient start];
-    [[QNCFHttpClient shareQueue] addOperation:self.httpClient];
+    [self.httpClient performSelector:@selector(main)
+                            onThread:[QNCFHttpClient shareThread]
+                          withObject:nil
+                       waitUntilDone:NO];
 }
 
 - (void)cancel {

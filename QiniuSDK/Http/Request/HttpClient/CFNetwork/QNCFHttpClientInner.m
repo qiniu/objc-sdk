@@ -41,99 +41,82 @@
 }
 
 - (void)main {
-    NSLog(@"====== cf start:%@", self);
-    [self startLoading];
-    
-    CFRunLoopSourceContext context = {0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL};
-    CFRunLoopSourceRef source = CFRunLoopSourceCreate(kCFAllocatorDefault, 0, &context);
-    CFRunLoopAddSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
-
-    while (!self.isCompleted) {
-        @autoreleasepool {
-            CFRunLoopRunInMode(kCFRunLoopDefaultMode, 1.0e10, true);
-        }
-    }
-
-    // Should never be called, but anyway
-    CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, kCFRunLoopDefaultMode);
-    CFRelease(source);
-    NSLog(@"====== cf end:%@", self);
-}
-
-- (void)startLoading{
-    self.isCompleted = NO;
     [self prepare];
     [self openInputStream];
     [self startProgress];
 }
 
-- (void)stopLoading{
+- (void)prepare {
+    @autoreleasepool {
+        self.inputStream = [self createInputStream:self.request];
+    }
+    
+    NSString *host = [self.request qn_domain];
+    if ([self.request qn_isHttps]) {
+       [self setInputStreamSNI:self.inputStream sni:host];
+    }
+    
+    [self setupProgress];
+}
+
+- (void)completeAction{
     if (self.isCompleted) {
         return;
     }
     self.isCompleted = YES;
-    [self closeInputStream];
+    
     [self endProgress:YES];
+    [self closeInputStream];
 }
 
 - (void)cancel {
-    [self stopLoading];
-}
-
-- (void)prepare {
-    NSInputStream *inputStream = [self createInputStream:self.request];
-    NSString *host = [self.request qn_domain];
-    if ([self.request qn_isHttps]) {
-       [self setInputStreamSNI:inputStream sni:host];
-    }
-    
-    [self setupProgress];
-    
-    self.inputStream = inputStream;
+    [self completeAction];
 }
 
 //MARK: -- request -> stream
 - (NSInputStream *)createInputStream:(NSURLRequest *)urlRequest{
 
-    CFStringRef urlString = (__bridge CFStringRef) [urlRequest.URL absoluteString];
-    CFURLRef url = CFURLCreateWithString(kCFAllocatorDefault,
-                                         urlString,
-                                         NULL);
-    CFStringRef httpMethod = (__bridge CFStringRef) urlRequest.HTTPMethod;
-    CFHTTPMessageRef request = CFHTTPMessageCreateRequest(kCFAllocatorDefault,
-                                                          httpMethod,
-                                                          url,
-                                                          kCFHTTPVersion1_1);
-    CFRelease(url);
-    
-    
-    NSDictionary *headFieldInfo = self.request.qn_allHTTPHeaderFields;
-    for (NSString *headerField in headFieldInfo) {
-        CFStringRef headerFieldP = (__bridge CFStringRef)headerField;
-        CFStringRef headerFieldValueP = (__bridge CFStringRef)(headFieldInfo[headerField]);
-        CFHTTPMessageSetHeaderFieldValue(request, headerFieldP, headerFieldValueP);
+    CFReadStreamRef readStream = NULL;
+    @autoreleasepool {
+        CFStringRef urlString = (__bridge CFStringRef) [urlRequest.URL absoluteString];
+        CFURLRef url = CFURLCreateWithString(kCFAllocatorDefault,
+                                             urlString,
+                                             NULL);
+        CFStringRef httpMethod = (__bridge CFStringRef) urlRequest.HTTPMethod;
+        CFHTTPMessageRef request = CFHTTPMessageCreateRequest(kCFAllocatorDefault,
+                                                              httpMethod,
+                                                              url,
+                                                              kCFHTTPVersion1_1);
+        CFRelease(url);
+
+        NSDictionary *headFieldInfo = self.request.qn_allHTTPHeaderFields;
+        for (NSString *headerField in headFieldInfo) {
+            CFStringRef headerFieldP = (__bridge CFStringRef)headerField;
+            CFStringRef headerFieldValueP = (__bridge CFStringRef)(headFieldInfo[headerField]);
+            CFHTTPMessageSetHeaderFieldValue(request, headerFieldP, headerFieldValueP);
+        }
+        
+        NSData *httpBody = [self.request qn_getHttpBody];
+        if (httpBody) {
+            CFDataRef bodyData = (__bridge CFDataRef) httpBody;
+            CFHTTPMessageSetBody(request, bodyData);
+        }
+        
+        readStream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, request);
+        CFRelease(request);
     }
     
-    NSData *httpBody = [self.request qn_getHttpBody];
-    if (httpBody) {
-        CFDataRef bodyData = (__bridge CFDataRef) httpBody;
-        CFHTTPMessageSetBody(request, bodyData);
-    }
-    
-    CFReadStreamRef readStream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, request);
-    CFRelease(request);
-    
-    if (self.connectionProxy) {
-        for (NSString *key in self.connectionProxy.allKeys) {
-            NSObject *value = self.connectionProxy[key];
-            if (key.length > 0) {
-                CFReadStreamSetProperty(readStream, (__bridge CFTypeRef _Null_unspecified)key, (__bridge CFTypeRef _Null_unspecified)(value));
+    @autoreleasepool {
+        if (self.connectionProxy) {
+            for (NSString *key in self.connectionProxy.allKeys) {
+                NSObject *value = self.connectionProxy[key];
+                if (key.length > 0) {
+                    CFReadStreamSetProperty(readStream, (__bridge CFTypeRef _Null_unspecified)key, (__bridge CFTypeRef _Null_unspecified)(value));
+                }
             }
         }
     }
-    
-    NSInputStream *inputStream = (__bridge_transfer NSInputStream *) readStream;
-    return inputStream;
+    return (__bridge_transfer NSInputStream *) readStream;
 }
 
 - (void)setInputStreamSNI:(NSInputStream *)inputStream sni:(NSString *)sni{
@@ -151,18 +134,17 @@
 
 //MARK: -- stream action
 - (void)openInputStream{
-    @autoreleasepool {
-        [self.inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
-        self.inputStream.delegate = self;
-        [self.inputStream open];
-    }
+    [self.inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+    self.inputStream.delegate = self;
+    [self.inputStream open];
 }
 
 - (void)closeInputStream {
-    @autoreleasepool {
+    if (self.inputStream) {
         [self.inputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         [self.inputStream setDelegate:nil];
         [self.inputStream close];
+        self.inputStream = nil;
     }
 }
 
@@ -296,7 +278,7 @@
                                                          HTTPVersion:httpVersionString
                                                         headerFields:headInfo];
     
-    [self stopLoading];
+    [self completeAction];
     [self delegate_redirectedToRequest:request redirectResponse:response];
     
     CFRelease(responseMessage);
@@ -323,7 +305,7 @@
                 break;
             case NSStreamEventErrorOccurred:{
                 [self endProgress: YES];
-                [self stopLoading];
+                [self completeAction];
                 [self delegate_onError:[self translateCFNetworkErrorIntoUrlError:[self.inputStream streamError]]];
             }
                 break;
@@ -336,7 +318,7 @@
                     [self inputStreamGetAndNotifyHttpData];
                     
                     [self endProgress: NO];
-                    [self stopLoading];
+                    [self completeAction];
                     [self inputStreamDidLoadHttpResponse];
                 }
             }
