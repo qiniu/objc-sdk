@@ -11,7 +11,7 @@
 @interface QNCFHttpThread()
 @property(nonatomic, assign)BOOL isCompleted;
 @property(nonatomic, assign)NSInteger operationCount;
-@property(nonatomic, strong)NSDate deadline;
+@property(nonatomic, strong)NSDate *deadline;
 @end
 @implementation QNCFHttpThread
 + (instancetype)thread {
@@ -38,10 +38,6 @@
 
 - (void)cancel {
     self.isCompleted = YES;
-}
-
-- (void)dealloc {
-    NSLog(@"======= CFHttpThread dealloc");
 }
 
 @end
@@ -78,7 +74,7 @@
     @synchronized (self) {
         NSArray *pool = [self.pool copy];
         for (QNCFHttpThread *thread in pool) {
-            if (thread.operationCount < 1 && [thread.deadline timeIntervalSinceNow] > 0) {
+            if (thread.operationCount < 1 && thread.deadline && [thread.deadline timeIntervalSinceNow] < 0) {
                 [self.pool removeObject:thread];
                 [thread cancel];
             }
@@ -112,7 +108,6 @@
     @synchronized (self) {
         thread.operationCount += 1;
         thread.deadline = nil;
-        NSLog(@"======= add operationCount:%lu", thread.operationCount);
     }
 }
 
@@ -125,7 +120,6 @@
         if (thread.operationCount < 1) {
             thread.deadline = [NSDate dateWithTimeIntervalSinceNow:self.threadLiveTime];
         }
-        NSLog(@"======= sub operationCount:%lu", thread.operationCount);
     }
 }
 
