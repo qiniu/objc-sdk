@@ -166,7 +166,7 @@ NSString * const QNReportLogTypeQuality = @"quality";
 
 //MARK:-- 请求信息打点⽇志
 NSString * const QNReportRequestKeyLogType = @"log_type";
-NSString *const QNReportRequestKeyUpTime = @"up_time";
+NSString * const QNReportRequestKeyUpTime = @"up_time";
 NSString * const QNReportRequestKeyStatusCode = @"status_code";
 NSString * const QNReportRequestKeyRequestId = @"req_id";
 NSString * const QNReportRequestKeyHost = @"host";

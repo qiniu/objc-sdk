@@ -216,9 +216,9 @@
             resource = assetRes;
         }
     }
-    NSString *fileName = resource.originalFilename;
-    if (fileName == nil || fileName.length == 0) {
-        fileName = [NSString stringWithFormat:@"tempAsset-%@.mov", [NSDate date]];
+    NSString *fileName = [NSString stringWithString:resource.originalFilename];
+    if (fileName == nil || fileName.length == 0 || [fileName containsString:@"/"]) {
+        fileName = [NSString stringWithFormat:@"tempAsset-%lf.mov", [[NSDate date] timeIntervalSince1970]];
     }
     PHAssetResourceRequestOptions *options = [PHAssetResourceRequestOptions new];
     //不支持icloud上传
