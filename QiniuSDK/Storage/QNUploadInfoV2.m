@@ -144,9 +144,10 @@
         return true;
     }
     
-    BOOL isAllUploaded = true;
+    __block BOOL isAllUploaded = true;
     [self.dataList enumerateObjectsUsingBlock:^(QNUploadData *data, NSUInteger idx, BOOL * _Nonnull stop) {
         if (!data.isUploaded) {
+            isAllUploaded = false;
             *stop = true;
         }
     }];

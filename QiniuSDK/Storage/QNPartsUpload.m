@@ -153,7 +153,7 @@
                 return;
             }
             
-            QNLogInfo(@"key:%@ completeUpload", self.key);
+            QNLogInfo(@"key:%@ completeUpload errorResponseInfo:%@", self.key, self.uploadDataErrorResponseInfo);
             
             // 3. 组装文件
             kQNWeakSelf;

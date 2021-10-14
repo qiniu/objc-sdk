@@ -276,10 +276,10 @@ typedef NS_ENUM(NSInteger, UploadState){
 
 
 - (void)alertMessage:(NSString *)message{
-//    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" message:message preferredStyle:UIAlertControllerStyleAlert];
-//    [alert addAction:[UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-//    }]];
-//    [self presentViewController:alert animated:YES completion:nil];
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"提示" message:message preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"知道了" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    }]];
+    [self presentViewController:alert animated:YES completion:nil];
     NSLog(@"=== alert:%@", message);
 }
 
