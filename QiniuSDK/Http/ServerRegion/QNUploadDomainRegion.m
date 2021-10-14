@@ -258,7 +258,7 @@
                 // 1.1 剔除冻结对象
                 NSString *frozenType = QNUploadFrozenType(host, filterServer.ip);
                 BOOL isFrozen = [QNUploadServerFreezeUtil isType:frozenType
-                                          frozenByFreezeManagers:@[self.partialHttp2Freezer, kQNUploadGlobalHttp3Freezer]];
+                                          frozenByFreezeManagers:@[self.partialHttp3Freezer, kQNUploadGlobalHttp3Freezer]];
                 if (isFrozen) {
                     return NO;
                 }

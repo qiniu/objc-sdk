@@ -62,7 +62,7 @@ typedef NS_ENUM(NSInteger, UploadState){
         path = [[NSBundle mainBundle] pathForResource:@"image.png" ofType:nil];
         path = [[NSBundle mainBundle] pathForResource:@"image.jpg" ofType:nil];
         path = [[NSBundle mainBundle] pathForResource:@"UploadResource_6M.zip" ofType:nil];
-        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
+//        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1.44G.zip" ofType:nil];
         
 //        NSFileManager *manager = [NSFileManager defaultManager];
@@ -122,7 +122,7 @@ typedef NS_ENUM(NSInteger, UploadState){
         builder.resumeUploadVersion = QNResumeUploadVersionV2;
         builder.putThreshold = 4*1024*1024;
         builder.chunkSize = 1*1024*1024;
-        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[@"up-z0.qbox.me", /*@"upload.qbox.me"*/]];
+//        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[@"up-z0.qbox.me", /*@"upload.qbox.me"*/]];
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] error:nil];
     }];
     
