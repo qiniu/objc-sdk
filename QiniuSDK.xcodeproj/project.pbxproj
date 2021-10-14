@@ -265,6 +265,10 @@
 		31C9D24527141252006B9433 /* QNCFHttpClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C9D24227141252006B9433 /* QNCFHttpClient.h */; };
 		31C9D24627141252006B9433 /* QNCFHttpClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C9D24327141252006B9433 /* QNCFHttpClient.m */; };
 		31C9D24727141252006B9433 /* QNCFHttpClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C9D24327141252006B9433 /* QNCFHttpClient.m */; };
+		31C9D2522717E106006B9433 /* QNCFHttpThreadPool.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C9D2502717E106006B9433 /* QNCFHttpThreadPool.m */; };
+		31C9D2532717E106006B9433 /* QNCFHttpThreadPool.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C9D2502717E106006B9433 /* QNCFHttpThreadPool.m */; };
+		31C9D2542717E106006B9433 /* QNCFHttpThreadPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C9D2512717E106006B9433 /* QNCFHttpThreadPool.h */; };
+		31C9D2552717E106006B9433 /* QNCFHttpThreadPool.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C9D2512717E106006B9433 /* QNCFHttpThreadPool.h */; };
 		31CBB0F92595F2720089C795 /* QNLogUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 31CBB0F72595F2720089C795 /* QNLogUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		31CBB0FA2595F2720089C795 /* QNLogUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 31CBB0F72595F2720089C795 /* QNLogUtil.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		31CBB0FB2595F2720089C795 /* QNLogUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 31CBB0F82595F2720089C795 /* QNLogUtil.m */; };
@@ -532,6 +536,8 @@
 		31C2EEEB242DEF6A00713A33 /* QNUtilTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUtilTest.m; sourceTree = "<group>"; };
 		31C9D24227141252006B9433 /* QNCFHttpClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNCFHttpClient.h; sourceTree = "<group>"; };
 		31C9D24327141252006B9433 /* QNCFHttpClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNCFHttpClient.m; sourceTree = "<group>"; };
+		31C9D2502717E106006B9433 /* QNCFHttpThreadPool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNCFHttpThreadPool.m; sourceTree = "<group>"; };
+		31C9D2512717E106006B9433 /* QNCFHttpThreadPool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNCFHttpThreadPool.h; sourceTree = "<group>"; };
 		31CBB0F72595F2720089C795 /* QNLogUtil.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNLogUtil.h; sourceTree = "<group>"; };
 		31CBB0F82595F2720089C795 /* QNLogUtil.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNLogUtil.m; sourceTree = "<group>"; };
 		31D84468254017BD005C0222 /* QNErrorCode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNErrorCode.h; sourceTree = "<group>"; };
@@ -816,6 +822,8 @@
 		31BAA270243DB83700B7E883 /* CFNetwork */ = {
 			isa = PBXGroup;
 			children = (
+				31C9D2512717E106006B9433 /* QNCFHttpThreadPool.h */,
+				31C9D2502717E106006B9433 /* QNCFHttpThreadPool.m */,
 				31BAA274243DB83700B7E883 /* NSURLRequest+QNRequest.h */,
 				31BAA271243DB83700B7E883 /* NSURLRequest+QNRequest.m */,
 				31C9D24227141252006B9433 /* QNCFHttpClient.h */,
@@ -1158,6 +1166,7 @@
 				31F8A0852657B424005EBE46 /* QNUpProgress.h in Headers */,
 				318E2F052552AE05004EDE8C /* QNVersion.h in Headers */,
 				318E2F212552AE2F004EDE8C /* QNResponseInfo.h in Headers */,
+				31C9D2552717E106006B9433 /* QNCFHttpThreadPool.h in Headers */,
 				318E2F1F2552AE2F004EDE8C /* QNInetAddress.h in Headers */,
 				3188D4D326490A0C00183CAE /* QNUploadInfo.h in Headers */,
 				318E2F122552AE2B004EDE8C /* QNUploadSystemClient.h in Headers */,
@@ -1254,6 +1263,7 @@
 				DF609A051A58E39D00AC7297 /* QNFormUpload.h in Headers */,
 				CC25135C244C7EB3003F4C65 /* QNBaseUpload.h in Headers */,
 				CC3F322322C0CCDF00F23681 /* QNUploadInfoReporter.h in Headers */,
+				31C9D2542717E106006B9433 /* QNCFHttpThreadPool.h in Headers */,
 				31C2EECA242CC52600713A33 /* QNDnsCacheInfo.h in Headers */,
 				314944672448503C00386F16 /* QNZone.h in Headers */,
 				CCF661082355C5120018A41E /* QiniuSDK.h in Headers */,
@@ -1388,6 +1398,7 @@
 					};
 					DF2CDE2319DAC08400CE01FB = {
 						CreatedOnToolsVersion = 6.0.1;
+						DevelopmentTeam = 5G98NLC322;
 					};
 				};
 			};
@@ -1552,6 +1563,7 @@
 				DF293C9F19DBC2AE00799011 /* QNUserAgent.m in Sources */,
 				3188D4FF264913B800183CAE /* QNUploadSourceStream.m in Sources */,
 				31F553A52456F2F3000B66AD /* QNCrc32.m in Sources */,
+				31C9D2522717E106006B9433 /* QNCFHttpThreadPool.m in Sources */,
 				DFA9B65919E0B53700A15FD1 /* QNFileRecorder.m in Sources */,
 				31304CBA2563DA03001034D2 /* QNUploadRequestState.m in Sources */,
 				31C2EECD242CC52600713A33 /* QNDnsCacheInfo.m in Sources */,
@@ -1674,6 +1686,7 @@
 				31C2EED7242CC52600713A33 /* QNDnsCacheFile.m in Sources */,
 				3188D500264913B800183CAE /* QNUploadSourceStream.m in Sources */,
 				DFA9B65A19E0B53700A15FD1 /* QNFileRecorder.m in Sources */,
+				31C9D2532717E106006B9433 /* QNCFHttpThreadPool.m in Sources */,
 				31A1841C246A8C77001D6EEE /* QNUploadRequestMetrics.m in Sources */,
 				313B37F72574F00F00FBB57B /* QNPartsUploadPerformerV2.m in Sources */,
 				CC25135E244C7EB3003F4C65 /* QNBaseUpload.m in Sources */,
@@ -1965,6 +1978,7 @@
 			baseConfigurationReference = 6DD894AA2A19370381AD4201 /* Pods-QiniuSDK_iOSTests.debug.xcconfig */;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = 5G98NLC322;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = QiniuSDK_iOSTests;
@@ -1978,6 +1992,7 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 5G98NLC322;
 				PRODUCT_NAME = QiniuSDK_iOSTests;
 				SDKROOT = iphoneos;
 			};

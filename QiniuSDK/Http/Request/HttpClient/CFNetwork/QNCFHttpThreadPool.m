@@ -6,10 +6,12 @@
 //
 
 #import "QNCFHttpThreadPool.h"
+#import "QNTransactionManager.h"
 
 @interface QNCFHttpThread()
 @property(nonatomic, assign)BOOL isCompleted;
 @property(nonatomic, assign)NSInteger operationCount;
+@property(nonatomic, strong)NSDate deadline;
 @end
 @implementation QNCFHttpThread
 + (instancetype)thread {
@@ -60,8 +62,28 @@
         pool.threadLiveTime = 60;
         pool.maxOperationPerThread = 6;
         pool.pool = [NSMutableArray array];
+        [pool addThreadLiveChecker];
     });
     return pool;
+}
+
+- (void)addThreadLiveChecker {
+    QNTransaction *transaction = [QNTransaction timeTransaction:@"CFHttpThreadPool" after:0 interval:1 action:^{
+        [self checkThreadLive];
+    }];
+    [kQNTransactionManager addTransaction:transaction];
+}
+
+- (void)checkThreadLive {
+    @synchronized (self) {
+        NSArray *pool = [self.pool copy];
+        for (QNCFHttpThread *thread in pool) {
+            if (thread.operationCount < 1 && [thread.deadline timeIntervalSinceNow] > 0) {
+                [self.pool removeObject:thread];
+                [thread cancel];
+            }
+        }
+    }
 }
 
 - (QNCFHttpThread *)getOneThread {
@@ -89,6 +111,7 @@
     }
     @synchronized (self) {
         thread.operationCount += 1;
+        thread.deadline = nil;
         NSLog(@"======= add operationCount:%lu", thread.operationCount);
     }
 }
@@ -99,22 +122,10 @@
     }
     @synchronized (self) {
         thread.operationCount -= 1;
-        NSLog(@"======= sub operationCount:%lu", thread.operationCount);
-    }
-    
-    if (thread.operationCount < 1) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(self.threadLiveTime * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-            [self tryRemoveThread:thread];
-        });
-    }
-}
-
-- (void)tryRemoveThread:(QNCFHttpThread *)thread {
-    @synchronized (self) {
         if (thread.operationCount < 1) {
-            [self.pool removeObject:thread];
-            [thread cancel];
+            thread.deadline = [NSDate dateWithTimeIntervalSinceNow:self.threadLiveTime];
         }
+        NSLog(@"======= sub operationCount:%lu", thread.operationCount);
     }
 }
 
