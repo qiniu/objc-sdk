@@ -111,6 +111,7 @@ connectionProxy:(NSDictionary *)connectionProxy
 - (void)didSendBodyData:(int64_t)bytesSent
          totalBytesSent:(int64_t)totalBytesSent
 totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend{
+    self.requestMetrics.countOfRequestBodyBytesSent = totalBytesSent;
     if (self.progress) {
         self.progress(totalBytesSent, totalBytesExpectedToSend);
     }

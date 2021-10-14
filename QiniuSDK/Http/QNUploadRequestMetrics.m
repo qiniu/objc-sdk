@@ -37,6 +37,8 @@
 @end
 
 @interface QNUploadSingleRequestMetrics()
+@property (nonatomic, assign) int64_t countOfRequestHeaderBytes;
+@property (nonatomic, assign) int64_t countOfRequestBodyBytes;
 @end
 @implementation QNUploadSingleRequestMetrics
 
@@ -65,15 +67,21 @@
                                                           timeoutInterval:request.timeoutInterval];
     newRequest.allHTTPHeaderFields = request.allHTTPHeaderFields;
     
-    NSInteger headerLength = [NSString stringWithFormat:@"%@", request.allHTTPHeaderFields].length;
-    NSInteger bodyLength = [request.qn_getHttpBody length];
-    _totalBytes = @(headerLength + bodyLength);
+    self.countOfRequestHeaderBytes = [NSString stringWithFormat:@"%@", request.allHTTPHeaderFields].length;
+    self.countOfRequestBodyBytes = [request.qn_getHttpBody length];
+    _totalBytes = @(self.countOfRequestHeaderBytes + self.countOfRequestBodyBytes);
     _request = [newRequest copy];
 }
 
 - (void)setResponse:(NSURLResponse *)response {
-    if (_countOfRequestBodyBytesSent <= 0) {
-        _countOfRequestBodyBytesSent = response.expectedContentLength;
+    if ([response isKindOfClass:[NSHTTPURLResponse class]] &&
+        [(NSHTTPURLResponse *)response statusCode] >= 200 &&
+        [(NSHTTPURLResponse *)response statusCode] < 300) {
+        _countOfRequestHeaderBytesSent = _countOfRequestHeaderBytes;
+        _countOfRequestBodyBytesSent = _countOfRequestBodyBytes;
+    }
+    if (_countOfResponseBodyBytesReceived <= 0) {
+        _countOfResponseBodyBytesReceived = response.expectedContentLength;
     }
     if (_countOfResponseHeaderBytesReceived <= 0 && [response isKindOfClass:[NSHTTPURLResponse class]]) {
         _countOfResponseHeaderBytesReceived = [NSString stringWithFormat:@"%@", [(NSHTTPURLResponse *)response allHeaderFields]].length;

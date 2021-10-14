@@ -102,7 +102,7 @@ typedef NS_ENUM(NSInteger, UploadState){
 
 - (void)uploadImageToQNFilePath:(NSString *)filePath {
     
-    kQNGlobalConfiguration.isDnsOpen = YES;
+    kQNGlobalConfiguration.isDnsOpen = NO;
 //    kQNGlobalConfiguration.connectCheckEnable = false;
     kQNGlobalConfiguration.dnsCacheMaxTTL = 600;
     kQNGlobalConfiguration.partialHostFrozenTime = 20*60;
