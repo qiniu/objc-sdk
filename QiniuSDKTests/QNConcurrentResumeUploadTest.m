@@ -67,6 +67,7 @@
         builder.useHttps = NO;
     }];
     NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    sizeArray = @[@8000];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"concurrent_http_v1_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
