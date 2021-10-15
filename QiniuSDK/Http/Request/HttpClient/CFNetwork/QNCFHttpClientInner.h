@@ -15,9 +15,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)redirectedToRequest:(NSURLRequest *)request
            redirectResponse:(NSURLResponse *)redirectResponse;
 
-- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust
-                  forDomain:(NSString *)domain;
-
 - (void)onError:(NSError *)error;
 
 - (void)didSendBodyData:(int64_t)bytesSent

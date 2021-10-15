@@ -158,20 +158,6 @@
     }
 }
 
-- (void)evaluateInputStreamServerTrust{
-    if (self.isInputStreamEvaluated) {
-        return;
-    }
-    
-    SecTrustRef trust = (__bridge SecTrustRef) [self.inputStream propertyForKey:(__bridge NSString *) kCFStreamPropertySSLPeerTrust];
-    NSString *host = [self.request allHTTPHeaderFields][@"host"];
-    if ([self delegate_evaluateServerTrust:trust forDomain:host]) {
-        self.isInputStreamEvaluated = YES;
-    } else {
-        [self delegate_onError:[self createError:NSURLErrorSecureConnectionFailed errorDescription:@"SSLHandshake failed"]];
-    }
-}
-
 - (void)inputStreamGetAndNotifyHttpResponse{
     @synchronized (self) {
         if (self.isReadResponseHeader) {
@@ -298,10 +284,6 @@
     @autoreleasepool {
         switch (eventCode) {
             case NSStreamEventHasBytesAvailable:{
-                if ([self shouldEvaluateInputStreamServerTrust]) {
-                    [self evaluateInputStreamServerTrust];
-                }
-                
                 if (![self isInputStreamHttpResponseHeaderComplete]) {
                     break;
                 }
@@ -315,7 +297,7 @@
             case NSStreamEventErrorOccurred:{
                 [self releaseResource];
                 [self endProgress: YES];
-                [self delegate_onError:[self translateCFNetworkErrorIntoUrlError:[self.inputStream streamError]]];
+                [self delegate_onError:[self translateCFNetworkErrorIntoUrlError:[aStream streamError]]];
             }
                 break;
             case NSStreamEventEndEncountered:{
@@ -813,15 +795,6 @@
                     redirectResponse:(NSURLResponse *)redirectResponse{
     if ([self.delegate respondsToSelector:@selector(redirectedToRequest:redirectResponse:)]) {
         [self.delegate redirectedToRequest:request redirectResponse:redirectResponse];
-    }
-}
-
-- (BOOL)delegate_evaluateServerTrust:(SecTrustRef)serverTrust
-                           forDomain:(NSString *)domain{
-    if ([self.delegate respondsToSelector:@selector(evaluateServerTrust:forDomain:)]) {
-        return [self.delegate evaluateServerTrust:serverTrust forDomain:domain];
-    } else {
-        return NO;
     }
 }
 

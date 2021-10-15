@@ -77,7 +77,7 @@ connectionProxy:(NSDictionary *)connectionProxy
     [self.requestMetrics start];
     
     self.responseData = [NSMutableData data];
-    self.httpClient = [QNCFHttpClientInner client:request connectionProxy:connectionProxy];
+    self.httpClient = [QNCFHttpClientInner client:self.request connectionProxy:connectionProxy];
     self.httpClient.delegate = self;
     [self.httpClient performSelector:@selector(main)
                             onThread:self.thread
@@ -124,31 +124,6 @@ totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend{
 
 - (void)didLoadData:(nonnull NSData *)data {
     [self.responseData appendData:data];
-}
-
-- (BOOL)evaluateServerTrust:(SecTrustRef)serverTrust forDomain:(NSString *)domain {
-    
-    NSMutableArray *policies = [NSMutableArray array];
-    if (domain) {
-        [policies addObject:(__bridge_transfer id)SecPolicyCreateSSL(true, (__bridge CFStringRef)domain)];
-    } else {
-        [policies addObject:(__bridge_transfer id)SecPolicyCreateBasicX509()];
-    }
-
-    SecTrustSetPolicies(serverTrust, (__bridge CFArrayRef)policies);
-
-    SecTrustResultType result = kSecTrustResultInvalid;
-    
-    OSStatus status = SecTrustEvaluate(serverTrust, &result);
-    if (status != errSecSuccess) {
-        return NO;
-    }
-    
-    if (result == kSecTrustResultUnspecified || result == kSecTrustResultProceed) {
-        return YES;
-    } else {
-        return NO;
-    }
 }
 
 - (void)onError:(nonnull NSError *)error {

@@ -41,6 +41,9 @@ typedef NS_ENUM(NSInteger, UploadState){
 
 @implementation ViewController
 
+#define kUploadFixHost00 @"up-z0.qbox.me"
+#define kUploadFixHost01 @"upload.qbox.me"
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [QNLogUtil setLogLevel:QNLogLevelInfo];
@@ -62,7 +65,7 @@ typedef NS_ENUM(NSInteger, UploadState){
         path = [[NSBundle mainBundle] pathForResource:@"image.png" ofType:nil];
         path = [[NSBundle mainBundle] pathForResource:@"image.jpg" ofType:nil];
         path = [[NSBundle mainBundle] pathForResource:@"UploadResource_6M.zip" ofType:nil];
-        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_9M.zip" ofType:nil];
+//        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_9M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1.44G.zip" ofType:nil];
         
@@ -70,7 +73,7 @@ typedef NS_ENUM(NSInteger, UploadState){
 //        NSURL *desktopUrl = [manager URLsForDirectory:NSDesktopDirectory inDomains:NSUserDomainMask].firstObject;
 //        path = [desktopUrl URLByAppendingPathComponent:@"pycharm.dmg"].path;
         
-        [self uploadImageToQNFilePath:path index:0];
+//        [self uploadImageToQNFilePath:path index:0];
         [self uploadImageToQNFilePath:path complete:nil];
         [self changeUploadState:UploadStateUploading];
 #else
@@ -116,7 +119,7 @@ typedef NS_ENUM(NSInteger, UploadState){
 
 - (void)uploadImageToQNFilePath:(NSString *)filePath complete:(dispatch_block_t)complete {
     
-    kQNGlobalConfiguration.isDnsOpen = NO;
+//    kQNGlobalConfiguration.isDnsOpen = NO;
 //    kQNGlobalConfiguration.connectCheckEnable = false;
     kQNGlobalConfiguration.dnsCacheMaxTTL = 600;
     kQNGlobalConfiguration.partialHostFrozenTime = 20*60;
@@ -130,14 +133,14 @@ typedef NS_ENUM(NSInteger, UploadState){
     QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.timeoutInterval = 90;
         builder.retryMax = 1;
-        builder.useHttps = NO;
+//        builder.useHttps = NO;
         
         builder.useConcurrentResumeUpload = true;
-//        builder.concurrentTaskCount = 6;
+        builder.concurrentTaskCount = 3;
         builder.resumeUploadVersion = QNResumeUploadVersionV1;
         builder.putThreshold = 4*1024*1024;
-//        builder.chunkSize = 1*1024*1024;
-//        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[@"up-z0.qbox.me", /*@"upload.qbox.me"*/]];
+        builder.chunkSize = 1*1024*1024;
+        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[kUploadFixHost00, kUploadFixHost01]];
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] error:nil];
     }];
     
@@ -310,8 +313,14 @@ typedef NS_ENUM(NSInteger, UploadState){
         item.ipValue = @"180.101.136.19";
         item.sourceValue = @"custom";
         [array addObject:item];
-    } else if ([host containsString:@"up-z0.qbox.me"]) {
+    } else if ([host containsString:kUploadFixHost00]) {
         DnsItem *item = [[DnsItem alloc] init];
+        item.hostValue = host;
+        item.ipValue = @"220.181.38.148";
+        item.sourceValue = @"custom";
+        [array addObject:item];
+        
+        item = [[DnsItem alloc] init];
         item.hostValue = host;
         item.ipValue = @"180.101.136.28";
         item.sourceValue = @"custom";
