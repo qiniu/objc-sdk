@@ -71,6 +71,7 @@ typedef NS_ENUM(NSInteger, UploadState){
 //        path = [desktopUrl URLByAppendingPathComponent:@"pycharm.dmg"].path;
         
         [self uploadImageToQNFilePath:path index:0];
+        [self uploadImageToQNFilePath:path complete:nil];
         [self changeUploadState:UploadStateUploading];
 #else
         if (self.pickImage == nil) {

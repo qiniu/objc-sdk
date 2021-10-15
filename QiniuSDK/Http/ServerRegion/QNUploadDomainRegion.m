@@ -246,9 +246,12 @@
     [self freezeServerIfNeed:responseInfo freezeServer:freezeServer];
     
     QNUploadServer *server = nil;
-    BOOL isUseOldServer = requestState.isUseOldServer;
-    NSArray *hostList = isUseOldServer ? self.oldDomainHostList : self.domainHostList;
-    NSDictionary *domainInfo = isUseOldServer ? self.oldDomainDictionary : self.domainDictionary;
+    NSArray *hostList = self.domainHostList;
+    NSDictionary *domainInfo = self.domainDictionary;
+    if (requestState.isUseOldServer && self.oldDomainHostList.count > 0 && self.oldDomainDictionary.count > 0) {
+        hostList = self.oldDomainHostList;
+        domainInfo = self.oldDomainDictionary;
+    }
     
     // 1. 优先使用http3
     if (self.http3Enabled) {
