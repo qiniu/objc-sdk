@@ -73,8 +73,8 @@ typedef NS_ENUM(NSInteger, UploadState){
 //        NSURL *desktopUrl = [manager URLsForDirectory:NSDesktopDirectory inDomains:NSUserDomainMask].firstObject;
 //        path = [desktopUrl URLByAppendingPathComponent:@"pycharm.dmg"].path;
         
-//        [self uploadImageToQNFilePath:path index:0];
-        [self uploadImageToQNFilePath:path complete:nil];
+        [self uploadImageToQNFilePath:path index:0];
+//        [self uploadImageToQNFilePath:path complete:nil];
         [self changeUploadState:UploadStateUploading];
 #else
         if (self.pickImage == nil) {
@@ -123,7 +123,7 @@ typedef NS_ENUM(NSInteger, UploadState){
 //    kQNGlobalConfiguration.connectCheckEnable = false;
     kQNGlobalConfiguration.dnsCacheMaxTTL = 600;
     kQNGlobalConfiguration.partialHostFrozenTime = 20*60;
-    kQNGlobalConfiguration.dns = self;
+//    kQNGlobalConfiguration.dns = self;
     
 //    [QNServerConfigMonitor removeConfigCache];
     
