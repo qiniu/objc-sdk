@@ -157,7 +157,7 @@
         [self reportToServer:tokenString];
     } else {
         // 有未上传日志存在，则 interval 时间后再次重试一次
-        if ([fileManager fileExistsAtPath:self.recorderFilePath] && [recorderFileAttr fileSize] == 0) {
+        if (![fileManager fileExistsAtPath:self.recorderFilePath] || [recorderFileAttr fileSize] == 0) {
             return;
         }
         
