@@ -127,14 +127,16 @@
             return;
         }
         
+        NSFileHandle *fileHandler = nil;
         @try {
             // 上传信息写入recorder文件
-            NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:_recorderFilePath];
+            fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:_recorderFilePath];
             [fileHandler seekToEndOfFile];
             [fileHandler writeData: [finalRecordInfo dataUsingEncoding:NSUTF8StringEncoding]];
-            [fileHandler closeFile];
         } @catch (NSException *exception) {
             NSLog(@"NSFileHandle cannot write data: %@", exception.description);
+        } @finally {
+            [fileHandler closeFile];
         }
     }
 }
