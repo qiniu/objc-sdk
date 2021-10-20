@@ -45,8 +45,8 @@ connectionProxy:(NSDictionary *)connectionProxy
     }
 
     self.requestMetrics = [QNUploadSingleRequestMetrics emptyMetrics];
-    self.requestMetrics.remoteAddress = request.qn_isHttps ? nil : server.ip;
-    self.requestMetrics.remotePort = request.qn_isHttps ? @443 : @80;
+    self.requestMetrics.remoteAddress = self.request.qn_isHttps ? nil : server.ip;
+    self.requestMetrics.remotePort = self.request.qn_isHttps ? @443 : @80;
     [self.requestMetrics start];
     
     self.responseData = [NSMutableData data];
@@ -60,7 +60,7 @@ connectionProxy:(NSDictionary *)connectionProxy
     NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration
                                                           delegate:self
                                                      delegateQueue:nil];
-    NSURLSessionDataTask *uploadTask = [session dataTaskWithRequest:request];
+    NSURLSessionDataTask *uploadTask = [session dataTaskWithRequest:self.request];
     [uploadTask resume];
     
     self.uploadTask = uploadTask;
