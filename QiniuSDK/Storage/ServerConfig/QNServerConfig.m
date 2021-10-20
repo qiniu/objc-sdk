@@ -46,7 +46,7 @@
 @implementation QNServerDohConfig
 + (instancetype)config:(NSDictionary *)info {
     QNServerDohConfig *config = [[QNServerDohConfig alloc] init];
-    config.enable = info[@"enable"];
+    config.enable = info[@"enabled"];
     config.ipv4Server = [QNServerDnsServer config:info[@"ipv4"]];
     config.ipv6Server = [QNServerDnsServer config:info[@"ipv6"]];
     return config;
@@ -61,7 +61,7 @@
 @implementation QNServerUdpDnsConfig
 + (instancetype)config:(NSDictionary *)info {
     QNServerUdpDnsConfig *config = [[QNServerUdpDnsConfig alloc] init];
-    config.enable = info[@"enable"];
+    config.enable = info[@"enabled"];
     config.ipv4Server = [QNServerDnsServer config:info[@"ipv4"]];
     config.ipv6Server = [QNServerDnsServer config:info[@"ipv6"]];
     return config;
@@ -79,7 +79,7 @@
 @implementation QNServerDnsConfig
 + (instancetype)config:(NSDictionary *)info {
     QNServerDnsConfig *config = [[QNServerDnsConfig alloc] init];
-    config.enable = info[@"enable"];
+    config.enable = info[@"enabled"];
     config.clearId = [info[@"clear_id"] longValue];
     config.clearCache = [info[@"clear_cache"] longValue];
     config.dohConfig = [QNServerDohConfig config:info[@"doh"]];

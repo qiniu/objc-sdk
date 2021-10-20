@@ -34,12 +34,13 @@
 //}
 
 - (void)testServerConfigModel {
-    NSString *serverConfigJsonString = @"{\"region\":{\"clear_id\":10,\"clear_cache\":true},\"dns\":{\"clear_id\":10,\"clear_cache\":true,\"doh\":{\"enable\":true,\"ipv4\":{\"override_default\":true,\"urls\":[\"https://223.5.5.5/dns-query\"]},\"ipv6\":{\"override_default\":true,\"urls\":[\"https://FFAE::EEEE/dns-query\"]}},\"udp\":{\"enable\":true,\"ipv4\":{\"ips\":[\"223.5.5.5\",\"1.1.1.1\"],\"override_default\":true},\"ipv6\":{\"ips\":[\"FFAE::EEEE\"],\"override_default\":true}}},\"ttl\":86400}";
+    NSString *serverConfigJsonString = @"{\"region\":{\"clear_id\":10,\"clear_cache\":true},\"dns\":{\"enabled\":true,\"clear_id\":10,\"clear_cache\":true,\"doh\":{\"enabled\":true,\"ipv4\":{\"override_default\":true,\"urls\":[\"https://223.5.5.5/dns-query\"]},\"ipv6\":{\"override_default\":true,\"urls\":[\"https://FFAE::EEEE/dns-query\"]}},\"udp\":{\"enabled\":true,\"ipv4\":{\"ips\":[\"223.5.5.5\",\"1.1.1.1\"],\"override_default\":true},\"ipv6\":{\"ips\":[\"FFAE::EEEE\"],\"override_default\":true}}},\"ttl\":86400}";
     NSDictionary *serverConfigInfo = [NSJSONSerialization JSONObjectWithData:[serverConfigJsonString dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingMutableLeaves error:nil];
     QNServerConfig *serverConfig = [QNServerConfig config:serverConfigInfo];
     XCTAssertTrue(serverConfig != nil, "server config was nil");
     XCTAssertTrue(serverConfig.ttl > 0, "server config ttl was nil");
     XCTAssertTrue(serverConfig.dnsConfig != nil, "server config dns config was nil");
+    XCTAssertTrue(serverConfig.dnsConfig.enable != nil, "server config dns config enable was nil");
     XCTAssertTrue(serverConfig.dnsConfig.clearId > 0, "server config dns config clearId was nil");
     XCTAssertTrue(serverConfig.dnsConfig.udpConfig != nil, "server config udp dns config was nil");
     XCTAssertTrue(serverConfig.dnsConfig.udpConfig.enable != nil, "server config udp dns config enable was nil");
