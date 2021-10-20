@@ -250,7 +250,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 }
 
 - (BOOL)couldHostRetry{
-    if ([self isNotQiniu] || ![self couldRegionRetry] == NO
+    if ([self isNotQiniu] || ![self couldRegionRetry]
         || _statusCode == 502 || _statusCode == 503 || _statusCode == 571 || _statusCode == 599) {
         return NO;
     } else {
