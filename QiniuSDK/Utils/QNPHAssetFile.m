@@ -216,7 +216,7 @@
             resource = assetRes;
         }
     }
-    NSString *fileName =  [NSString stringWithFormat:@"tempAsset-%lf.mov", [[NSDate date] timeIntervalSince1970]];
+    NSString *fileName = [NSString stringWithFormat:@"tempAsset-%f-%d.mov", [[NSDate date] timeIntervalSince1970], arc4random()%100000];
     PHAssetResourceRequestOptions *options = [PHAssetResourceRequestOptions new];
     //不支持icloud上传
     options.networkAccessAllowed = NO;

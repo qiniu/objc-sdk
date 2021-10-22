@@ -109,7 +109,8 @@ enum {
         _hasGotInfo = YES;
         NSConditionLock *assetReadLock = [[NSConditionLock alloc] initWithCondition:kAMASSETMETADATA_PENDINGREADS];
 
-        NSString *pathToWrite = [NSTemporaryDirectory() stringByAppendingString:self.phAssetResource.originalFilename];
+        NSString *fileName = [NSString stringWithFormat:@"tempAsset-%f-%d.mov", [[NSDate date] timeIntervalSince1970], arc4random()%100000];
+        NSString *pathToWrite = [NSTemporaryDirectory() stringByAppendingString:fileName];
         NSURL *localpath = [NSURL fileURLWithPath:pathToWrite];
         PHAssetResourceRequestOptions *options = [PHAssetResourceRequestOptions new];
         options.networkAccessAllowed = YES;
@@ -147,7 +148,8 @@ enum {
 
     NSConditionLock *assetReadLock = [[NSConditionLock alloc] initWithCondition:kAMASSETMETADATA_PENDINGREADS];
 
-    NSString *pathToWrite = [NSTemporaryDirectory() stringByAppendingString:videoResource.originalFilename];
+    NSString *fileName = [NSString stringWithFormat:@"tempAsset-%f-%d.mov", [[NSDate date] timeIntervalSince1970], arc4random()%100000];
+    NSString *pathToWrite = [NSTemporaryDirectory() stringByAppendingString:fileName];
     NSURL *localpath = [NSURL fileURLWithPath:pathToWrite];
     PHAssetResourceRequestOptions *options = [PHAssetResourceRequestOptions new];
     options.networkAccessAllowed = YES;
