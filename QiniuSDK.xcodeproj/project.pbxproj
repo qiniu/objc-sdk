@@ -1322,6 +1322,7 @@
 					};
 					DF2CDE2319DAC08400CE01FB = {
 						CreatedOnToolsVersion = 6.0.1;
+						DevelopmentTeam = 5G98NLC322;
 					};
 				};
 			};
@@ -1885,6 +1886,7 @@
 			baseConfigurationReference = 6DD894AA2A19370381AD4201 /* Pods-QiniuSDK_iOSTests.debug.xcconfig */;
 			buildSettings = {
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = 5G98NLC322;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				PRODUCT_NAME = QiniuSDK_iOSTests;
@@ -1898,6 +1900,7 @@
 			buildSettings = {
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = 5G98NLC322;
 				PRODUCT_NAME = QiniuSDK_iOSTests;
 				SDKROOT = iphoneos;
 			};
