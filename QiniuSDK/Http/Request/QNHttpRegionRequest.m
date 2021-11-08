@@ -9,6 +9,7 @@
 #import "QNDefine.h"
 #import "QNLogUtil.h"
 #import "QNAsyncRun.h"
+#import "QNDnsPrefetch.h"
 #import "QNUploadRequestState.h"
 #import "QNHttpRegionRequest.h"
 #import "QNConfiguration.h"
@@ -160,13 +161,15 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
         [self.requestMetrics addMetricsList:metrics];
         
         BOOL hijacked = metrics.lastObject.isMaybeHijacked || metrics.lastObject.isForsureHijacked;
-        if (hijacked) {
+        BOOL isSafeDnsSource = kQNIsDnsSourceCustom(metrics.lastObject.syncDnsSource) || kQNIsDnsSourceDoh(metrics.lastObject.syncDnsSource) || kQNIsDnsSourceDnsPod(metrics.lastObject.syncDnsSource);
+        BOOL hijackedAndNeedRetry = hijacked && isSafeDnsSource;
+        if (hijackedAndNeedRetry) {
             [self.region updateIpListFormHost:server.host];
         }
         
         if ((shouldRetry(responseInfo, response)
             && self.config.allowBackupHost
-            && responseInfo.couldRegionRetry) || hijacked) {
+            && responseInfo.couldRegionRetry) || hijackedAndNeedRetry) {
             
             id <QNUploadServer> newServer = [self getNextServer:responseInfo];
             if (newServer) {

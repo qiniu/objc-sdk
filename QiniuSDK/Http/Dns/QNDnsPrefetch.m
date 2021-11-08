@@ -355,6 +355,15 @@
     }
 }
 
+- (void)invalidNetworkAddressOfHost:(NSString *)host {
+    if (host == nil || host.length == 0) {
+        return;
+    }
+    @synchronized (self) {
+        [self.addressDictionary removeObjectForKey:host];
+    }
+}
+
 - (void)clearDnsCache:(NSError *__autoreleasing  _Nullable *)error {
     [self clearDnsMemoryCache];
     [self clearDnsDiskCache:error];
@@ -366,6 +375,9 @@
     if (host == nil) {
         return nil;
     }
+    
+    [self invalidNetworkAddressOfHost:host];
+    
     NSError *err = nil;
     NSArray *nextFetchHosts = @[host];
     nextFetchHosts = [self preFetchHosts:nextFetchHosts dns:self.customDns error:&err];
