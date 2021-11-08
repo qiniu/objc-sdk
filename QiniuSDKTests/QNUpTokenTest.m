@@ -40,6 +40,7 @@
     XCTAssert(t != nil, @"token was nil");
     XCTAssert(t.isValid, @"token was invalid");
     XCTAssert([t isValidForDuration:5*60], @"token was invalid for 5*60");
+    XCTAssert(![t isValidForDuration:12*30*24*3600], @"token was valid for 12*30*24*3600");
     XCTAssert([t isValidBeforeDate:[NSDate date]], @"token was invalid");
     XCTAssert(!t.hasReturnUrl, @"token has return url");
 }
