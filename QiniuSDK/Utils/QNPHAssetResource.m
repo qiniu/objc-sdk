@@ -55,7 +55,7 @@ enum {
     return self;
 }
 
-- (NSData *)read:(long)offset
+- (NSData *)read:(long long)offset
             size:(long)size
            error:(NSError **)error {
     
@@ -67,8 +67,8 @@ enum {
         }
         
         if (_assetData != nil && offset < _assetData.length) {
-            NSInteger realSize = MIN(size, _assetData.length - offset);
-            data = [_assetData subdataWithRange:NSMakeRange(offset, realSize)];
+            NSUInteger realSize = MIN((NSUInteger)size, _assetData.length - (NSUInteger)offset);
+            data = [_assetData subdataWithRange:NSMakeRange((NSUInteger)offset, realSize)];
         } else {
             data = [NSData data];
         }
@@ -100,12 +100,17 @@ enum {
     return _fileSize;
 }
 
+- (NSString *)fileType {
+    return @"PHAssetResource";
+}
+
 - (void)getInfo {
     if (!_hasGotInfo) {
         _hasGotInfo = YES;
         NSConditionLock *assetReadLock = [[NSConditionLock alloc] initWithCondition:kAMASSETMETADATA_PENDINGREADS];
 
-        NSString *pathToWrite = [NSTemporaryDirectory() stringByAppendingString:self.phAssetResource.originalFilename];
+        NSString *fileName = [NSString stringWithFormat:@"tempAsset-%f-%d.mov", [[NSDate date] timeIntervalSince1970], arc4random()%100000];
+        NSString *pathToWrite = [NSTemporaryDirectory() stringByAppendingString:fileName];
         NSURL *localpath = [NSURL fileURLWithPath:pathToWrite];
         PHAssetResourceRequestOptions *options = [PHAssetResourceRequestOptions new];
         options.networkAccessAllowed = YES;
@@ -143,7 +148,8 @@ enum {
 
     NSConditionLock *assetReadLock = [[NSConditionLock alloc] initWithCondition:kAMASSETMETADATA_PENDINGREADS];
 
-    NSString *pathToWrite = [NSTemporaryDirectory() stringByAppendingString:videoResource.originalFilename];
+    NSString *fileName = [NSString stringWithFormat:@"tempAsset-%f-%d.mov", [[NSDate date] timeIntervalSince1970], arc4random()%100000];
+    NSString *pathToWrite = [NSTemporaryDirectory() stringByAppendingString:fileName];
     NSURL *localpath = [NSURL fileURLWithPath:pathToWrite];
     PHAssetResourceRequestOptions *options = [PHAssetResourceRequestOptions new];
     options.networkAccessAllowed = YES;

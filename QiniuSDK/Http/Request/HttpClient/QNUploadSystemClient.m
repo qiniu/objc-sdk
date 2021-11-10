@@ -9,7 +9,6 @@
 #import "QNUploadSystemClient.h"
 #import "QNUserAgent.h"
 #import "NSURLRequest+QNRequest.h"
-#import "QNURLProtocol.h"
 
 @interface QNUploadSystemClient()<NSURLSessionDelegate>
 
@@ -23,29 +22,45 @@
 @end
 @implementation QNUploadSystemClient
 
+- (NSString *)clientId {
+    return @"NSURLSession";
+}
+
 - (void)request:(NSURLRequest *)request
+         server:(id <QNUploadServer>)server
 connectionProxy:(NSDictionary *)connectionProxy
        progress:(void (^)(long long, long long))progress
        complete:(QNRequestClientCompleteHandler)complete {
     
-    self.request = request;
+    // 非 https 方可使用 IP
+    if (!request.qn_isHttps && server && server.ip.length > 0 && server.host.length > 0) {
+        NSString *urlString = request.URL.absoluteString;
+        urlString = [urlString stringByReplacingOccurrencesOfString:server.host withString:server.ip];
+        NSMutableURLRequest *requestNew = [request mutableCopy];
+        requestNew.URL = [NSURL URLWithString:urlString];
+        requestNew.qn_domain = server.host;
+        self.request = [requestNew copy];
+    } else {
+        self.request = request;
+    }
+
     self.requestMetrics = [QNUploadSingleRequestMetrics emptyMetrics];
-    self.requestMetrics.remoteAddress = request.qn_ip;
-    self.requestMetrics.remotePort = request.qn_isHttps ? @443 : @80;
+    self.requestMetrics.remoteAddress = self.request.qn_isHttps ? nil : server.ip;
+    self.requestMetrics.remotePort = self.request.qn_isHttps ? @443 : @80;
     [self.requestMetrics start];
     
     self.responseData = [NSMutableData data];
     self.progress = progress;
     self.complete = complete;
     
-    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration qn_sessionConfiguration];
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration defaultSessionConfiguration];
     if (connectionProxy) {
         configuration.connectionProxyDictionary = connectionProxy;
     }
     NSURLSession *session = [NSURLSession sessionWithConfiguration:configuration
                                                           delegate:self
                                                      delegateQueue:nil];
-    NSURLSessionDataTask *uploadTask = [session dataTaskWithRequest:request];
+    NSURLSessionDataTask *uploadTask = [session dataTaskWithRequest:self.request];
     [uploadTask resume];
     
     self.uploadTask = uploadTask;

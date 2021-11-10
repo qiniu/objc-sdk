@@ -5,7 +5,7 @@
 //  Created by bailong on 14/10/2.
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
-
+#import "QNErrorCode.h"
 #import "QNResponseInfo.h"
 #import "QNUserAgent.h"
 #import "QNUtils.h"
@@ -136,11 +136,12 @@ static NSString *kQNErrorDomain = @"qiniu.com";
             
             int statusCode = (int)[response statusCode];
             NSDictionary *headers = [response allHeaderFields];
+            _responseHeader = [headers copy];
             _statusCode = statusCode;
             _reqId = headers[@"x-reqid"];
             _xlog = headers[@"x-log"];
             _xvia = headers[@"x-via"] ?: headers[@"x-px"] ?: headers[@"fw-via"];
-            if (_statusCode == 200 && (_reqId == nil || _xlog == nil)) {
+            if (_statusCode == 200 && _reqId == nil && _xlog == nil) {
                 _statusCode = kQNMaliciousResponseError;
                 _message = @"this is a malicious response";
                 _responseDictionary = nil;
@@ -210,17 +211,22 @@ static NSString *kQNErrorDomain = @"qiniu.com";
     }
 }
 
+- (BOOL)isQiniu {
+    // reqId is nill means the server is not qiniu
+    return ![self isNotQiniu];
+}
+
 - (BOOL)isNotQiniu {
     // reqId is nill means the server is not qiniu
-    return _reqId == nil || _xlog == nil;
+    return (_statusCode == kQNMaliciousResponseError) || (_statusCode > 0 && _reqId == nil && _xlog == nil);
 }
 
 - (BOOL)isOK {
-    return (_statusCode >= 200 && _statusCode < 300) && _error == nil && _reqId != nil && _xlog != nil;
+    return (_statusCode >= 200 && _statusCode < 300) && _error == nil && (_reqId != nil || _xlog != nil);
 }
 
 - (BOOL)couldRetry {
-    if (self.isCancelled
+    if ([self isQiniu] && (self.isCancelled
         || _statusCode == 100
         || (_statusCode > 300 && _statusCode < 400)
         || (_statusCode > 400 && _statusCode < 500 && _statusCode != 406)
@@ -228,7 +234,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
         || _statusCode == 608 || _statusCode == 612 || _statusCode == 614 || _statusCode == 616
         || _statusCode == 619 || _statusCode == 630 || _statusCode == 631 || _statusCode == 640
         || _statusCode == 701
-        || (_statusCode < -1 && _statusCode > -1000)) {
+        || (_statusCode != kQNLocalIOError && _statusCode != kQNUnexpectedSysCallError && _statusCode < -1 && _statusCode > -1000))) {
         return NO;
     } else {
         return YES;
@@ -236,7 +242,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 }
 
 - (BOOL)couldRegionRetry{
-    if ([self couldRetry] == NO || _statusCode == 400 || _statusCode == 579 ) {
+    if (![self couldRetry] || _statusCode == 400 || _statusCode == 579) {
         return NO;
     } else {
         return YES;
@@ -244,7 +250,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 }
 
 - (BOOL)couldHostRetry{
-    if ([self couldRegionRetry] == NO
+    if ([self isNotQiniu] || ![self couldRegionRetry]
         || _statusCode == 502 || _statusCode == 503 || _statusCode == 571 || _statusCode == 599) {
         return NO;
     } else {

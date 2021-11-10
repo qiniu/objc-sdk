@@ -82,7 +82,7 @@
     return self;
 }
 
-- (NSData *)read:(long)offset
+- (NSData *)read:(long long)offset
             size:(long)size
            error:(NSError **)error {
     
@@ -90,8 +90,8 @@
     @try {
         [_lock lock];
         if (_assetData != nil && offset < _assetData.length) {
-            NSInteger realSize = MIN(size, _assetData.length - offset);
-            data = [_assetData subdataWithRange:NSMakeRange(offset, realSize)];
+            NSUInteger realSize = MIN((NSUInteger)size, _assetData.length - (NSUInteger)offset);
+            data = [_assetData subdataWithRange:NSMakeRange((NSUInteger)offset, realSize)];
         } else if (_file != nil && offset < _fileSize) {
             [_file seekToFileOffset:offset];
             data = [_file readDataOfLength:size];
@@ -133,6 +133,10 @@
 
 - (int64_t)size {
     return _fileSize;
+}
+
+- (NSString *)fileType {
+    return @"PHAsset";
 }
 
 - (void)getInfo {
@@ -212,10 +216,7 @@
             resource = assetRes;
         }
     }
-    NSString *fileName = [NSString stringWithFormat:@"tempAsset-%@.mov", [NSDate date]];
-    if (resource.originalFilename) {
-        fileName = resource.originalFilename;
-    }
+    NSString *fileName = [NSString stringWithFormat:@"tempAsset-%f-%d.mov", [[NSDate date] timeIntervalSince1970], arc4random()%100000];
     PHAssetResourceRequestOptions *options = [PHAssetResourceRequestOptions new];
     //不支持icloud上传
     options.networkAccessAllowed = NO;

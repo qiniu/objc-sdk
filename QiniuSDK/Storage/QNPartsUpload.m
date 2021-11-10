@@ -153,7 +153,7 @@
                 return;
             }
             
-            QNLogInfo(@"key:%@ completeUpload", self.key);
+            QNLogInfo(@"key:%@ completeUpload errorResponseInfo:%@", self.key, self.uploadDataErrorResponseInfo);
             
             // 3. 组装文件
             kQNWeakSelf;
@@ -278,6 +278,8 @@
     [item setReportValue:@([QNUtils getCurrentProcessID]) forKey:QNReportBlockKeyPid];
     [item setReportValue:@([QNUtils getCurrentThreadID]) forKey:QNReportBlockKeyTid];
     
+    [item setReportValue:metrics.metricsList.lastObject.hijacked forKey:QNReportBlockKeyHijacking];
+    
     // 统计当前 region 上传速度 文件大小 / 总耗时
     if (self.uploadDataErrorResponseInfo == nil && [self.uploadSource getSize] > 0 && [metrics totalElapsedTime] > 0) {
         NSNumber *speed = [QNUtils calculateSpeed:[self.uploadSource getSize] totalTime:[metrics totalElapsedTime].longLongValue];
@@ -297,6 +299,22 @@
     [item setReportValue:[QNUtils sdkVersion] forKey:QNReportBlockKeySDKVersion];
     
     [kQNReporter reportItem:item token:self.token.token];
+}
+
+- (NSString *)upType {
+    if (self.config == nil) {
+        return nil;
+    }
+    
+    NSString *sourceType = @"";
+    if ([self.uploadSource respondsToSelector:@selector(sourceType)]) {
+        sourceType = [self.uploadSource sourceType];
+    }
+    if (self.config.resumeUploadVersion == QNResumeUploadVersionV1) {
+        return [NSString stringWithFormat:@"%@<%@>",QNUploadUpTypeResumableV1, sourceType];
+    } else {
+        return [NSString stringWithFormat:@"%@<%@>",QNUploadUpTypeResumableV2, sourceType];
+    }
 }
 
 @end

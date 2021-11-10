@@ -19,6 +19,4 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-#define kQNUnknownSourceSize (-1)
-
 NS_ASSUME_NONNULL_END

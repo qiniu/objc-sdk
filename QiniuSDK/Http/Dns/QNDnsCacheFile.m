@@ -16,10 +16,11 @@
 @implementation QNDnsCacheFile
 
 + (instancetype)dnsCacheFile:(NSString *)directory
-                       error:(NSError **)perror{
-    
-    [[NSFileManager defaultManager] createDirectoryAtPath:directory withIntermediateDirectories:YES attributes:nil error:perror];
-    if (*perror != nil) {
+                       error:(NSError **)error{
+    NSError *err = nil;
+    [[NSFileManager defaultManager] createDirectoryAtPath:directory withIntermediateDirectories:YES attributes:nil error:&err];
+    if (err != nil) {
+        if (error != nil) *error = err;
         return nil;
     }
     
@@ -28,15 +29,17 @@
     return f;
 }
 
-- (NSError *)set:(NSString *)key
-            data:(NSData *)value {
-    
-    NSError *error;
-    NSFileManager *fileManager = [NSFileManager defaultManager];
-    NSString *filePath = [self pathOfKey:key];
-    [fileManager createFileAtPath:filePath contents:value attributes:nil];
-    
-    return error;
+- (NSError *)set:(NSString *)key data:(NSData *)value {
+    @synchronized (self) {
+        NSError *error;
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        NSString *filePath = [self pathOfKey:key];
+        if ([fileManager fileExistsAtPath:filePath]) {
+            [fileManager removeItemAtPath:filePath error:&error];
+        }
+        [fileManager createFileAtPath:filePath contents:value attributes:nil];
+        return error;
+    }
 }
 
 - (NSData *)get:(NSString *)key {
@@ -44,13 +47,32 @@
 }
 
 - (NSError *)del:(NSString *)key {
-    NSError *error = nil;
-    NSString *path = [self pathOfKey:key];
-    if (path) {
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        [fileManager removeItemAtPath:path error:&error];
+    @synchronized (self) {
+        NSError *error = nil;
+        NSString *path = [self pathOfKey:key];
+        if (path) {
+            NSFileManager *fileManager = [NSFileManager defaultManager];
+            [fileManager removeItemAtPath:path error:&error];
+        }
+        return error;
     }
-    return error;
+}
+
+- (void)clearCache:(NSError *__autoreleasing  _Nullable *)error {
+    @synchronized (self) {
+        NSError *err;
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        [fileManager removeItemAtPath:self.directory error:&err];
+        if (err != nil) {
+            if (error != nil) *error = err;
+            return;
+        }
+        
+        [fileManager createDirectoryAtPath:self.directory withIntermediateDirectories:YES attributes:nil error:&err];
+        if (error != nil) {
+            *error = err;
+        }
+    }
 }
 
 - (NSString *)getFileName{

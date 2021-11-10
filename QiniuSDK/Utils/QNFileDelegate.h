@@ -22,7 +22,7 @@
  *
  *    @return 数据
  */
-- (NSData *)read:(long)offset
+- (NSData *)read:(long long)offset
             size:(long)size
            error:(NSError **)error;
 
@@ -58,5 +58,8 @@
  *    @return 文件大小
  */
 - (int64_t)size;
+
+@optional
+- (NSString *)fileType;
 
 @end

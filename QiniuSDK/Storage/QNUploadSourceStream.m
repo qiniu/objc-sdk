@@ -11,8 +11,9 @@
 
 @interface QNUploadSourceStream()
 
+@property(nonatomic, assign)BOOL hasSize;
 @property(nonatomic, assign)long long size;
-@property(nonatomic, assign)NSInteger readOffset;
+@property(nonatomic, assign)long long readOffset;
 @property(nonatomic,   copy)NSString *sourceId;
 @property(nonatomic,   copy)NSString *fileName;
 @property(nonatomic, strong)NSInputStream *stream;
@@ -29,6 +30,7 @@
     sourceStream.sourceId = sourceId;
     sourceStream.fileName = fileName;
     sourceStream.size = size;
+    sourceStream.hasSize = size > 0;
     sourceStream.readOffset = 0;
     return sourceStream;
 }
@@ -57,7 +59,7 @@
     }
 }
 
-- (NSData *)readData:(NSInteger)dataSize dataOffset:(long)dataOffset error:(NSError **)error {
+- (NSData *)readData:(NSInteger)dataSize dataOffset:(long long)dataOffset error:(NSError **)error {
     if (self.stream == nil) {
         *error = [NSError errorWithDomain:NSCocoaErrorDomain code:kQNFileError userInfo:@{NSLocalizedDescriptionKey : @"inputStream is empty"}];
         return nil;
@@ -139,7 +141,7 @@
     }
 }
 
-- (void)streamSkipSize:(NSInteger)size error:(NSError **)error {
+- (void)streamSkipSize:(long long)size error:(NSError **)error {
     BOOL isEOF = false;
     NSInteger sliceSize = 1024;
     NSInteger readSize = 0;
@@ -226,4 +228,7 @@
     [self.stream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSRunLoopCommonModes];
 }
 
+- (NSString *)sourceType {
+    return [NSString stringWithFormat:@"SourceStream:%@", _hasSize?@"HasSize":@"NoSize"];
+}
 @end

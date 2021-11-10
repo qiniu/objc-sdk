@@ -15,13 +15,6 @@
 #define kQNURLRequestHostKey @"Host"
 #define kQNURLRequestIPKey @"QNURLRequestIP"
 #define kQNURLRequestIdentifierKey @"QNURLRequestIdentifier"
-- (BOOL)qn_isQiNiuRequest{
-    if (self.qn_identifier && self.qn_domain) {
-        return YES;
-    } else {
-        return NO;
-    }
-}
 
 - (NSString *)qn_identifier{
     return self.allHTTPHeaderFields[kQNURLRequestIdentifierKey];

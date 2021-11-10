@@ -8,17 +8,22 @@
 
 #import "QNErrorCode.h"
 #import "QNDefine.h"
-#import "QNCFHttpClient.h"
+#import "QNCFHttpClientInner.h"
 #import "NSURLRequest+QNRequest.h"
 #import <sys/errno.h>
 
-@interface QNCFHttpClient()<NSStreamDelegate>
+#define kQNCFHttpClientErrorDomain @"CFNetwork"
 
+@interface QNCFHttpClientInner()<NSStreamDelegate>
+
+@property(nonatomic, assign)BOOL isCallFinishOrError;
+@property(nonatomic, assign)BOOL isCompleted;
 @property(nonatomic, strong)NSMutableURLRequest *request;
+@property(nonatomic, strong)NSDictionary *connectionProxy;
 @property(nonatomic, assign)BOOL isReadResponseHeader;
+@property(nonatomic, assign)BOOL isReadResponseBody;
 @property(nonatomic, assign)BOOL isInputStreamEvaluated;
 @property(nonatomic, strong)NSInputStream *inputStream;
-@property(nonatomic, strong)NSRunLoop *inputStreamRunLoop;
 
 // 上传进度
 @property(nonatomic, strong)NSTimer *progressTimer; // 进度定时器
@@ -26,83 +31,92 @@
 @property(nonatomic, assign)int64_t totalBytesExpectedToSend; // 总大小
 
 @end
-@implementation QNCFHttpClient
+@implementation QNCFHttpClientInner
 
-+ (instancetype)client:(NSURLRequest *)request{
++ (instancetype)client:(NSURLRequest *)request connectionProxy:(nonnull NSDictionary *)connectionProxy{
     if (!request) {
         return nil;
     }
-    
-    QNCFHttpClient *client = [[QNCFHttpClient alloc] init];
-    [client setup:request];
+    QNCFHttpClientInner *client = [[QNCFHttpClientInner alloc] init];
+    client.connectionProxy = connectionProxy;
+    client.request = [request mutableCopy];
+    client.isCompleted = false;
     return client;
 }
 
-- (void)setup:(NSURLRequest *)request{
-    
-    @autoreleasepool {
-        self.request = [request mutableCopy];
-        NSInputStream *inputStream = [self createInputStream:self.request];
-        
-        NSString *host = [self.request qn_domain];
-        if ([self.request qn_isHttps]) {
-           [self setInputStreamSNI:inputStream sni:host];
-        }
-        
-        [self setupProgress];
-        
-        self.inputStream = inputStream;
-        
-    }
-}
-
-- (void)startLoading{
-
+- (void)main {
+    [self prepare];
     [self openInputStream];
     [self startProgress];
 }
 
-- (void)stopLoading{
+- (void)prepare {
+    @autoreleasepool {
+        self.inputStream = [self createInputStream:self.request];
+    }
     
-    [self closeInputStream];
+    NSString *host = [self.request qn_domain];
+    if ([self.request qn_isHttps]) {
+       [self setInputStreamSNI:self.inputStream sni:host];
+    }
+    
+    [self setupProgress];
+}
+
+- (void)releaseResource{
     [self endProgress:YES];
+    [self closeInputStream];
+}
+
+- (void)cancel {
+    [self releaseResource];
+    [self delegate_onError:[self createError:NSURLErrorCancelled errorDescription:@"user cancel"]];
 }
 
 //MARK: -- request -> stream
 - (NSInputStream *)createInputStream:(NSURLRequest *)urlRequest{
-    
-    CFStringRef urlString = (__bridge CFStringRef) [urlRequest.URL absoluteString];
-    CFURLRef url = CFURLCreateWithString(kCFAllocatorDefault,
-                                         urlString,
-                                         NULL);
-    CFStringRef httpMethod = (__bridge CFStringRef) urlRequest.HTTPMethod;
-    CFHTTPMessageRef request = CFHTTPMessageCreateRequest(kCFAllocatorDefault,
-                                                          httpMethod,
-                                                          url,
-                                                          kCFHTTPVersion1_1);
-    CFRelease(url);
-    
-    
-    NSDictionary *headFieldInfo = self.request.qn_allHTTPHeaderFields;
-    for (NSString *headerField in headFieldInfo) {
-        CFStringRef headerFieldP = (__bridge CFStringRef)headerField;
-        CFStringRef headerFieldValueP = (__bridge CFStringRef)(headFieldInfo[headerField]);
-        CFHTTPMessageSetHeaderFieldValue(request, headerFieldP, headerFieldValueP);
-    }
-    
 
-    NSData *httpBody = [self.request qn_getHttpBody];
-    if (httpBody) {
-        CFDataRef bodyData = (__bridge CFDataRef) httpBody;
-        CFHTTPMessageSetBody(request, bodyData);
+    CFReadStreamRef readStream = NULL;
+    @autoreleasepool {
+        CFStringRef urlString = (__bridge CFStringRef) [urlRequest.URL absoluteString];
+        CFURLRef url = CFURLCreateWithString(kCFAllocatorDefault,
+                                             urlString,
+                                             NULL);
+        CFStringRef httpMethod = (__bridge CFStringRef) urlRequest.HTTPMethod;
+        CFHTTPMessageRef request = CFHTTPMessageCreateRequest(kCFAllocatorDefault,
+                                                              httpMethod,
+                                                              url,
+                                                              kCFHTTPVersion1_1);
+        CFRelease(url);
+
+        NSDictionary *headFieldInfo = self.request.qn_allHTTPHeaderFields;
+        for (NSString *headerField in headFieldInfo) {
+            CFStringRef headerFieldP = (__bridge CFStringRef)headerField;
+            CFStringRef headerFieldValueP = (__bridge CFStringRef)(headFieldInfo[headerField]);
+            CFHTTPMessageSetHeaderFieldValue(request, headerFieldP, headerFieldValueP);
+        }
+        
+        NSData *httpBody = [self.request qn_getHttpBody];
+        if (httpBody) {
+            CFDataRef bodyData = (__bridge CFDataRef) httpBody;
+            CFHTTPMessageSetBody(request, bodyData);
+        }
+        
+        readStream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, request);
+        CFRelease(request);
     }
     
-    CFReadStreamRef readStream = CFReadStreamCreateForHTTPRequest(kCFAllocatorDefault, request);
-    NSInputStream *inputStream = (__bridge_transfer NSInputStream *) readStream;
-    
-    CFRelease(request);
-    
-    return inputStream;
+    @autoreleasepool {
+        if (self.connectionProxy) {
+            for (NSString *key in self.connectionProxy.allKeys) {
+                NSObject *value = self.connectionProxy[key];
+                if (key.length > 0) {
+                    CFReadStreamSetProperty(readStream, (__bridge CFTypeRef _Null_unspecified)key, (__bridge CFTypeRef _Null_unspecified)(value));
+                }
+            }
+        }
+    }
+    return (__bridge_transfer NSInputStream *) readStream;
 }
 
 - (void)setInputStreamSNI:(NSInputStream *)inputStream sni:(NSString *)sni{
@@ -120,21 +134,20 @@
 
 //MARK: -- stream action
 - (void)openInputStream{
-    if (!self.inputStreamRunLoop) {
-        self.inputStreamRunLoop = [NSRunLoop currentRunLoop];
-    }
-    [self.inputStream scheduleInRunLoop:self.inputStreamRunLoop
-                                forMode:NSRunLoopCommonModes];
-    
+    [self.inputStream scheduleInRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
     self.inputStream.delegate = self;
     [self.inputStream open];
 }
 
 - (void)closeInputStream {
-    [self.inputStream removeFromRunLoop:self.inputStreamRunLoop forMode:NSRunLoopCommonModes];
-    [self.inputStream setDelegate:nil];
-    [self.inputStream close];
-    self.inputStream = nil;
+    @synchronized (self) {
+        if (self.inputStream) {
+            [self.inputStream close];
+            [self.inputStream setDelegate:nil];
+            [self.inputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+            self.inputStream = nil;
+        }
+    }
 }
 
 - (BOOL)shouldEvaluateInputStreamServerTrust{
@@ -145,23 +158,14 @@
     }
 }
 
-- (void)evaluateInputStreamServerTrust{
-    if (self.isInputStreamEvaluated) {
-        return;
+- (void)inputStreamGetAndNotifyHttpResponse{
+    @synchronized (self) {
+        if (self.isReadResponseHeader) {
+            return;
+        }
+        self.isReadResponseHeader = YES;
     }
     
-    SecTrustRef trust = (__bridge SecTrustRef) [self.inputStream propertyForKey:(__bridge NSString *) kCFStreamPropertySSLPeerTrust];
-    NSString *host = [self.request allHTTPHeaderFields][@"host"];
-    if ([self delegate_evaluateServerTrust:trust forDomain:host]) {
-        self.isInputStreamEvaluated = YES;
-    } else {
-        [self delegate_onError:[NSError errorWithDomain:@"CFNetwork SSLHandshake failed"
-                                                   code:NSURLErrorSecureConnectionFailed
-                                               userInfo:nil]];
-    }
-}
-
-- (void)inputStreamGetAndNotifyHttpResponse{
 
     CFReadStreamRef readStream = (__bridge CFReadStreamRef)self.inputStream;
     CFHTTPMessageRef httpMessage = (CFHTTPMessageRef)CFReadStreamCopyProperty(readStream, kCFStreamPropertyHTTPResponseHeader);
@@ -176,13 +180,19 @@
     
     if (![self isHttpRedirectStatusCode:statusCode]) {
         NSHTTPURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:self.request.URL statusCode:statusCode HTTPVersion:httpVersionInfo headerFields:headInfo];
-        [self delegate_onReceiveResponse:response];
+        [self delegate_onReceiveResponse:response httpVersion:httpVersionInfo];
     }
     
     CFRelease(httpMessage);
 }
 
 - (void)inputStreamGetAndNotifyHttpData{
+    @synchronized (self) {
+        if (self.isReadResponseBody) {
+            return;
+        }
+        self.isReadResponseBody = YES;
+    }
     
     UInt8 buffer[16 * 1024];
     UInt8 *buf = NULL;
@@ -196,11 +206,6 @@
     
     NSData *data = [[NSData alloc] initWithBytes:buf length:length];
     [self delegate_didLoadData:data];
-}
-
-- (void)inputStreamDidLoadHttpResponse{
-    
-    [self delegate_didFinish];
 }
 
 - (BOOL)isInputStreamHttpResponseHeaderComplete{
@@ -220,7 +225,7 @@
 }
 
 - (BOOL)isHttpRedirectStatusCode:(NSInteger)code{
-    if (code >= 300 && code < 400) {
+    if (code == 301 || code == 302 || code == 303 || code == 307) {
         return YES;
     } else {
         return NO;
@@ -247,14 +252,28 @@
     
     CFIndex statusCode = CFHTTPMessageGetResponseStatusCode(responseMessage);
     
+    NSDictionary *requestHeader = self.request.allHTTPHeaderFields;
+    if (statusCode == 303) {
+        NSMutableDictionary *header = [NSMutableDictionary dictionary];
+        if (requestHeader[@"User-Agent"]) {
+            header[@"User-Agent"] = requestHeader[@"User-Agent"];
+        }
+        if (requestHeader[@"Accept"]) {
+            header[@"Accept"] = requestHeader[@"Accept"];
+        }
+        requestHeader = [header copy];
+    }
+    
     NSURL *url = [NSURL URLWithString:urlString];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     request.HTTPMethod = @"GET";
+    [request setAllHTTPHeaderFields:requestHeader];
     NSURLResponse *response = [[NSHTTPURLResponse alloc] initWithURL:self.request.URL
                                                           statusCode:statusCode
                                                          HTTPVersion:httpVersionString
                                                         headerFields:headInfo];
     
+    [self releaseResource];
     [self delegate_redirectedToRequest:request redirectResponse:response];
     
     CFRelease(responseMessage);
@@ -265,37 +284,33 @@
     @autoreleasepool {
         switch (eventCode) {
             case NSStreamEventHasBytesAvailable:{
-                
                 if (![self isInputStreamHttpResponseHeaderComplete]) {
                     break;
                 }
                 
-                if ([self shouldEvaluateInputStreamServerTrust]) {
-                    [self evaluateInputStreamServerTrust];
-                }
-                
-                if (self.isReadResponseHeader == NO) {
-                    self.isReadResponseHeader = YES;
-                    [self inputStreamGetAndNotifyHttpResponse];
-                }
-                
+                [self inputStreamGetAndNotifyHttpResponse];
                 [self inputStreamGetAndNotifyHttpData];
             }
                 break;
             case NSStreamEventHasSpaceAvailable:
                 break;
             case NSStreamEventErrorOccurred:{
+                [self releaseResource];
                 [self endProgress: YES];
-                [self delegate_onError:[self translateCFNetworkErrorIntoUrlError:[self.inputStream streamError]]];
-                [self closeInputStream];
+                [self delegate_onError:[self translateCFNetworkErrorIntoUrlError:[aStream streamError]]];
             }
                 break;
             case NSStreamEventEndEncountered:{
                 if ([self shouldInputStreamRedirect]) {
                     [self inputStreamRedirect];
                 } else {
+                    
+                    [self inputStreamGetAndNotifyHttpResponse];
+                    [self inputStreamGetAndNotifyHttpData];
+                    
+                    [self releaseResource];
                     [self endProgress: NO];
-                    [self inputStreamDidLoadHttpResponse];
+                    [self delegate_didFinish];
                 }
             }
                 break;
@@ -337,8 +352,7 @@
                                            selector:@selector(timerAction)
                                            userInfo:nil
                                             repeats:YES];
-    [[NSRunLoop currentRunLoop] addTimer:timer
-                                 forMode:NSDefaultRunLoopMode];
+    [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
     
     [self timerAction];
     _progressTimer = timer;
@@ -784,16 +798,14 @@
     }
 }
 
-- (BOOL)delegate_evaluateServerTrust:(SecTrustRef)serverTrust
-                           forDomain:(NSString *)domain{
-    if ([self.delegate respondsToSelector:@selector(evaluateServerTrust:forDomain:)]) {
-        return [self.delegate evaluateServerTrust:serverTrust forDomain:domain];
-    } else {
-        return NO;
-    }
-}
-
 - (void)delegate_onError:(NSError *)error{
+    @synchronized (self) {
+        if (self.isCallFinishOrError) {
+            return;
+        }
+        self.isCallFinishOrError = YES;
+    }
+    
     if ([self.delegate respondsToSelector:@selector(onError:)]) {
         [self.delegate onError:error];
     }
@@ -810,9 +822,9 @@
               totalBytesExpectedToSend:totalBytesExpectedToSend];
     }
 }
-- (void)delegate_onReceiveResponse:(NSURLResponse *)response{
-    if ([self.delegate respondsToSelector:@selector(onReceiveResponse:)]) {
-        [self.delegate onReceiveResponse:response];
+- (void)delegate_onReceiveResponse:(NSURLResponse *)response httpVersion:(NSString *)httpVersion{
+    if ([self.delegate respondsToSelector:@selector(onReceiveResponse:httpVersion:)]) {
+        [self.delegate onReceiveResponse:response httpVersion:httpVersion];
     }
 }
 
@@ -823,8 +835,29 @@
 }
 
 - (void)delegate_didFinish{
+    @synchronized (self) {
+        if (self.isCallFinishOrError) {
+            return;
+        }
+        self.isCallFinishOrError = YES;
+    }
+    
     if ([self.delegate respondsToSelector:@selector(didFinish)]) {
         [self.delegate didFinish];
+    }
+}
+
+
+// MARK: error
+- (NSError *)createError:(NSInteger)errorCode errorDescription:(NSString *)errorDescription {
+    if (errorDescription) {
+        return [NSError errorWithDomain:kQNCFHttpClientErrorDomain
+                                   code:errorCode
+                               userInfo:@{@"userInfo":errorDescription}];
+    } else {
+        return [NSError errorWithDomain:kQNCFHttpClientErrorDomain
+                                   code:NSURLErrorSecureConnectionFailed
+                               userInfo:nil];
     }
 }
 

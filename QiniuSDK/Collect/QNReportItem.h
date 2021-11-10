@@ -87,10 +87,13 @@ extern NSString *const QNReportRequestKeyHttpClient;
 extern NSString *const QNReportRequestKeyNetworkType;
 extern NSString *const QNReportRequestKeySignalStrength;
 extern NSString *const QNReportRequestKeyPrefetchedDnsSource;
+extern NSString *const QNReportRequestKeyDnsSource;
+extern NSString *const QNReportRequestKeyDnsErrorMessage;
 extern NSString *const QNReportRequestKeyPrefetchedBefore;
 extern NSString *const QNReportRequestKeyPrefetchedErrorMessage;
 extern NSString *const QNReportRequestKeyNetworkMeasuring;
 extern NSString *const QNReportRequestKeyPerceptiveSpeed;
+extern NSString *const QNReportRequestKeyHijacking;
 
 //MARK:-- 分块上传统计⽇志
 extern NSString *const QNReportBlockKeyLogType;
@@ -112,14 +115,17 @@ extern NSString *const QNReportBlockKeyOsVersion;
 extern NSString *const QNReportBlockKeySDKName;
 extern NSString *const QNReportBlockKeySDKVersion;
 extern NSString *const QNReportBlockKeyPerceptiveSpeed;
+extern NSString *const QNReportBlockKeyHijacking;
 
 //MARK:-- 上传质量统计
 extern NSString *const QNReportQualityKeyLogType;
+extern NSString *const QNReportQualityKeyUpType;
 extern NSString *const QNReportQualityKeyUpTime;
 extern NSString *const QNReportQualityKeyResult;
 extern NSString *const QNReportQualityKeyTargetBucket;
 extern NSString *const QNReportQualityKeyTargetKey;
 extern NSString *const QNReportQualityKeyTotalElapsedTime;
+extern NSString *const QNReportQualityKeyUcQueryElapsedTime;
 extern NSString *const QNReportQualityKeyRequestsCount;
 extern NSString *const QNReportQualityKeyRegionsCount;
 extern NSString *const QNReportQualityKeyBytesSent;
@@ -132,5 +138,6 @@ extern NSString *const QNReportQualityKeyOsVersion;
 extern NSString *const QNReportQualityKeySDKName;
 extern NSString *const QNReportQualityKeySDKVersion;
 extern NSString *const QNReportQualityKeyPerceptiveSpeed;
+extern NSString *const QNReportQualityKeyHijacking;
 
 NS_ASSUME_NONNULL_END

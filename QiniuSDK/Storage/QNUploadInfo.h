@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)getSourceId;
 
 /// 数据源大小，未知为：-1
-- (long)getSourceSize;
+- (long long)getSourceSize;
 
 /// 是否为同一个 UploadInfo，
 /// 同一个：source 相同，上传方式相同

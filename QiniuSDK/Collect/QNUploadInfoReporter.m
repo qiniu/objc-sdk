@@ -5,9 +5,11 @@
 //  Created by WorkSpace_Sun on 2019/6/24.
 //  Copyright © 2019 Qiniu. All rights reserved.
 //
-
+#import "QNDefine.h"
+#import "QNZoneInfo.h"
 #import "QNUploadInfoReporter.h"
 #import "QNResponseInfo.h"
+#import "QNUtils.h"
 #import "QNFile.h"
 #import "QNUpToken.h"
 #import "QNUserAgent.h"
@@ -15,17 +17,24 @@
 #import "QNVersion.h"
 #import "QNReportConfig.h"
 #import "NSData+QNGZip.h"
+#import "QNTransactionManager.h"
+#import "QNRequestTransaction.h"
+
+#define kQNUplogDelayReportTransactionName @"com.qiniu.uplog"
 
 @interface QNUploadInfoReporter ()
 
 @property (nonatomic, strong) QNReportConfig *config;
 @property (nonatomic, assign) NSTimeInterval lastReportTime;
-@property (nonatomic, strong) NSFileManager *fileManager;
 @property (nonatomic, strong) NSString *recorderFilePath;
-@property (nonatomic, strong) dispatch_queue_t recordQueue;
-@property (nonatomic, strong) dispatch_semaphore_t semaphore;
+@property (nonatomic, strong) NSString *recorderTempFilePath;
 @property (nonatomic, copy) NSString *X_Log_Client_Id;
 
+@property (nonatomic, strong) QNRequestTransaction *transaction;
+@property (nonatomic, assign) BOOL isReporting;
+
+@property (nonatomic, strong) dispatch_queue_t recordQueue;
+@property (nonatomic, strong) dispatch_semaphore_t semaphore;
 @end
 
 @implementation QNUploadInfoReporter
@@ -47,17 +56,22 @@
         _config = [QNReportConfig sharedInstance];
         _lastReportTime = 0;
         _recorderFilePath = [NSString stringWithFormat:@"%@/%@", _config.recordDirectory, @"qiniu.log"];
-        _fileManager = [NSFileManager defaultManager];
+        _recorderTempFilePath = [NSString stringWithFormat:@"%@/%@", _config.recordDirectory, @"qiniuTemp.log"];
         _recordQueue = dispatch_queue_create("com.qiniu.reporter", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
 
 - (void)clean {
-    
-    if ([_fileManager fileExistsAtPath:_recorderFilePath]) {
+    [self cleanRecorderFile];
+    [self cleanTempRecorderFile];
+}
+
+- (void)cleanRecorderFile {
+    NSFileManager *manager = [NSFileManager defaultManager];
+    if ([manager fileExistsAtPath:_recorderFilePath]) {
         NSError *error = nil;
-        [_fileManager removeItemAtPath:_recorderFilePath error:&error];
+        [manager removeItemAtPath:_recorderFilePath error:&error];
         if (error) {
             NSLog(@"remove recorder file failed: %@", error);
             return;
@@ -65,8 +79,19 @@
     }
 }
 
+- (void)cleanTempRecorderFile {
+    NSFileManager *manager = [NSFileManager defaultManager];
+    if ([manager fileExistsAtPath:_recorderTempFilePath]) {
+        NSError *error = nil;
+        [manager removeItemAtPath:_recorderTempFilePath error:&error];
+        if (error) {
+            NSLog(@"remove recorder temp file failed: %@", error);
+            return;
+        }
+    }
+}
+
 - (BOOL)checkReportAvailable {
-    
     if (!_config.isReportEnable) {
         return NO;
     }
@@ -79,91 +104,141 @@
 
 - (void)report:(NSString *)jsonString token:(NSString *)token {
     
-    if (![self checkReportAvailable] || !jsonString) {
+    if (![self checkReportAvailable] || !jsonString || !token || token.length == 0) {
         return;
     }
+    
     // 串行队列处理文件读写
     dispatch_async(_recordQueue, ^{
-        [self innerReport:jsonString token:token];
+        [self saveReportJsonString:jsonString];
+        [self reportToServerIfNeeded:token];
     });
 }
 
-- (void)innerReport:(NSString *)jsonString token:(NSString *)token {
-    
-    // 检查recorder文件夹是否存在
-    NSError *error = nil;
-    if (![_fileManager fileExistsAtPath:_config.recordDirectory]) {
-        [_fileManager createDirectoryAtPath:_config.recordDirectory withIntermediateDirectories:YES attributes:nil error:&error];
-        if (error) {
-            NSLog(@"create record directory failed, please check record directory: %@", error.localizedDescription);
-            return;
-        }
-    }
-
-    // 拼接换行符
+- (void)saveReportJsonString:(NSString *)jsonString {
     NSString *finalRecordInfo = [jsonString stringByAppendingString:@"\n"];
-    if (![_fileManager fileExistsAtPath:_recorderFilePath]) {
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    if (![fileManager fileExistsAtPath:self.recorderFilePath]) {
         // 如果recordFile不存在，创建文件并写入首行，首次不上传
-        [finalRecordInfo writeToFile:_recorderFilePath atomically:YES encoding:NSUTF8StringEncoding error:&error];
+        [finalRecordInfo writeToFile:_recorderFilePath atomically:YES encoding:NSUTF8StringEncoding error:nil];
     } else {
-        // recordFile存在，拼接文件内容、上传到服务器
-        QNFile *file = [[QNFile alloc] init:_recorderFilePath error:&error];
-        if (error) {
-            NSLog(@"create QNFile with path failed: %@", error.localizedDescription);
+        NSDictionary *recorderFileAttr = [fileManager attributesOfItemAtPath:self.recorderFilePath error:nil];
+        if ([recorderFileAttr fileSize] > self.config.maxRecordFileSize) {
             return;
         }
         
-        // 判断recorder文件大小是否超过maxRecordFileSize
-        if (file.size < _config.maxRecordFileSize) {
-            @try {
-                // 上传信息写入recorder文件
-                NSFileHandle *fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:_recorderFilePath];
-                [fileHandler seekToEndOfFile];
-                [fileHandler writeData: [finalRecordInfo dataUsingEncoding:NSUTF8StringEncoding]];
-                [fileHandler closeFile];
-            } @catch (NSException *exception) {
-                NSLog(@"NSFileHandle cannot write data: %@", exception.description);
-            } 
-        }
-        
-        // 判断是否满足上传条件：文件大于上报临界值 || (首次上传 || 距上次上传时间大于_config.interval)
-        NSTimeInterval currentTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970];
-        if (file.size > _config.uploadThreshold || (_lastReportTime == 0 || currentTime - _lastReportTime > _config.interval * 60)) {
-            
-            NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:_config.serverURL]];
-            [request setValue:[NSString stringWithFormat:@"UpToken %@", token] forHTTPHeaderField:@"Authorization"];
-            [request setValue:[[QNUserAgent sharedInstance] getUserAgent:[QNUpToken parse:token].access] forHTTPHeaderField:@"User-Agent"];
-            if (self.X_Log_Client_Id) {
-                [request setValue:self.X_Log_Client_Id forHTTPHeaderField:@"X-Log-Client-Id"];
-            }
-            [request setHTTPMethod:@"POST"];
-            [request setTimeoutInterval:_config.timeoutInterval];
-    
-            NSData *reportData = [NSData dataWithContentsOfFile:_recorderFilePath];
-            reportData = [NSData qn_gZip:reportData];
-            __block NSURLSession *session = [NSURLSession sessionWithConfiguration:[NSURLSessionConfiguration defaultSessionConfiguration]];
-            NSURLSessionUploadTask *uploadTask = [session uploadTaskWithRequest:request fromData:reportData completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-                NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-                if (httpResponse.statusCode == 200) {
-                    self.lastReportTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970];
-                    NSDictionary *respHeader = httpResponse.allHeaderFields;
-                    if (!self.X_Log_Client_Id && [respHeader.allKeys containsObject:@"x-log-client-id"]) {
-                        self.X_Log_Client_Id = respHeader[@"x-log-client-id"];
-                    }
-                    [self clean];
-                } else {
-                    NSLog(@"upload info report failed: %@", error.localizedDescription);
-                }
-                [session finishTasksAndInvalidate];
-                dispatch_semaphore_signal(self.semaphore);
-            }];
-            [uploadTask resume];
-            
-            // 控制上传过程中，文件内容不被修改
-            _semaphore = dispatch_semaphore_create(0);
-            dispatch_semaphore_wait(_semaphore, DISPATCH_TIME_FOREVER);
+        NSFileHandle *fileHandler = nil;
+        @try {
+            // 上传信息写入recorder文件
+            fileHandler = [NSFileHandle fileHandleForUpdatingAtPath:_recorderFilePath];
+            [fileHandler seekToEndOfFile];
+            [fileHandler writeData: [finalRecordInfo dataUsingEncoding:NSUTF8StringEncoding]];
+        } @catch (NSException *exception) {
+            NSLog(@"NSFileHandle cannot write data: %@", exception.description);
+        } @finally {
+            [fileHandler closeFile];
         }
     }
+}
+
+- (void)reportToServerIfNeeded:(NSString *)tokenString {
+    BOOL needToReport = NO;
+    long currentTime = [[NSDate date] timeIntervalSince1970];
+    long interval = self.config.interval * 60;
+    
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSDictionary *recorderFileAttr = [fileManager attributesOfItemAtPath:self.recorderFilePath error:nil];
+    if ([fileManager fileExistsAtPath:self.recorderTempFilePath]) {
+        needToReport = YES;
+    } else if ((self.lastReportTime == 0 || (currentTime - self.lastReportTime) >= interval || [recorderFileAttr fileSize] > self.config.uploadThreshold) &&
+            ([fileManager moveItemAtPath:self.recorderFilePath toPath:self.recorderTempFilePath error:nil])) {
+        needToReport = YES;
+    }
+    
+    if (needToReport && !self.isReporting) {
+        [self reportToServer:tokenString];
+    } else {
+        // 有未上传日志存在，则 interval 时间后再次重试一次
+        if (![fileManager fileExistsAtPath:self.recorderFilePath] || [recorderFileAttr fileSize] == 0) {
+            return;
+        }
+        
+        NSArray *transactionList = [kQNTransactionManager transactionsForName:kQNUplogDelayReportTransactionName];
+        if (transactionList != nil && transactionList.count > 1) {
+            return;
+        }
+
+        if (transactionList != nil && transactionList.count == 1) {
+            QNTransaction *transaction = transactionList.firstObject;
+            if (transaction != nil && !transaction.isExecuting) {
+                return;
+            }
+        }
+        
+        kQNWeakSelf;
+        QNTransaction *transaction = [QNTransaction transaction:kQNUplogDelayReportTransactionName after:interval action:^{
+            kQNStrongSelf;
+            [self reportToServerIfNeeded:tokenString];
+        }];
+        [kQNTransactionManager addTransaction:transaction];
+    }
+}
+
+
+- (void)reportToServer:(NSString *)tokenString {
+    if (tokenString == nil) {
+        return;
+    }
+    QNUpToken *token = [QNUpToken parse:tokenString];
+    if (!token.isValid) {
+        return;
+    }
+    
+    NSData *logData = [self getLogData];
+    if (logData == nil) {
+        return;
+    }
+    
+    self.isReporting = YES;
+    logData = [NSData qn_gZip:logData];
+    QNRequestTransaction *transaction = [self createUploadRequestTransaction:token];
+    [transaction reportLog:logData logClientId:self.X_Log_Client_Id complete:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, NSDictionary * _Nullable response) {
+        if (responseInfo.isOK) {
+            self.lastReportTime = [[NSDate dateWithTimeIntervalSinceNow:0] timeIntervalSince1970];
+            if (!self.X_Log_Client_Id) {
+                self.X_Log_Client_Id = responseInfo.responseHeader[@"x-log-client-id"];
+            }
+            [self cleanTempRecorderFile];
+        } else {
+            NSLog(@"upload info report failed: %@", responseInfo);
+        }
+        
+        self.isReporting = NO;
+        [self destroyUploadRequestTransaction:transaction];
+    }];
+}
+
+- (NSData *)getLogData {
+    return [NSData dataWithContentsOfFile:_recorderTempFilePath];
+}
+
+- (QNRequestTransaction *)createUploadRequestTransaction:(QNUpToken *)token{
+    if (self.config.serverURL) {
+        
+    }
+    NSArray *hosts = nil;
+    if (self.config.serverHost) {
+        hosts = @[self.config.serverHost];
+    }
+    QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithHosts:hosts
+                                                                           regionId:QNZoneInfoEmptyRegionId
+                                                                              token:token];
+    self.transaction = transaction;
+    return transaction;
+}
+
+- (void)destroyUploadRequestTransaction:(QNRequestTransaction *)transaction{
+    self.transaction = nil;
 }
 
 @end

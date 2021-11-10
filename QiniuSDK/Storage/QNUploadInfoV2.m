@@ -144,9 +144,10 @@
         return true;
     }
     
-    BOOL isAllUploaded = true;
+    __block BOOL isAllUploaded = true;
     [self.dataList enumerateObjectsUsingBlock:^(QNUploadData *data, NSUInteger idx, BOOL * _Nonnull stop) {
         if (!data.isUploaded) {
+            isAllUploaded = false;
             *stop = true;
         }
     }];
@@ -193,7 +194,7 @@
         }
         
         // 从资源中读取新的 block 进行上传
-        long dataOffset = 0;
+        long long dataOffset = 0;
         if (self.dataList.count > 0) {
             QNUploadData *lastData = self.dataList[self.dataList.count - 1];
             dataOffset = lastData.offset + lastData.size;
@@ -273,7 +274,7 @@
     
     // 未加载过 block 数据
     // 根据 data 信息加载 dataBytes
-    NSData *dataBytes = [self readData:data.size dataOffset:data.offset error:error];
+    NSData *dataBytes = [self readData:(NSInteger)data.size dataOffset:data.offset error:error];
     if (*error != nil) {
         return nil;
     }

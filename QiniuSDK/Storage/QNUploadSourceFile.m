@@ -42,7 +42,7 @@
     return [self.file size];
 }
 
-- (NSData *)readData:(NSInteger)dataSize dataOffset:(long)dataOffset error:(NSError *__autoreleasing  _Nullable *)error {
+- (NSData *)readData:(NSInteger)dataSize dataOffset:(long long)dataOffset error:(NSError *__autoreleasing  _Nullable *)error {
     return [self.file read:dataOffset size:dataSize error:error];
 }
 
@@ -50,4 +50,11 @@
     [self.file close];
 }
 
+- (NSString *)sourceType {
+    if ([self.file respondsToSelector:@selector(fileType)]) {
+        return self.file.fileType;
+    } else {
+        return @"SourceFile";
+    }
+}
 @end

@@ -43,7 +43,7 @@
     return self;
 }
 
-- (NSData *)read:(long)offset
+- (NSData *)read:(long long)offset
             size:(long)size
            error:(NSError **)error {
     
@@ -81,6 +81,10 @@
 
 - (int64_t)size {
     return _fileSize;
+}
+
+- (NSString *)fileType {
+    return @"ALAsset";
 }
 @end
 #endif

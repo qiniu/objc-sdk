@@ -12,13 +12,22 @@
 
 + (instancetype)parse:(NSString *)token;
 
-@property (copy, nonatomic, readonly) NSString *access;
-@property (copy, nonatomic, readonly) NSString *bucket;
-@property (copy, nonatomic, readonly) NSString *token;
+@property (assign, nonatomic, readonly) long deadline;
+@property (copy  , nonatomic, readonly) NSString *access;
+@property (copy  , nonatomic, readonly) NSString *bucket;
+@property (copy  , nonatomic, readonly) NSString *token;
 
 @property (readonly) BOOL isValid;
 @property (readonly) BOOL hasReturnUrl;
 
++ (instancetype)getInvalidToken;
+
 - (NSString *)index;
+
+/// 是否在未来 duration 分钟内有效
+- (BOOL)isValidForDuration:(long)duration;
+
+/// 在是否在 date 之前有效
+- (BOOL)isValidBeforeDate:(NSDate *)date;
 
 @end

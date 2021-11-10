@@ -26,10 +26,20 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+#define kQNMetricsRequestHijacked @"forsure"
+#define kQNMetricsRequestMaybeHijacked @"maybe"
+
 @interface QNUploadSingleRequestMetrics : QNUploadMetrics
 
 // 请求的 httpVersion
 @property (nonatomic,  copy)NSString *httpVersion;
+
+// 请求是否劫持
+@property (nonatomic,   copy)NSString *hijacked;
+@property (nonatomic, assign, readonly)BOOL isForsureHijacked;
+@property (nonatomic, assign, readonly)BOOL isMaybeHijacked;
+@property (nonatomic,   copy) NSString *syncDnsSource;
+@property (nonatomic, strong) NSError *syncDnsError;
 
 // 只有进行网络检测才会有 connectCheckMetrics
 @property (nonatomic, nullable , strong) QNUploadSingleRequestMetrics *connectCheckMetrics;
@@ -86,6 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, readonly) NSNumber *requestCount;
 @property (nonatomic, strong, readonly) NSNumber *bytesSend;
 @property (nonatomic, strong, readonly) id <QNUploadRegion> region;
+@property (nonatomic, strong, readonly) QNUploadSingleRequestMetrics *lastMetrics;
 @property (nonatomic,   copy, readonly) NSArray<QNUploadSingleRequestMetrics *> *metricsList;
 
 //MARK:-- 构造
@@ -99,10 +110,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNUploadTaskMetrics : QNUploadMetrics
 
+@property (nonatomic,   copy, readonly) NSString *upType;
 @property (nonatomic, strong, readonly) NSNumber *requestCount;
 @property (nonatomic, strong, readonly) NSNumber *bytesSend;
 @property (nonatomic, strong, readonly) NSNumber *regionCount;
+@property (nonatomic, strong, readonly) QNUploadRegionRequestMetrics *lastMetrics;
+
+@property (nonatomic, strong) QNUploadRegionRequestMetrics *ucQueryMetrics;
 @property (nonatomic, strong) NSArray<id <QNUploadRegion>> *regions;
+
++ (instancetype)taskMetrics:(NSString *)upType;
 
 - (void)addMetrics:(QNUploadRegionRequestMetrics *)metrics;
 

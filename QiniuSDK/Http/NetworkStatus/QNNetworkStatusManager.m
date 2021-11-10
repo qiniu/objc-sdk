@@ -58,7 +58,7 @@
     self.isHandlingNetworkInfoOfDisk = NO;
     self.networkStatusInfo = [NSMutableDictionary dictionary];
     self.recorder = [QNFileRecorder fileRecorderWithFolder:[[QNUtils sdkCacheDirectory] stringByAppendingString:@"/NetworkStatus"] error:nil];
-    [self asyncRecordNetworkStatusInfo];
+    [self asyncRecoverNetworkStatusFromDisk];
 }
 
 + (NSString *)getNetworkStatusType:(NSString *)host

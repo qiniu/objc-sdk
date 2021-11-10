@@ -7,6 +7,7 @@
 //
 
 #import "QNReportConfig.h"
+#import "QNConfig.h"
 #import "QNUtils.h"
 
 @implementation QNReportConfig
@@ -25,8 +26,8 @@
     self = [super init];
     if (self) {
         _reportEnable = YES;
-        _interval = 10;
-        _serverURL = @"https://uplog.qbox.me/log/4?compressed=gzip";
+        _interval = 0.5;
+        _serverHost = kQNUpLogHost;
         _recordDirectory = [NSString stringWithFormat:@"%@/report", [QNUtils sdkCacheDirectory]];
         _maxRecordFileSize = 2 * 1024 * 1024;
         _uploadThreshold = 4 * 1024;
@@ -35,4 +36,7 @@
     return self;
 }
 
+- (NSString *)serverURL {
+    return [NSString stringWithFormat:@"https://%@/log/4?compressed=gzip", _serverHost];
+}
 @end

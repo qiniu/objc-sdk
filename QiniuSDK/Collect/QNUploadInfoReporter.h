@@ -11,7 +11,6 @@
 #import <UIKit/UIKit.h>
 #endif
 
-@class QNResponseInfo;
 
 #define kQNReporter [QNUploadInfoReporter sharedInstance]
 @interface QNUploadInfoReporter : NSObject

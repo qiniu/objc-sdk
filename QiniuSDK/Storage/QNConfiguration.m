@@ -71,6 +71,10 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 @end
 
 @interface QNGlobalConfiguration()
+@property(nonatomic, strong)NSArray *defaultDohIpv4Servers;
+@property(nonatomic, strong)NSArray *defaultDohIpv6Servers;
+@property(nonatomic, strong)NSArray *defaultUdpDnsIpv4Servers;
+@property(nonatomic, strong)NSArray *defaultUdpDnsIpv6Servers;
 @end
 @implementation QNGlobalConfiguration
 + (instancetype)shared{
@@ -84,19 +88,65 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 }
 - (void)setupData{
     _isDnsOpen = YES;
+    _dnsResolveTimeout = 2;
     _dnsCacheDir = [NSHomeDirectory() stringByAppendingPathComponent:@"Library/Caches/Dns"];
     _dnsRepreHostNum = 2;
     _dnsCacheTime = kQNDefaultDnsCacheTime;
     _dnsCacheMaxTTL = 10*60;
-
+    
+    _dohEnable = true;
+    _defaultDohIpv4Servers = @[@"https://223.6.6.6/dns-query", @"https://8.8.8.8/dns-query"];
+    
+    _udpDnsEnable = true;
+    _defaultUdpDnsIpv4Servers = @[@"223.5.5.5", @"114.114.114.114", @"1.1.1.1", @"8.8.8.8"];
+    
     _globalHostFrozenTime = 10;
     _partialHostFrozenTime = 5*60;
     
     _connectCheckEnable = YES;
-    _connectCheckTimeout = 3;
+    _connectCheckTimeout = 2;
     _connectCheckURLStrings = @[@"https://www.qiniu.com", @"https://www.baidu.com", @"https://www.google.com"];
 }
 
+- (BOOL)isDohEnable {
+    return _dohEnable && (_dohIpv4Servers.count > 0) ;
+}
+
+- (NSArray<NSString *> *)dohIpv4Servers {
+    if (_dohIpv4Servers) {
+        return _dohIpv4Servers;
+    } else {
+        return _defaultDohIpv4Servers;
+    }
+}
+
+- (NSArray<NSString *> *)dohIpv6Servers {
+    if (_dohIpv6Servers) {
+        return _dohIpv6Servers;
+    } else {
+        return _defaultDohIpv6Servers;
+    }
+}
+
+- (NSArray<NSString *> *)udpDnsIpv4Servers {
+    if (_udpDnsIpv4Servers) {
+        return _udpDnsIpv4Servers;
+    } else {
+        return _defaultUdpDnsIpv4Servers;
+    }
+}
+
+- (NSArray<NSString *> *)udpDnsIpv6Servers {
+    if (_udpDnsIpv6Servers) {
+        return _udpDnsIpv6Servers;
+    } else {
+        return _defaultUdpDnsIpv6Servers;
+    }
+}
+
+- (BOOL)isUdpDnsEnable {
+    return _udpDnsEnable && (_udpDnsIpv4Servers.count > 0) ;
+}
 @end
 
 @implementation QNConfigurationBuilder
@@ -106,7 +156,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
         _zone = [[QNAutoZone alloc] init];
         _chunkSize = 2 * 1024 * 1024;
         _putThreshold = 4 * 1024 * 1024;
-        _retryMax = 0;
+        _retryMax = 1;
         _timeoutInterval = 90;
         _retryInterval = 0.5;
 

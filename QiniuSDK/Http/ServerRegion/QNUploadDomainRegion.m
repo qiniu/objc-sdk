@@ -89,9 +89,13 @@
     }
     
     // Host未解析出IP时:
-    if (condition == nil || condition(self.host, nil, nil)) {
+    QNUploadServer *hostServer = [QNUploadServer server:self.host
+                                                     ip:nil
+                                                 source:nil
+                                       ipPrefetchedTime:nil];
+    if (condition == nil || condition(self.host, nil, hostServer)) {
         // 未解析时，没有可比性，直接返回自身，自身即为最优
-        server = [QNUploadServer server:self.host ip:nil source:nil ipPrefetchedTime:nil];
+        server = hostServer;
     }
     
     return server;
@@ -112,7 +116,13 @@
     }
 }
 
-- (void)createIpGroupList{
+- (void)clearIpGroupList {
+    @synchronized (self) {
+        self.ipGroupList = nil;
+    }
+}
+
+- (void)createIpGroupList {
 
     @synchronized (self) {
         if (self.ipGroupList && self.ipGroupList.count > 0) {
@@ -162,6 +172,7 @@
 @property(atomic   , assign)BOOL isAllFrozen;
 // 局部http2冻结管理对象
 @property(nonatomic, strong)QNUploadServerFreezeManager *partialHttp2Freezer;
+@property(nonatomic, strong)QNUploadServerFreezeManager *partialHttp3Freezer;
 @property(nonatomic, strong)NSArray <NSString *> *domainHostList;
 @property(nonatomic, strong)NSDictionary <NSString *, QNUploadServerDomain *> *domainDictionary;
 @property(nonatomic, strong)NSArray <NSString *> *oldDomainHostList;
@@ -216,6 +227,15 @@
     return [domainDictionary copy];
 }
 
+- (void)updateIpListFormHost:(NSString *)host {
+    if (host == nil) {
+        return;
+    }
+    
+    [self.domainDictionary[host] clearIpGroupList];
+    [self.oldDomainDictionary[host] clearIpGroupList];
+}
+
 - (id<QNUploadServer> _Nullable)getNextServer:(QNUploadRequestState *)requestState
                                  responseInfo:(QNResponseInfo *)responseInfo
                                  freezeServer:(id <QNUploadServer> _Nullable)freezeServer{
@@ -226,9 +246,12 @@
     [self freezeServerIfNeed:responseInfo freezeServer:freezeServer];
     
     QNUploadServer *server = nil;
-    BOOL isUseOldServer = requestState.isUseOldServer;
-    NSArray *hostList = isUseOldServer ? self.oldDomainHostList : self.domainHostList;
-    NSDictionary *domainInfo = isUseOldServer ? self.oldDomainDictionary : self.domainDictionary;
+    NSArray *hostList = self.domainHostList;
+    NSDictionary *domainInfo = self.domainDictionary;
+    if (requestState.isUseOldServer && self.oldDomainHostList.count > 0 && self.oldDomainDictionary.count > 0) {
+        hostList = self.oldDomainHostList;
+        domainInfo = self.oldDomainDictionary;
+    }
     
     // 1. 优先使用http3
     if (self.http3Enabled) {
@@ -238,7 +261,7 @@
                 // 1.1 剔除冻结对象
                 NSString *frozenType = QNUploadFrozenType(host, filterServer.ip);
                 BOOL isFrozen = [QNUploadServerFreezeUtil isType:frozenType
-                                          frozenByFreezeManagers:@[kQNUploadGlobalHttp3Freezer]];
+                                          frozenByFreezeManagers:@[self.partialHttp3Freezer, kQNUploadGlobalHttp3Freezer]];
                 if (isFrozen) {
                     return NO;
                 }
@@ -312,6 +335,11 @@
     NSString *frozenType = QNUploadFrozenType(freezeServer.host, freezeServer.ip);
     // 1. http3 冻结
     if (kQNIsHttp3(freezeServer.httpVersion)) {
+        if (responseInfo.isNotQiniu) {
+            self.hasFreezeHost = YES;
+            [self.partialHttp3Freezer freezeType:frozenType frozenTime:kQNGlobalConfiguration.partialHostFrozenTime];
+        }
+        
         if (!responseInfo.canConnectToHost || responseInfo.isHostUnavailable) {
             self.hasFreezeHost = YES;
             [kQNUploadGlobalHttp3Freezer freezeType:frozenType frozenTime:kQNUploadHttp3FrozenTime];
@@ -321,7 +349,7 @@
     
     // 2. http2 冻结
     // 2.1 无法连接到Host || Host不可用， 局部冻结
-    if (!responseInfo.canConnectToHost || responseInfo.isHostUnavailable) {
+    if (responseInfo.isNotQiniu || !responseInfo.canConnectToHost || responseInfo.isHostUnavailable) {
         QNLogInfo(@"partial freeze server host:%@ ip:%@", freezeServer.host, freezeServer.ip);
         self.hasFreezeHost = YES;
         [self.partialHttp2Freezer freezeType:frozenType frozenTime:kQNGlobalConfiguration.partialHostFrozenTime];
@@ -350,6 +378,13 @@
         _partialHttp2Freezer = [[QNUploadServerFreezeManager alloc] init];
     }
     return _partialHttp2Freezer;
+}
+
+- (QNUploadServerFreezeManager *)partialHttp3Freezer{
+    if (!_partialHttp3Freezer) {
+        _partialHttp3Freezer = [[QNUploadServerFreezeManager alloc] init];
+    }
+    return _partialHttp3Freezer;
 }
 
 @end

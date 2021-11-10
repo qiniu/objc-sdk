@@ -12,6 +12,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface QNAutoZone : QNZone
 
++ (instancetype)zoneWithUcHosts:(NSArray *)ucHosts;
+
++ (void)clearCache;
+
 @end
 
 NS_ASSUME_NONNULL_END

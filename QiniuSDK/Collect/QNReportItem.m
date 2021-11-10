@@ -166,7 +166,7 @@ NSString * const QNReportLogTypeQuality = @"quality";
 
 //MARK:-- 请求信息打点⽇志
 NSString * const QNReportRequestKeyLogType = @"log_type";
-NSString *const QNReportRequestKeyUpTime = @"up_time";
+NSString * const QNReportRequestKeyUpTime = @"up_time";
 NSString * const QNReportRequestKeyStatusCode = @"status_code";
 NSString * const QNReportRequestKeyRequestId = @"req_id";
 NSString * const QNReportRequestKeyHost = @"host";
@@ -201,10 +201,13 @@ NSString * const QNReportRequestKeyHttpClient = @"http_client";
 NSString * const QNReportRequestKeyNetworkType = @"network_type";
 NSString * const QNReportRequestKeySignalStrength = @"signal_strength";
 NSString * const QNReportRequestKeyPrefetchedDnsSource = @"prefetched_dns_source";
+NSString * const QNReportRequestKeyDnsSource = @"dns_source";
+NSString * const QNReportRequestKeyDnsErrorMessage = @"dns_error_message";
 NSString * const QNReportRequestKeyPrefetchedBefore = @"prefetched_before";
 NSString * const QNReportRequestKeyPrefetchedErrorMessage = @"prefetched_error_message";
 NSString * const QNReportRequestKeyNetworkMeasuring = @"network_measuring";
 NSString * const QNReportRequestKeyPerceptiveSpeed = @"perceptive_speed";
+NSString * const QNReportRequestKeyHijacking = @"hijacking";
 
 //MARK:-- 分块上传统计⽇志
 NSString * const QNReportBlockKeyLogType = @"log_type";
@@ -226,15 +229,18 @@ NSString * const QNReportBlockKeyOsVersion = @"os_version";
 NSString * const QNReportBlockKeySDKName = @"sdk_name";
 NSString * const QNReportBlockKeySDKVersion = @"sdk_version";
 NSString * const QNReportBlockKeyPerceptiveSpeed = @"perceptive_speed";
+NSString * const QNReportBlockKeyHijacking = @"hijacking";
 
 
 //MARK:-- 上传质量统计
 NSString * const QNReportQualityKeyLogType = @"log_type";
+NSString * const QNReportQualityKeyUpType = @"up_type";
 NSString * const QNReportQualityKeyUpTime = @"up_time";
 NSString * const QNReportQualityKeyResult = @"result";
 NSString * const QNReportQualityKeyTargetBucket = @"target_bucket";
 NSString * const QNReportQualityKeyTargetKey = @"target_key";
 NSString * const QNReportQualityKeyTotalElapsedTime = @"total_elapsed_time";
+NSString * const QNReportQualityKeyUcQueryElapsedTime = @"uc_query_elapsed_time";
 NSString * const QNReportQualityKeyRequestsCount = @"requests_count";
 NSString * const QNReportQualityKeyRegionsCount = @"regions_count";
 NSString * const QNReportQualityKeyBytesSent = @"bytes_sent";
@@ -247,3 +253,4 @@ NSString * const QNReportQualityKeyOsVersion = @"os_version";
 NSString * const QNReportQualityKeySDKName = @"sdk_name";
 NSString * const QNReportQualityKeySDKVersion = @"sdk_version";
 NSString * const QNReportQualityKeyPerceptiveSpeed = @"perceptive_speed";
+NSString * const QNReportQualityKeyHijacking = @"hijacking";

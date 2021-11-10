@@ -30,6 +30,8 @@
 #import <CoreServices/CoreServices.h>
 #endif
 
+#import "QNUploadManager.h"
+
 #import "QNAsyncRun.h"
 #import "QNConfiguration.h"
 #import "QNCrc32.h"
@@ -45,6 +47,7 @@
 #import "QNUploadOption.h"
 #import "QNReportItem.h"
 
+#import "QNServerConfigMonitor.h"
 #import "QNDnsPrefetch.h"
 #import "QNZone.h"
 
@@ -82,6 +85,7 @@
         }
         _config = config;
         [[QNTransactionManager shared] addDnsLocalLoadTransaction];
+        [QNServerConfigMonitor startMonitor];
     }
     return self;
 }
@@ -130,6 +134,7 @@
         return;
     }
     
+    QNServerConfigMonitor.token = token;
     [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone token:t];
     
     QNUpTaskCompletionHandler complete = ^(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp) {
@@ -333,12 +338,13 @@
                              complete:completionHandler];
         };
 
+        QNServerConfigMonitor.token = token;
         [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone token:t];
 
         long long sourceSize = [source getSize];
         if (sourceSize > 0 && sourceSize <= self.config.putThreshold) {
             NSError *error;
-            NSData *data = [source readData:sourceSize dataOffset:0 error:&error];
+            NSData *data = [source readData:(NSInteger)sourceSize dataOffset:0 error:&error];
             [source close];
             if (error) {
                 QNResponseInfo *info = [QNResponseInfo responseInfoWithFileError:error];
@@ -459,12 +465,13 @@
     
     QNReportItem *item = [QNReportItem item];
     [item setReportValue:QNReportLogTypeQuality forKey:QNReportQualityKeyLogType];
+    [item setReportValue:taskMetricsP.upType forKey:QNReportQualityKeyUpType];
     [item setReportValue:@([[NSDate date] timeIntervalSince1970]) forKey:QNReportQualityKeyUpTime];
     [item setReportValue:responseInfo.qualityResult forKey:QNReportQualityKeyResult];
     [item setReportValue:upToken.bucket forKey:QNReportQualityKeyTargetBucket];
     [item setReportValue:key forKey:QNReportQualityKeyTargetKey];
     [item setReportValue:taskMetricsP.totalElapsedTime forKey:QNReportQualityKeyTotalElapsedTime];
-    [item setReportValue:taskMetricsP.totalElapsedTime forKey:QNReportQualityKeyTotalElapsedTime];
+    [item setReportValue:taskMetricsP.ucQueryMetrics.totalElapsedTime forKey:QNReportQualityKeyUcQueryElapsedTime];
     [item setReportValue:taskMetricsP.requestCount forKey:QNReportQualityKeyRequestsCount];
     [item setReportValue:taskMetricsP.regionCount forKey:QNReportQualityKeyRegionsCount];
     [item setReportValue:taskMetricsP.bytesSend forKey:QNReportQualityKeyBytesSent];
@@ -477,6 +484,8 @@
     [item setReportValue:responseInfo.requestReportErrorType forKey:QNReportQualityKeyErrorType];
     NSString *errorDesc = responseInfo.requestReportErrorType ? responseInfo.message : nil;
     [item setReportValue:errorDesc forKey:QNReportQualityKeyErrorDescription];
+    
+    [item setReportValue:taskMetricsP.lastMetrics.lastMetrics.hijacked forKey:QNReportBlockKeyHijacking];
     
     long long fileSize = -1;
     if ([source conformsToProtocol:@protocol(QNUploadSource)]) {

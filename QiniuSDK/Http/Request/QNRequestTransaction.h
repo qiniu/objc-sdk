@@ -80,6 +80,23 @@ typedef void(^QNRequestTransactionCompleteHandler)(QNResponseInfo * _Nullable re
         partInfoArray:(NSArray <NSDictionary *> *)partInfoArray
              complete:(QNRequestTransactionCompleteHandler)complete;
 
+/**
+ * 上传日志
+ */
+- (void)reportLog:(NSData *)logData
+      logClientId:(NSString *)logClientId
+         complete:(QNRequestTransactionCompleteHandler)complete;
+
+/**
+ * 获取服务端配置
+ */
+- (void)serverConfig:(QNRequestTransactionCompleteHandler)complete;
+
+/**
+ * 获取服务端针对某个用户的配置
+ */
+- (void)serverUserConfig:(QNRequestTransactionCompleteHandler)complete;
+
 @end
 
 NS_ASSUME_NONNULL_END

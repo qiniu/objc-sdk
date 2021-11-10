@@ -56,7 +56,7 @@
 
 @implementation QNDnsPrefetcherTest
 
-#define kCustomHost @"api.qiniu.com"
+#define kCustomHost @"uplog.qbox.me"
 #define kDnsTestToken token_na0
 - (void)setUp {
     

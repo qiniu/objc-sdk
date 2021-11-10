@@ -34,13 +34,6 @@
     id<QNUploadServer> server = [region getNextServer:nil responseInfo:nil freezeServer:nil];
     
     XCTAssertNotNil(server, @"server is nil");
-    
-    PHAsset *asset = nil;
-    PHContentEditingInputRequestOptions *options = nil;
-    [asset requestContentEditingInputWithOptions:options completionHandler:^(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nonnull info) {
-            
-    }];
-    PHContentEditingInput *input = nil;
 }
 
 

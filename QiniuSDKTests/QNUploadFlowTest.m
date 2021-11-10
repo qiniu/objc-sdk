@@ -151,9 +151,12 @@
     NSArray *upList01 = @[@"uptemp01.qbox.me", @"uptemp02.qbox.me"];
     QNZoneInfo *zoneInfo01 = [QNZoneInfo zoneInfoWithMainHosts:upList01 regionId:nil];
     
-    NSArray *upList02 = @[@"upload-na0.qiniup.com", @"up-na0.qbox.me"];
+    NSArray *upList02 = @[@"upload.qiniup.com", @"up.qbox.me"];
     QNZoneInfo *zoneInfo02 = [QNZoneInfo zoneInfoWithMainHosts:upList02 regionId:nil];
-    QNZonesInfo *zonesInfo = [[QNZonesInfo alloc] initWithZonesInfo:@[zoneInfo01, zoneInfo02]];
+    
+    NSArray *upList03 = @[@"upload-na0.qiniup.com", @"up-na0.qbox.me"];
+    QNZoneInfo *zoneInfo03 = [QNZoneInfo zoneInfoWithMainHosts:upList03 regionId:nil];
+    QNZonesInfo *zonesInfo = [[QNZonesInfo alloc] initWithZonesInfo:@[zoneInfo01, zoneInfo02, zoneInfo03]];
     
     QNFixedZone *zone = [[QNFixedZone alloc] init];
     [zone setValue:zonesInfo forKeyPath:@"zonesInfo"];

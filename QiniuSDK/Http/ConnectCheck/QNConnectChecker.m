@@ -126,7 +126,7 @@
     });
     
     QNUploadSystemClient *client = [[QNUploadSystemClient alloc] init];
-    [client request:request connectionProxy:nil progress:nil complete:^(NSURLResponse *response, QNUploadSingleRequestMetrics * metrics, NSData * _Nullable data, NSError * error) {
+    [client request:request server:nil connectionProxy:nil progress:nil complete:^(NSURLResponse *response, QNUploadSingleRequestMetrics * metrics, NSData * _Nullable data, NSError * error) {
         @synchronized (self) {
             if (hasCallback) {
                 return;

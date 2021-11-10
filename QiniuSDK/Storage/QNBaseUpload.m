@@ -12,6 +12,10 @@
 #import "QNBaseUpload.h"
 #import "QNUploadDomainRegion.h"
 
+NSString *const QNUploadUpTypeForm = @"form";
+NSString *const QNUploadUpTypeResumableV1 = @"resumable_v1";
+NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
+
 @interface QNBaseUpload ()
 
 @property (nonatomic, strong) QNBaseUpload *strongSelf;
@@ -32,6 +36,7 @@
 @property (nonatomic, strong)NSMutableArray <id <QNUploadRegion> > *regions;
 
 @property (nonatomic, strong)QNUploadRegionRequestMetrics *currentRegionRequestMetrics;
+@property (nonatomic, strong) QNUploadTaskMetrics *metrics;
 
 @end
 
@@ -94,7 +99,6 @@
 - (void)initData{
     _strongSelf = self;
     _currentRegionIndex = 0;
-    _metrics = [QNUploadTaskMetrics emptyMetrics];
 }
 
 - (void)run {
@@ -103,7 +107,8 @@
     kQNWeakSelf;
     [_config.zone preQuery:self.token on:^(int code, QNResponseInfo *responseInfo, QNUploadRegionRequestMetrics *metrics) {
         kQNStrongSelf;
-        [self.metrics addMetrics:metrics];
+        self.metrics.ucQueryMetrics = metrics;
+        
         if (code == 0) {
             int prepareCode = [self prepareToUpload];
             if (prepareCode == 0) {
@@ -241,4 +246,10 @@
     [self.currentRegionRequestMetrics addMetrics:metrics];
 }
 
+- (QNUploadTaskMetrics *)metrics {
+    if (_metrics == nil) {
+        _metrics = [QNUploadTaskMetrics taskMetrics:self.upType];
+    }
+    return _metrics;
+}
 @end
