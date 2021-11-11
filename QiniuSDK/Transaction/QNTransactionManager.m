@@ -26,6 +26,8 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
 @property(nonatomic, assign)double createTime;
 // 执行次数
 @property(nonatomic, assign)long executedCount;
+// 下次执行时的时间戳
+@property(nonatomic, assign)double nextExecutionTime;
 
 // 事务名称
 @property(nonatomic,  copy)NSString *name;
@@ -47,6 +49,7 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
     transaction.action = action;
     transaction.executedCount = 0;
     transaction.createTime = [[NSDate date] timeIntervalSince1970];
+    transaction.nextExecutionTime = transaction.createTime + after;
     return transaction;
 }
 
@@ -62,15 +65,16 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
     transaction.action = action;
     transaction.executedCount = 0;
     transaction.createTime = [[NSDate date] timeIntervalSince1970];
+    transaction.nextExecutionTime = transaction.createTime + after;
     return transaction;
 }
 
 - (BOOL)shouldAction {
     double currentTime = [[NSDate date] timeIntervalSince1970];
     if (self.type == QNTransactionTypeNormal) {
-        return self.executedCount < 1 && (currentTime - self.createTime) >= self.after;
+        return self.executedCount < 1 && currentTime >= self.nextExecutionTime;
     } else if (self.type == QNTransactionTypeTime) {
-        return (currentTime - self.createTime) >= (self.executedCount * self.interval + self.after);
+        return currentTime >= self.nextExecutionTime;
     } else {
         return NO;
     }
@@ -91,8 +95,9 @@ typedef NS_ENUM(NSInteger, QNTransactionType){
         return;
     }
     if (self.action) {
-        self.executedCount += 1;
         _isExecuting = YES;
+        self.executedCount += 1;
+        self.nextExecutionTime = [[NSDate date] timeIntervalSince1970] + self.interval;
         self.action();
         _isExecuting = NO;
     }
