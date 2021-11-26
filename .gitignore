@@ -39,3 +39,4 @@ QiniuSDK.xcworkspace/xcshareddata/
 Pods/
 Podfile.lock
 .Podfile.swo
+.swiftpm

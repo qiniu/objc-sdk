@@ -1,0 +1,1 @@
+../Collect/QNReportConfig.h
