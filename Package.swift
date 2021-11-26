@@ -16,7 +16,7 @@ let package = Package(
             targets: ["QiniuSDK"]),
     ],
     dependencies: [
-        .package(name:"HappyDNS", url: "https://github.com/YangSen-qn/happy-dns-objc", "1.0.1"..<"1.1.0"),
+        .package(name:"HappyDNS", url: "https://github.com/qiniu/happy-dns-objc", "1.0.1"..<"1.1.0"),
     ],
     targets: [
         .target(
