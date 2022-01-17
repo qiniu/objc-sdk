@@ -1,12 +1,18 @@
 #Changelog
+
 ## 8.4.1(2021-11-26)
 - 支持 Swift Package Manager
 
-## 8.4.0(2021-10-15)
+## 8.4.0(2021-12-07)
 ## 优化
-- Dns 预解析支持 Doh
-- 优化 Dns 劫持处理
-- 优化 Dns 预取结果分组
+- DNS 预解析支持 DoH (DNS over HTTPS)
+- 检测并处理劫持，使用安全的 DNS 重试，提高上传可用性
+- 优化 DNS 预取结果分组和预取失败处理，提高上传可用性
+- 优化日志收集，可更快定位异常问题
+- HappyDns 依赖升至 [v1.0.0](https://github.com/qiniu/happy-dns-android/releases/tag/v1.0.0)
+- SDK 行为可与存储服务端配合，来控制某版本或者指定客户 SDK 的行为，主要用来控制 DNS 预解析阶段要请求的 DNS server 地址和一些提供了开关能力的功能的开启/关闭状态，防止 DNS server 变动或者部分功能的开启/关闭需要更新 SDK 版本
+## 新增
+- 新增 token.isValidForDuration API，可在上传之前检查 token 是否有效
 
 ## 8.3.2(2021-09-3)
 ## 优化
