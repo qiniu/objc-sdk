@@ -14,7 +14,23 @@
 通过 CocoaPods
 
 ```ruby
-pod "Qiniu", "~> 8.4.0" 
+pod "Qiniu", "~> 8.4.1" 
+```
+
+通过 Swift Package Manager (Xcode 11+)
+```
+App 对接:
+File -> Swift Packages -> Add Package Dependency，输入 HappyDNS 库链接，选择相应版本即可
+库链接: https://github.com/qiniu/objc-sdk
+
+库对接:
+let package = Package(
+    dependencies: [
+        .package(url: "https://github.com/qiniu/objc-sdk", from: "8.4.1")
+    ],
+    // ...
+)
+
 ```
 
 ## 运行环境

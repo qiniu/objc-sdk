@@ -1,4 +1,8 @@
 #Changelog
+
+## 8.4.1(2021-11-26)
+- 支持 Swift Package Manager
+
 ## 8.4.0(2021-12-07)
 ## 优化
 - DNS 预解析支持 DoH (DNS over HTTPS)
