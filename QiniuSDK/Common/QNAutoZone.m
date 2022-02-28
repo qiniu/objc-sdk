@@ -210,7 +210,7 @@
     if (self.ucHosts && self.ucHosts.count > 0) {
         hosts = [self.ucHosts copy];
     } else {
-        hosts = @[kQNPreQueryHost00, kQNPreQueryHost01];
+        hosts = @[kQNPreQueryHost02, kQNPreQueryHost00, kQNPreQueryHost01];
     }
     QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithHosts:hosts
                                                                            regionId:QNZoneInfoEmptyRegionId
