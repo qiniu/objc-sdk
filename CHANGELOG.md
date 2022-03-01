@@ -1,4 +1,6 @@
 #Changelog
+## 8.4.2(2022-02-28)
+- uc query 流程增加新的域名
 
 ## 8.4.1(2022-01-27)
 - 支持 Swift Package Manager
