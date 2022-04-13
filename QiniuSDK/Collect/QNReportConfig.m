@@ -29,8 +29,8 @@
         _interval = 0.5;
         _serverHost = kQNUpLogHost;
         _recordDirectory = [NSString stringWithFormat:@"%@/report", [QNUtils sdkCacheDirectory]];
-        _maxRecordFileSize = 2 * 1024 * 1024;
-        _uploadThreshold = 4 * 1024;
+        _maxRecordFileSize = 20 * 1024 * 1024;
+        _uploadThreshold = 16 * 1024;
         _timeoutInterval = 10;
     }
     return self;
