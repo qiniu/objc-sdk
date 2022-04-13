@@ -6,7 +6,7 @@
 //  Copyright © 2016年 Aaron. All rights reserved.
 //
 
-#import "Configure.h" // 测试参数配置，暂时只有token，可删除
+//#import "Configure.h" // 测试参数配置，暂时只有token，可删除
 #import "ViewController.h"
 #import "QNTransactionManager.h"
 #import <Photos/Photos.h>
@@ -44,6 +44,11 @@ typedef NS_ENUM(NSInteger, UploadState){
 #define kUploadFixHost00 @"up-z0.qbox.me"
 #define kUploadFixHost01 @"upload.qbox.me"
 
+#ifdef YourToken
+#else
+#define YourToken @"dxVQk8gyk3WswArbNhdKIwmwibJ9nFsQhMNUmtIM:1fql6_Zx4WIJbgSfInTFOqf9bxk=:eyJzY29wZSI6ImtvZG8tcGhvbmUtem9uZTAtc3BhY2UiLCJkZWFkbGluZSI6MzI5ODcyNDMxMX0="
+#endif
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     [QNLogUtil setLogLevel:QNLogLevelInfo];
@@ -64,7 +69,7 @@ typedef NS_ENUM(NSInteger, UploadState){
         NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource.dmg" ofType:nil];
         path = [[NSBundle mainBundle] pathForResource:@"image.png" ofType:nil];
         path = [[NSBundle mainBundle] pathForResource:@"image.jpg" ofType:nil];
-        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_6M.zip" ofType:nil];
+        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_118M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_9M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1.44G.zip" ofType:nil];
@@ -113,7 +118,7 @@ typedef NS_ENUM(NSInteger, UploadState){
     [self uploadImageToQNFilePath:filePath complete:^{
         NSDate *end = [NSDate date];
         NSLog(@"\n======= 第 %ld 次上传结束 耗时：%lfs", index, [end timeIntervalSinceDate:start]);
-        [self uploadImageToQNFilePath:filePath index:index];
+//        [self uploadImageToQNFilePath:filePath index:index];
     }];
 }
 
@@ -128,6 +133,7 @@ typedef NS_ENUM(NSInteger, UploadState){
 //    [QNServerConfigMonitor removeConfigCache];
     
     NSString *key = [NSString stringWithFormat:@"iOS_Demo_%@", [NSDate date]];
+    key = @"iOS-Test";
     self.token = YourToken;
 
     QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {

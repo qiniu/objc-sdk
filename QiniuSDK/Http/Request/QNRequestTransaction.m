@@ -20,6 +20,7 @@
 #import "QNUserAgent.h"
 #import "QNResponseInfo.h"
 #import "QNUploadRequestState.h"
+#import "QNUploadRequestMetrics.h"
 
 #import "QNUploadDomainRegion.h"
 #import "QNHttpRegionRequest.h"
@@ -133,28 +134,40 @@
         param[@"crc32"] = [NSString stringWithFormat:@"%u", (unsigned int)[QNCrc32 data:data]];
     }
     
-    NSMutableData *body = [NSMutableData data];
     NSString *boundary = @"werghnvt54wef654rjuhgb56trtg34tweuyrgf";
     NSString *disposition = @"Content-Disposition: form-data";
-    for (NSString *paramsKey in param) {
-        NSString *pair = [NSString stringWithFormat:@"--%@\r\n%@; name=\"%@\"\r\n\r\n", boundary, disposition, paramsKey];
-        [body appendData:[pair dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    NSMutableData *body = [NSMutableData data];
+    @try {
+        for (NSString *paramsKey in param) {
+            NSString *pair = [NSString stringWithFormat:@"--%@\r\n%@; name=\"%@\"\r\n\r\n", boundary, disposition, paramsKey];
+            [body appendData:[pair dataUsingEncoding:NSUTF8StringEncoding]];
 
-        id value = [param objectForKey:paramsKey];
-        if ([value isKindOfClass:[NSString class]]) {
-            [body appendData:[value dataUsingEncoding:NSUTF8StringEncoding]];
-        } else if ([value isKindOfClass:[NSData class]]) {
-            [body appendData:value];
+            id value = [param objectForKey:paramsKey];
+            if ([value isKindOfClass:[NSString class]]) {
+                [body appendData:[value dataUsingEncoding:NSUTF8StringEncoding]];
+            } else if ([value isKindOfClass:[NSData class]]) {
+                [body appendData:value];
+            }
+            [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
         }
-        [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    
+        fileName = [QNUtils formEscape:fileName];
+    
+        NSString *filePair = [NSString stringWithFormat:@"--%@\r\n%@; name=\"%@\"; filename=\"%@\"\nContent-Type:%@\r\n\r\n", boundary, disposition, @"file", fileName, self.uploadOption.mimeType];
+        [body appendData:[filePair dataUsingEncoding:NSUTF8StringEncoding]];
+    
+        [body appendData:data];
+        [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    } @catch (NSException *exception) {
+        if (complete) {
+            QNResponseInfo *info = [QNResponseInfo responseInfoWithLocalIOError:[NSString stringWithFormat:@"%@", exception]];
+            QNUploadRegionRequestMetrics *metrics = [QNUploadRegionRequestMetrics emptyMetrics];
+            complete(info, metrics, nil);
+        }
+        return;
     }
     
-    fileName = [QNUtils formEscape:fileName];
-    
-    NSString *filePair = [NSString stringWithFormat:@"--%@\r\n%@; name=\"%@\"; filename=\"%@\"\nContent-Type:%@\r\n\r\n", boundary, disposition, @"file", fileName, self.uploadOption.mimeType];
-    [body appendData:[filePair dataUsingEncoding:NSUTF8StringEncoding]];
-    [body appendData:data];
-    [body appendData:[[NSString stringWithFormat:@"\r\n--%@--\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
     
     NSMutableDictionary *header = [NSMutableDictionary dictionary];
     header[@"Content-Type"] = [NSString stringWithFormat:@"multipart/form-data; boundary=%@", boundary];
