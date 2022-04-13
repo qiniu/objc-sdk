@@ -34,7 +34,7 @@
 }
 
 - (NSDictionary *)toDictionary {
-    return @{@"sourceSize" : @(self.sourceSize),
+    return @{@"sourceSize" : @([self getSourceSize]),
              @"sourceId" : self.sourceId ?: @""};
 }
 
