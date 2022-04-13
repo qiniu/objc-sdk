@@ -6,7 +6,16 @@
 //  Copyright © 2016年 Aaron. All rights reserved.
 //
 
-//#import "Configure.h" // 测试参数配置，暂时只有token，可删除
+#ifdef YourToken
+
+#import "Configure.h" // 测试参数配置，暂时只有token，可删除
+
+#else
+
+#define YourToken @""
+
+#endif
+
 #import "ViewController.h"
 #import "QNTransactionManager.h"
 #import <Photos/Photos.h>
@@ -43,11 +52,6 @@ typedef NS_ENUM(NSInteger, UploadState){
 
 #define kUploadFixHost00 @"up-z0.qbox.me"
 #define kUploadFixHost01 @"upload.qbox.me"
-
-#ifdef YourToken
-#else
-#define YourToken @"dxVQk8gyk3WswArbNhdKIwmwibJ9nFsQhMNUmtIM:1fql6_Zx4WIJbgSfInTFOqf9bxk=:eyJzY29wZSI6ImtvZG8tcGhvbmUtem9uZTAtc3BhY2UiLCJkZWFkbGluZSI6MzI5ODcyNDMxMX0="
-#endif
 
 - (void)viewDidLoad {
     [super viewDidLoad];
