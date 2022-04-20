@@ -13,7 +13,7 @@
  */
 @interface QNResponseInfo : NSObject
 
-/// 状态码
+/// 状态码，具体见 QNErrorCode.h
 @property (readonly) int statusCode;
 /// response 信息
 @property (nonatomic, copy, readonly) NSDictionary *responseDictionary;
