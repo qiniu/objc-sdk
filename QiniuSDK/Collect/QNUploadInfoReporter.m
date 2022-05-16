@@ -144,7 +144,7 @@
 - (void)reportToServerIfNeeded:(NSString *)tokenString {
     BOOL needToReport = NO;
     long currentTime = [[NSDate date] timeIntervalSince1970];
-    long interval = self.config.interval * 60;
+    long interval = self.config.interval * 10;
     
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSDictionary *recorderFileAttr = [fileManager attributesOfItemAtPath:self.recorderFilePath error:nil];
@@ -175,9 +175,7 @@
             }
         }
         
-        kQNWeakSelf;
         QNTransaction *transaction = [QNTransaction transaction:kQNUplogDelayReportTransactionName after:interval action:^{
-            kQNStrongSelf;
             [self reportToServerIfNeeded:tokenString];
         }];
         [kQNTransactionManager addTransaction:transaction];

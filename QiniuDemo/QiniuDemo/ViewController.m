@@ -6,7 +6,16 @@
 //  Copyright © 2016年 Aaron. All rights reserved.
 //
 
+#ifdef YourToken
+
 #import "Configure.h" // 测试参数配置，暂时只有token，可删除
+
+#else
+
+#define YourToken @""
+
+#endif
+
 #import "ViewController.h"
 #import "QNTransactionManager.h"
 #import <Photos/Photos.h>
@@ -64,7 +73,7 @@ typedef NS_ENUM(NSInteger, UploadState){
         NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource.dmg" ofType:nil];
         path = [[NSBundle mainBundle] pathForResource:@"image.png" ofType:nil];
         path = [[NSBundle mainBundle] pathForResource:@"image.jpg" ofType:nil];
-        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_6M.zip" ofType:nil];
+        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_118M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_9M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1.44G.zip" ofType:nil];
@@ -113,7 +122,7 @@ typedef NS_ENUM(NSInteger, UploadState){
     [self uploadImageToQNFilePath:filePath complete:^{
         NSDate *end = [NSDate date];
         NSLog(@"\n======= 第 %ld 次上传结束 耗时：%lfs", index, [end timeIntervalSinceDate:start]);
-        [self uploadImageToQNFilePath:filePath index:index];
+//        [self uploadImageToQNFilePath:filePath index:index];
     }];
 }
 
@@ -128,6 +137,7 @@ typedef NS_ENUM(NSInteger, UploadState){
 //    [QNServerConfigMonitor removeConfigCache];
     
     NSString *key = [NSString stringWithFormat:@"iOS_Demo_%@", [NSDate date]];
+    key = @"iOS-Test";
     self.token = YourToken;
 
     QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {

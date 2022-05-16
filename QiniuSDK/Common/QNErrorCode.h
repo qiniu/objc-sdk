@@ -7,6 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+/**
+ * StatusCode >= 100 见：https://developer.qiniu.com/kodo/3928/error-responses
+ * 除上述链接及下面定义外的状态码依据 iOS 标准库定义
+ */
 
 /**
  *    中途取消的状态码

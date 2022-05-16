@@ -68,6 +68,14 @@
         return;
     }
     
+    if (chunk.data == nil) {
+        QNLogInfo(@"key:%@ chunk data is nil", self.key);
+        
+        QNResponseInfo *responseInfo = [QNResponseInfo responseInfoOfZeroData:@"chunk data is nil"];;
+        completeHandler(YES, responseInfo, nil, nil);
+        return;
+    }
+    
     kQNWeakSelf;
     void (^progress)(long long, long long) = ^(long long totalBytesWritten, long long totalBytesExpectedToWrite){
         kQNStrongSelf;
