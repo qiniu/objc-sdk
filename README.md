@@ -14,7 +14,7 @@
 通过 CocoaPods
 
 ```ruby
-pod "Qiniu", "~> 8.4.2" 
+pod "Qiniu", "~> 8.4.3" 
 ```
 
 通过 Swift Package Manager (Xcode 11+)
@@ -26,7 +26,7 @@ File -> Swift Packages -> Add Package Dependency，输入库链接，选择相�
 库对接:
 let package = Package(
     dependencies: [
-        .package(url: "https://github.com/qiniu/objc-sdk", from: "8.4.2")
+        .package(url: "https://github.com/qiniu/objc-sdk", from: "8.4.3")
     ],
     // ...
 )
@@ -123,6 +123,7 @@ $ xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -configur
 - 如果需要支持 iOS 5 或者支持 RestKit, 请用 AFNetworking 1.x 分支的版本
 - 如果碰到其他编译错误, 请参考 CocoaPods 的 [troubleshooting](http://guides.cocoapods.org/using/troubleshooting.html)
 - iOS 9+ 强制使用https，需要在project build info 添加NSAppTransportSecurity类型Dictionary。在NSAppTransportSecurity下添加NSAllowsArbitraryLoads类型Boolean,值设为YES。 具体操作可参见 http://blog.csdn.net/guoer9973/article/details/48622823
+- 上传返回错误码理解，[status code 注释](https://github.com/qiniu/objc-sdk/blob/master/QiniuSDK/Common/QNErrorCode.h)
 
 ## 代码贡献
 
