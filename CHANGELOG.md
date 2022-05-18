@@ -1,4 +1,9 @@
 #Changelog
+## 8.4.3 (2022-05-18)
+- 优化表单上传：当出现内存问题抛出错误
+- 优化分片 v1 上传：强化验证上传块数据验证
+- 增加上传 [status code 注释](https://github.com/qiniu/objc-sdk/blob/master/QiniuSDK/Common/QNErrorCode.h)
+
 ## 8.4.2(2022-02-28)
 - 为默认自动获取上传域名流程增加了新的备份域名
 
