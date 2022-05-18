@@ -11,4 +11,4 @@
 /**
  *    sdk 版本
  */
-static NSString *const kQiniuVersion = @"8.4.2";
+static NSString *const kQiniuVersion = @"8.4.3";
