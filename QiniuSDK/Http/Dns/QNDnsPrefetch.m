@@ -731,10 +731,10 @@
 }
 
 - (QNInternalDns *)customDns {
-    if (_systemDns == nil && kQNGlobalConfiguration.dns) {
-        _systemDns = [QNInternalDns dnsWithDns:kQNGlobalConfiguration.dns];
+    if (_customDns == nil && kQNGlobalConfiguration.dns) {
+        _customDns = [QNInternalDns dnsWithDns:kQNGlobalConfiguration.dns];
     }
-    return _systemDns;
+    return _customDns;
 }
 
 - (QNInternalDns *)systemDns {

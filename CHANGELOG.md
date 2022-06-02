@@ -1,4 +1,7 @@
 #Changelog
+## 8.4.4 (2022-06-02)
+- HappyDns 依赖升至 [v1.0.2](https://github.com/qiniu/happy-dns-android/releases/tag/v1.0.2)
+
 ## 8.4.3 (2022-05-18)
 - 优化表单上传：当出现内存问题抛出错误
 - 优化分片 v1 上传：强化验证上传块数据验证
