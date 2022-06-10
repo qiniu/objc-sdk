@@ -260,6 +260,8 @@
 		31C2EEE5242DE86D00713A33 /* QNUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEE2242DE86300713A33 /* QNUtils.m */; };
 		31C2EEEC242DEF6A00713A33 /* QNUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEEB242DEF6A00713A33 /* QNUtilTest.m */; };
 		31C2EEED242DEF6A00713A33 /* QNUtilTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C2EEEB242DEF6A00713A33 /* QNUtilTest.m */; };
+		31C30FAC2852EA7900BFD8F7 /* QNNetworkStatusTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C30FAB2852EA7900BFD8F7 /* QNNetworkStatusTest.m */; };
+		31C30FAD2852EA7900BFD8F7 /* QNNetworkStatusTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31C30FAB2852EA7900BFD8F7 /* QNNetworkStatusTest.m */; };
 		31C6E68824ECC75700633629 /* NSData+QNGZip.m in Sources */ = {isa = PBXBuildFile; fileRef = 31259E3124E3D02C00CF7531 /* NSData+QNGZip.m */; };
 		31C9D24427141252006B9433 /* QNCFHttpClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C9D24227141252006B9433 /* QNCFHttpClient.h */; };
 		31C9D24527141252006B9433 /* QNCFHttpClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 31C9D24227141252006B9433 /* QNCFHttpClient.h */; };
@@ -534,6 +536,7 @@
 		31C2EEE1242DE86300713A33 /* QNUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNUtils.h; sourceTree = "<group>"; };
 		31C2EEE2242DE86300713A33 /* QNUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUtils.m; sourceTree = "<group>"; };
 		31C2EEEB242DEF6A00713A33 /* QNUtilTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUtilTest.m; sourceTree = "<group>"; };
+		31C30FAB2852EA7900BFD8F7 /* QNNetworkStatusTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNNetworkStatusTest.m; sourceTree = "<group>"; };
 		31C9D24227141252006B9433 /* QNCFHttpClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNCFHttpClient.h; sourceTree = "<group>"; };
 		31C9D24327141252006B9433 /* QNCFHttpClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNCFHttpClient.m; sourceTree = "<group>"; };
 		31C9D2502717E106006B9433 /* QNCFHttpThreadPool.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNCFHttpThreadPool.m; sourceTree = "<group>"; };
@@ -1092,6 +1095,7 @@
 				31C2EEEB242DEF6A00713A33 /* QNUtilTest.m */,
 				3149445D24470B9E00386F16 /* XCTestCase+QNTest.h */,
 				3149445E24470B9E00386F16 /* XCTestCase+QNTest.m */,
+				31C30FAB2852EA7900BFD8F7 /* QNNetworkStatusTest.m */,
 			);
 			path = QiniuSDKTests;
 			sourceTree = SOURCE_ROOT;
@@ -1628,6 +1632,7 @@
 				31304CBF25676921001034D2 /* QNUploadDomainRegionTest.m in Sources */,
 				316A4B832431C8BA007BF564 /* QNDnsPrefetcherTest.m in Sources */,
 				317211E526FAD36400EF0947 /* QNServerConfigTest.m in Sources */,
+				31C30FAC2852EA7900BFD8F7 /* QNNetworkStatusTest.m in Sources */,
 				31C2EEEC242DEF6A00713A33 /* QNUtilTest.m in Sources */,
 				3142419E2449553F00BD9A21 /* QNCFHttpClientTest.m in Sources */,
 				DF0A03241B3BAC3900E3778C /* QNFormUploadTest.m in Sources */,
@@ -1751,6 +1756,7 @@
 				31304CC025676921001034D2 /* QNUploadDomainRegionTest.m in Sources */,
 				316A4B842431C8D2007BF564 /* QNDnsPrefetcherTest.m in Sources */,
 				317211E626FAD36400EF0947 /* QNServerConfigTest.m in Sources */,
+				31C30FAD2852EA7900BFD8F7 /* QNNetworkStatusTest.m in Sources */,
 				31C2EEED242DEF6A00713A33 /* QNUtilTest.m in Sources */,
 				3142419F2449554200BD9A21 /* QNCFHttpClientTest.m in Sources */,
 				DF0A03261B3BAC6E00E3778C /* QNBase64Test.m in Sources */,

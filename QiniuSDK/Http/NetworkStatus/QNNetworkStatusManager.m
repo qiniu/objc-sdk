@@ -99,7 +99,7 @@
 
 
 // ----- status 持久化
-#define kNetworkStatusDiskKey @"NetworkStatus:v1.0.0"
+#define kNetworkStatusDiskKey @"NetworkStatus:v1.0.1"
 - (void)asyncRecordNetworkStatusInfo{
     @synchronized (self) {
         if (self.isHandlingNetworkInfoOfDisk) {
@@ -112,6 +112,7 @@
         self.isHandlingNetworkInfoOfDisk = NO;
     });
 }
+
 - (void)asyncRecoverNetworkStatusFromDisk{
     @synchronized (self) {
         if (self.isHandlingNetworkInfoOfDisk) {
@@ -124,13 +125,19 @@
         self.isHandlingNetworkInfoOfDisk = NO;
     });
 }
+
 - (void)recordNetworkStatusInfo{
     if (self.recorder == nil || self.networkStatusInfo == nil) {
         return;
     }
+    
+    NSDictionary *networkStatusInfo = nil;
+    @synchronized(self) {
+        networkStatusInfo = [self.networkStatusInfo copy];
+    }
     NSMutableDictionary *statusInfo = [NSMutableDictionary dictionary];
-    for (NSString *key in self.networkStatusInfo.allKeys) {
-        NSDictionary *statusDictionary = [self.networkStatusInfo[key] toDictionary];
+    for (NSString *key in networkStatusInfo.allKeys) {
+        NSDictionary *statusDictionary = [networkStatusInfo[key] toDictionary];
         if (statusDictionary) {
             [statusInfo setObject:statusDictionary forKey:key];
         }
@@ -167,7 +174,9 @@
         }
     }
     
-    [self.networkStatusInfo setValuesForKeysWithDictionary:networkStatusInfo];
+    @synchronized(self) {
+        [self.networkStatusInfo setValuesForKeysWithDictionary:networkStatusInfo];
+    }
 }
 
 @end
