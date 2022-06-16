@@ -55,10 +55,30 @@
     QNUploadServer *server00 = [QNUploadServer server:host00 ip:@"" source:@"c" ipPrefetchedTime:nil];
     QNUploadServer *server01 = [QNUploadServer server:host01 ip:@"" source:@"c" ipPrefetchedTime:nil];
     NSLog(@"==== start compare");
-    for (int i=0; i<100000; i++) {
-        BOOL isBetter = [QNUploadServerNetworkStatus isServerNetworkBetter:server00 thanServerB:server01];
-        XCTAssertFalse(isBetter, @"should not better");
-    }
+    
+    dispatch_group_t group = dispatch_group_create();
+    dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{
+        for (int i=0; i<100000; i++) {
+            NSString *host = [[NSString alloc]initWithFormat:@"qiniu%2d.com", i];
+            [kQNNetworkStatusManager updateNetworkStatus:host speed:100];
+        }
+    });
+    
+    dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{
+        for (int i=0; i<100000; i++) {
+            BOOL isBetter = [QNUploadServerNetworkStatus isServerNetworkBetter:server00 thanServerB:server01];
+            XCTAssertFalse(isBetter, @"should not better");
+        }
+    });
+    
+    dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{
+        for (int i=0; i<100000; i++) {
+            [kQNNetworkStatusManager performSelector:@selector(recoverNetworkStatusFromDisk)];
+        }
+    });
+    
+    
+    dispatch_group_wait(group, dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC));
 }
 
 @end
