@@ -65,10 +65,11 @@
     });
     
     dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{
+        dispatch_group_enter(group);
         for (int i=0; i<100000; i++) {
-            BOOL isBetter = [QNUploadServerNetworkStatus isServerNetworkBetter:server00 thanServerB:server01];
-            XCTAssertFalse(isBetter, @"should not better");
+            [QNUploadServerNetworkStatus isServerNetworkBetter:server00 thanServerB:server01];
         }
+        dispatch_group_leave(group);
     });
     
     dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{

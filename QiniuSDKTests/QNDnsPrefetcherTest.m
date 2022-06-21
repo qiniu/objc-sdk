@@ -156,4 +156,40 @@
     QN_TEST_CASE_WAIT_TIME(2);
 }
 
+- (void)testClearCache{
+    [kQNTransactionManager destroyResource];
+    QN_TEST_CASE_WAIT_TIME(2);
+        
+    CustomDns *dns = [[CustomDns alloc] init];
+    dns.isTestTtl = YES;
+    kQNGlobalConfiguration.dns = dns;
+    NSString *host = @"uplog.qbox.me";
+    dispatch_group_t group = dispatch_group_create();
+    
+    dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{
+        dispatch_group_enter(group);
+        [kQNDnsPrefetch prefetchHostBySafeDns:host error:nil];
+        for (int i=0; i<1000000; i++) {
+            for (int i=0; i<100000; i++) {
+                [kQNDnsPrefetch prefetchHostBySafeDns:[NSString stringWithFormat:@"%d%@", i, host] error:nil];
+            }
+            [NSThread sleepForTimeInterval:0.0001];
+        }
+        dispatch_group_leave(group);
+    });
+
+    dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{
+        dispatch_group_enter(group);
+        for (int i=0; i<100000; i++) {
+            [kQNDnsPrefetch clearDnsCache:nil];
+            [NSThread sleepForTimeInterval:0.001];
+        }
+        dispatch_group_leave(group);
+    });
+    
+    dispatch_group_wait(group, dispatch_time(DISPATCH_TIME_NOW, 60 * NSEC_PER_SEC));
+    
+    QN_TEST_CASE_WAIT_TIME(2);
+}
+
 @end
