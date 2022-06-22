@@ -100,8 +100,7 @@
     dispatch_once(&onceToken, ^{
         zFogCnEast1 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload-fog-cn-east-1.qiniup.com",
                                                                   @"up-fog-cn-east-1.qiniup.com"]
-                                                      oldUpList:@[@"upload-fog-cn-east-1.qiniup.com",
-                                                                  @"up-fog-cn-east-1.qiniup.com"]
+                                                      oldUpList:nil
                                                        regionId:@"fog-cn-east-1"];;
     });
     return zFogCnEast1;
