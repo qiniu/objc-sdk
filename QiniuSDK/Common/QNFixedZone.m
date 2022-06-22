@@ -28,6 +28,17 @@
     return z0;
 }
 
++ (instancetype)zoneCnEast2 {
+    static QNFixedZone *zoneCnEast2 = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        zoneCnEast2 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload-cn-east-2.qiniup.com", @"up-cn-east-2.qiniup.com"]
+                                                      oldUpList:nil
+                                                       regionId:@"cn-east-2"];
+    });
+    return zoneCnEast2;
+}
+
 + (instancetype)zone1 {
     static QNFixedZone *z1 = nil;
     static dispatch_once_t onceToken;
@@ -48,6 +59,17 @@
                                               regionId:@"z2"];
     });
     return z2;
+}
+
++ (instancetype)zoneNorthEast1 {
+    static QNFixedZone *zoneNorthEast1 = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        zoneNorthEast1 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload-ap-northeast-1.qiniup.com", @"up-ap-northeast-1.qiniup.com"]
+                                                         oldUpList:nil
+                                                          regionId:@"ap-northeast-1"];
+    });
+    return zoneNorthEast1;
 }
 
 + (instancetype)zoneNa0 {

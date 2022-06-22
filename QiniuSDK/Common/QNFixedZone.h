@@ -20,6 +20,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)zone0;
 
 /**
+ *    zoneCnEast2 华东-浙江2
+ *
+ *    @return 实例
+ */
++ (instancetype)zoneCnEast2;
+
+/**
  *    zone 1 华北
  *
  *    @return 实例
@@ -32,6 +39,13 @@ NS_ASSUME_NONNULL_BEGIN
  *    @return 实例
  */
 + (instancetype)zone2;
+
+/**
+ *    zoneNorthEast1 首尔区域
+ *
+ *    @return 实例
+ */
++ (instancetype)zoneNorthEast1;
 
 /**
  *    zone Na0 北美
