@@ -62,19 +62,6 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)zoneAs0;
 
 /**
- *    zone fog-cn-east-1 雾存储 华东-1
- *    分片上传暂时仅支持分片 api v2
- *    分片 api v2设置方式：配置 QNConfiguration 的 resumeUploadVersion 为 QNResumeUploadVersionV2
- *    eg：
- *    QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
- *          builder.resumeUploadVersion = QNResumeUploadVersionV2;
- *    }];
- *
- *    @return 实例
- */
-+ (instancetype)zoneFogCnEast1;
-
-/**
  *    Zone初始化方法
  *
  *    @param upList     默认上传服务器地址列表
