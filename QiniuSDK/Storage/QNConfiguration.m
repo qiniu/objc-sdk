@@ -37,8 +37,8 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
         
         _chunkSize = builder.chunkSize;
         if (builder.resumeUploadVersion == QNResumeUploadVersionV1) {
-            if (_chunkSize < 512 * 1024) {
-                _chunkSize = 512 * 1024;
+            if (_chunkSize < 1024) {
+                _chunkSize = 1024;
             }
         } else if (builder.resumeUploadVersion == QNResumeUploadVersionV2) {
             if (_chunkSize < 1024 * 1024) {

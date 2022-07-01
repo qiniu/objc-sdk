@@ -263,7 +263,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 
 /**
  *    断点上传时的分片大小
- *    分片 v1 最小为 512 * 1024，即 512K
+ *    分片 v1 最小为 1024，即 1K，建议用户配置 >= 512K
  *    分片 v2 最小为 1024 * 1024，即 1M
  */
 @property (assign) UInt32 chunkSize;
