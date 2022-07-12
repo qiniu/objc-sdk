@@ -166,11 +166,12 @@
     NSString *host = @"uplog.qbox.me";
     dispatch_group_t group = dispatch_group_create();
     
+    int times = 10;
     dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{
         dispatch_group_enter(group);
         [kQNDnsPrefetch prefetchHostBySafeDns:host error:nil];
-        for (int i=0; i<1000000; i++) {
-            for (int i=0; i<100000; i++) {
+        for (int i=0; i<times; i++) {
+            for (int i=0; i<times; i++) {
                 [kQNDnsPrefetch prefetchHostBySafeDns:[NSString stringWithFormat:@"%d%@", i, host] error:nil];
             }
             [NSThread sleepForTimeInterval:0.0001];
@@ -180,7 +181,7 @@
 
     dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{
         dispatch_group_enter(group);
-        for (int i=0; i<100000; i++) {
+        for (int i=0; i<times; i++) {
             [kQNDnsPrefetch clearDnsCache:nil];
             [NSThread sleepForTimeInterval:0.001];
         }
