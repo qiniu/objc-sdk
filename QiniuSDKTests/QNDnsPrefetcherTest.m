@@ -27,12 +27,18 @@
 @end
 
 #define CustomIPValue @"192.168.1.1"
+#define kCustomHost @"uplog.qbox.me"
+#define kDnsTestToken token_na0
+
 @interface CustomDns : NSObject <QNDnsDelegate>
 @property(nonatomic, assign)BOOL isTestTtl;
 @end
 @implementation CustomDns
 
 - (NSArray<id<QNIDnsNetworkAddress>> *)lookup:(NSString *)host{
+    if (![host isEqualToString:kCustomHost]) {
+        return nil;
+    }
     
     InetAddress *inetAddress = [[InetAddress alloc] init];
     inetAddress.hostValue = host;
@@ -56,8 +62,6 @@
 
 @implementation QNDnsPrefetcherTest
 
-#define kCustomHost @"uplog.qbox.me"
-#define kDnsTestToken token_na0
 - (void)setUp {
     
     [kQNTransactionManager destroyResource];
