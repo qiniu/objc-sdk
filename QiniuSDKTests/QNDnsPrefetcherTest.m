@@ -78,6 +78,7 @@
 
 - (void)testLocalLoad {
     
+    kQNGlobalConfiguration.dns = [[CustomDns alloc] init];
     [kQNTransactionManager addDnsLocalLoadTransaction];
     
     AGWW_WAIT_WHILE([kQNDnsPrefetch getInetAddressByHost:kCustomHost] == nil, 60 * 5);
