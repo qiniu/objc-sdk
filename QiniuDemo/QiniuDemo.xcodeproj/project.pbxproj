@@ -9,8 +9,7 @@
 /* Begin PBXBuildFile section */
 		26F62ADDD5B6306E978C9A3F /* libPods-QiniuDemoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14CB2139715DD7B6FD5B146E /* libPods-QiniuDemoTests.a */; };
 		2B848FF719DFA7ECB394CA9F /* libPods-QiniuDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B9BC5A8D93F988C1240E05F /* libPods-QiniuDemo.a */; };
-		456EB87E280003D500D8BB3E /* UploadResource_118M.zip in Resources */ = {isa = PBXBuildFile; fileRef = 456EB87D280003D500D8BB3E /* UploadResource_118M.zip */; };
-		456EB8802800097C00D8BB3E /* UploadResource_18M.zip in Resources */ = {isa = PBXBuildFile; fileRef = 456EB87F2800097C00D8BB3E /* UploadResource_18M.zip */; };
+		4524905B28A245CB000C0FD4 /* DemoResource in Resources */ = {isa = PBXBuildFile; fileRef = 4524905A28A245CB000C0FD4 /* DemoResource */; };
 		93D230241C86D7F700434F6D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D230231C86D7F700434F6D /* main.m */; };
 		93D230271C86D7F700434F6D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D230261C86D7F700434F6D /* AppDelegate.m */; };
 		93D2302A1C86D7F700434F6D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D230291C86D7F700434F6D /* ViewController.m */; };
@@ -42,8 +41,7 @@
 		14CB2139715DD7B6FD5B146E /* libPods-QiniuDemoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuDemoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		24EE530BBB100BED89B08A3D /* Pods-QiniuDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuDemo/Pods-QiniuDemo.release.xcconfig"; sourceTree = "<group>"; };
 		3189882026469145003CCA68 /* QiniuDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QiniuDemo.entitlements; sourceTree = "<group>"; };
-		456EB87D280003D500D8BB3E /* UploadResource_118M.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = UploadResource_118M.zip; sourceTree = "<group>"; };
-		456EB87F2800097C00D8BB3E /* UploadResource_18M.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = UploadResource_18M.zip; sourceTree = "<group>"; };
+		4524905A28A245CB000C0FD4 /* DemoResource */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DemoResource; sourceTree = "<group>"; };
 		6B9BC5A8D93F988C1240E05F /* libPods-QiniuDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		93D2301F1C86D7F700434F6D /* QiniuDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QiniuDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93D230231C86D7F700434F6D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -93,15 +91,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		318191A92531516F00D18536 /* DemoTestResource */ = {
-			isa = PBXGroup;
-			children = (
-				456EB87F2800097C00D8BB3E /* UploadResource_18M.zip */,
-				456EB87D280003D500D8BB3E /* UploadResource_118M.zip */,
-			);
-			path = DemoTestResource;
-			sourceTree = "<group>";
-		};
 		63D8EA8E5532E578D972E007 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -147,8 +136,8 @@
 		93D230211C86D7F700434F6D /* QiniuDemo */ = {
 			isa = PBXGroup;
 			children = (
+				4524905A28A245CB000C0FD4 /* DemoResource */,
 				3189882026469145003CCA68 /* QiniuDemo.entitlements */,
-				318191A92531516F00D18536 /* DemoTestResource */,
 				93D230251C86D7F700434F6D /* AppDelegate.h */,
 				93D230261C86D7F700434F6D /* AppDelegate.m */,
 				93D230281C86D7F700434F6D /* ViewController.h */,
@@ -295,10 +284,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				93D230321C86D7F700434F6D /* LaunchScreen.storyboard in Resources */,
+				4524905B28A245CB000C0FD4 /* DemoResource in Resources */,
 				93D2302F1C86D7F700434F6D /* Assets.xcassets in Resources */,
 				93D2302D1C86D7F700434F6D /* Main.storyboard in Resources */,
-				456EB87E280003D500D8BB3E /* UploadResource_118M.zip in Resources */,
-				456EB8802800097C00D8BB3E /* UploadResource_18M.zip in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -41,11 +41,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)zone2;
 
 /**
- *    zoneNorthEast1 首尔区域
+ *    zoneNorthEast1 亚太-首尔
  *
  *    @return 实例
  */
-+ (instancetype)zoneNorthEast1;
++ (instancetype)zoneApNorthEast1;
 
 /**
  *    zone Na0 北美

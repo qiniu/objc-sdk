@@ -73,7 +73,7 @@ typedef NS_ENUM(NSInteger, UploadState){
         NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource.dmg" ofType:nil];
         path = [[NSBundle mainBundle] pathForResource:@"image.png" ofType:nil];
         path = [[NSBundle mainBundle] pathForResource:@"image.jpg" ofType:nil];
-        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_118M.zip" ofType:nil];
+        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_14M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_9M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1.44G.zip" ofType:nil];

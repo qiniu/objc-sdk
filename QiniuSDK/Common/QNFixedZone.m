@@ -61,7 +61,7 @@
     return z2;
 }
 
-+ (instancetype)zoneNorthEast1 {
++ (instancetype)zoneApNorthEast1 {
     static QNFixedZone *zoneNorthEast1 = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
@@ -101,7 +101,7 @@
                        [QNFixedZone zone2],
                        [QNFixedZone zoneCnEast2],
                        [QNFixedZone zoneNa0],
-                       [QNFixedZone zoneNorthEast1],
+                       [QNFixedZone zoneApNorthEast1],
                        [QNFixedZone zoneAs0]];
     
     NSMutableArray <QNZoneInfo *> *zoneInfoArray = [NSMutableArray array];
