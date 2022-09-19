@@ -105,9 +105,9 @@
     return isSuccess;
 }
 
-- (BOOL)switchRegionAndUpload{
+- (BOOL)switchRegionAndUploadIfNeededWithErrorResponse:(QNResponseInfo *)errorResponseInfo {
     [self reportBlock];
-    return [super switchRegionAndUpload];;
+    return [super switchRegionAndUploadIfNeededWithErrorResponse:errorResponseInfo];
 }
 
 - (void)startToUpload{

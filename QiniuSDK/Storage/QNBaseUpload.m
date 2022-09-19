@@ -136,6 +136,7 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
     [self.currentRegionRequestMetrics start];
 }
 
+// 内部不再调用
 - (BOOL)switchRegionAndUpload{
     if (self.currentRegionRequestMetrics) {
         [self.currentRegionRequestMetrics end];
@@ -152,13 +153,26 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
 
 // 根据错误信息进行切换region并上传，return:是否切换region并上传
 - (BOOL)switchRegionAndUploadIfNeededWithErrorResponse:(QNResponseInfo *)errorResponseInfo {
-    if (!errorResponseInfo || errorResponseInfo.isOK || // 不存在 || 不是error 不切
-        !errorResponseInfo.couldRetry || ![self.config allowBackupHost] ||  // 不能重试不切
-        ![self switchRegionAndUpload]) { // 切换失败
+    if (!errorResponseInfo || errorResponseInfo.isOK || // 不存在 || 成功 不需要重试
+        !errorResponseInfo.couldRetry || ![self.config allowBackupHost]) {  // 不能重试
         return NO;
     }
-
-    return YES;
+    
+    if (self.currentRegionRequestMetrics) {
+        [self.currentRegionRequestMetrics end];
+        [self.metrics addMetrics:self.currentRegionRequestMetrics];
+        self.currentRegionRequestMetrics = nil;
+    }
+    
+    // 切换区域，当为 context 过期错误不需要切换区域
+    if (!errorResponseInfo.isCtxExpiedError && [self switchRegion]) {
+        // 非 context 过期错误，但是切换 region 失败
+        return false;
+    }
+    
+    [self startToUpload];
+    
+    return true;
 }
 
 - (void)complete:(QNResponseInfo *)info

@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, assign, readonly)BOOL isCompleted;
 // 上传大小 【不进行离线缓存】
 @property(nonatomic, assign, readonly)NSInteger uploadSize;
+// ctx 过期时间
+@property(nonatomic, strong, nullable, readonly)NSNumber *expiredAt;
 
 //MARK:-- 构造
 + (instancetype)blockFromDictionary:(NSDictionary *)dictionary;
@@ -34,6 +36,9 @@ NS_ASSUME_NONNULL_BEGIN
                      blockSize:(NSInteger)blockSize
                       dataSize:(NSInteger)dataSize
                          index:(NSInteger)index;
+
+// 检测 block 是否有效
+- (BOOL)isValid;
 
 /// 获取下一个需要上传的块
 - (QNUploadData *)nextUploadDataWithoutCheckData;

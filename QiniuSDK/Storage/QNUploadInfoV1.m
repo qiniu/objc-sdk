@@ -76,6 +76,21 @@
     return data.index == 0;
 }
 
+- (BOOL)isValid {
+    if (![super isValid]) {
+        return false;
+    }
+    
+    __block BOOL valid = true;
+    [self.blockList enumerateObjectsUsingBlock:^(QNUploadBlock *block, NSUInteger idx, BOOL * _Nonnull stop) {
+        valid = [block isValid];
+        if (!valid) {
+            *stop = true;
+        }
+    }];
+    return  valid;
+}
+
 - (BOOL)reloadSource {
     self.isEOF = false;
     self.readError = nil;

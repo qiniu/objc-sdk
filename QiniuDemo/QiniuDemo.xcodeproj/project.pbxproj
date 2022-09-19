@@ -246,7 +246,7 @@
 				TargetAttributes = {
 					93D2301E1C86D7F700434F6D = {
 						CreatedOnToolsVersion = 7.2;
-						DevelopmentTeam = W2TP34G2MM;
+						DevelopmentTeam = X2US9XXC6H;
 					};
 					93D230371C86D7F700434F6D = {
 						CreatedOnToolsVersion = 7.2;
@@ -517,7 +517,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = QiniuDemo/QiniuDemo.entitlements;
-				DEVELOPMENT_TEAM = W2TP34G2MM;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				DEVELOPMENT_TEAM = X2US9XXC6H;
 				INFOPLIST_FILE = QiniuDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -534,7 +535,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = QiniuDemo/QiniuDemo.entitlements;
-				DEVELOPMENT_TEAM = W2TP34G2MM;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				DEVELOPMENT_TEAM = X2US9XXC6H;
 				INFOPLIST_FILE = QiniuDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
