@@ -165,7 +165,7 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
     }
     
     // 切换区域，当为 context 过期错误不需要切换区域
-    if (!errorResponseInfo.isCtxExpiedError && [self switchRegion]) {
+    if (!errorResponseInfo.isCtxExpiedError && ![self switchRegion]) {
         // 非 context 过期错误，但是切换 region 失败
         return false;
     }
