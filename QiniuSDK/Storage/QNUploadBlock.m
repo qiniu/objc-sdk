@@ -13,7 +13,6 @@
 @property(nonatomic, assign)long long offset;
 @property(nonatomic, assign)NSInteger size;
 @property(nonatomic, assign)NSInteger index;
-@property(nonatomic, strong, nullable)NSNumber *expiredAt;
 @property(nonatomic, strong)NSArray <QNUploadData *> *uploadDataList;
 
 @end
@@ -62,7 +61,7 @@
 }
 
 - (BOOL)isValid {
-    if (!self.expiredAt) {
+    if (!self.expiredAt || self.expiredAt.integerValue <= 0) {
         // 不存在时，为新创建 block: 有效
         return true;
     }
@@ -151,7 +150,7 @@
     dictionary[@"offset"]      = @(self.offset);
     dictionary[@"size"]        = @(self.size);
     dictionary[@"index"]       = @(self.index);
-    dictionary[@"expired_at"]  = self.expiredAt;
+    dictionary[@"expired_at"]  = self.expiredAt ?: @(0);
     dictionary[@"md5"]         = self.md5 ?: @"";
     if (self.context) {
         dictionary[@"context"] = self.context;

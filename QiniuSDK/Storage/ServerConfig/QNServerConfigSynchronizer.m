@@ -78,7 +78,7 @@ static QNRequestTransaction *serverUserConfigTransaction = nil;
         return;
     }
     
-    QNRequestTransaction *transaction = [self createServerConfigTransaction];
+    QNRequestTransaction *transaction = [self createServerUserConfigTransaction];
     if (transaction == nil) {
         complete(nil);
         return;

@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 // 上传大小 【不进行离线缓存】
 @property(nonatomic, assign, readonly)NSInteger uploadSize;
 // ctx 过期时间
-@property(nonatomic, strong, nullable, readonly)NSNumber *expiredAt;
+@property(nonatomic, strong, nullable)NSNumber *expiredAt;
 
 //MARK:-- 构造
 + (instancetype)blockFromDictionary:(NSDictionary *)dictionary;

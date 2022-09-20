@@ -6,14 +6,10 @@
 //  Copyright © 2016年 Aaron. All rights reserved.
 //
 
-#ifdef YourToken
-
+#if __has_include("Configure.h")
 #import "Configure.h" // 测试参数配置，暂时只有token，可删除
-
 #else
-
-#define YourToken @"lUkkMTqUK-fY7t6Tbg7zq-p3iaopntRMOQOkEEDW:GgEJQJE_Z6XnaklcNp3mrEM8QeA=:eyJzY29wZSI6ImN6eXR0ZXN0IiwiZGVhZGxpbmUiOjE2NjI1MzEyMTN9"
-
+#define YourToken @""
 #endif
 
 #import "ViewController.h"
@@ -151,7 +147,9 @@ typedef NS_ENUM(NSInteger, UploadState){
         builder.putThreshold = 4*1024*1024;
         builder.chunkSize = 1*1024*1024;
         builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[kUploadFixHost00, kUploadFixHost01]];
-        builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] error:nil];
+        NSString *recorderPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+        NSLog(@"== record path:%@", recorderPath);
+        builder.recorder = [QNFileRecorder fileRecorderWithFolder:recorderPath error:nil];
     }];
     
     
