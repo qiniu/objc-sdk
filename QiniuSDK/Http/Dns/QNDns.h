@@ -34,7 +34,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 根据host获取解析结果
 /// @param host 域名
-- (NSArray < id <QNIDnsNetworkAddress> > *)lookup:(NSString *)host;
+/// 此方法已废弃，内部不再调用
+/// 请实现方法 - (NSArray < id <QNIDnsNetworkAddress> > *)query:(NSString *)host, 否则自定义的 Dns 不会生效
+- (NSArray < id <QNIDnsNetworkAddress> > *)lookup:(NSString *)host DEPRECATED_MSG_ATTRIBUTE("deprecated, please implement query:");
+
+/// 根据host获取解析结果
+/// @param host 域名
+- (NSArray < id <QNIDnsNetworkAddress> > *)query:(NSString *)host;
 
 @end
 
