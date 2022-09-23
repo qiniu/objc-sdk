@@ -190,8 +190,8 @@
     return interDns;
 }
 - (NSArray < id <QNIDnsNetworkAddress> > *)query:(NSString *)host error:(NSError **)error {
-    if (self.dns && [self.dns respondsToSelector:@selector(query:)]) {
-        return [self.dns query:host];
+    if (self.dns && [self.dns respondsToSelector:@selector(lookup:)]) {
+        return [self.dns lookup:host];
     } else if (self.resolver) {
         NSArray <QNRecord *>* records = [self.resolver query:[[QNDomain alloc] init:host] networkInfo:nil error:error];
         return [self filterRecords:records];
