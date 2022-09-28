@@ -59,7 +59,7 @@
     }];
     NSArray *sizeArray = @[@30000];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"resume_cancel_v1_%@k", size];
+        NSString *key = [NSString stringWithFormat:@"resume_cancel_v1_%@k_%@", size, [NSDate date]];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self allFileTypeCancelTest:cancelPercent * size.longLongValue * 1024 tempFile:tempFile key:key config:config option:nil];
     }
@@ -209,7 +209,7 @@
     }];
     NSArray *sizeArray = @[@30000];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"resume_cancel_v2_%@k", size];
+        NSString *key = [NSString stringWithFormat:@"resume_cancel_v2_%@k_%@", size, [NSDate date]];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self allFileTypeCancelTest:cancelPercent * size.longLongValue * 1024 tempFile:tempFile key:key config:config option:nil];
     }
