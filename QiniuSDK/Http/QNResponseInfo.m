@@ -239,7 +239,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
         || (_statusCode > 300 && _statusCode < 400)
         || (_statusCode > 400 && _statusCode < 500 && _statusCode != 406)
         || _statusCode == 501 || _statusCode == 573
-        || _statusCode == 608 || _statusCode == 614 || _statusCode == 616
+        || _statusCode == 608 || _statusCode == 612 || _statusCode == 614 || _statusCode == 616
         || _statusCode == 619 || _statusCode == 630 || _statusCode == 631 || _statusCode == 640
         || (_statusCode != kQNLocalIOError && _statusCode != kQNUnexpectedSysCallError && _statusCode < -1 && _statusCode > -1000)) {
         return NO;
@@ -259,6 +259,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
         || _statusCode == 501 || _statusCode == 573 || _statusCode == 579
         || _statusCode == 608 || _statusCode == 612 || _statusCode == 614 || _statusCode == 616
         || _statusCode == 619 || _statusCode == 630 || _statusCode == 631 || _statusCode == 640
+        || _statusCode == 701
         || (_statusCode != kQNLocalIOError && _statusCode != kQNUnexpectedSysCallError && _statusCode < -1 && _statusCode > -1000)) {
         return NO;
     } else {
@@ -278,6 +279,7 @@ static NSString *kQNErrorDomain = @"qiniu.com";
         || _statusCode == 571 || _statusCode == 573 || _statusCode == 579 || _statusCode == 599
         || _statusCode == 608 || _statusCode == 612 || _statusCode == 614 || _statusCode == 616
         || _statusCode == 619 || _statusCode == 630 || _statusCode == 631 || _statusCode == 640
+        || _statusCode == 701
         || (_statusCode != kQNLocalIOError && _statusCode != kQNUnexpectedSysCallError && _statusCode < -1 && _statusCode > -1000)) {
         return NO;
     } else {
