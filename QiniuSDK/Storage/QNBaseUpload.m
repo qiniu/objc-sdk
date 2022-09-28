@@ -123,6 +123,10 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
     }];
 }
 
+- (BOOL)reloadUploadInfo {
+    return YES;
+}
+
 - (int)prepareToUpload{
     int ret = 0;
     if (![self setupRegions]) {
@@ -154,14 +158,19 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
 // 根据错误信息进行切换region并上传，return:是否切换region并上传
 - (BOOL)switchRegionAndUploadIfNeededWithErrorResponse:(QNResponseInfo *)errorResponseInfo {
     if (!errorResponseInfo || errorResponseInfo.isOK || // 不存在 || 成功 不需要重试
-        !errorResponseInfo.couldRetry || ![self.config allowBackupHost]) {  // 不能重试
-        return NO;
+        ![errorResponseInfo couldRetry] || ![self.config allowBackupHost]) {  // 不能重试
+        return false;
     }
     
     if (self.currentRegionRequestMetrics) {
         [self.currentRegionRequestMetrics end];
         [self.metrics addMetrics:self.currentRegionRequestMetrics];
         self.currentRegionRequestMetrics = nil;
+    }
+    
+    // 重新加载上传数据，上传记录 & Resource index 归零
+    if (![self reloadUploadInfo]) {
+        return false;
     }
     
     // 切换区域，当为 context 过期错误不需要切换区域

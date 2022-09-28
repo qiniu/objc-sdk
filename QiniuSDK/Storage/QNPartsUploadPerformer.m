@@ -82,13 +82,13 @@
 }
 
 - (BOOL)reloadInfo {
+    self.recoveredFrom = nil;
+    [self.uploadInfo clearUploadState];
     return [self.uploadInfo reloadSource];
 }
 
 - (void)switchRegion:(id <QNUploadRegion>)region {
-    [self.uploadInfo clearUploadState];
     self.currentRegion = region;
-    self.recoveredFrom = nil;
     if (!self.targetRegion) {
         self.targetRegion = region;
     }

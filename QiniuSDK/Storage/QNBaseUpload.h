@@ -90,6 +90,9 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
 /// 准备上传
 - (int)prepareToUpload;
 
+/// 重新加载上传数据
+- (BOOL)reloadUploadInfo;
+
 /// 开始上传
 - (void)startToUpload;
 

@@ -92,11 +92,6 @@
 }
 
 - (BOOL)switchRegion{
-    // 重新加载资源，如果加载失败，不可切换 region
-    if (![self.uploadPerformer couldReloadInfo] || ![self.uploadPerformer reloadInfo]) {
-        return false;
-    }
-    
     BOOL isSuccess = [super switchRegion];
     if (isSuccess) {
         [self.uploadPerformer switchRegion:self.getCurrentRegion];
@@ -108,6 +103,16 @@
 - (BOOL)switchRegionAndUploadIfNeededWithErrorResponse:(QNResponseInfo *)errorResponseInfo {
     [self reportBlock];
     return [super switchRegionAndUploadIfNeededWithErrorResponse:errorResponseInfo];
+}
+
+- (BOOL)reloadUploadInfo {
+    BOOL success = [super reloadUploadInfo];
+    if (![super reloadUploadInfo]) {
+        return NO;
+    }
+    
+    // 重新加载资源
+    return [self.uploadPerformer couldReloadInfo] && [self.uploadPerformer reloadInfo];
 }
 
 - (void)startToUpload{

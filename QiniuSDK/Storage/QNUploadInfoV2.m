@@ -108,6 +108,8 @@
 }
 
 - (void)clearUploadState {
+    self.expireAt = nil;
+    self.uploadId = nil;
     if (self.dataList == nil || self.dataList.count == 0) {
         return;
     }
