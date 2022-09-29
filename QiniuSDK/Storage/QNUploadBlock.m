@@ -67,7 +67,7 @@
     }
     
     // 存在则有效期必须为过期
-    return (self.expiredAt.doubleValue - 24*3600) > [[NSDate date] timeIntervalSince1970];
+    return (self.expiredAt.doubleValue - 2*3600) > [[NSDate date] timeIntervalSince1970];
 }
 
 - (BOOL)isCompleted{

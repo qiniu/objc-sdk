@@ -86,7 +86,7 @@
         return false;
     }
     
-    return (self.expireAt.doubleValue - 24*3600) > [[NSDate date] timeIntervalSince1970];
+    return (self.expireAt.doubleValue - 2*3600) > [[NSDate date] timeIntervalSince1970];
 }
 
 - (BOOL)reloadSource {
