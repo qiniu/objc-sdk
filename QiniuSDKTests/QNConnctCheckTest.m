@@ -54,7 +54,7 @@
 - (void)testNotConnected {
     kQNGlobalConfiguration.connectCheckURLStrings = @[@"https://www.test1.com", @"https://www.test2.com"];
     
-    int maxCount = 100;
+    int maxCount = 10;
     int successCount = 0;
     for (int i = 0; i < maxCount; i++) {
         if ([QNConnectChecker isConnected:[QNConnectChecker check]]) {

@@ -530,7 +530,10 @@
         return NO;
     }
     
-    NSDictionary *addressDictionary = self.addressDictionary;
+    NSDictionary *addressDictionary = nil;
+    @synchronized (self) {
+        addressDictionary = [self.addressDictionary copy];
+    }
     NSArray<QNDnsNetworkAddress *>* preAddressList = addressDictionary[preHost];
     if (preAddressList && ![preAddressList.firstObject needRefresh]) {
         return YES;
@@ -610,7 +613,10 @@
         return NO;
     }
     
-    NSDictionary *addressDictionary = self.addressDictionary;
+    NSDictionary *addressDictionary = nil;
+    @synchronized (self) {
+        addressDictionary = [self.addressDictionary copy];
+    }
     NSMutableDictionary *addressInfo = [NSMutableDictionary dictionary];
     for (NSString *key in addressDictionary.allKeys) {
        
@@ -686,11 +692,6 @@
         }
     }
     return [autoHosts copy];
-}
-
-- (NSArray <NSString *> *)getCacheHosts{
-    NSDictionary *addressDictionary = self.addressDictionary;
-    return [addressDictionary copy];
 }
 
 
