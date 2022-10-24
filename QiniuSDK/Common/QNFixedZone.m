@@ -28,6 +28,17 @@
     return z0;
 }
 
++ (instancetype)zoneCnEast2 {
+    static QNFixedZone *zoneCnEast2 = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        zoneCnEast2 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload-cn-east-2.qiniup.com", @"up-cn-east-2.qiniup.com"]
+                                                      oldUpList:nil
+                                                       regionId:@"cn-east-2"];
+    });
+    return zoneCnEast2;
+}
+
 + (instancetype)zone1 {
     static QNFixedZone *z1 = nil;
     static dispatch_once_t onceToken;
@@ -48,6 +59,17 @@
                                               regionId:@"z2"];
     });
     return z2;
+}
+
++ (instancetype)zoneApNorthEast1 {
+    static QNFixedZone *zoneNorthEast1 = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        zoneNorthEast1 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload-ap-northeast-1.qiniup.com", @"up-ap-northeast-1.qiniup.com"]
+                                                         oldUpList:nil
+                                                          regionId:@"ap-northeast-1"];
+    });
+    return zoneNorthEast1;
 }
 
 + (instancetype)zoneNa0 {
@@ -72,25 +94,14 @@
     return zAs0;
 }
 
-+ (instancetype)zoneFogCnEast1 {
-    static QNFixedZone *zFogCnEast1 = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        zFogCnEast1 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload-fog-cn-east-1.qiniup.com",
-                                                                  @"up-fog-cn-east-1.qiniup.com"]
-                                                      oldUpList:@[@"upload-fog-cn-east-1.qiniup.com",
-                                                                  @"up-fog-cn-east-1.qiniup.com"]
-                                                       regionId:@"fog-cn-east-1"];;
-    });
-    return zFogCnEast1;
-}
-
 + (QNFixedZone *)localsZoneInfo{
 
     NSArray *zones = @[[QNFixedZone zone0],
                        [QNFixedZone zone1],
                        [QNFixedZone zone2],
+                       [QNFixedZone zoneCnEast2],
                        [QNFixedZone zoneNa0],
+                       [QNFixedZone zoneApNorthEast1],
                        [QNFixedZone zoneAs0]];
     
     NSMutableArray <QNZoneInfo *> *zoneInfoArray = [NSMutableArray array];

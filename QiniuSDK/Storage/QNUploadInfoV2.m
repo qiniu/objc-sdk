@@ -86,7 +86,7 @@
         return false;
     }
     
-    return self.expireAt.doubleValue > [[NSDate date] timeIntervalSince1970] - 24*3600;
+    return (self.expireAt.doubleValue - 2*3600) > [[NSDate date] timeIntervalSince1970];
 }
 
 - (BOOL)reloadSource {
@@ -108,6 +108,8 @@
 }
 
 - (void)clearUploadState {
+    self.expireAt = nil;
+    self.uploadId = nil;
     if (self.dataList == nil || self.dataList.count == 0) {
         return;
     }

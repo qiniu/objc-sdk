@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 根据host获取解析结果
 /// @param host 域名
-- (NSArray < id <QNIDnsNetworkAddress> > *)lookup:(NSString *)host;
+- (NSArray < id <QNIDnsNetworkAddress> > *)query:(NSString *)host;
 
 @end
 

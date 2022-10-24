@@ -38,7 +38,7 @@
 }
 
 - (void)testCustomCheckHosts {
-    kQNGlobalConfiguration.connectCheckURLStrings = @[@"https://www.baidu.com"];
+    kQNGlobalConfiguration.connectCheckURLStrings = @[@"https://www.google.com"];
     
     int maxCount = 100;
     int successCount = 0;
@@ -48,7 +48,7 @@
         }
     }
     
-    XCTAssertTrue(successCount > 0 , @"maxCount:%d successCount:%d", maxCount, successCount);
+    XCTAssertTrue(successCount > 50, @"maxCount:%d successCount:%d", maxCount, successCount);
 }
 
 - (void)testNotConnected {

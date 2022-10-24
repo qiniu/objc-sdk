@@ -1,4 +1,11 @@
 #Changelog
+## 8.5.0 (2022-10-25)
+- 优化分片上传 ctx 超时检测
+- QNDnsDelegate 代理函数名调整 lookup: 调整为 query:【不兼容变更】
+- 移除雾存储区域：华东一区
+- 增加亚太-首尔和华东浙江 2 区固定 Region
+- 处理网络检测阶段可能出现的并发异常
+
 ## 8.4.4 (2022-06-02)
 - HappyDns 依赖升至 [v1.0.2](https://github.com/qiniu/happy-dns-objc/releases/tag/v1.0.2)
 

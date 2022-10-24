@@ -48,11 +48,12 @@
     float cancelPercent = 0.02;
     
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.putThreshold = 100*1024*1024;
         builder.useHttps = YES;
     }];
     NSArray *sizeArray = @[@30000]; // 网速太快
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"form_cancel_%@k", size];
+        NSString *key = [NSString stringWithFormat:@"form_cancel_%@k_%@", size, [NSDate date]];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self allFileTypeCancelTest:cancelPercent * size.longLongValue * 1024 tempFile:tempFile key:key config:config option:nil];
     }

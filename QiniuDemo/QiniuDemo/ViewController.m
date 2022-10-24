@@ -6,14 +6,10 @@
 //  Copyright © 2016年 Aaron. All rights reserved.
 //
 
-#ifdef YourToken
-
+#if __has_include("Configure.h")
 #import "Configure.h" // 测试参数配置，暂时只有token，可删除
-
 #else
-
 #define YourToken @""
-
 #endif
 
 #import "ViewController.h"
@@ -73,7 +69,7 @@ typedef NS_ENUM(NSInteger, UploadState){
         NSString *path = [[NSBundle mainBundle] pathForResource:@"UploadResource.dmg" ofType:nil];
         path = [[NSBundle mainBundle] pathForResource:@"image.png" ofType:nil];
         path = [[NSBundle mainBundle] pathForResource:@"image.jpg" ofType:nil];
-        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_118M.zip" ofType:nil];
+        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_14M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_9M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1.44G.zip" ofType:nil];
@@ -151,7 +147,9 @@ typedef NS_ENUM(NSInteger, UploadState){
         builder.putThreshold = 4*1024*1024;
         builder.chunkSize = 1*1024*1024;
         builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[kUploadFixHost00, kUploadFixHost01]];
-        builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSHomeDirectory() stringByAppendingPathComponent:@"Documents"] error:nil];
+        NSString *recorderPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+        NSLog(@"== record path:%@", recorderPath);
+        builder.recorder = [QNFileRecorder fileRecorderWithFolder:recorderPath error:nil];
     }];
     
     

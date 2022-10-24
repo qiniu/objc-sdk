@@ -27,6 +27,7 @@
     block.offset = [dictionary[@"offset"] longLongValue];
     block.size = [dictionary[@"size"] integerValue];
     block.index = [dictionary[@"index"] integerValue];
+    block.expiredAt = dictionary[@"expired_at"];
     block.md5 = dictionary[@"md5"];
     block.context = dictionary[@"context"];
     
@@ -57,6 +58,16 @@
         _uploadDataList = [self createDataList:dataSize];
     }
     return self;
+}
+
+- (BOOL)isValid {
+    if (!self.expiredAt || self.expiredAt.integerValue <= 0) {
+        // 不存在时，为新创建 block: 有效
+        return true;
+    }
+    
+    // 存在则有效期必须为过期
+    return (self.expiredAt.doubleValue - 2*3600) > [[NSDate date] timeIntervalSince1970];
 }
 
 - (BOOL)isCompleted{
@@ -136,10 +147,11 @@
 - (NSDictionary *)toDictionary{
     
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
-    dictionary[@"offset"] = @(self.offset);
-    dictionary[@"size"]   = @(self.size);
-    dictionary[@"index"]  = @(self.index);
-    dictionary[@"md5"]    = self.md5 ?: @"";
+    dictionary[@"offset"]      = @(self.offset);
+    dictionary[@"size"]        = @(self.size);
+    dictionary[@"index"]       = @(self.index);
+    dictionary[@"expired_at"]  = self.expiredAt ?: @(0);
+    dictionary[@"md5"]         = self.md5 ?: @"";
     if (self.context) {
         dictionary[@"context"] = self.context;
     }

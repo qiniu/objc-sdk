@@ -189,9 +189,9 @@
     interDns.resolver = resolver;
     return interDns;
 }
-- (NSArray < id <QNIDnsNetworkAddress> > *)lookup:(NSString *)host error:(NSError **)error {
-    if (self.dns) {
-        return [self.dns lookup:host];
+- (NSArray < id <QNIDnsNetworkAddress> > *)query:(NSString *)host error:(NSError **)error {
+    if (self.dns && [self.dns respondsToSelector:@selector(query:)]) {
+        return [self.dns query:host];
     } else if (self.resolver) {
         NSArray <QNRecord *>* records = [self.resolver query:[[QNDomain alloc] init:host] networkInfo:nil error:error];
         return [self filterRecords:records];
@@ -539,7 +539,7 @@
         return YES;
     }
     
-    NSArray <id <QNIDnsNetworkAddress> > * addressList = [dns lookup:preHost error:error];
+    NSArray <id <QNIDnsNetworkAddress> > * addressList = [dns query:preHost error:error];
     if (addressList && addressList.count > 0) {
         NSMutableArray *addressListP = [NSMutableArray array];
         for (id <QNIDnsNetworkAddress>inetAddress in addressList) {

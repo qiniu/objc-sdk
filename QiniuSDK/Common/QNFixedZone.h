@@ -20,6 +20,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)zone0;
 
 /**
+ *    zoneCnEast2 华东-浙江2
+ *
+ *    @return 实例
+ */
++ (instancetype)zoneCnEast2;
+
+/**
  *    zone 1 华北
  *
  *    @return 实例
@@ -34,6 +41,13 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)zone2;
 
 /**
+ *    zoneNorthEast1 亚太-首尔
+ *
+ *    @return 实例
+ */
++ (instancetype)zoneApNorthEast1;
+
+/**
  *    zone Na0 北美
  *
  *    @return 实例
@@ -46,19 +60,6 @@ NS_ASSUME_NONNULL_BEGIN
  *    @return 实例
  */
 + (instancetype)zoneAs0;
-
-/**
- *    zone fog-cn-east-1 雾存储 华东-1
- *    分片上传暂时仅支持分片 api v2
- *    分片 api v2设置方式：配置 QNConfiguration 的 resumeUploadVersion 为 QNResumeUploadVersionV2
- *    eg：
- *    QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
- *          builder.resumeUploadVersion = QNResumeUploadVersionV2;
- *    }];
- *
- *    @return 实例
- */
-+ (instancetype)zoneFogCnEast1;
 
 /**
  *    Zone初始化方法

@@ -87,8 +87,10 @@
         kQNStrongSelf;
         
         NSString *blockContext = response[@"ctx"];
-        if (responseInfo.isOK && blockContext) {
+        NSNumber *expiredAt = response[@"expired_at"];
+        if (responseInfo.isOK && blockContext && expiredAt) {
             block.context = blockContext;
+            block.expiredAt = expiredAt;
             chunk.state = QNUploadStateComplete;
             [self recordUploadInfo];
             [self notifyProgress:false];

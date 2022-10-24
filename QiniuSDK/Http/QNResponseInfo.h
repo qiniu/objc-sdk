@@ -53,6 +53,8 @@
 @property (nonatomic, readonly) BOOL canConnectToHost;
 /// 当前host是否可用
 @property (nonatomic, readonly) BOOL isHostUnavailable;
+/// 在断点续上传过程中，ctx 信息已过期。
+@property (nonatomic, readonly) BOOL isCtxExpiedError;
 /// 是否为 七牛响应
 @property (nonatomic, readonly, getter=isNotQiniu) BOOL notQiniu;
 
