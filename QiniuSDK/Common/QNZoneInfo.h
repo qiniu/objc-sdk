@@ -48,6 +48,12 @@ extern NSString *const QNZoneInfoEmptyRegionId;
 /// 根据键值对构造对象 【内部使用】
 /// @param dictionary 键值对信息
 + (instancetype)infoWithDictionary:(NSDictionary *)dictionary;
+
+/// 根据键值对构造对象 【内部使用】
+/// @param dictionary 键值对信息
+/// @param supportApis 需要支持的 apis
++ (instancetype)infoWithDictionary:(NSDictionary *)dictionary supportApis:(NSArray * _Nullable)supportApis;
+
 - (instancetype)initWithZonesInfo:(NSArray<QNZoneInfo *> *)zonesInfo;
 
 // 转成临时 zones, 临时 Zones，不建议长期使用

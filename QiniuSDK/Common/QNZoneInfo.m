@@ -139,9 +139,40 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
 }
 
 + (instancetype)infoWithDictionary:(NSDictionary *)dictionary {
+    return [self infoWithDictionary:dictionary supportApis:nil];
+}
+
++ (instancetype)infoWithDictionary:(NSDictionary *)dictionary supportApis:(NSArray *)supportApis {
+    NSMutableArray *zonesInfo = [NSMutableArray array];
+    
+    if (supportApis != nil && supportApis.count > 0) {
+        NSMutableDictionary *universal = [dictionary[@"universal"] mutableCopy];
+        if ([universal isKindOfClass:[NSDictionary class]]) {
+            
+            BOOL support = false;
+            NSArray *apis = universal[@"support_apis"];
+            if ([apis isKindOfClass:[NSArray class]]) {
+                support = true;
+                for (NSString *supportApi in supportApis) {
+                    if (![apis containsObject:supportApi]) {
+                        support = false;
+                        break;
+                    }
+                }
+            }
+            
+            // 同时满足所有 api
+            if (support) {
+                [universal setObject:@"universal" forKey:@"region"];
+                QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:universal];
+                if (zoneInfo && [zoneInfo isValid]) {
+                    [zonesInfo addObject:zoneInfo];
+                }
+            }
+        }
+    }
     
     NSArray *hosts = dictionary[@"hosts"];
-    NSMutableArray *zonesInfo = [NSMutableArray array];
     if ([hosts isKindOfClass:[NSArray class]]) {
         for (NSInteger i = 0; i < hosts.count; i++) {
             QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:hosts[i]];
@@ -150,6 +181,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
             }
         }
     }
+    
     return [[[self class] alloc] initWithZonesInfo:zonesInfo];
 }
 

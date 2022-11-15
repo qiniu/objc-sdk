@@ -16,11 +16,19 @@ typedef void (^QNPrequeryReturn)(int code, QNResponseInfo * _Nullable httpRespon
 
 @interface QNZone : NSObject
 
-/// 根据token查询相关Zone信息【内部使用】
-/// @param token token信息
+/// 根据token查询相关 Zone 信息【内部使用】
+/// @param token token 信息
 /// @param ret 查询回调
 - (void)preQuery:(QNUpToken * _Nullable)token
-              on:(QNPrequeryReturn)ret;
+              on:(QNPrequeryReturn _Nullable)ret;
+
+/// 根据token查询相关 Zone 信息【内部使用】
+/// @param token token 信息
+/// @param supportApis 需要使用的 API 信息
+/// @param ret 查询回调
+- (void)preQuery:(QNUpToken * _Nullable)token
+     supportApis:(NSArray * _Nullable)supportApis
+              on:(QNPrequeryReturn _Nullable)ret;
 
 /// 根据token获取ZonesInfo 【内部使用】
 /// @param token token信息

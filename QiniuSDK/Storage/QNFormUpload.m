@@ -67,6 +67,10 @@
     return _progress;
 }
 
+- (NSArray *)needApis {
+    return @[@"up.formupload"];
+}
+
 - (NSString *)upType {
     return QNUploadUpTypeForm;
 }

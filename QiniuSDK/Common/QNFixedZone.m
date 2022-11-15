@@ -165,6 +165,12 @@
     ret(0, nil, nil);
 }
 
+- (void)preQuery:(QNUpToken *)token
+     supportApis:(NSArray *)supportApis
+              on:(QNPrequeryReturn)ret {
+    ret(0, nil, nil);
+}
+
 - (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token {
     return self.zonesInfo;
 }

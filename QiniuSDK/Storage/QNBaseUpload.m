@@ -105,7 +105,7 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
     [self.metrics start];
     
     kQNWeakSelf;
-    [_config.zone preQuery:self.token on:^(int code, QNResponseInfo *responseInfo, QNUploadRegionRequestMetrics *metrics) {
+    [_config.zone preQuery:self.token supportApis:[self needApis] on:^(int code, QNResponseInfo *responseInfo, QNUploadRegionRequestMetrics *metrics) {
         kQNStrongSelf;
         self.metrics.ucQueryMetrics = metrics;
         
@@ -197,6 +197,10 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
         self.completionHandler(info, _key, _metrics, response);
     }
     self.strongSelf = nil;
+}
+
+- (NSArray *)needApis {
+    return nil;
 }
 
 //MARK:-- region
