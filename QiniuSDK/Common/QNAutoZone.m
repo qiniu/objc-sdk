@@ -128,19 +128,18 @@
     return self;
 }
 
-- (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token {
+- (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken * _Nullable)token
+                            actionType:(QNActionType)actionType {
+    
     if (token == nil) return nil;
-    QNZonesInfo *zonesInfo = [[QNAutoZoneCache share] cacheForKey:[token index]];
+    NSString *cacheKey = [NSString stringWithFormat:@"%@%@", token.index, [QNApiType actionTypeString:actionType]] ;
+    QNZonesInfo *zonesInfo = [[QNAutoZoneCache share] cacheForKey:cacheKey];
     zonesInfo = [zonesInfo copy];
     return zonesInfo;
 }
 
-- (void)preQuery:(QNUpToken *)token on:(QNPrequeryReturn)ret {
-    [self preQuery:token supportApis:nil on:ret];
-}
+- (void)preQuery:(QNUpToken *)token actionType:(QNActionType)actionType on:(QNPrequeryReturn)ret {
 
-- (void)preQuery:(QNUpToken *)token supportApis:(NSArray *)supportApis on:(QNPrequeryReturn)ret {
-    
     if (token == nil || ![token isValid]) {
         ret(-1, [QNResponseInfo responseInfoWithInvalidToken:@"invalid token"], nil);
         return;
@@ -149,10 +148,7 @@
     QNUploadRegionRequestMetrics *cacheMetrics = [QNUploadRegionRequestMetrics emptyMetrics];
     [cacheMetrics start];
     
-    NSString *cacheKey = token.index;
-    if (supportApis != nil && supportApis.count > 0) {
-        cacheKey = [NSString stringWithFormat:@"%@:%@", cacheKey, supportApis];
-    }
+    NSString *cacheKey = [NSString stringWithFormat:@"%@%@", token.index, [QNApiType actionTypeString:actionType]] ;
     QNZonesInfo *zonesInfo = [[QNAutoZoneCache share] zonesInfoForKey:cacheKey];
     
     // 临时的 zonesInfo 仅能使用一次
@@ -189,7 +185,7 @@
         QNUploadRegionRequestMetrics *metrics = [(QNUCQuerySingleFlightValue *)value metrics];
 
         if (responseInfo && responseInfo.isOK) {
-            QNZonesInfo *zonesInfo = [QNZonesInfo infoWithDictionary:response supportApis:supportApis];
+            QNZonesInfo *zonesInfo = [QNZonesInfo infoWithDictionary:response actionType:actionType];
             if ([zonesInfo isValid]) {
                 [[QNAutoZoneCache share] cache:zonesInfo forKey:cacheKey];
                 ret(0, responseInfo, metrics);

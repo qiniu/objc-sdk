@@ -107,9 +107,6 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
 - (void)complete:(QNResponseInfo *)info
         response:(NSDictionary *)response;
 
-// 需要的 api
-- (NSArray *)needApis;
-
 //MARK: -- 机房管理
 
 /// 在区域列表头部插入一个区域

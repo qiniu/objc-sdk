@@ -306,14 +306,6 @@
     [kQNReporter reportItem:item token:self.token.token];
 }
 
-- (NSArray *)needApis {
-    if (self.config.resumeUploadVersion == QNResumeUploadVersionV1) {
-        return @[@"up.mkblk", @"up.bput", @"up.mkfile"];
-    } else {
-        return @[@"up.initparts", @"up.uploadpart", @"up.completeparts"];
-    }
-}
-
 - (NSString *)upType {
     if (self.config == nil) {
         return nil;

@@ -139,12 +139,13 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
 }
 
 + (instancetype)infoWithDictionary:(NSDictionary *)dictionary {
-    return [self infoWithDictionary:dictionary supportApis:nil];
+    return [self infoWithDictionary:dictionary actionType:QNActionTypeNone];
 }
 
-+ (instancetype)infoWithDictionary:(NSDictionary *)dictionary supportApis:(NSArray *)supportApis {
++ (instancetype)infoWithDictionary:(NSDictionary *)dictionary actionType:(QNActionType)actionType {
     NSMutableArray *zonesInfo = [NSMutableArray array];
     
+    NSArray *supportApis = [QNApiType apisWithActionType:actionType];
     if (supportApis != nil && supportApis.count > 0) {
         NSMutableDictionary *universal = [dictionary[@"universal"] mutableCopy];
         if ([universal isKindOfClass:[NSDictionary class]]) {

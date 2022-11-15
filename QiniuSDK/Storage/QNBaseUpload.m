@@ -105,7 +105,7 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
     [self.metrics start];
     
     kQNWeakSelf;
-    [_config.zone preQuery:self.token supportApis:[self needApis] on:^(int code, QNResponseInfo *responseInfo, QNUploadRegionRequestMetrics *metrics) {
+    [_config.zone preQuery:self.token actionType:[self actionType] on:^(int code, QNResponseInfo *responseInfo, QNUploadRegionRequestMetrics *metrics) {
         kQNStrongSelf;
         self.metrics.ucQueryMetrics = metrics;
         
@@ -199,14 +199,22 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
     self.strongSelf = nil;
 }
 
-- (NSArray *)needApis {
-    return nil;
+- (QNActionType)actionType {
+    if ([self.upType containsString:QNUploadUpTypeForm]) {
+        return QNActionTypeUploadByForm;
+    } else if ([self.upType containsString:QNUploadUpTypeResumableV1]) {
+        return QNActionTypeUploadByResumeV1;
+    } else if ([self.upType containsString:QNUploadUpTypeResumableV2]) {
+        return QNActionTypeUploadByResumeV2;
+    } else {
+        return QNActionTypeNone;
+    }
 }
 
 //MARK:-- region
 - (BOOL)setupRegions{
     NSMutableArray *defaultRegions = [NSMutableArray array];
-    NSArray *zoneInfos = [self.config.zone getZonesInfoWithToken:self.token].zonesInfo;
+    NSArray *zoneInfos = [self.config.zone getZonesInfoWithToken:self.token actionType:[self actionType]].zonesInfo;
     for (QNZoneInfo *zoneInfo in zoneInfos) {
         QNUploadDomainRegion *region = [[QNUploadDomainRegion alloc] init];
         [region setupRegionData:zoneInfo];
