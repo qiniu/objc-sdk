@@ -56,7 +56,7 @@
     dispatch_once(&onceToken, ^{
         pool = [[QNCFHttpThreadPool alloc] init];
         pool.threadLiveTime = 60;
-        pool.maxOperationPerThread = 1;
+        pool.maxOperationPerThread = 6;
         pool.pool = [NSMutableArray array];
         [pool addThreadLiveChecker];
     });
@@ -97,6 +97,7 @@
             [thread start];
             [self.pool addObject:thread];
         }
+        thread.deadline = nil;
     }
     return thread;
 }
