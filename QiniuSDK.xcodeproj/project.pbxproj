@@ -1378,15 +1378,14 @@
 					};
 					DF2CDE0919DAC05500CE01FB = {
 						CreatedOnToolsVersion = 6.0.1;
-						DevelopmentTeam = X2US9XXC6H;
-						ProvisioningStyle = Automatic;
+						ProvisioningStyle = Manual;
 					};
 					DF2CDE1919DAC08400CE01FB = {
 						CreatedOnToolsVersion = 6.0.1;
 					};
 					DF2CDE2319DAC08400CE01FB = {
 						CreatedOnToolsVersion = 6.0.1;
-						DevelopmentTeam = X2US9XXC6H;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -1930,10 +1929,11 @@
 			baseConfigurationReference = 466E7AACB5F77BA0D4DE4070 /* Pods-QiniuSDK_MacTests.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = X2US9XXC6H;
+				DEVELOPMENT_TEAM = "";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1948,11 +1948,12 @@
 			baseConfigurationReference = B62E937FF4E75CDD482C35E8 /* Pods-QiniuSDK_MacTests.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = X2US9XXC6H;
+				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = YES;
 				GENERATE_PKGINFO_FILE = YES;
 				PRODUCT_NAME = QiniuSDK_MacTests;
@@ -1989,12 +1990,17 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 6DD894AA2A19370381AD4201 /* Pods-QiniuSDK_iOSTests.debug.xcconfig */;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = NO;
-				DEVELOPMENT_TEAM = X2US9XXC6H;
+				DEVELOPMENT_TEAM = "";
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GENERATE_INFOPLIST_FILE = YES;
 				GENERATE_PKGINFO_FILE = YES;
 				PRODUCT_NAME = QiniuSDK_iOSTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 			};
 			name = Debug;
@@ -2003,11 +2009,16 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 135958056D8FF4295F3D9AB0 /* Pods-QiniuSDK_iOSTests.release.xcconfig */;
 			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
+				CODE_SIGN_STYLE = Manual;
 				COPY_PHASE_STRIP = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = X2US9XXC6H;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
 				GENERATE_PKGINFO_FILE = YES;
 				PRODUCT_NAME = QiniuSDK_iOSTests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 			};
 			name = Release;
