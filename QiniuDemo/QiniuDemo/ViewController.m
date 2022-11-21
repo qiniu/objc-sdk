@@ -143,10 +143,10 @@ typedef NS_ENUM(NSInteger, UploadState){
         
         builder.useConcurrentResumeUpload = true;
         builder.concurrentTaskCount = 3;
-        builder.resumeUploadVersion = QNResumeUploadVersionV1;
+        builder.resumeUploadVersion = QNResumeUploadVersionV2;
         builder.putThreshold = 4*1024*1024;
         builder.chunkSize = 1*1024*1024;
-        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[kUploadFixHost00, kUploadFixHost01]];
+//        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[kUploadFixHost00, kUploadFixHost01]];
         NSString *recorderPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
         NSLog(@"== record path:%@", recorderPath);
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:recorderPath error:nil];

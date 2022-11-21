@@ -6,7 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
-#import <Foundation/Foundation.h>
+#import "QNApiType.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -48,6 +48,12 @@ extern NSString *const QNZoneInfoEmptyRegionId;
 /// 根据键值对构造对象 【内部使用】
 /// @param dictionary 键值对信息
 + (instancetype)infoWithDictionary:(NSDictionary *)dictionary;
+
+/// 根据键值对构造对象 【内部使用】
+/// @param dictionary 键值对信息
+/// @param actionType  action 类型
++ (instancetype)infoWithDictionary:(NSDictionary *)dictionary actionType:(QNActionType)actionType;
+
 - (instancetype)initWithZonesInfo:(NSArray<QNZoneInfo *> *)zonesInfo;
 
 // 转成临时 zones, 临时 Zones，不建议长期使用

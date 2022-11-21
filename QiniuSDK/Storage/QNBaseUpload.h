@@ -82,7 +82,7 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
 /// 初始化数据
 - (void)initData;
 
-//MARK:-- 上传
+//MARK: -- 上传
 
 /// 开始上传流程
 - (void)run;
