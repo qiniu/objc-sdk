@@ -83,6 +83,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (QNFixedZone *)localsZoneInfo;
 
+/**
+ *  合并区域
+ */
++ (QNFixedZone *)combineZones:(NSArray<QNFixedZone *> *)zones;
+
 @end
 
 NS_ASSUME_NONNULL_END

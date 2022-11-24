@@ -103,6 +103,17 @@
                        [QNFixedZone zoneNa0],
                        [QNFixedZone zoneApNorthEast1],
                        [QNFixedZone zoneAs0]];
+    QNFixedZone *zone = [self combineZones:zones];
+    if (zone) {
+        [zone.zonesInfo toTemporary];
+    }
+    return zone;
+}
+
++ (QNFixedZone *)combineZones:(NSArray<QNFixedZone *> *)zones {
+    if (zones == nil || zones.count == 0) {
+        return nil;
+    }
     
     NSMutableArray <QNZoneInfo *> *zoneInfoArray = [NSMutableArray array];
     for (QNFixedZone *zone in zones) {

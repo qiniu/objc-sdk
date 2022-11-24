@@ -97,6 +97,7 @@
 @interface QNAutoZone()
 
 @property(nonatomic, strong)NSArray *ucHosts;
+@property(nonatomic, strong)QNFixedZone *defaultZone;
 @property(nonatomic, strong)NSMutableArray <QNRequestTransaction *> *transactions;
 
 @end
@@ -126,6 +127,10 @@
         _transactions = [NSMutableArray array];
     }
     return self;
+}
+
+- (void)setDefaultZones:(NSArray <QNFixedZone *> *)zones {
+    self.defaultZone = [QNFixedZone combineZones:zones];
 }
 
 - (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken * _Nullable)token
@@ -196,9 +201,17 @@
             if (responseInfo.isConnectionBroken) {
                 ret(kQNNetworkError, responseInfo, metrics);
             } else {
-                QNZonesInfo *zonesInfo = [[QNFixedZone localsZoneInfo] getZonesInfoWithToken:token];
-                if ([zonesInfo isValid]) {
-                    [[QNAutoZoneCache share] cache:zonesInfo forKey:cacheKey];
+                QNZonesInfo *info = nil;
+                if (self.defaultZone) {
+                    QNZonesInfo * infoP = [self.defaultZone getZonesInfoWithToken:token actionType:actionType];
+                    if (infoP && [infoP isValid]) {
+                        [infoP toTemporary];
+                        info = infoP;
+                    }
+                }
+                
+                if (info) {
+                    [[QNAutoZoneCache share] cache:info forKey:cacheKey];
                     ret(0, responseInfo, metrics);
                 } else {
                     ret(-1, responseInfo, metrics);
