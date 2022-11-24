@@ -45,7 +45,8 @@ static QNRequestTransaction *serverUserConfigTransaction = nil;
 
 + (QNRequestTransaction *)createServerConfigTransaction {
     @synchronized (self) {
-        if (serverConfigTransaction != nil) {
+        // 上传时才会有 token，不上传不请求，避免不必要请求
+        if (serverConfigTransaction != nil || Token == nil) {
             return nil;
         }
         

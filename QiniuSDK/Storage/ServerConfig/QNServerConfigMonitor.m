@@ -83,7 +83,8 @@
             return;
         }
         
-        QNTransaction *transaction = [QNTransaction timeTransaction:kQNServerConfigTransactionKey after:0 interval:10 action:^{
+        int interval = 120 + arc4random()%240;
+        QNTransaction *transaction = [QNTransaction timeTransaction:kQNServerConfigTransactionKey after:0 interval:interval action:^{
             [[QNServerConfigMonitor share] monitor];
         }];
         [kQNTransactionManager addTransaction:transaction];
