@@ -37,6 +37,9 @@
     if (!value || !key || ![key isKindOfClass:[NSString class]]) {
         return;
     }
+    if ([value isKindOfClass:[NSString class]] && [(NSString *)value length] > 1024) {
+        value = [(NSString *)value substringToIndex:1024];
+    }
     [self.keyValues setValue:value forKey:key];
 }
 
