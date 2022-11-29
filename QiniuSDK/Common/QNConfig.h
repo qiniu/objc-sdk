@@ -10,8 +10,8 @@
 
 //MARK: -- 内部布置 尽量不要修改
 #define kQNPreQueryHost00 @"uc.qbox.me"
-#define kQNPreQueryHost01 @"api.qiniu.com" // 不再使用
+#define kQNPreQueryHost01 @"api.qiniu.com"
 #define kQNPreQueryHost02 @"kodo-config.qiniuapi.com"
-#define kQNPreQueryHosts @[kQNPreQueryHost00, kQNPreQueryHost02]
+#define kQNPreQueryHosts @[kQNPreQueryHost00, kQNPreQueryHost02, kQNPreQueryHost01]
 
 #define kQNUpLogHost @"uplog.qbox.me"
