@@ -199,6 +199,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
     for (QNZoneInfo *info in self.zonesInfo) {
         if (![info isValid]) {
             valid = false;
+            break;
         }
     }
     return valid;
