@@ -191,7 +191,17 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
 }
 
 - (BOOL)isValid {
-    return [self.zonesInfo count] > 0 && [self.zonesInfo.firstObject isValid];
+    if ([self.zonesInfo count] == 0) {
+        return false;
+    }
+    
+    BOOL valid = true;
+    for (QNZoneInfo *info in self.zonesInfo) {
+        if (![info isValid]) {
+            valid = false;
+        }
+    }
+    return valid;
 }
 
 - (id)copyWithZone:(NSZone *)zone {
