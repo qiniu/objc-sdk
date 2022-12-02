@@ -10,11 +10,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class QNFixedZone;
 @interface QNAutoZone : QNZone
 
 + (instancetype)zoneWithUcHosts:(NSArray *)ucHosts;
 
 + (void)clearCache;
+
+/**
+ * 当 查询失败时，会使用 zones 进行上传，默认不配置。
+ */
+- (void)setDefaultZones:(NSArray <QNFixedZone *> *)zones;
 
 @end
 

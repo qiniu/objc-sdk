@@ -45,6 +45,7 @@ static QNRequestTransaction *serverUserConfigTransaction = nil;
 
 + (QNRequestTransaction *)createServerConfigTransaction {
     @synchronized (self) {
+        // 上传时才会有 token，不上传不请求，避免不必要请求
         if (serverConfigTransaction != nil) {
             return nil;
         }
@@ -56,7 +57,7 @@ static QNRequestTransaction *serverUserConfigTransaction = nil;
         
         NSArray *hosts = Hosts;
         if (hosts == nil) {
-            hosts = @[kQNPreQueryHost00, kQNPreQueryHost01];
+            hosts = kQNPreQueryHosts;
         }
         QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithHosts:hosts
                                                                                regionId:QNZoneInfoEmptyRegionId
@@ -107,7 +108,7 @@ static QNRequestTransaction *serverUserConfigTransaction = nil;
         
         NSArray *hosts = Hosts;
         if (hosts == nil) {
-            hosts = @[kQNPreQueryHost00, kQNPreQueryHost01];
+            hosts = kQNPreQueryHosts;
         }
         QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithHosts:hosts
                                                                                regionId:QNZoneInfoEmptyRegionId

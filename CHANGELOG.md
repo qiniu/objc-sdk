@@ -1,4 +1,8 @@
 #Changelog
+## 8.5.1 (2022-11-24)
+- 支持 multi 区域
+- 优化 Server 配置获取逻辑
+
 ## 8.5.0 (2022-10-25)
 - 优化分片上传 ctx 超时检测
 - QNDnsDelegate 代理函数名调整 lookup: 调整为 query:【不兼容变更】
