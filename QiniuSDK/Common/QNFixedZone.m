@@ -171,7 +171,7 @@
     return self;
 }
 
-- (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token actionType:(QNActionType)actionType {
+- (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token {
     return self.zonesInfo;
 }
 
