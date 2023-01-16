@@ -12,7 +12,10 @@
 #import "QNResponseInfo.h"
 #import "QNRequestTransaction.h"
 #import "QNServerConfigSynchronizer.h"
+#import <pthread.h>
 
+static pthread_mutex_t qnServerConfigTokenMutexLock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t qnServerConfigHostsMutexLock = PTHREAD_MUTEX_INITIALIZER;
 
 static NSString *Token = nil;
 static NSArray <NSString *> *Hosts = nil;
@@ -125,7 +128,9 @@ static QNRequestTransaction *serverUserConfigTransaction = nil;
 }
 
 + (void)setToken:(NSString *)token {
+    pthread_mutex_lock(&qnServerConfigTokenMutexLock);
     Token = token;
+    pthread_mutex_unlock(&qnServerConfigTokenMutexLock);
 }
 
 + (NSString *)token {
@@ -133,7 +138,9 @@ static QNRequestTransaction *serverUserConfigTransaction = nil;
 }
 
 + (void)setHosts:(NSArray<NSString *> *)servers {
+    pthread_mutex_lock(&qnServerConfigHostsMutexLock);
     Hosts = [servers copy];
+    pthread_mutex_lock(&qnServerConfigHostsMutexLock);
 }
 
 + (NSArray<NSString *> *)hosts {
