@@ -12,6 +12,9 @@
 #import "QNServerConfigSynchronizer.h"
 #import <XCTest/XCTest.h>
 #import <AGAsyncTestHelper.h>
+#import "XCTestCase+QNTest.h"
+
+#import "QNLogUtil.h"
 
 @interface QNServerConfigTest : XCTestCase
 
@@ -32,6 +35,31 @@
 //    QNServerConfigMonitor.token = token_na0;
 //    AGWW_WAIT_WHILE(true, 30);
 //}
+
+- (void)testServerConfigProperty {
+    dispatch_group_t group = dispatch_group_create();
+    
+    for (int i=0; i<1000; i++) {
+        dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{
+            dispatch_group_enter(group);
+            for (int j=0; j<100000; j++) {
+                NSString *token = QNServerConfigSynchronizer.token;
+                if (token.length > 0) {
+                    token = [token substringToIndex:1];
+                }
+                NSString *newToken = [NSString stringWithFormat:@"%@-%d-%d", token, i, j];
+                QNServerConfigSynchronizer.token = newToken;
+            }
+            dispatch_group_leave(group);
+        });
+    }
+    
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        NSLog(@"testServerConfigProperty complete");
+    });
+    
+    QN_TEST_CASE_WAIT_TIME(2);
+}
 
 - (void)testServerConfigModel {
     NSString *serverConfigJsonString = @"{\"region\":{\"clear_id\":10,\"clear_cache\":true},\"dns\":{\"enabled\":true,\"clear_id\":10,\"clear_cache\":true,\"doh\":{\"enabled\":true,\"ipv4\":{\"override_default\":true,\"urls\":[\"https://223.5.5.5/dns-query\"]},\"ipv6\":{\"override_default\":true,\"urls\":[\"https://FFAE::EEEE/dns-query\"]}},\"udp\":{\"enabled\":true,\"ipv4\":{\"ips\":[\"223.5.5.5\",\"1.1.1.1\"],\"override_default\":true},\"ipv6\":{\"ips\":[\"FFAE::EEEE\"],\"override_default\":true}}},\"ttl\":86400}";
