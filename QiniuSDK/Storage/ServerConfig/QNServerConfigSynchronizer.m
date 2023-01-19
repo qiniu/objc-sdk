@@ -12,10 +12,13 @@
 #import "QNResponseInfo.h"
 #import "QNRequestTransaction.h"
 #import "QNServerConfigSynchronizer.h"
-
+#import <pthread.h>
 
 static NSString *Token = nil;
 static NSArray <NSString *> *Hosts = nil;
+static pthread_mutex_t TokenMutexLock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t HostsMutexLock = PTHREAD_MUTEX_INITIALIZER;
+
 static QNRequestTransaction *serverConfigTransaction = nil;
 static QNRequestTransaction *serverUserConfigTransaction = nil;
 
@@ -50,12 +53,12 @@ static QNRequestTransaction *serverUserConfigTransaction = nil;
             return nil;
         }
         
-        QNUpToken *token = [QNUpToken parse:Token];
+        QNUpToken *token = [QNUpToken parse:self.token];
         if (token == nil) {
             token = [QNUpToken getInvalidToken];
         }
         
-        NSArray *hosts = Hosts;
+        NSArray *hosts = self.hosts;
         if (hosts == nil) {
             hosts = kQNPreQueryHosts;
         }
@@ -101,12 +104,12 @@ static QNRequestTransaction *serverUserConfigTransaction = nil;
             return nil;
         }
         
-        QNUpToken *token = [QNUpToken parse:Token];
+        QNUpToken *token = [QNUpToken parse:self.token];
         if (token == nil || !token.isValid) {
             return nil;
         }
         
-        NSArray *hosts = Hosts;
+        NSArray *hosts = self.hosts;
         if (hosts == nil) {
             hosts = kQNPreQueryHosts;
         }
@@ -125,19 +128,31 @@ static QNRequestTransaction *serverUserConfigTransaction = nil;
 }
 
 + (void)setToken:(NSString *)token {
+    pthread_mutex_lock(&TokenMutexLock);
     Token = token;
+    pthread_mutex_unlock(&TokenMutexLock);
 }
 
 + (NSString *)token {
-    return Token;
+    NSString *token = nil;
+    pthread_mutex_lock(&TokenMutexLock);
+    token = Token;
+    pthread_mutex_unlock(&TokenMutexLock);
+    return token;
 }
 
 + (void)setHosts:(NSArray<NSString *> *)servers {
+    pthread_mutex_lock(&HostsMutexLock);
     Hosts = [servers copy];
+    pthread_mutex_unlock(&HostsMutexLock);
 }
 
 + (NSArray<NSString *> *)hosts {
-    return Hosts;
+    NSArray<NSString *> *hosts = nil;
+    pthread_mutex_lock(&HostsMutexLock);
+    hosts = [Hosts copy];
+    pthread_mutex_unlock(&HostsMutexLock);
+    return hosts;
 }
 
 @end

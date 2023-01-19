@@ -109,7 +109,7 @@
     }
     
     // 串行队列处理文件读写
-    dispatch_async(_recordQueue, ^{
+    dispatch_async(self.recordQueue, ^{
         [self saveReportJsonString:jsonString];
         [self reportToServerIfNeeded:token];
     });
