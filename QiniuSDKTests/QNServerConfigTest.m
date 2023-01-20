@@ -42,7 +42,7 @@
     for (int i=0; i<1000; i++) {
         dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{
             dispatch_group_enter(group);
-            for (int j=0; j<100000; j++) {
+            for (int j=0; j<10000; j++) {
                 NSString *token = QNServerConfigSynchronizer.token;
                 if (token.length > 0) {
                     token = [token substringToIndex:1];

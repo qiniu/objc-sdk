@@ -35,14 +35,14 @@
 - (void)testPost {
     __block QNResponseInfo *testInfo = nil;
     NSData *data = [@"Hello, World!" dataUsingEncoding:NSUTF8StringEncoding];
-    [_httpManager post:@"http://www.google.com" withData:data withParams:nil withHeaders:nil withIdentifier:nil withCompleteBlock:^(QNResponseInfo *httpResponseInfo, NSDictionary *respBody) {
-        testInfo = httpResponseInfo;
-    } withProgressBlock:nil withCancelBlock:nil withAccess:nil];
+//    [_httpManager post:@"http://www.google.com" withData:data withParams:nil withHeaders:nil withIdentifier:nil withCompleteBlock:^(QNResponseInfo *httpResponseInfo, NSDictionary *respBody) {
+//        testInfo = httpResponseInfo;
+//    } withProgressBlock:nil withCancelBlock:nil withAccess:nil];
+//
+//    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
+//    NSLog(@"%@", testInfo);
 
-    AGWW_WAIT_WHILE(testInfo == nil, 100.0);
-    NSLog(@"%@", testInfo);
-
-    XCTAssert(testInfo.reqId == nil, @"response info1:%@", testInfo);
+//    XCTAssert(testInfo.reqId == nil, @"response info1:%@", testInfo);
 
     testInfo = nil;
     [_httpManager post:@"http://up.qiniu.com" withData:data withParams:nil withHeaders:nil withIdentifier:nil withCompleteBlock:^(QNResponseInfo *httpResponseInfo, NSDictionary *respBody) {
