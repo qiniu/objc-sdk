@@ -110,8 +110,8 @@
     
     // 串行队列处理文件读写
     dispatch_async(self.recordQueue, ^{
-        [self saveReportJsonString:jsonString];
-        [self reportToServerIfNeeded:token];
+        [kQNReporter saveReportJsonString:jsonString];
+        [kQNReporter reportToServerIfNeeded:token];
     });
 }
 
@@ -176,7 +176,7 @@
         }
         
         QNTransaction *transaction = [QNTransaction transaction:kQNUplogDelayReportTransactionName after:interval action:^{
-            [self reportToServerIfNeeded:tokenString];
+            [kQNReporter reportToServerIfNeeded:tokenString];
         }];
         [kQNTransactionManager addTransaction:transaction];
     }

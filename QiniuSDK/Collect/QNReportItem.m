@@ -74,13 +74,11 @@
 @implementation QNUploadInfoReporter(ReportItem)
 
 - (void)reportItem:(QNReportItem *)item token:(NSString *)token{
-    QNAsyncRun(^{
-        NSString *itemJsonString = [item toJson];
-        QNLogInfo(@"up log:%@", itemJsonString);
-        if (itemJsonString && ![itemJsonString isEqualToString:@"{}"]) {
-            [self report:itemJsonString token:token];
-        }
-    });
+    NSString *itemJsonString = [item toJson];
+    QNLogInfo(@"up log:%@", itemJsonString);
+    if (itemJsonString && ![itemJsonString isEqualToString:@"{}"]) {
+        [kQNReporter report:itemJsonString token:token];
+    }
 }
 
 @end

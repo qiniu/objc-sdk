@@ -65,7 +65,7 @@
 
 - (void)addThreadLiveChecker {
     QNTransaction *transaction = [QNTransaction timeTransaction:@"CFHttpThreadPool" after:0 interval:1 action:^{
-        [self checkThreadLive];
+        [[QNCFHttpThreadPool shared] checkThreadLive];
     }];
     [kQNTransactionManager addTransaction:transaction];
 }
