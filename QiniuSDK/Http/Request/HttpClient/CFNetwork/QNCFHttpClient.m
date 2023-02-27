@@ -101,10 +101,10 @@ connectionProxy:(NSDictionary *)connectionProxy
     }
     self.requestMetrics.response = self.response;
     [self.requestMetrics end];
-    [[QNCFHttpThreadPool shared] subtractOperationCountOfThread:self.thread];
     if (self.complete) {
         self.complete(self.response, self.requestMetrics, self.responseData, error);
     }
+    [[QNCFHttpThreadPool shared] subtractOperationCountOfThread:self.thread];
 }
 
 //MARK: -- delegate
