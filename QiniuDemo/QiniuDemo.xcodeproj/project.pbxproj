@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		26F62ADDD5B6306E978C9A3F /* libPods-QiniuDemoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14CB2139715DD7B6FD5B146E /* libPods-QiniuDemoTests.a */; };
 		4561F02C28D9A6F80098A697 /* UploadResource_14M.zip in Resources */ = {isa = PBXBuildFile; fileRef = 4561F02B28D9A6F80098A697 /* UploadResource_14M.zip */; };
+		45E6080929ADD57100634200 /* UploadResource_1G.zip in Resources */ = {isa = PBXBuildFile; fileRef = 45E6080829ADD57100634200 /* UploadResource_1G.zip */; };
 		93D230241C86D7F700434F6D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D230231C86D7F700434F6D /* main.m */; };
 		93D230271C86D7F700434F6D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D230261C86D7F700434F6D /* AppDelegate.m */; };
 		93D2302A1C86D7F700434F6D /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D230291C86D7F700434F6D /* ViewController.m */; };
@@ -42,6 +43,7 @@
 		3189882026469145003CCA68 /* QiniuDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QiniuDemo.entitlements; sourceTree = "<group>"; };
 		4561F02B28D9A6F80098A697 /* UploadResource_14M.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = UploadResource_14M.zip; sourceTree = "<group>"; };
 		4561F02F28D9AB090098A697 /* Configure.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Configure.h; sourceTree = "<group>"; };
+		45E6080829ADD57100634200 /* UploadResource_1G.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = UploadResource_1G.zip; sourceTree = "<group>"; };
 		6B9BC5A8D93F988C1240E05F /* libPods-QiniuDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		93D2301F1C86D7F700434F6D /* QiniuDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QiniuDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		93D230231C86D7F700434F6D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -93,6 +95,7 @@
 		4561F02A28D9A6F80098A697 /* DemoResource */ = {
 			isa = PBXGroup;
 			children = (
+				45E6080829ADD57100634200 /* UploadResource_1G.zip */,
 				4561F02B28D9A6F80098A697 /* UploadResource_14M.zip */,
 				4561F02F28D9AB090098A697 /* Configure.h */,
 			);
@@ -292,6 +295,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				93D230321C86D7F700434F6D /* LaunchScreen.storyboard in Resources */,
+				45E6080929ADD57100634200 /* UploadResource_1G.zip in Resources */,
 				4561F02C28D9A6F80098A697 /* UploadResource_14M.zip in Resources */,
 				93D2302F1C86D7F700434F6D /* Assets.xcassets in Resources */,
 				93D2302D1C86D7F700434F6D /* Main.storyboard in Resources */,
@@ -532,10 +536,13 @@
 				INFOPLIST_FILE = QiniuDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.qiniu.QiniuDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.qiniu.demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_SWIFT_SYMBOLS = YES;
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -550,10 +557,13 @@
 				INFOPLIST_FILE = QiniuDemo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.qiniu.QiniuDemo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.qiniu.demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRIP_SWIFT_SYMBOLS = YES;
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

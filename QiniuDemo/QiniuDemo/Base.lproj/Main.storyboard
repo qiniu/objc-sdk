@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="18122" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="ICJ-el-kyi">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="ICJ-el-kyi">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment version="2048" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -12,7 +12,7 @@
             <objects>
                 <navigationController id="ICJ-el-kyi" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="0Ga-mq-GEB">
-                        <rect key="frame" x="0.0" y="44" width="414" height="44"/>
+                        <rect key="frame" x="0.0" y="48" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -36,7 +36,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="f8h-Tl-cef">
-                                <rect key="frame" x="41.5" y="582" width="331" height="50"/>
+                                <rect key="frame" x="41.5" y="592" width="331" height="50"/>
                                 <color key="backgroundColor" red="0.0" green="0.50196081400000003" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="kgT-aZ-IJU"/>
@@ -64,13 +64,13 @@
                                 </connections>
                             </button>
                             <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="PUC-cw-bND">
-                                <rect key="frame" x="20" y="202" width="374" height="249.5"/>
+                                <rect key="frame" x="20" y="206" width="374" height="249.5"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="PUC-cw-bND" secondAttribute="height" multiplier="3:2" id="C8p-6F-bXA"/>
                                 </constraints>
                             </imageView>
                             <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="F9t-wS-hHW">
-                                <rect key="frame" x="20" y="168" width="374" height="4"/>
+                                <rect key="frame" x="20" y="172" width="374" height="4"/>
                             </progressView>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -86,7 +86,7 @@
                             <constraint firstItem="F9t-wS-hHW" firstAttribute="leading" secondItem="PUC-cw-bND" secondAttribute="leading" id="jiN-B0-534"/>
                             <constraint firstAttribute="trailingMargin" secondItem="PUC-cw-bND" secondAttribute="trailing" id="k8E-N3-8Zw"/>
                             <constraint firstItem="f8h-Tl-cef" firstAttribute="centerX" secondItem="UJS-dn-gjX" secondAttribute="centerX" id="pzZ-Ph-Td6"/>
-                            <constraint firstItem="Psn-X6-kmD" firstAttribute="top" secondItem="f8h-Tl-cef" secondAttribute="bottom" constant="30" id="sEq-Qn-Fuf"/>
+                            <constraint firstItem="Psn-X6-kmD" firstAttribute="top" secondItem="f8h-Tl-cef" secondAttribute="bottom" constant="20" id="sEq-Qn-Fuf"/>
                         </constraints>
                     </view>
                     <tabBarItem key="tabBarItem" title="图片上传" id="NUn-lf-ojx"/>
@@ -100,7 +100,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="0ur-tY-LLn" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2316" y="-313"/>
+            <point key="canvasLocation" x="-2417" y="-338"/>
         </scene>
     </scenes>
 </document>

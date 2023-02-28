@@ -58,7 +58,7 @@ typedef NS_ENUM(NSInteger, UploadState){
     self.title = @"七牛云上传";
 }
 
-- (IBAction)chooseAction:(id)sender {
+- (IBAction)chooseAction:(UIButton *)sender {
     [self gotoImageLibrary];
 }
 
@@ -72,7 +72,7 @@ typedef NS_ENUM(NSInteger, UploadState){
         path = [[NSBundle mainBundle] pathForResource:@"UploadResource_14M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_9M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
-//        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1.44G.zip" ofType:nil];
+//        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1G.zip" ofType:nil];
         
 //        NSFileManager *manager = [NSFileManager defaultManager];
 //        NSURL *desktopUrl = [manager URLsForDirectory:NSDesktopDirectory inDomains:NSUserDomainMask].firstObject;
@@ -141,8 +141,8 @@ typedef NS_ENUM(NSInteger, UploadState){
         builder.retryMax = 1;
 //        builder.useHttps = NO;
         
-        builder.useConcurrentResumeUpload = true;
-        builder.concurrentTaskCount = 3;
+        builder.useConcurrentResumeUpload = false;
+        builder.concurrentTaskCount = 10;
         builder.resumeUploadVersion = QNResumeUploadVersionV2;
         builder.putThreshold = 4*1024*1024;
         builder.chunkSize = 1*1024*1024;

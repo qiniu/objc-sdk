@@ -97,6 +97,7 @@
             [thread start];
             [self.pool addObject:thread];
         }
+        thread.operationCount += 1;
         thread.deadline = nil;
     }
     return thread;
