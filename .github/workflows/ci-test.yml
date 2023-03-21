@@ -20,7 +20,7 @@ jobs:
           ruby-version: '2.6'
       - name: Setup Environment
         run: |
-          gem install cocoapods --pre --quiet --silent --no-document
+          gem install cocoapods --pre --no-document
           rm -rf $HOME/.cocoapods
           pod setup --silent
           pod install --silent --no-repo-update
