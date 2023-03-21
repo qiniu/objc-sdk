@@ -8,13 +8,13 @@ on:
 name: Run Test Cases
 jobs:
   test-on-mac:
-    runs-on: macos-10.15
+    runs-on: macos-12
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
-      - name: Setup Ruby 2.6
+      - name: Setup Ruby 3.0
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.0'
