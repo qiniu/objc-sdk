@@ -194,7 +194,7 @@
     NSArray *sizeArray = @[@1000, @3000, @4000, @5000, @8000, @10000, @20000];
     NSInteger timestamp = [[NSDate date] timeIntervalSince1970];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"resume_switch_region_v2_%@k_%d", size, timestamp];
+        NSString *key = [NSString stringWithFormat:@"resume_switch_region_v2_%@k_%ld", size, (long)timestamp];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self allFileTypeSwitchRegionTestWithFile:tempFile key:key config:config option:nil];
     }
@@ -225,7 +225,7 @@
     NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
     NSInteger timestamp = [[NSDate date] timeIntervalSince1970];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"resume_http_v2_%@k_%d", size, timestamp];
+        NSString *key = [NSString stringWithFormat:@"resume_http_v2_%@k_%ld", size, (long)timestamp];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self allFileTypeUploadAndAssertSuccessResult:tempFile key:key config:config option:nil];
     }
@@ -241,7 +241,7 @@
     NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
     NSInteger timestamp = [[NSDate date] timeIntervalSince1970];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"resume_https_v2_%@k_%d", size, timestamp];
+        NSString *key = [NSString stringWithFormat:@"resume_https_v2_%@k_%ld", size, (long)timestamp];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self allFileTypeUploadAndAssertSuccessResult:tempFile key:key config:config option:nil];
     }
@@ -261,7 +261,7 @@
     NSArray *sizeArray = @[@30000];
     NSInteger timestamp = [[NSDate date] timeIntervalSince1970];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"resume_reupload_v2_%@k_%d", size, timestamp];
+        NSString *key = [NSString stringWithFormat:@"resume_reupload_v2_%@k_%ld", size, (long)timestamp];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self allFileTypeResumeUploadTest:0.5 * 1024 * size.longLongValue tempFile:tempFile key:key config:config option:nil];
     }
@@ -276,7 +276,7 @@
     }];
     
     NSInteger timestamp = [[NSDate date] timeIntervalSince1970];
-    NSString *keyUp = [NSString stringWithFormat:@"resume_NoKey_v2_%dk_%d", 600, timestamp];
+    NSString *keyUp = [NSString stringWithFormat:@"resume_NoKey_v2_%dk_%ld", 600, (long)timestamp];
     QNTempFile *tempFile = [QNTempFile createTempFileWithSize:600 * 1024 identifier:keyUp];
     tempFile.canRemove = NO;
     [self allFileTypeUploadAndAssertSuccessResult:tempFile key:nil config:configHttp option:nil];
@@ -333,7 +333,7 @@
     }];
     
     NSInteger timestamp = [[NSDate date] timeIntervalSince1970];
-    NSString *key = [NSString stringWithFormat:@"resume_custom_param_v2_%d", timestamp];
+    NSString *key = [NSString stringWithFormat:@"resume_custom_param_v2_%ld", (long)timestamp];
     QNTempFile *tempFile = [QNTempFile createTempFileWithSize:1024 * 1024 * 5 identifier:key];
     
     [self allFileTypeUploadAndAssertSuccessResult:tempFile key:key config:configHttp option:option];
