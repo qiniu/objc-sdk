@@ -42,7 +42,6 @@
         self.redirectCount = 0;
         self.maxRedirectCount = 15;
         self.hasCallBack = false;
-        self.thread = [[QNCFHttpThreadPool shared] getOneThread];
     }
     return self;
 }
@@ -53,8 +52,7 @@ connectionProxy:(NSDictionary *)connectionProxy
        progress:(void (^)(long long, long long))progress
        complete:(QNRequestClientCompleteHandler)complete {
     
-    [[QNCFHttpThreadPool shared] addOperationCountOfThread:self.thread];
-    
+    self.thread = [[QNCFHttpThreadPool shared] getOneThread];
     // 有 ip 才会使用
     if (server && server.ip.length > 0 && server.host.length > 0) {
         NSString *urlString = request.URL.absoluteString;
@@ -86,6 +84,10 @@ connectionProxy:(NSDictionary *)connectionProxy
 }
 
 - (void)cancel {
+    if (self.thread) {
+        return;
+    }
+    
     [self.httpClient performSelector:@selector(cancel)
                             onThread:self.thread
                           withObject:nil
@@ -101,10 +103,10 @@ connectionProxy:(NSDictionary *)connectionProxy
     }
     self.requestMetrics.response = self.response;
     [self.requestMetrics end];
-    [[QNCFHttpThreadPool shared] subtractOperationCountOfThread:self.thread];
     if (self.complete) {
         self.complete(self.response, self.requestMetrics, self.responseData, error);
     }
+    [[QNCFHttpThreadPool shared] subtractOperationCountOfThread:self.thread];
 }
 
 //MARK: -- delegate

@@ -73,6 +73,9 @@
     AGWW_WAIT_WHILE(!responseInfo, 60 * 30);
     XCTAssertTrue(responseInfo.isOK, @"response info:%@", responseInfo);
     XCTAssertTrue(responseInfo.reqId, @"response info:%@", responseInfo);
+    if (tempFile.size > 0) {
+        XCTAssertTrue([responseInfo.responseDictionary[@"fsize"] longValue] == tempFile.size, @"response info:%@", responseInfo);
+    }
 }
 
 
@@ -105,7 +108,7 @@
     tempFile.canRemove = false;
     tempFile.fileType = QNTempFileTypeData;
     [self uploadAndAssertResult:statusCode tempFile:tempFile token:token key:key config:config option:option];
-    
+
     tempFile.fileType = QNTempFileTypeFile;
     [self uploadAndAssertResult:statusCode tempFile:tempFile token:token key:key config:config option:option];
     

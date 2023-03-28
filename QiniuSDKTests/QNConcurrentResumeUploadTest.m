@@ -165,8 +165,9 @@
         builder.useHttps = YES;
     }];
     NSArray *sizeArray = @[@5000, @8000, @10000, @20000];
+    NSInteger timestamp = [[NSDate date] timeIntervalSince1970];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"concurrent_resume_switch_region_v2_%@k", size];
+        NSString *key = [NSString stringWithFormat:@"concurrent_resume_switch_region_v2_%@k_%ld", size, (long)timestamp];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self allFileTypeSwitchRegionTestWithFile:tempFile key:key config:config option:nil];
     }
@@ -197,8 +198,9 @@
         builder.useHttps = NO;
     }];
     NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    NSInteger timestamp = [[NSDate date] timeIntervalSince1970];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"concurrent_http_v2_%@k", size];
+        NSString *key = [NSString stringWithFormat:@"concurrent_http_v2_%@k_%ld", size, (long)timestamp];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self allFileTypeUploadAndAssertSuccessResult:tempFile key:key config:config option:nil];
     }
@@ -213,8 +215,9 @@
         builder.useHttps = YES;
     }];
     NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    NSInteger timestamp = [[NSDate date] timeIntervalSince1970];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"concurrent_https_v2_%@k", size];
+        NSString *key = [NSString stringWithFormat:@"concurrent_https_v2_%@k_%ld", size, (long)timestamp];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self allFileTypeUploadAndAssertSuccessResult:tempFile key:key config:config option:nil];
     }
@@ -233,8 +236,9 @@
     }];
     
     NSArray *sizeArray = @[@30000];
+    NSInteger timestamp = [[NSDate date] timeIntervalSince1970];
     for (NSNumber *size in sizeArray) {
-        NSString *key = [NSString stringWithFormat:@"concurrent_reupload_v2_%@k", size];
+        NSString *key = [NSString stringWithFormat:@"concurrent_reupload_v2_%@k_%ld", size, (long)timestamp];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
         [self allFileTypeResumeUploadTest:0.5 * 1024 * size.longLongValue tempFile:tempFile key:key config:config option:nil];
     }
@@ -248,7 +252,8 @@
         builder.useHttps = NO;
     }];
     
-    NSString *keyUp = [NSString stringWithFormat:@"concurrent_NoKey_v2_%dk", 600];
+    NSInteger timestamp = [[NSDate date] timeIntervalSince1970];
+    NSString *keyUp = [NSString stringWithFormat:@"concurrent_NoKey_v2_%dk_%ld", 600, (long)timestamp];
     QNTempFile *tempFile = [QNTempFile createTempFileWithSize:600 * 1024 identifier:keyUp];
     tempFile.canRemove = NO;
     [self allFileTypeUploadAndAssertSuccessResult:tempFile key:nil config:configHttp option:nil];

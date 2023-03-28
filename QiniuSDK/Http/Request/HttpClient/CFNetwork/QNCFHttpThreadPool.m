@@ -56,7 +56,7 @@
     dispatch_once(&onceToken, ^{
         pool = [[QNCFHttpThreadPool alloc] init];
         pool.threadLiveTime = 60;
-        pool.maxOperationPerThread = 6;
+        pool.maxOperationPerThread = 1;
         pool.pool = [NSMutableArray array];
         [pool addThreadLiveChecker];
     });
@@ -65,7 +65,7 @@
 
 - (void)addThreadLiveChecker {
     QNTransaction *transaction = [QNTransaction timeTransaction:@"CFHttpThreadPool" after:0 interval:1 action:^{
-        [self checkThreadLive];
+        [[QNCFHttpThreadPool shared] checkThreadLive];
     }];
     [kQNTransactionManager addTransaction:transaction];
 }
@@ -97,6 +97,7 @@
             [thread start];
             [self.pool addObject:thread];
         }
+        thread.operationCount += 1;
         thread.deadline = nil;
     }
     return thread;

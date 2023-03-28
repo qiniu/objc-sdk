@@ -8,19 +8,19 @@ on:
 name: Run Test Cases
 jobs:
   test-on-mac:
-    runs-on: macos-10.15
+    runs-on: macos-12
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
-      - name: Setup Ruby 2.6
-        uses: actions/setup-ruby@v1
+      - name: Setup Ruby 3.0
+        uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '2.6'
+          ruby-version: '3.0'
       - name: Setup Environment
         run: |
-          gem install cocoapods --pre --quiet --silent --no-document
+          gem install cocoapods --pre --no-document
           rm -rf $HOME/.cocoapods
           pod setup --silent
           pod install --silent --no-repo-update
