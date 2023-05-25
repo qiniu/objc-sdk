@@ -76,6 +76,15 @@
     __block BOOL isCompleted = false;
     kQNWeakSelf;
     NSArray *allHosts = [kQNGlobalConfiguration.connectCheckURLStrings copy];
+    if (allHosts.count == 0) {
+        QNUploadSingleRequestMetrics *metrics = [QNUploadSingleRequestMetrics emptyMetrics];
+        [metrics start];
+        [metrics end];
+        metrics.error = [NSError errorWithDomain:@"com.qiniu.NetworkCheck" code:NSURLErrorUnsupportedURL userInfo:@{@"user_info":@"check host is empty"}];
+        complete(metrics);
+        return;
+    }
+    
     for (NSString *host in allHosts) {
         [self checkHost:host complete:^(QNUploadSingleRequestMetrics *metrics) {
             kQNStrongSelf;
