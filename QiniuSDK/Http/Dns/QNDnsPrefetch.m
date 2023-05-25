@@ -392,17 +392,19 @@
         return nil;
     }
     
-    QNDohResolver *dohResolver = [QNDohResolver resolverWithServers:kQNGlobalConfiguration.dohIpv4Servers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsResolveTimeout];
-    QNInternalDns *doh = [QNInternalDns dnsWithResolver:dohResolver];
-    nextFetchHosts = [self preFetchHosts:nextFetchHosts dns:doh error:&err];
-    if (nextFetchHosts.count == 0) {
-        return [self getInetAddressByHost:host].firstObject.sourceValue;
-    }
-    if (error != nil && err) {
-        *error = err;
+    if (kQNGlobalConfiguration.dohIpv4Servers && [kQNGlobalConfiguration.dohIpv4Servers count] > 0) {
+        QNDohResolver *dohResolver = [QNDohResolver resolverWithServers:kQNGlobalConfiguration.dohIpv4Servers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsResolveTimeout];
+        QNInternalDns *doh = [QNInternalDns dnsWithResolver:dohResolver];
+        nextFetchHosts = [self preFetchHosts:nextFetchHosts dns:doh error:&err];
+        if (nextFetchHosts.count == 0) {
+            return [self getInetAddressByHost:host].firstObject.sourceValue;
+        }
+        if (error != nil && err) {
+            *error = err;
+        }
     }
     
-    if ([QNIP isIpV6FullySupported]) {
+    if ([QNIP isIpV6FullySupported] && kQNGlobalConfiguration.dohIpv6Servers && [kQNGlobalConfiguration.dohIpv6Servers count] > 0) {
         QNDohResolver *dohResolver = [QNDohResolver resolverWithServers:kQNGlobalConfiguration.dohIpv6Servers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsResolveTimeout];
         QNInternalDns *doh = [QNInternalDns dnsWithResolver:dohResolver];
         nextFetchHosts = [self preFetchHosts:nextFetchHosts dns:doh error:&err];
@@ -462,14 +464,16 @@
     
     // doh
     if (kQNGlobalConfiguration.dohEnable) {
-        QNDohResolver *dohResolver = [QNDohResolver resolverWithServers:kQNGlobalConfiguration.dohIpv4Servers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsResolveTimeout];
-        QNInternalDns *doh = [QNInternalDns dnsWithResolver:dohResolver];
-        nextFetchHosts = [self preFetchHosts:nextFetchHosts dns:doh error:error];
-        if (nextFetchHosts.count == 0) {
-            return;
+        if (kQNGlobalConfiguration.dohIpv4Servers && [kQNGlobalConfiguration.dohIpv4Servers count] > 0) {
+            QNDohResolver *dohResolver = [QNDohResolver resolverWithServers:kQNGlobalConfiguration.dohIpv4Servers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsResolveTimeout];
+            QNInternalDns *doh = [QNInternalDns dnsWithResolver:dohResolver];
+            nextFetchHosts = [self preFetchHosts:nextFetchHosts dns:doh error:error];
+            if (nextFetchHosts.count == 0) {
+                return;
+            }
         }
         
-        if ([QNIP isIpV6FullySupported]) {
+        if ([QNIP isIpV6FullySupported] && kQNGlobalConfiguration.dohIpv6Servers && [kQNGlobalConfiguration.dohIpv6Servers count] > 0) {
             QNDohResolver *dohResolver = [QNDohResolver resolverWithServers:kQNGlobalConfiguration.dohIpv6Servers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsResolveTimeout];
             QNInternalDns *doh = [QNInternalDns dnsWithResolver:dohResolver];
             nextFetchHosts = [self preFetchHosts:nextFetchHosts dns:doh error:error];
@@ -481,11 +485,13 @@
     
     // udp
     if (kQNGlobalConfiguration.udpDnsEnable) {
-        QNDnsUdpResolver *udpDnsResolver = [QNDnsUdpResolver resolverWithServerIPs:kQNGlobalConfiguration.udpDnsIpv4Servers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsResolveTimeout];
-        QNInternalDns *udpDns = [QNInternalDns dnsWithResolver:udpDnsResolver];
-        [self preFetchHosts:nextFetchHosts dns:udpDns error:error];
+        if (kQNGlobalConfiguration.udpDnsIpv4Servers && [kQNGlobalConfiguration.udpDnsIpv4Servers count] > 0) {
+            QNDnsUdpResolver *udpDnsResolver = [QNDnsUdpResolver resolverWithServerIPs:kQNGlobalConfiguration.udpDnsIpv4Servers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsResolveTimeout];
+            QNInternalDns *udpDns = [QNInternalDns dnsWithResolver:udpDnsResolver];
+            [self preFetchHosts:nextFetchHosts dns:udpDns error:error];
+        }
         
-        if ([QNIP isIpV6FullySupported]) {
+        if ([QNIP isIpV6FullySupported] && kQNGlobalConfiguration.udpDnsIpv6Servers && [kQNGlobalConfiguration.udpDnsIpv6Servers count] > 0) {
             QNDnsUdpResolver *udpDnsResolver = [QNDnsUdpResolver resolverWithServerIPs:kQNGlobalConfiguration.udpDnsIpv6Servers recordType:kQNTypeA timeout:kQNGlobalConfiguration.dnsResolveTimeout];
             QNInternalDns *udpDns = [QNInternalDns dnsWithResolver:udpDnsResolver];
             [self preFetchHosts:nextFetchHosts dns:udpDns error:error];

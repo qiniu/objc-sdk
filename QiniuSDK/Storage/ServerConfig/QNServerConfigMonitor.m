@@ -204,6 +204,22 @@
         QNLogDebug(@"server config: doh config ipv6Server %@", config.dnsConfig.dohConfig.ipv6Server.servers);
         kQNGlobalConfiguration.defaultDohIpv6Servers = [config.dnsConfig.dohConfig.ipv6Server.servers copy];
     }
+    
+    // connect check
+    if (config.connectCheckConfig.enable) {
+        kQNGlobalConfiguration.connectCheckEnable = [config.connectCheckConfig.enable boolValue];
+        QNLogDebug(@"server config: connect check enable %@", config.dnsConfig.dohConfig.enable);
+    }
+    if (config.connectCheckConfig.timeoutMs) {
+        kQNGlobalConfiguration.connectCheckTimeout = [config.connectCheckConfig.timeoutMs doubleValue] / 1000;
+        QNLogDebug(@"server config: connect check timeout %@", config.connectCheckConfig.timeoutMs);
+    }
+    if (config.connectCheckConfig.isOverride &&
+        config.connectCheckConfig.urls &&
+        [config.connectCheckConfig.urls isKindOfClass:[NSArray class]]) {
+        kQNGlobalConfiguration.connectCheckURLStrings = config.connectCheckConfig.urls;
+        QNLogDebug(@"server config: connect check urls %@", config.connectCheckConfig.urls);
+    }
 }
 
 - (void)handleServerUserConfig:(QNServerUserConfig *)config {

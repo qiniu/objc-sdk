@@ -18,6 +18,7 @@
 		93D230321C86D7F700434F6D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 93D230301C86D7F700434F6D /* LaunchScreen.storyboard */; };
 		93D2303D1C86D7F700434F6D /* QiniuDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D2303C1C86D7F700434F6D /* QiniuDemoTests.m */; };
 		93D230481C86D7F800434F6D /* QiniuDemoUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D230471C86D7F800434F6D /* QiniuDemoUITests.m */; };
+		9C463550C07FFFC029A652B8 /* libPods-QiniuDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6B9BC5A8D93F988C1240E05F /* libPods-QiniuDemo.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +72,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9C463550C07FFFC029A652B8 /* libPods-QiniuDemo.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

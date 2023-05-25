@@ -40,6 +40,7 @@
 @property (nonatomic, strong) id <QNUploadRegion> currentRegion;
 @property (nonatomic, strong) QNUploadInfo *uploadInfo;
 
+@property(nonatomic, strong) NSLock *progressLocker;
 @property(nonatomic, strong) QNUpProgress *progress;
 @property(nonatomic, strong) NSMutableArray <QNRequestTransaction *> *uploadTransactions;
 
@@ -225,9 +226,11 @@
                                  NSDictionary * _Nullable))completeHandler {}
 
 - (QNUpProgress *)progress {
+    [self.progressLocker lock];
     if (_progress == nil) {
         _progress = [QNUpProgress progress:self.option.progressHandler byteProgress:self.option.byteProgressHandler];
     }
+    [self.progressLocker unlock];
     return _progress;
 }
 

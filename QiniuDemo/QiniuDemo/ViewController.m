@@ -13,7 +13,8 @@
 #endif
 
 #import "ViewController.h"
-#import "QNTransactionManager.h"
+//#import "QNTransactionManager.h"
+#import <HappyDNS/HappyDNS.h>
 #import <Photos/Photos.h>
 
 typedef NS_ENUM(NSInteger, UploadState){
@@ -126,31 +127,42 @@ typedef NS_ENUM(NSInteger, UploadState){
     
 //    kQNGlobalConfiguration.isDnsOpen = NO;
 //    kQNGlobalConfiguration.connectCheckEnable = false;
-    kQNGlobalConfiguration.dnsCacheMaxTTL = 600;
-    kQNGlobalConfiguration.partialHostFrozenTime = 20*60;
+//    kQNGlobalConfiguration.dnsCacheMaxTTL = 600;
+//    kQNGlobalConfiguration.partialHostFrozenTime = 20*60;
 //    kQNGlobalConfiguration.dns = self;
     
 //    [QNServerConfigMonitor removeConfigCache];
+    
+    kQNGlobalConfiguration.udpDnsIpv4Servers = @[@"223.5.5.5", @"114.114.114.114"];
+    kQNGlobalConfiguration.dohIpv4Servers = @[@"https://223.6.6.6/dns-query"];
     
     NSString *key = [NSString stringWithFormat:@"iOS_Demo_%@", [NSDate date]];
     key = @"iOS-Test";
     self.token = YourToken;
 
+    NSURLRequest
+    QNResolver *resolver = [QNResolver systemResolver];
+    QNDnsManager *dns = [[QNDnsManager alloc] init:@[resolver] networkInfo:nil];
+    [dns putHosts:@"host" ip:@"host-ip"];
     QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        builder.timeoutInterval = 90;
-        builder.retryMax = 1;
-//        builder.useHttps = NO;
-        
-        builder.useConcurrentResumeUpload = false;
-        builder.concurrentTaskCount = 10;
-        builder.resumeUploadVersion = QNResumeUploadVersionV2;
-        builder.putThreshold = 4*1024*1024;
-        builder.chunkSize = 1*1024*1024;
-//        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[kUploadFixHost00, kUploadFixHost01]];
-        NSString *recorderPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
-        NSLog(@"== record path:%@", recorderPath);
-        builder.recorder = [QNFileRecorder fileRecorderWithFolder:recorderPath error:nil];
+        builder.dns = dns;
     }];
+    
+//    QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+//        builder.timeoutInterval = 90;
+//        builder.retryMax = 1;
+////        builder.useHttps = NO;
+//
+//        builder.useConcurrentResumeUpload = false;
+//        builder.concurrentTaskCount = 10;
+//        builder.resumeUploadVersion = QNResumeUploadVersionV2;
+//        builder.putThreshold = 4*1024*1024;
+//        builder.chunkSize = 1*1024*1024;
+////        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[kUploadFixHost00, kUploadFixHost01]];
+//        NSString *recorderPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+//        NSLog(@"== record path:%@", recorderPath);
+//        builder.recorder = [QNFileRecorder fileRecorderWithFolder:recorderPath error:nil];
+//    }];
     
     
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:configuration];

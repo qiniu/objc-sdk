@@ -64,12 +64,25 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
+@interface QNConnectCheckConfig : NSObject
+
+@property(nonatomic, assign, readonly)BOOL isOverride;
+@property(nonatomic, strong, readonly)NSNumber *enable;
+@property(nonatomic, strong, readonly)NSNumber *timeoutMs;
+@property(nonatomic, strong, readonly)NSArray <NSString *> *urls;
+
++ (instancetype)config:(NSDictionary *)info;
+
+@end
+
+
 @interface QNServerConfig : NSObject
 
 @property(nonatomic, assign, readonly)BOOL isValid;
 @property(nonatomic, assign, readonly)long ttl;
 @property(nonatomic, strong, readonly)QNServerRegionConfig *regionConfig;
-@property(nonatomic, strong, readonly)QNServerDnsConfig *dnsConfig;
+@property(nonatomic, strong, readonly)QNServerDnsConfig    *dnsConfig;
+@property(nonatomic, strong, readonly)QNConnectCheckConfig *connectCheckConfig;
 
 @property(nonatomic, strong, readonly)NSDictionary *info;
 

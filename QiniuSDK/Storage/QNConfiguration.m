@@ -11,6 +11,7 @@
 #import "QNUpToken.h"
 #import "QNReportConfig.h"
 #import "QNAutoZone.h"
+#import "QN_GTM_Base64.h"
 
 const UInt32 kQNBlockSize = 4 * 1024 * 1024;
 const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
@@ -70,11 +71,13 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 
 @end
 
+
 @interface QNGlobalConfiguration()
 @property(nonatomic, strong)NSArray *defaultDohIpv4Servers;
 @property(nonatomic, strong)NSArray *defaultDohIpv6Servers;
 @property(nonatomic, strong)NSArray *defaultUdpDnsIpv4Servers;
 @property(nonatomic, strong)NSArray *defaultUdpDnsIpv6Servers;
+@property(nonatomic, strong)NSArray *defaultConnectCheckUrls;
 @end
 @implementation QNGlobalConfiguration
 + (instancetype)shared{
@@ -95,17 +98,27 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     _dnsCacheMaxTTL = 10*60;
     
     _dohEnable = true;
-    _defaultDohIpv4Servers = @[@"https://223.6.6.6/dns-query", @"https://8.8.8.8/dns-query"];
+    _defaultDohIpv4Servers = [self parseBase64Array:@"WyJodHRwczovLzIyMy42LjYuNi9kbnMtcXVlcnkiLCAiaHR0cHM6Ly84LjguOC44L2Rucy1xdWVyeSJd"];
     
     _udpDnsEnable = true;
-    _defaultUdpDnsIpv4Servers = @[@"223.5.5.5", @"114.114.114.114", @"1.1.1.1", @"8.8.8.8"];
+    _defaultUdpDnsIpv4Servers = [self parseBase64Array:@"WyIyMjMuNS41LjUiLCAiMTE0LjExNC4xMTQuMTE0IiwgIjEuMS4xLjEiLCAiOC44LjguOCJd"];
     
     _globalHostFrozenTime = 10;
     _partialHostFrozenTime = 5*60;
     
     _connectCheckEnable = YES;
     _connectCheckTimeout = 2;
-    _connectCheckURLStrings = @[@"https://www.qiniu.com", @"https://www.baidu.com", @"https://www.google.com"];
+    _defaultConnectCheckUrls = [self parseBase64Array:@"WyJodHRwczovL3d3dy5xaW5pdS5jb20iLCAiaHR0cHM6Ly93d3cuYmFpZHUuY29tIiwgImh0dHBzOi8vd3d3Lmdvb2dsZS5jb20iXQ=="];
+    _connectCheckURLStrings = nil;
+}
+
+- (NSArray *)parseBase64Array:(NSString *)data {
+    NSData *jsonData = [QN_GTM_Base64 decodeData:[data dataUsingEncoding:NSUTF8StringEncoding]];
+    NSArray *ret = [NSJSONSerialization JSONObjectWithData:jsonData options:NSJSONReadingMutableLeaves error:nil];
+    if (ret && [ret isKindOfClass:[NSArray class]]) {
+        return ret;
+    }
+    return nil;
 }
 
 - (BOOL)isDohEnable {
@@ -147,6 +160,15 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 - (BOOL)isUdpDnsEnable {
     return _udpDnsEnable && (_udpDnsIpv4Servers.count > 0) ;
 }
+
+- (NSArray<NSString *> *)connectCheckURLStrings {
+    if (_connectCheckURLStrings) {
+        return _connectCheckURLStrings;
+    } else {
+        return _defaultConnectCheckUrls;
+    }
+}
+
 @end
 
 @implementation QNConfigurationBuilder
