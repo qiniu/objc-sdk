@@ -28,6 +28,6 @@ jobs:
         env:
           QINIU_TEST_ENV: travis
         run: |
-          xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 12 Plus' -enableCodeCoverage YES
+          xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 14 Pro' -enableCodeCoverage YES
           xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -configuration Debug -destination 'platform=macOS,arch=x86_64'
           bash <(curl -s https://codecov.io/bash)
