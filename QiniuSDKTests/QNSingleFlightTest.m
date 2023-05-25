@@ -57,7 +57,7 @@
             @synchronized (self) {
                 completeCount += 1;
             }
-            NSLog(@"== async completeCount:%d", completeCount);
+//            NSLog(@"== async completeCount:%d", completeCount);
         }];
     }
     
@@ -95,10 +95,10 @@
         
         dispatch_block_t completeBlock = ^(){
             if (retryCount < RetryCount) {
-                NSLog(@"== %@ action retryCount:%d index:%d error", isAsync ? @"async" : @"sync", retryCount, index);
+//                NSLog(@"== %@ action retryCount:%d index:%d error", isAsync ? @"async" : @"sync", retryCount, index);
                 complete(nil, [[NSError alloc] initWithDomain:NSArgumentDomain code:-1 userInfo:nil]);
             } else {
-                NSLog(@"== %@ action retryCount:%d index:%d value", isAsync ? @"async" : @"sync", retryCount, index);
+//                NSLog(@"== %@ action retryCount:%d index:%d value", isAsync ? @"async" : @"sync", retryCount, index);
                 complete(indexString, nil);
             }
         };
