@@ -25,7 +25,7 @@
     for (int i = 0; i < maxCount; i++) {
         [self singleFlightPerform:singleFlight index:i retryCount:RetryCount isAsync:false complete:^{
             completeCount += 1;
-            NSLog(@"== sync completeCount:%d", completeCount);
+//            NSLog(@"== sync completeCount:%d", completeCount);
         }];
     }
     
@@ -40,7 +40,7 @@
     for (int i = 0; i < maxCount; i++) {
         [self singleFlightPerform:singleFlight index:i retryCount:0 isAsync:false complete:^{
             completeCount += 1;
-            NSLog(@"== sync completeCount:%d", completeCount);
+//            NSLog(@"== sync completeCount:%d", completeCount);
         }];
     }
     
@@ -74,7 +74,7 @@
             @synchronized (self) {
                 completeCount += 1;
             }
-            NSLog(@"== async completeCount:%d", completeCount);
+//            NSLog(@"== async completeCount:%d", completeCount);
         }];
     }
     

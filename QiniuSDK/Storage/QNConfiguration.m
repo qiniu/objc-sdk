@@ -72,7 +72,14 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 @end
 
 
-@interface QNGlobalConfiguration()
+@interface QNGlobalConfiguration(){
+    NSArray *_defaultDohIpv4Servers;
+    NSArray *_defaultDohIpv6Servers;
+    NSArray *_defaultUdpDnsIpv4Servers;
+    NSArray *_defaultUdpDnsIpv6Servers;
+    NSArray *_defaultConnectCheckUrls;
+}
+
 @property(nonatomic, strong)NSArray *defaultDohIpv4Servers;
 @property(nonatomic, strong)NSArray *defaultDohIpv6Servers;
 @property(nonatomic, strong)NSArray *defaultUdpDnsIpv4Servers;
@@ -122,14 +129,14 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 }
 
 - (BOOL)isDohEnable {
-    return _dohEnable && (_dohIpv4Servers.count > 0) ;
+    return _dohEnable && (self.dohIpv4Servers.count > 0 || self.dohIpv6Servers.count > 0) ;
 }
 
 - (NSArray<NSString *> *)dohIpv4Servers {
     if (_dohIpv4Servers) {
         return _dohIpv4Servers;
     } else {
-        return _defaultDohIpv4Servers;
+        return self.defaultDohIpv4Servers;
     }
 }
 
@@ -137,7 +144,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     if (_dohIpv6Servers) {
         return _dohIpv6Servers;
     } else {
-        return _defaultDohIpv6Servers;
+        return self.defaultDohIpv6Servers;
     }
 }
 
@@ -145,7 +152,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     if (_udpDnsIpv4Servers) {
         return _udpDnsIpv4Servers;
     } else {
-        return _defaultUdpDnsIpv4Servers;
+        return self.defaultUdpDnsIpv4Servers;
     }
 }
 
@@ -153,21 +160,104 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     if (_udpDnsIpv6Servers) {
         return _udpDnsIpv6Servers;
     } else {
-        return _defaultUdpDnsIpv6Servers;
+        return self.defaultUdpDnsIpv6Servers;
     }
 }
 
 - (BOOL)isUdpDnsEnable {
-    return _udpDnsEnable && (_udpDnsIpv4Servers.count > 0) ;
+    return _udpDnsEnable && (self.udpDnsIpv4Servers.count > 0 || self.udpDnsIpv6Servers.count > 0) ;
 }
 
 - (NSArray<NSString *> *)connectCheckURLStrings {
     if (_connectCheckURLStrings) {
         return _connectCheckURLStrings;
     } else {
-        return _defaultConnectCheckUrls;
+        return self.defaultConnectCheckUrls;
     }
 }
+
+- (NSArray *)defaultDohIpv4Servers {
+    NSArray *arr = nil;
+    @synchronized (self) {
+        if (_defaultDohIpv4Servers) {
+            arr = [_defaultDohIpv4Servers copy];
+        }
+    }
+    return arr;
+}
+
+- (void)setDefaultDohIpv4Servers:(NSArray *)defaultDohIpv4Servers {
+    @synchronized (self) {
+        _defaultDohIpv4Servers = defaultDohIpv4Servers;
+    }
+}
+
+- (NSArray *)defaultDohIpv6Servers {
+    NSArray *arr = nil;
+    @synchronized (self) {
+        if (_defaultDohIpv6Servers) {
+            arr = [_defaultDohIpv6Servers copy];
+        }
+    }
+    return arr;
+}
+
+- (void)setDefaultDohIpv6Servers:(NSArray *)defaultDohIpv6Servers {
+    @synchronized (self) {
+        _defaultDohIpv6Servers = defaultDohIpv6Servers;
+    }
+}
+
+
+- (NSArray *)defaultUdpDnsIpv4Servers {
+    NSArray *arr = nil;
+    @synchronized (self) {
+        if (_defaultUdpDnsIpv4Servers) {
+            arr = [_defaultUdpDnsIpv4Servers copy];
+        }
+    }
+    return arr;
+}
+
+- (void)setDefaultUdpDnsIpv4Servers:(NSArray *)defaultUdpDnsIpv4Servers {
+    @synchronized (self) {
+        _defaultUdpDnsIpv4Servers = defaultUdpDnsIpv4Servers;
+    }
+}
+
+
+- (NSArray *)defaultUdpDnsIpv6Servers {
+    NSArray *arr = nil;
+    @synchronized (self) {
+        if (_defaultUdpDnsIpv6Servers) {
+            arr = [_defaultUdpDnsIpv6Servers copy];
+        }
+    }
+    return arr;
+}
+
+- (void)setDefaultUdpDnsIpv6Servers:(NSArray *)defaultUdpDnsIpv6Servers {
+    @synchronized (self) {
+        _defaultUdpDnsIpv6Servers = defaultUdpDnsIpv6Servers;
+    }
+}
+
+- (NSArray *)defaultConnectCheckUrls {
+    NSArray *arr = nil;
+    @synchronized (self) {
+        if (_defaultConnectCheckUrls) {
+            arr = [_defaultConnectCheckUrls copy];
+        }
+    }
+    return arr;
+}
+
+- (void)setDefaultConnectCheckUrls:(NSArray *)defaultConnectCheckUrls {
+    @synchronized (self) {
+        _defaultConnectCheckUrls = defaultConnectCheckUrls;
+    }
+}
+
 
 @end
 

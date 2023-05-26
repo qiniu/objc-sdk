@@ -18,12 +18,14 @@
 #define kQNServerConfigTransactionKey @"QNServerConfig"
 
 @interface QNGlobalConfiguration(DnsDefaultServer)
+@property(nonatomic, strong)NSArray *defaultConnectCheckUrls;
 @property(nonatomic, strong)NSArray *defaultDohIpv4Servers;
 @property(nonatomic, strong)NSArray *defaultDohIpv6Servers;
 @property(nonatomic, strong)NSArray *defaultUdpDnsIpv4Servers;
 @property(nonatomic, strong)NSArray *defaultUdpDnsIpv6Servers;
 @end
 @implementation QNGlobalConfiguration(DnsDefaultServer)
+@dynamic defaultConnectCheckUrls;
 @dynamic defaultDohIpv4Servers;
 @dynamic defaultDohIpv6Servers;
 @dynamic defaultUdpDnsIpv4Servers;
@@ -217,7 +219,7 @@
     if (config.connectCheckConfig.isOverride &&
         config.connectCheckConfig.urls &&
         [config.connectCheckConfig.urls isKindOfClass:[NSArray class]]) {
-        kQNGlobalConfiguration.connectCheckURLStrings = config.connectCheckConfig.urls;
+        kQNGlobalConfiguration.defaultConnectCheckUrls = config.connectCheckConfig.urls;
         QNLogDebug(@"server config: connect check urls %@", config.connectCheckConfig.urls);
     }
 }
