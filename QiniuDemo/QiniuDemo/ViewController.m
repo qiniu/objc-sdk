@@ -73,7 +73,7 @@ typedef NS_ENUM(NSInteger, UploadState){
         path = [[NSBundle mainBundle] pathForResource:@"UploadResource_14M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_9M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
-//        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1G.zip" ofType:nil];
+        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1G.zip" ofType:nil];
         
 //        NSFileManager *manager = [NSFileManager defaultManager];
 //        NSURL *desktopUrl = [manager URLsForDirectory:NSDesktopDirectory inDomains:NSUserDomainMask].firstObject;
@@ -139,13 +139,8 @@ typedef NS_ENUM(NSInteger, UploadState){
     NSString *key = [NSString stringWithFormat:@"iOS_Demo_%@", [NSDate date]];
     key = @"iOS-Test";
     self.token = YourToken;
-
-    NSURLRequest
-    QNResolver *resolver = [QNResolver systemResolver];
-    QNDnsManager *dns = [[QNDnsManager alloc] init:@[resolver] networkInfo:nil];
-    [dns putHosts:@"host" ip:@"host-ip"];
+    
     QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-        builder.dns = dns;
     }];
     
 //    QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {

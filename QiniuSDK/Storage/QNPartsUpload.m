@@ -106,7 +106,6 @@
 }
 
 - (BOOL)reloadUploadInfo {
-    BOOL success = [super reloadUploadInfo];
     if (![super reloadUploadInfo]) {
         return NO;
     }

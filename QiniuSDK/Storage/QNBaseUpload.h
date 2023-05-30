@@ -46,7 +46,7 @@ typedef void (^QNUpTaskCompletionHandler)(QNResponseInfo *info, NSString *key, Q
 //MARK:-- 构造函数
 
 /// file构造函数
-/// @param file file信息
+/// @param uploadSource 文件源
 /// @param key 上传key
 /// @param token 上传token
 /// @param option 上传option

@@ -124,7 +124,7 @@
     config.ttl = [info[@"ttl"] longValue];
     config.regionConfig = [QNServerRegionConfig config:info[@"region"]];
     config.dnsConfig = [QNServerDnsConfig config:info[@"dns"]];
-    config.connectCheckConfig = [QNConnectCheckConfig config:info[@"connect_check"]];
+    config.connectCheckConfig = [QNConnectCheckConfig config:info[@"connection_check"]];
     
     if (config.ttl < 10) {
         config.ttl = 10;

@@ -116,7 +116,7 @@
             [self singleFlightPerform:singleFlight index:index retryCount:retryCount+1 isAsync:isAsync complete:complete];
         } else {
             NSString *indexString = [NSString stringWithFormat:@"%d", index];
-            NSLog(@"== %@ action complete retryCount:%d value:%@ index:%d", isAsync ? @"async" : @"sync", retryCount, value, index);
+//            NSLog(@"== %@ action complete retryCount:%d value:%@ index:%d", isAsync ? @"async" : @"sync", retryCount, value, index);
         
             if (!isAsync) {
                 XCTAssertTrue(value != nil, @"value:%@",value);

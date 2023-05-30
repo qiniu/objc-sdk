@@ -29,8 +29,8 @@
     cfg.dohIpv4Servers = nil;
     cfg.connectCheckURLStrings = nil;
     
-    XCTAssertTrue([cfg.udpDnsIpv4Servers containsObject:@"114.114.114.114"], @"default udp ipv4 server error");
-    XCTAssertTrue([cfg.dohIpv4Servers containsObject:@"https://223.6.6.6/dns-query"], @"default doh ipv4 server error");
+    XCTAssertTrue([cfg.udpDnsIpv4Servers containsObject:@"8.8.8.8"], @"default udp ipv4 server error");
+    XCTAssertTrue([cfg.dohIpv4Servers containsObject:@"https://8.8.8.8/dns-query"], @"default doh ipv4 server error");
     XCTAssertTrue([cfg.connectCheckURLStrings containsObject:@"https://www.qiniu.com"], @"default connect check url error");
 }
 
