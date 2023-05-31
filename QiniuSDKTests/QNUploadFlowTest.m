@@ -148,10 +148,10 @@
                           config:(QNConfiguration *)config
                           option:(QNUploadOption *)option {
     
-    NSArray *upList01 = @[@"uptemp01.qbox.me", @"uptemp02.qbox.me"];
+    NSArray *upList01 = @[@"uptemp01.qbox.me"];
     QNZoneInfo *zoneInfo01 = [QNZoneInfo zoneInfoWithMainHosts:upList01 regionId:nil];
     
-    NSArray *upList02 = @[@"upload.qiniup.com", @"up.qbox.me"];
+    NSArray *upList02 = @[@"upload.qiniup.com"];
     QNZoneInfo *zoneInfo02 = [QNZoneInfo zoneInfoWithMainHosts:upList02 regionId:nil];
     
     NSArray *upList03 = @[@"upload-na0.qiniup.com", @"up-na0.qbox.me"];

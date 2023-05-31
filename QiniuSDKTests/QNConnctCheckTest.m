@@ -52,7 +52,7 @@
 }
 
 - (void)testNotConnected {
-    kQNGlobalConfiguration.connectCheckURLStrings = @[@"https://www.test1.com", @"https://www.test2.com"];
+    kQNGlobalConfiguration.connectCheckURLStrings = @[@"https://connect.b.com", @"https://connect.a.com"];
     
     int maxCount = 10;
     int successCount = 0;
