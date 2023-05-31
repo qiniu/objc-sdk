@@ -24,8 +24,8 @@
 
 @property(nonatomic, strong)QNPartsUploadPerformer *uploadPerformer;
 
-@property(nonatomic, strong)QNResponseInfo *uploadDataErrorResponseInfo;
-@property(nonatomic, strong)NSDictionary *uploadDataErrorResponse;
+@property(   atomic, strong)QNResponseInfo *uploadDataErrorResponseInfo;
+@property(   atomic, strong)NSDictionary *uploadDataErrorResponse;
 
 @end
 @implementation QNPartsUpload

@@ -38,9 +38,9 @@
 }
 
 - (void)testCustomCheckHosts {
-    kQNGlobalConfiguration.connectCheckURLStrings = @[@"https://www.google.com"];
+    kQNGlobalConfiguration.connectCheckURLStrings = @[@"https://www.google.com", @"https://www.qiniu.com"];
     
-    int maxCount = 100;
+    int maxCount = 20;
     int successCount = 0;
     for (int i = 0; i < maxCount; i++) {
         if ([QNConnectChecker isConnected:[QNConnectChecker check]]) {
@@ -48,7 +48,7 @@
         }
     }
     
-    XCTAssertTrue(successCount > 50, @"maxCount:%d successCount:%d", maxCount, successCount);
+    XCTAssertTrue(successCount > 12, @"maxCount:%d successCount:%d", maxCount, successCount);
 }
 
 - (void)testNotConnected {

@@ -11,8 +11,8 @@
 
 @interface QNUpProgress()
 
-@property(nonatomic, assign)long long maxProgressUploadBytes;
-@property(nonatomic, assign)long long previousUploadBytes;
+@property(   atomic, assign)long long maxProgressUploadBytes;
+@property(   atomic, assign)long long previousUploadBytes;
 @property(nonatomic,  copy)QNUpProgressHandler progress;
 @property(nonatomic,  copy)QNUpByteProgressHandler byteProgress;
 
@@ -49,14 +49,26 @@
         return;
     }
     
+    [self notify:key uploadBytes:self.previousUploadBytes totalBytes:totalBytes];
+}
+
+- (void)notifyDone:(NSString *)key totalBytes:(long long)totalBytes {
+    [self notify:key uploadBytes:totalBytes totalBytes:totalBytes];
+}
+
+- (void)notify:(NSString *)key uploadBytes:(long long)uploadBytes totalBytes:(long long)totalBytes {
+    if (self.progress == nil && self.byteProgress == nil) {
+        return;
+    }
+    
     if (self.byteProgress) {
         QNAsyncRunInMain(^{
-            self.byteProgress(key, self.previousUploadBytes, totalBytes);
+            self.byteProgress(key, uploadBytes, totalBytes);
         });
         return;
     }
     
-    if (totalBytes < 0) {
+    if (totalBytes <= 0) {
         return;
     }
     
@@ -64,25 +76,6 @@
         QNAsyncRunInMain(^{
             double notifyPercent = (double) uploadBytes / (double) totalBytes;
             self.progress(key, notifyPercent);
-        });
-    }
-}
-
-- (void)notifyDone:(NSString *)key totalBytes:(long long)totalBytes {
-    if (self.progress == nil && self.byteProgress == nil) {
-        return;
-    }
-    
-    if (self.byteProgress) {
-        QNAsyncRunInMain(^{
-            self.byteProgress(key, totalBytes, totalBytes);
-        });
-        return;
-    }
-    
-    if (self.progress) {
-        QNAsyncRunInMain(^{
-            self.progress(key, 1);
         });
     }
 }
