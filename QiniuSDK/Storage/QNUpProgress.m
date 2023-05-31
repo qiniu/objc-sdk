@@ -11,8 +11,8 @@
 
 @interface QNUpProgress()
 
-@property(   atomic, assign)long long maxProgressUploadBytes;
-@property(   atomic, assign)long long previousUploadBytes;
+@property(nonatomic, assign)long long maxProgressUploadBytes;
+@property(nonatomic, assign)long long previousUploadBytes;
 @property(nonatomic,  copy)QNUpProgressHandler progress;
 @property(nonatomic,  copy)QNUpByteProgressHandler byteProgress;
 
@@ -34,8 +34,10 @@
     }
     
     if (totalBytes > 0) {
-        if (self.maxProgressUploadBytes < 0) {
-            self.maxProgressUploadBytes = totalBytes * 0.95;
+        @synchronized (self) {
+            if (self.maxProgressUploadBytes < 0) {
+                self.maxProgressUploadBytes = totalBytes * 0.95;
+            }
         }
         
         if (uploadBytes > self.maxProgressUploadBytes) {
@@ -43,13 +45,15 @@
         }
     }
     
-    if (uploadBytes > self.previousUploadBytes) {
-        self.previousUploadBytes = uploadBytes;
-    } else {
-        return;
+    @synchronized (self) {
+        if (uploadBytes > self.previousUploadBytes) {
+            self.previousUploadBytes = uploadBytes;
+        } else {
+            return;
+        }
     }
     
-    [self notify:key uploadBytes:self.previousUploadBytes totalBytes:totalBytes];
+    [self notify:key uploadBytes:uploadBytes totalBytes:totalBytes];
 }
 
 - (void)notifyDone:(NSString *)key totalBytes:(long long)totalBytes {
