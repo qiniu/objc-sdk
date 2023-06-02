@@ -140,24 +140,22 @@ typedef NS_ENUM(NSInteger, UploadState){
     key = @"iOS-Test";
     self.token = YourToken;
     
-    QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-    }];
     
-//    QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
-//        builder.timeoutInterval = 90;
-//        builder.retryMax = 1;
-////        builder.useHttps = NO;
-//
-//        builder.useConcurrentResumeUpload = false;
-//        builder.concurrentTaskCount = 10;
-//        builder.resumeUploadVersion = QNResumeUploadVersionV2;
-//        builder.putThreshold = 4*1024*1024;
-//        builder.chunkSize = 1*1024*1024;
-////        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[kUploadFixHost00, kUploadFixHost01]];
-//        NSString *recorderPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
-//        NSLog(@"== record path:%@", recorderPath);
-//        builder.recorder = [QNFileRecorder fileRecorderWithFolder:recorderPath error:nil];
-//    }];
+    QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+        builder.timeoutInterval = 90;
+        builder.retryMax = 1;
+//        builder.useHttps = NO;
+
+        builder.useConcurrentResumeUpload = false;
+        builder.concurrentTaskCount = 10;
+        builder.resumeUploadVersion = QNResumeUploadVersionV2;
+        builder.putThreshold = 4*1024*1024;
+        builder.chunkSize = 1*1024*1024;
+//        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[kUploadFixHost00, kUploadFixHost01]];
+        NSString *recorderPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
+        NSLog(@"== record path:%@", recorderPath);
+        builder.recorder = [QNFileRecorder fileRecorderWithFolder:recorderPath error:nil];
+    }];
     
     
     QNUploadManager *upManager = [[QNUploadManager alloc] initWithConfiguration:configuration];
