@@ -13,7 +13,8 @@
 #endif
 
 #import "ViewController.h"
-#import "QNTransactionManager.h"
+//#import "QNTransactionManager.h"
+#import <HappyDNS/HappyDNS.h>
 #import <Photos/Photos.h>
 
 typedef NS_ENUM(NSInteger, UploadState){
@@ -72,7 +73,7 @@ typedef NS_ENUM(NSInteger, UploadState){
         path = [[NSBundle mainBundle] pathForResource:@"UploadResource_14M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_9M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
-//        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1G.zip" ofType:nil];
+        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1G.zip" ofType:nil];
         
 //        NSFileManager *manager = [NSFileManager defaultManager];
 //        NSURL *desktopUrl = [manager URLsForDirectory:NSDesktopDirectory inDomains:NSUserDomainMask].firstObject;
@@ -126,21 +127,25 @@ typedef NS_ENUM(NSInteger, UploadState){
     
 //    kQNGlobalConfiguration.isDnsOpen = NO;
 //    kQNGlobalConfiguration.connectCheckEnable = false;
-    kQNGlobalConfiguration.dnsCacheMaxTTL = 600;
-    kQNGlobalConfiguration.partialHostFrozenTime = 20*60;
+//    kQNGlobalConfiguration.dnsCacheMaxTTL = 600;
+//    kQNGlobalConfiguration.partialHostFrozenTime = 20*60;
 //    kQNGlobalConfiguration.dns = self;
     
 //    [QNServerConfigMonitor removeConfigCache];
     
+    kQNGlobalConfiguration.udpDnsIpv4Servers = @[@"223.5.5.5", @"114.114.114.114"];
+    kQNGlobalConfiguration.dohIpv4Servers = @[@"https://223.6.6.6/dns-query"];
+    
     NSString *key = [NSString stringWithFormat:@"iOS_Demo_%@", [NSDate date]];
     key = @"iOS-Test";
     self.token = YourToken;
-
+    
+    
     QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.timeoutInterval = 90;
         builder.retryMax = 1;
 //        builder.useHttps = NO;
-        
+
         builder.useConcurrentResumeUpload = false;
         builder.concurrentTaskCount = 10;
         builder.resumeUploadVersion = QNResumeUploadVersionV2;

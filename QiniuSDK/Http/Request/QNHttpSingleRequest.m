@@ -182,7 +182,7 @@
 }
 
 - (BOOL)shouldCheckConnect:(QNResponseInfo *)responseInfo {
-    if (!kQNGlobalConfiguration.connectCheckEnable) {
+    if (!kQNGlobalConfiguration.connectCheckEnable || [kQNGlobalConfiguration.connectCheckURLStrings count] == 0) {
         return NO;
     }
     

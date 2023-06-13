@@ -25,7 +25,7 @@
     for (int i = 0; i < maxCount; i++) {
         [self singleFlightPerform:singleFlight index:i retryCount:RetryCount isAsync:false complete:^{
             completeCount += 1;
-            NSLog(@"== sync completeCount:%d", completeCount);
+//            NSLog(@"== sync completeCount:%d", completeCount);
         }];
     }
     
@@ -40,7 +40,7 @@
     for (int i = 0; i < maxCount; i++) {
         [self singleFlightPerform:singleFlight index:i retryCount:0 isAsync:false complete:^{
             completeCount += 1;
-            NSLog(@"== sync completeCount:%d", completeCount);
+//            NSLog(@"== sync completeCount:%d", completeCount);
         }];
     }
     
@@ -57,7 +57,7 @@
             @synchronized (self) {
                 completeCount += 1;
             }
-            NSLog(@"== async completeCount:%d", completeCount);
+//            NSLog(@"== async completeCount:%d", completeCount);
         }];
     }
     
@@ -74,7 +74,7 @@
             @synchronized (self) {
                 completeCount += 1;
             }
-            NSLog(@"== async completeCount:%d", completeCount);
+//            NSLog(@"== async completeCount:%d", completeCount);
         }];
     }
     
@@ -95,10 +95,10 @@
         
         dispatch_block_t completeBlock = ^(){
             if (retryCount < RetryCount) {
-                NSLog(@"== %@ action retryCount:%d index:%d error", isAsync ? @"async" : @"sync", retryCount, index);
+//                NSLog(@"== %@ action retryCount:%d index:%d error", isAsync ? @"async" : @"sync", retryCount, index);
                 complete(nil, [[NSError alloc] initWithDomain:NSArgumentDomain code:-1 userInfo:nil]);
             } else {
-                NSLog(@"== %@ action retryCount:%d index:%d value", isAsync ? @"async" : @"sync", retryCount, index);
+//                NSLog(@"== %@ action retryCount:%d index:%d value", isAsync ? @"async" : @"sync", retryCount, index);
                 complete(indexString, nil);
             }
         };
@@ -116,7 +116,7 @@
             [self singleFlightPerform:singleFlight index:index retryCount:retryCount+1 isAsync:isAsync complete:complete];
         } else {
             NSString *indexString = [NSString stringWithFormat:@"%d", index];
-            NSLog(@"== %@ action complete retryCount:%d value:%@ index:%d", isAsync ? @"async" : @"sync", retryCount, value, index);
+//            NSLog(@"== %@ action complete retryCount:%d value:%@ index:%d", isAsync ? @"async" : @"sync", retryCount, value, index);
         
             if (!isAsync) {
                 XCTAssertTrue(value != nil, @"value:%@",value);

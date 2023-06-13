@@ -18,12 +18,14 @@
 #define kQNServerConfigTransactionKey @"QNServerConfig"
 
 @interface QNGlobalConfiguration(DnsDefaultServer)
+@property(nonatomic, strong)NSArray *defaultConnectCheckUrls;
 @property(nonatomic, strong)NSArray *defaultDohIpv4Servers;
 @property(nonatomic, strong)NSArray *defaultDohIpv6Servers;
 @property(nonatomic, strong)NSArray *defaultUdpDnsIpv4Servers;
 @property(nonatomic, strong)NSArray *defaultUdpDnsIpv6Servers;
 @end
 @implementation QNGlobalConfiguration(DnsDefaultServer)
+@dynamic defaultConnectCheckUrls;
 @dynamic defaultDohIpv4Servers;
 @dynamic defaultDohIpv6Servers;
 @dynamic defaultUdpDnsIpv4Servers;
@@ -203,6 +205,22 @@
         [config.dnsConfig.dohConfig.ipv6Server.servers isKindOfClass:[NSArray class]]) {
         QNLogDebug(@"server config: doh config ipv6Server %@", config.dnsConfig.dohConfig.ipv6Server.servers);
         kQNGlobalConfiguration.defaultDohIpv6Servers = [config.dnsConfig.dohConfig.ipv6Server.servers copy];
+    }
+    
+    // connect check
+    if (config.connectCheckConfig.enable) {
+        kQNGlobalConfiguration.connectCheckEnable = [config.connectCheckConfig.enable boolValue];
+        QNLogDebug(@"server config: connect check enable %@", config.dnsConfig.dohConfig.enable);
+    }
+    if (config.connectCheckConfig.timeoutMs) {
+        kQNGlobalConfiguration.connectCheckTimeout = [config.connectCheckConfig.timeoutMs doubleValue] / 1000;
+        QNLogDebug(@"server config: connect check timeout %@", config.connectCheckConfig.timeoutMs);
+    }
+    if (config.connectCheckConfig.isOverride &&
+        config.connectCheckConfig.urls &&
+        [config.connectCheckConfig.urls isKindOfClass:[NSArray class]]) {
+        kQNGlobalConfiguration.defaultConnectCheckUrls = config.connectCheckConfig.urls;
+        QNLogDebug(@"server config: connect check urls %@", config.connectCheckConfig.urls);
     }
 }
 
