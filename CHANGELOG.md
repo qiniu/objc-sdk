@@ -1,4 +1,8 @@
 #Changelog
+## 8.5.3 (2022-12-28)
+- 优化 Dns 预解析的域名配置
+- HappyDns 依赖升至 [v1.0.3](https://github.com/qiniu/happy-dns-objc/releases/tag/v1.0.3)
+
 ## 8.5.2 (2022-12-28)
 - 处理 Server 配置同步并发问题
 
