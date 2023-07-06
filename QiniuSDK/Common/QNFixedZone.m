@@ -61,17 +61,6 @@
     return z2;
 }
 
-+ (instancetype)zoneApNorthEast1 {
-    static QNFixedZone *zoneNorthEast1 = nil;
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        zoneNorthEast1 = [[QNFixedZone alloc] initWithUpDomainList:@[@"upload-ap-northeast-1.qiniup.com", @"up-ap-northeast-1.qiniup.com"]
-                                                         oldUpList:nil
-                                                          regionId:@"ap-northeast-1"];
-    });
-    return zoneNorthEast1;
-}
-
 + (instancetype)zoneNa0 {
     static QNFixedZone *zNa0 = nil;
     static dispatch_once_t onceToken;
@@ -101,7 +90,6 @@
                        [QNFixedZone zone2],
                        [QNFixedZone zoneCnEast2],
                        [QNFixedZone zoneNa0],
-                       [QNFixedZone zoneApNorthEast1],
                        [QNFixedZone zoneAs0]];
     QNFixedZone *zone = [self combineZones:zones];
     if (zone) {
