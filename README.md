@@ -14,7 +14,7 @@
 通过 CocoaPods
 
 ```ruby
-pod "Qiniu", "~> 8.5.3" 
+pod "Qiniu", "~> 8.6.0" 
 ```
 
 通过 Swift Package Manager (Xcode 11+)
@@ -37,6 +37,7 @@ let package = Package(
 
 |               Qiniu SDK 版本               | 最低 iOS版本 | 最低 OS X 版本 |     Notes     |
 | :--------------------------------------: | :------: | :--------: | :-----------: |
+|                  8.6.x                   |  iOS 7   | OS X 10.15  | Xcode 最低版本 11 |
 |                  8.5.x                   |  iOS 7   | OS X 10.15  | Xcode 最低版本 11 |
 |                  8.4.x                   |  iOS 7   | OS X 10.15  | Xcode 最低版本 11 |
 |                  8.3.x                   |  iOS 7   | OS X 10.15  | Xcode 最低版本 11 |
