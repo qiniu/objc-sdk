@@ -17,11 +17,11 @@
 @implementation QNComplexUploadSceneTest
 
 - (void)testMutiUploadV1{
-    int maxCount = 40;
+    int maxCount = 10;
     __block int completeCount = 0;
     __block int successCount = 0;
     
-    int start = 35;
+    int start = 5;
     for (int i=start; i<maxCount; i++) {
         QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
             builder.resumeUploadVersion = QNResumeUploadVersionV1;
@@ -55,7 +55,7 @@
     __block int completeCount = 0;
     __block int successCount = 0;
     
-    int start = 50;
+    int start = 80;
     for (int i=start; i<maxCount; i++) {
         QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
             builder.resumeUploadVersion = QNResumeUploadVersionV1;

@@ -1,4 +1,8 @@
 #Changelog
+## 8.6.0（2023-08-07）
+- 调整在根据 Bucket 获取其所在区域信息时的主备域名顺序
+- 移除亚太-首尔区域
+
 ## 8.5.3 (2023-06-29)
 - 对 Dns 预解析和网络检测中的默认域名进行 Base64 处理
 - HappyDns 依赖升至 [v1.0.3](https://github.com/qiniu/happy-dns-objc/releases/tag/v1.0.3)

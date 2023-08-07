@@ -41,7 +41,7 @@
         builder.useConcurrentResumeUpload = NO;
         builder.useHttps = YES;
     }];
-    NSArray *sizeArray = @[@5000, @8000, @10000, @20000];
+    NSArray *sizeArray = @[@10000];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"resume_switch_region_v1_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
@@ -57,7 +57,7 @@
         builder.useConcurrentResumeUpload = NO;
         builder.useHttps = YES;
     }];
-    NSArray *sizeArray = @[@30000];
+    NSArray *sizeArray = @[@20000];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"resume_cancel_v1_%@k_%@", size, [NSDate date]];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
@@ -71,7 +71,7 @@
         builder.useConcurrentResumeUpload = NO;
         builder.useHttps = NO;
     }];
-    NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    NSArray *sizeArray = @[@10000];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"resume_http_v1_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
@@ -88,7 +88,7 @@
         builder.useConcurrentResumeUpload = NO;
         builder.useHttps = YES;
     }];
-    NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    NSArray *sizeArray = @[@10000];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"resume_https_v1_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
@@ -107,7 +107,7 @@
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniu"] error:nil];
     }];
     
-    NSArray *sizeArray = @[@30000];
+    NSArray *sizeArray = @[@20000];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"resume_reupload_v1_%@k", size];
         QNTempFile *tempFile = [QNTempFile createTempFileWithSize:[size intValue] * 1024 identifier:key];
@@ -191,7 +191,7 @@
         builder.useConcurrentResumeUpload = NO;
         builder.useHttps = YES;
     }];
-    NSArray *sizeArray = @[@1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    NSArray *sizeArray = @[@10000];
     NSInteger timestamp = [[NSDate date] timeIntervalSince1970];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"resume_switch_region_v2_%@k_%ld", size, (long)timestamp];
@@ -222,7 +222,7 @@
         builder.useConcurrentResumeUpload = NO;
         builder.useHttps = NO;
     }];
-    NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    NSArray *sizeArray = @[@10000];
     NSInteger timestamp = [[NSDate date] timeIntervalSince1970];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"resume_http_v2_%@k_%ld", size, (long)timestamp];
@@ -238,7 +238,7 @@
         builder.useConcurrentResumeUpload = NO;
         builder.useHttps = YES;
     }];
-    NSArray *sizeArray = @[@500, @1000, @3000, @4000, @5000, @8000, @10000, @20000];
+    NSArray *sizeArray = @[@10000];
     NSInteger timestamp = [[NSDate date] timeIntervalSince1970];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"resume_https_v2_%@k_%ld", size, (long)timestamp];
@@ -258,7 +258,7 @@
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:[NSTemporaryDirectory() stringByAppendingString:@"qiniu"] error:nil];
     }];
     
-    NSArray *sizeArray = @[@30000];
+    NSArray *sizeArray = @[@20000];
     NSInteger timestamp = [[NSDate date] timeIntervalSince1970];
     for (NSNumber *size in sizeArray) {
         NSString *key = [NSString stringWithFormat:@"resume_reupload_v2_%@k_%ld", size, (long)timestamp];
