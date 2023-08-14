@@ -13,7 +13,7 @@
 #if defined(__IPHONE_OS_VERSION_MAX_ALLOWED)
 #if !TARGET_OS_MACCATALYST
 @class ALAsset;
-@interface QNALAssetFile : NSObject <QNFileDelegate>
+@interface QNALAssetFile : NSObject <QNFileDelegate>;
 
 /**
  *    打开指定文件
@@ -24,7 +24,7 @@
  *    @return 实例
  */
 - (instancetype)init:(ALAsset *)asset
-               error:(NSError *__autoreleasing *)error;
+               error:(NSError *__autoreleasing *)error NS_DEPRECATED_IOS(4_0, 9_0);
 @end
 #endif
 #endif

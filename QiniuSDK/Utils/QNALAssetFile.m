@@ -15,7 +15,7 @@
 
 @interface QNALAssetFile ()
 
-@property (nonatomic) ALAsset *asset;
+@property (nonatomic) ALAsset *asset NS_DEPRECATED_IOS(4_0, 9_0);
 
 @property (readonly) int64_t fileSize;
 
@@ -45,7 +45,7 @@
 
 - (NSData *)read:(long long)offset
             size:(long)size
-           error:(NSError **)error {
+           error:(NSError **)error NS_DEPRECATED_IOS(4_0, 9_0) {
     
     NSData *data = nil;
     @try {
@@ -70,7 +70,7 @@
 - (void)close {
 }
 
-- (NSString *)path {
+- (NSString *)path NS_DEPRECATED_IOS(4_0, 9_0) {
     ALAssetRepresentation *rep = [self.asset defaultRepresentation];
     return [rep url].path;
 }
