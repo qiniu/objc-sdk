@@ -120,6 +120,14 @@
     return [[QNFixedZone alloc] initWithUpDomainList:upList oldUpList:nil regionId:nil];
 }
 
++ (instancetype)createWithRegionId:(NSString *)regionId {
+    NSArray *upList = @[
+        [NSString stringWithFormat:@"upload-%@.qiniup.com", regionId],
+        [NSString stringWithFormat:@"up-%@.qiniup.com", regionId],
+    ];
+    return [[QNFixedZone alloc] initWithUpDomainList:upList oldUpList:nil regionId:regionId];
+}
+
 - (QNZonesInfo *)createZonesInfo:(NSArray <NSString *> *)upDomains
                         regionId:(NSString *)regionId {
     return [self createZonesInfo:upDomains oldUpDomains:nil regionId:regionId];

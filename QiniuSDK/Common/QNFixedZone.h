@@ -72,6 +72,16 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype)createWithHost:(NSArray<NSString *> *)upList;
 
 /**
+ *    Zone初始化方法
+ *    regionId 参考链接：https://developer.qiniu.com/kodo/1671/region-endpoint-fq
+ *
+ *    @param regionId     根据区域 ID 创建 Zone
+ *
+ *    @return Zone 实例
+ */
++ (instancetype)createWithRegionId:(NSString *)regionId;
+
+/**
  *   获取本地所有固定zone信息
  */
 + (QNFixedZone *)localsZoneInfo;

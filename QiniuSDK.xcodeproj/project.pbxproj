@@ -358,6 +358,8 @@
 		4551E56724D0065100447285 /* NSData+QNMD5.h in Headers */ = {isa = PBXBuildFile; fileRef = 4551E56524D0065100447285 /* NSData+QNMD5.h */; };
 		4551E56824D0065100447285 /* NSData+QNMD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 4551E56624D0065100447285 /* NSData+QNMD5.m */; };
 		4551E56924D0065100447285 /* NSData+QNMD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 4551E56624D0065100447285 /* NSData+QNMD5.m */; };
+		45CBC6C32AA9B05A00962B47 /* QNFixZoneTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45CBC6C22AA9B05A00962B47 /* QNFixZoneTest.m */; };
+		45CBC6C42AA9B05A00962B47 /* QNFixZoneTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45CBC6C22AA9B05A00962B47 /* QNFixZoneTest.m */; };
 		45E0B28A2A1F0596009B1BC7 /* QNConfigurationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45E0B2892A1F0596009B1BC7 /* QNConfigurationTest.m */; };
 		45E0B28B2A1F0596009B1BC7 /* QNConfigurationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 45E0B2892A1F0596009B1BC7 /* QNConfigurationTest.m */; };
 		8D0FB78D364BAEE65E20A604 /* libPods-QiniuSDK_iOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F881668982449FAF2384327E /* libPods-QiniuSDK_iOS.a */; };
@@ -596,6 +598,7 @@
 		4551E55E24CE81DA00447285 /* QNInetAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNInetAddress.m; sourceTree = "<group>"; };
 		4551E56524D0065100447285 /* NSData+QNMD5.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+QNMD5.h"; sourceTree = "<group>"; };
 		4551E56624D0065100447285 /* NSData+QNMD5.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "NSData+QNMD5.m"; sourceTree = "<group>"; };
+		45CBC6C22AA9B05A00962B47 /* QNFixZoneTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNFixZoneTest.m; sourceTree = "<group>"; };
 		45E0B2892A1F0596009B1BC7 /* QNConfigurationTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNConfigurationTest.m; sourceTree = "<group>"; };
 		466E7AACB5F77BA0D4DE4070 /* Pods-QiniuSDK_MacTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_MacTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_MacTests/Pods-QiniuSDK_MacTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5F32D114A1227199BEC6DF5C /* libPods-QiniuSDK_iOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuSDK_iOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1062,6 +1065,7 @@
 				316A4B822431C8BA007BF564 /* QNDnsPrefetcherTest.m */,
 				DFA9B63E19DFD8C900A15FD1 /* QNEtagTest.m */,
 				DFFE0E5F19E6575600D7A0FC /* QNFileRecorderTest.m */,
+				45CBC6C22AA9B05A00962B47 /* QNFixZoneTest.m */,
 				DF3C504619DD7BA6000F548F /* QNFormUploadTest.m */,
 				31259E3524E3D32700CF7531 /* QNGZipTest.m */,
 				31C30FAB2852EA7900BFD8F7 /* QNNetworkStatusTest.m */,
@@ -1634,6 +1638,7 @@
 				311ADD23257748A700A6E15E /* QNUploadFlowTest.m in Sources */,
 				DF437CDF1B243A2C0099587B /* QNUpTokenTest.m in Sources */,
 				31DD31D624971BD7004BFDDE /* QNUploadFileNameTest.m in Sources */,
+				45CBC6C32AA9B05A00962B47 /* QNFixZoneTest.m in Sources */,
 				31A74BCA26E8A89C001EC948 /* QNUplogTest.m in Sources */,
 				31A1840E246942E0001D6EEE /* QNComplexUploadSceneTest.m in Sources */,
 				DF3C504A19DD7D9F000F548F /* QNResumeUploadTest.m in Sources */,
@@ -1759,6 +1764,7 @@
 				311ADD24257748A700A6E15E /* QNUploadFlowTest.m in Sources */,
 				DF0A03281B3BAC6E00E3778C /* QNFormUploadTest.m in Sources */,
 				31DD31D724971BD7004BFDDE /* QNUploadFileNameTest.m in Sources */,
+				45CBC6C42AA9B05A00962B47 /* QNFixZoneTest.m in Sources */,
 				31A74BCB26E8A89C001EC948 /* QNUplogTest.m in Sources */,
 				31A1840F246942E0001D6EEE /* QNComplexUploadSceneTest.m in Sources */,
 				DF0A03291B3BAC6E00E3778C /* QNResumeUploadTest.m in Sources */,
