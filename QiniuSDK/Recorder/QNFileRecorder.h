@@ -49,4 +49,7 @@
         directory:(NSString *)dir
         encodeKey:(BOOL)encode;
 
+// 删除所有
+- (NSError *)delAll;
+
 @end
