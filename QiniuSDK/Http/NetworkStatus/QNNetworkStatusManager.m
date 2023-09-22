@@ -24,7 +24,7 @@
     return self;
 }
 
-- (nonnull id<QNCacheObject>)initWithDictionary:(nonnull NSDictionary *)dictionary {
+- (nonnull id<QNCacheObject>)initWithDictionary:(nullable NSDictionary *)dictionary {
     QNNetworkStatus *status = [[QNNetworkStatus alloc] init];
     status.speed = [dictionary[@"speed"] intValue];
     return status;

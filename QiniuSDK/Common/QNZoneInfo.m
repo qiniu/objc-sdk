@@ -140,7 +140,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
     return [[self alloc] initWithDictionary:dictionary];
 }
 
-- (nonnull id<QNCacheObject>)initWithDictionary:(nonnull NSDictionary *)dictionary {
+- (nonnull id<QNCacheObject>)initWithDictionary:(nullable NSDictionary *)dictionary {
     NSMutableArray *zonesInfo = [NSMutableArray array];
     NSArray *hosts = dictionary[@"hosts"];
     if ([hosts isKindOfClass:[NSArray class]]) {
@@ -203,8 +203,8 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
     return zonesInfo;
 }
 
-- (nonnull NSDictionary *)toDictionary {
-    return self.detailInfo;
+- (nullable NSDictionary *)toDictionary {
+    return [self.detailInfo copy];
 }
 
 @end

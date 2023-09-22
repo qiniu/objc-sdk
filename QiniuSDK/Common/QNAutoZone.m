@@ -127,6 +127,7 @@
     // 临时的 zonesInfo 仅能使用一次
     if (zonesInfo != nil && zonesInfo.isValid && !zonesInfo.isTemporary) {
         [cacheMetrics end];
+        [self setZonesInfo:zonesInfo forKey:cacheKey];
         ret(0, [QNResponseInfo successResponse], cacheMetrics);
         return;
     }

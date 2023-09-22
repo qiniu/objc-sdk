@@ -31,6 +31,24 @@
     [super tearDown];
 }
 
+//- (void)debugtest {
+//    int size = 20*1024;
+//    QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
+//        builder.useConcurrentResumeUpload = NO;
+//        builder.useHttps = YES;
+////        builder.zone = [QNFixedZone zone0];
+//    }];
+//    NSString *key = [NSString stringWithFormat:@"form_switch_region_%dk", size];
+//    QNTempFile *tempFile = [QNTempFile createTempFileWithSize:size * 1024 identifier:key];
+//
+//    [self uploadAndAssertResult:200
+//                       tempFile:tempFile
+//                          token:token_na0
+//                            key:key
+//                         config:config
+//                         option:[QNUploadOption defaultOptions]];
+//}
+
 - (void)testSwitchRegion {
     QNConfiguration *config = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
         builder.useConcurrentResumeUpload = NO;

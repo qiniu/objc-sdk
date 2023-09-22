@@ -15,14 +15,14 @@
 @end
 @implementation Info
 
-- (nonnull id<QNCacheObject>)initWithDictionary:(nonnull NSDictionary *)dictionary {
+- (nonnull id<QNCacheObject>)initWithDictionary:(nullable NSDictionary *)dictionary {
     Info *info = [[Info alloc] init];
     info.foo = dictionary[@"foo"];
     info.bar = [dictionary[@"bar"] integerValue];
     return info;
 }
 
-- (nonnull NSDictionary *)toDictionary {
+- (nullable NSDictionary *)toDictionary {
     return @{
         @"foo": self.foo,
         @"bar": @1
