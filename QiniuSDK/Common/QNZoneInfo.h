@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNCache.h"
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -39,13 +40,12 @@ extern NSString *const QNZoneInfoEmptyRegionId;
 
 @end
 
-@interface QNZonesInfo : NSObject
+@interface QNZonesInfo : NSObject <QNCacheObject>
 
 @property (nonatomic, strong, readonly) NSDate *buildDate;
 @property (nonatomic, assign, readonly) BOOL isTemporary;
 @property (nonatomic, assign, readonly) BOOL isValid;
 @property (nonatomic, strong, readonly) NSArray<QNZoneInfo *> *zonesInfo;
-@property (nonatomic, strong, readonly) NSDictionary *detailInfo;
 
 /// 根据键值对构造对象 【内部使用】
 /// @param dictionary 键值对信息

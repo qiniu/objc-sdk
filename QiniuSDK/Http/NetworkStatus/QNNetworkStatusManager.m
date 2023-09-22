@@ -7,12 +7,13 @@
 //
 
 #import "QNUtils.h"
+#import "QNCache.h"
 #import "QNAsyncRun.h"
 #import "QNFileRecorder.h"
 #import "QNRecorderDelegate.h"
 #import "QNNetworkStatusManager.h"
 
-@interface QNNetworkStatus()
+@interface QNNetworkStatus()<QNCacheObject>
 @property(nonatomic, assign)int speed;
 @end
 @implementation QNNetworkStatus
@@ -22,11 +23,19 @@
     }
     return self;
 }
+
+- (nonnull id<QNCacheObject>)initWithDictionary:(nonnull NSDictionary *)dictionary {
+    QNNetworkStatus *status = [[QNNetworkStatus alloc] init];
+    status.speed = [dictionary[@"speed"] intValue];
+    return status;
+}
+
 - (NSDictionary *)toDictionary{
     NSMutableDictionary *dictionary = [NSMutableDictionary dictionary];
     [dictionary setObject:@(self.speed) forKey:@"speed"];
     return dictionary;
 }
+
 + (QNNetworkStatus *)statusFromDictionary:(NSDictionary *)dictionary{
     QNNetworkStatus *status = [[QNNetworkStatus alloc] init];
     status.speed = [dictionary[@"speed"] intValue];
@@ -37,9 +46,7 @@
 
 @interface QNNetworkStatusManager()
 
-@property(nonatomic, assign)BOOL isHandlingNetworkInfoOfDisk;
-@property(nonatomic, strong)id<QNRecorderDelegate> recorder;
-@property(nonatomic, strong)NSMutableDictionary<NSString *, QNNetworkStatus *> *networkStatusInfo;
+@property(nonatomic, strong)QNCache *cache;
 
 @end
 @implementation QNNetworkStatusManager
@@ -55,10 +62,10 @@
 }
 
 - (void)initData{
-    self.isHandlingNetworkInfoOfDisk = NO;
-    self.networkStatusInfo = [NSMutableDictionary dictionary];
-    self.recorder = [QNFileRecorder fileRecorderWithFolder:[[QNUtils sdkCacheDirectory] stringByAppendingString:@"/NetworkStatus"] error:nil];
-    [self asyncRecoverNetworkStatusFromDisk];
+    QNCacheOption *option = [[QNCacheOption alloc] init];
+    option.version = @"v1.0.2";
+    option.flushCount = 10;
+    self.cache = [QNCache cache:[QNNetworkStatus class] option:option];
 }
 
 + (NSString *)getNetworkStatusType:(NSString *)host
@@ -70,14 +77,7 @@
     if (type == nil || type.length == 0) {
         return nil;
     }
-    QNNetworkStatus *status = nil;
-    @synchronized (self) {
-        status = self.networkStatusInfo[type];
-    }
-    if (status == nil) {
-        status = [[QNNetworkStatus alloc] init];
-    }
-    return status;
+    return [self.cache cacheForKey:type];
 }
 
 - (void)updateNetworkStatus:(NSString *)type speed:(int)speed{
@@ -85,98 +85,9 @@
         return;
     }
     
-    @synchronized (self) {
-        QNNetworkStatus *status = self.networkStatusInfo[type];
-        if (status == nil) {
-            status = [[QNNetworkStatus alloc] init];
-            self.networkStatusInfo[type] = status;
-        }
-        status.speed = speed;
-    }
-    
-    [self asyncRecordNetworkStatusInfo];
-}
-
-
-// ----- status 持久化
-#define kNetworkStatusDiskKey @"NetworkStatus:v1.0.1"
-- (void)asyncRecordNetworkStatusInfo{
-    @synchronized (self) {
-        if (self.isHandlingNetworkInfoOfDisk) {
-            return;
-        }
-        self.isHandlingNetworkInfoOfDisk = YES;
-    }
-    QNAsyncRun(^{
-        [self recordNetworkStatusInfo];
-        self.isHandlingNetworkInfoOfDisk = NO;
-    });
-}
-
-- (void)asyncRecoverNetworkStatusFromDisk{
-    @synchronized (self) {
-        if (self.isHandlingNetworkInfoOfDisk) {
-            return;
-        }
-        self.isHandlingNetworkInfoOfDisk = YES;
-    }
-    QNAsyncRun(^{
-        [self recoverNetworkStatusFromDisk];
-        self.isHandlingNetworkInfoOfDisk = NO;
-    });
-}
-
-- (void)recordNetworkStatusInfo{
-    if (self.recorder == nil || self.networkStatusInfo == nil) {
-        return;
-    }
-    
-    NSDictionary *networkStatusInfo = nil;
-    @synchronized(self) {
-        networkStatusInfo = [self.networkStatusInfo copy];
-    }
-    NSMutableDictionary *statusInfo = [NSMutableDictionary dictionary];
-    for (NSString *key in networkStatusInfo.allKeys) {
-        NSDictionary *statusDictionary = [networkStatusInfo[key] toDictionary];
-        if (statusDictionary) {
-            [statusInfo setObject:statusDictionary forKey:key];
-        }
-    }
-    NSData *data = [NSJSONSerialization dataWithJSONObject:statusInfo options:NSJSONWritingPrettyPrinted error:nil];
-    if (data) {
-        [self.recorder set:kNetworkStatusDiskKey data:data];
-    }
-}
-
-- (void)recoverNetworkStatusFromDisk{
-    if (self.recorder == nil) {
-        return;
-    }
-
-    NSData *data = [self.recorder get:kNetworkStatusDiskKey];
-    if (data == nil) {
-        return;
-    }
-
-    NSError *error = nil;
-    NSDictionary *statusInfo = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&error];
-    if (error != nil || ![statusInfo isKindOfClass:[NSDictionary class]]) {
-        [self.recorder del:kNetworkStatusDiskKey];
-        return;
-    }
-
-    NSMutableDictionary *networkStatusInfo = [NSMutableDictionary dictionary];
-    for (NSString *key in statusInfo.allKeys) {
-        NSDictionary *value = statusInfo[key];
-        QNNetworkStatus *status = [QNNetworkStatus statusFromDictionary:value];
-        if (status) {
-            [networkStatusInfo setObject:status forKey:key];
-        }
-    }
-    
-    @synchronized(self) {
-        [self.networkStatusInfo setValuesForKeysWithDictionary:networkStatusInfo];
-    }
+    QNNetworkStatus *status = [[QNNetworkStatus alloc] init];
+    status.speed = speed;
+    [self.cache cache:status forKey:type atomically:false];
 }
 
 @end
