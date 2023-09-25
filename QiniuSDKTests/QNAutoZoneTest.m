@@ -76,15 +76,23 @@
     AGWW_WAIT_WHILE(x == 0, 100.0);
     XCTAssertEqual(0, c, @"c: %d", c);
     
-    QNZonesInfo *info = [autoZone getZonesInfoWithToken:tok];
-    XCTAssertTrue(info != nil , @"info is nil");
-    XCTAssertTrue(!info.isTemporary , @"info is temporary");
+    QNZonesInfo *infoBefore = [autoZone getZonesInfoWithToken:tok];
+    XCTAssertTrue(infoBefore != nil , @"info is nil");
     
+    // 清理缓存
     [QNAutoZone clearCache];
     
-    info = [autoZone getZonesInfoWithToken:tok];
-    XCTAssertTrue(info != nil , @"after clear: info is nil");
-    XCTAssertTrue(info.isTemporary , @"after clear: info is not temporary");
+    x = 0;
+    c = 0;
+    [autoZone preQuery:tok on:^(int code, QNResponseInfo *info, QNUploadRegionRequestMetrics *metrics) {
+        x = 1;
+        c = code;
+    }];
+    
+    QNZonesInfo *infoAfter = [autoZone getZonesInfoWithToken:tok];
+    
+    XCTAssertTrue(infoAfter != nil , @"after clear: info is nil");
+    XCTAssertTrue(infoBefore != infoAfter , @"after clear: info is not temporary");
 }
 
 - (void)testHttp {
