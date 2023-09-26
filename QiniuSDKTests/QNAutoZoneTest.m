@@ -88,6 +88,7 @@
         x = 1;
         c = code;
     }];
+    AGWW_WAIT_WHILE(x == 0, 100.0);
     
     QNZonesInfo *infoAfter = [autoZone getZonesInfoWithToken:tok];
     

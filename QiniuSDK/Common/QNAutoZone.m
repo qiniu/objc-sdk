@@ -71,10 +71,8 @@
 }
 
 + (void)clearCache {
-    @synchronized (self) {
-        [[QNAutoZone zoneShareCache] clearMemoryCache];
-        [[QNAutoZone zoneShareCache] clearDiskCache];
-    }
+    [[QNAutoZone zoneShareCache] clearMemoryCache];
+    [[QNAutoZone zoneShareCache] clearDiskCache];
 }
 
 - (instancetype)init {
