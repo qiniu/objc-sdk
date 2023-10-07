@@ -734,6 +734,8 @@
 		3149446424484DE200386F16 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				45CBC6D02ABA9FFF00962B47 /* QNCache.h */,
+				45CBC6D12ABA9FFF00962B47 /* QNCache.m */,
 				31259E3224E3D02C00CF7531 /* NSData+QNGZip.h */,
 				31259E3124E3D02C00CF7531 /* NSData+QNGZip.m */,
 				31F5538E2456F2F3000B66AD /* QN_GTM_Base64.h */,
@@ -911,15 +913,6 @@
 			path = ConnectCheck;
 			sourceTree = "<group>";
 		};
-		45CBC6CF2ABA9FED00962B47 /* Cache */ = {
-			isa = PBXGroup;
-			children = (
-				45CBC6D02ABA9FFF00962B47 /* QNCache.h */,
-				45CBC6D12ABA9FFF00962B47 /* QNCache.m */,
-			);
-			path = Cache;
-			sourceTree = "<group>";
-		};
 		A955AABD20BF51BFE5032419 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -987,7 +980,6 @@
 		DF2CDE4D19DAC6A400CE01FB /* QiniuSDK */ = {
 			isa = PBXGroup;
 			children = (
-				45CBC6CF2ABA9FED00962B47 /* Cache */,
 				314E49E424B3267B00310A03 /* Collect */,
 				31F553A92457C552000B66AD /* BigData */,
 				3149446424484DE200386F16 /* Utils */,
