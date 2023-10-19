@@ -171,7 +171,7 @@
                 }
                 ret(0, responseInfo, metrics);
             } else {
-                ret(-11, responseInfo, metrics);
+                ret(NSURLErrorCannotDecodeRawData, responseInfo, metrics);
             }
         } else {
             if (self.defaultZone != nil) {
