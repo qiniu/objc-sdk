@@ -14,20 +14,27 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
-      - name: Setup Ruby 3.0
-        uses: ruby/setup-ruby@v1
+      # - name: Setup Ruby 3.2
+      #   uses: ruby/setup-ruby@v1
+      #   with:
+      #     ruby-version: '3.2'
+      # - name: Setup Environment
+      #   run: |
+      #     gem install cocoapods --pre --no-document
+      #     rm -rf $HOME/.cocoapods
+      #     pod setup --silent
+      #     pod install --silent --no-repo-update
+      - name: setup-cocoapods
+        uses: maxim-lobanov/setup-cocoapods@v1
         with:
-          ruby-version: '3.0'
-      - name: Setup Environment
-        run: |
-          gem install cocoapods --pre --no-document
-          rm -rf $HOME/.cocoapods
-          pod setup --silent
-          pod install --silent --no-repo-update
+          version: 1.12.1
       - name: Run Cases
         env:
           QINIU_TEST_ENV: travis
         run: |
+          rm -rf $HOME/.cocoapods
+          pod setup --silent
+          pod install --silent --no-repo-update
           xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 14 Pro' -enableCodeCoverage YES
           xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -configuration Debug -destination 'platform=macOS,arch=x86_64'
           bash <(curl -s https://codecov.io/bash)

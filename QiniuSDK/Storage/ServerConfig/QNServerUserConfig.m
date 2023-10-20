@@ -19,25 +19,36 @@
 @implementation QNServerUserConfig
 
 + (instancetype)config:(NSDictionary *)info {
-    QNServerUserConfig *config = [[QNServerUserConfig alloc] init];
-    config.ttl = [info[@"ttl"] longValue];
-    config.http3Enable = info[@"http3"][@"enabled"];
-    config.networkCheckEnable = info[@"network_check"][@"enabled"];
-    
-    if (config.ttl < 10) {
-        config.ttl = 10;
+    return [[QNServerUserConfig alloc] initWithDictionary:info];
+}
+
+- (nonnull id<QNCacheObject>)initWithDictionary:(nullable NSDictionary *)info {
+    if (self = [super init]) {
+        if (info) {
+            self.ttl = [info[@"ttl"] longValue];
+            self.http3Enable = info[@"http3"][@"enabled"];
+            self.networkCheckEnable = info[@"network_check"][@"enabled"];
+            
+            if (self.ttl < 10) {
+                self.ttl = 10;
+            }
+            
+            NSMutableDictionary *mutableInfo = [info mutableCopy];
+            if (info[@"timestamp"] != nil) {
+                self.timestamp = [info[@"timestamp"] doubleValue];
+            }
+            if (self.timestamp == 0) {
+                self.timestamp = [[NSDate date] timeIntervalSince1970];
+                mutableInfo[@"timestamp"] = @(self.timestamp);
+            }
+            self.info = [mutableInfo copy];
+        }
     }
-    
-    NSMutableDictionary *mutableInfo = [info mutableCopy];
-    if (info[@"timestamp"] != nil) {
-        config.timestamp = [info[@"timestamp"] doubleValue];
-    }
-    if (config.timestamp == 0) {
-        config.timestamp = [[NSDate date] timeIntervalSince1970];
-        mutableInfo[@"timestamp"] = @(config.timestamp);
-    }
-    config.info = [mutableInfo copy];
-    return config;
+    return self;
+}
+
+- (nullable NSDictionary *)toDictionary {
+    return [self.info copy];
 }
 
 - (BOOL)isValid {

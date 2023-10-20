@@ -15,13 +15,13 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
 
 @property(nonatomic, strong) NSDate *buildDate;
 
-@property(nonatomic,   copy)NSString *regionId;
+@property(nonatomic,   copy) NSString *regionId;
 @property(nonatomic, assign) long ttl;
-@property(nonatomic, assign)BOOL http3Enabled;
-@property(nonatomic, strong)NSArray<NSString *> *domains;
-@property(nonatomic, strong)NSArray<NSString *> *old_domains;
+@property(nonatomic, assign) BOOL http3Enabled;
+@property(nonatomic, strong) NSArray<NSString *> *domains;
+@property(nonatomic, strong) NSArray<NSString *> *old_domains;
 
-@property(nonatomic, strong)NSArray <NSString *> *allHosts;
+@property(nonatomic, strong) NSArray <NSString *> *allHosts;
 @property(nonatomic, strong) NSDictionary *detailInfo;
 
 @end
@@ -100,6 +100,10 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
 }
 
 - (BOOL)isValid{
+    if (self.allHosts == nil || self.allHosts.count == 0) {
+        return false;
+    }
+    
     if (self.ttl < 0) {
         return true;
     }
@@ -125,32 +129,48 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
 @end
 
 @interface QNZonesInfo()
+@property (nonatomic, strong) NSDate *buildDate;
 @property (nonatomic, assign) BOOL isTemporary;
 @property (nonatomic, strong) NSArray<QNZoneInfo *> *zonesInfo;
+@property (nonatomic, strong) NSDictionary *detailInfo;
 @end
 @implementation QNZonesInfo
 
-- (instancetype)initWithZonesInfo:(NSArray<QNZoneInfo *> *)zonesInfo{
-    self = [super init];
-    if (self) {
-        _zonesInfo = zonesInfo;
-    }
-    return self;
++ (instancetype)infoWithDictionary:(NSDictionary *)dictionary {
+    return [[self alloc] initWithDictionary:dictionary];
 }
 
-+ (instancetype)infoWithDictionary:(NSDictionary *)dictionary {
+- (nonnull id<QNCacheObject>)initWithDictionary:(nullable NSDictionary *)dictionary {
     NSMutableArray *zonesInfo = [NSMutableArray array];
     NSArray *hosts = dictionary[@"hosts"];
     if ([hosts isKindOfClass:[NSArray class]]) {
         for (NSInteger i = 0; i < hosts.count; i++) {
             QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:hosts[i]];
-            if (zoneInfo && [zoneInfo isValid]) {
+            if (zoneInfo && [zoneInfo allHosts].count > 0) {
                 [zonesInfo addObject:zoneInfo];
             }
         }
     }
     
-    return [[[self class] alloc] initWithZonesInfo:zonesInfo];
+    return [self initWithZonesInfo:zonesInfo];
+}
+
+- (instancetype)initWithZonesInfo:(NSArray<QNZoneInfo *> *)zonesInfo{
+    self = [super init];
+    if (self) {
+        _buildDate = [NSDate date];
+        _zonesInfo = zonesInfo;
+        NSMutableArray *zoneInfos = [NSMutableArray array];
+        if (zonesInfo != nil) {
+            for (NSInteger i = 0; i < zonesInfo.count; i++) {
+                if (zonesInfo[i].detailInfo != nil) {
+                    [zoneInfos addObject:zonesInfo[i].detailInfo];
+                }
+            }
+        }
+        self.detailInfo = @{@"hosts": [zoneInfos copy]};
+    }
+    return self;
 }
 
 - (void)toTemporary {
@@ -181,6 +201,10 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
     zonesInfo.zonesInfo = [zonesInfoArray copy];
     zonesInfo.isTemporary = self.isTemporary;
     return zonesInfo;
+}
+
+- (nullable NSDictionary *)toDictionary {
+    return [self.detailInfo copy];
 }
 
 @end

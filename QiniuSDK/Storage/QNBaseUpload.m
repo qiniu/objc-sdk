@@ -6,6 +6,7 @@
 //  Copyright © 2020 Qiniu. All rights reserved.
 //
 
+#import "QNAutoZone.h"
 #import "QNZoneInfo.h"
 #import "QNResponseInfo.h"
 #import "QNDefine.h"
@@ -157,6 +158,10 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
 
 // 根据错误信息进行切换region并上传，return:是否切换region并上传
 - (BOOL)switchRegionAndUploadIfNeededWithErrorResponse:(QNResponseInfo *)errorResponseInfo {
+    if (errorResponseInfo.statusCode == 400 && [errorResponseInfo.message containsString:@"incorrect region"]) {
+        [QNAutoZone clearCache];
+    }
+    
     if (!errorResponseInfo || errorResponseInfo.isOK || // 不存在 || 成功 不需要重试
         ![errorResponseInfo couldRetry] || ![self.config allowBackupHost]) {  // 不能重试
         return false;

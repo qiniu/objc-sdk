@@ -81,6 +81,27 @@
     return error;
 }
 
+- (NSError *)deleteAll {
+    NSString *filePath = self.directory;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
+    BOOL isDir = NO;
+    BOOL existed = [fileManager fileExistsAtPath:filePath isDirectory:&isDir];
+    if ( !(isDir == YES && existed == YES) ) {
+        return nil;
+    }
+    
+    //文件夹
+    NSError *error;
+    [fileManager removeItemAtPath:filePath error:&error];
+    if (error != nil) {
+        return error;
+    }
+    
+    [fileManager createDirectoryAtPath:filePath withIntermediateDirectories:YES attributes:nil error:&error];
+    return error;
+}
+
 - (NSString *)getFileName{
     return nil;
 }

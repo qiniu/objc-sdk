@@ -49,4 +49,7 @@
         directory:(NSString *)dir
         encodeKey:(BOOL)encode;
 
+// 删除所有修改时间在 date 之前的缓存
+- (NSError *)deleteAll;
+
 @end
