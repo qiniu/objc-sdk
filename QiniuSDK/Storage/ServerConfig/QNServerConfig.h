@@ -6,6 +6,7 @@
 //  Copyright © 2021 Qiniu. All rights reserved.
 //
 
+#import "QNCache.h"
 #import <Foundation/Foundation.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -76,7 +77,7 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 
-@interface QNServerConfig : NSObject
+@interface QNServerConfig : NSObject<QNCacheObject>
 
 @property(nonatomic, assign, readonly)BOOL isValid;
 @property(nonatomic, assign, readonly)long ttl;

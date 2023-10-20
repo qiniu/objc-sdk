@@ -72,12 +72,6 @@
         dispatch_group_leave(group);
     });
     
-    dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{
-        for (int i=0; i<100000; i++) {
-            [kQNNetworkStatusManager performSelector:@selector(recoverNetworkStatusFromDisk)];
-        }
-    });
-    
     
     dispatch_group_wait(group, dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC));
 }
