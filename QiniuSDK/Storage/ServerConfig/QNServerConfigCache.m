@@ -8,7 +8,7 @@
 
 #import "QNServerConfigCache.h"
 #import "QNUtils.h"
-#import "QNFileRecorder.h"
+#import "QNCache.h"
 
 #define kQNServerConfigDiskKey @"config"
 #define kQNServerUserConfigDiskKey @"userConfig"
@@ -17,88 +17,48 @@
     QNServerConfig *_config;
     QNServerUserConfig *_userConfig;
 }
-@property(nonatomic, strong)id<QNRecorderDelegate> recorder;
+@property(nonatomic, strong) QNCache *configCache;
+@property(nonatomic, strong) QNCache *userConfigCache;
 @end
 @implementation QNServerConfigCache
 
 - (instancetype)init {
     if (self = [super init]) {
-        self.recorder = [QNFileRecorder fileRecorderWithFolder:[[QNUtils sdkCacheDirectory] stringByAppendingString:@"/ServerConfig"] error:nil];
+        QNCacheOption *option = [[QNCacheOption alloc] init];
+        option.version = @"v1.0.0";
+        self.configCache = [QNCache cache:[QNServerConfig class] option:option];
+        
+        option = [[QNCacheOption alloc] init];
+        option.version = @"v1.0.0";
+        self.userConfigCache = [QNCache cache:[QNServerUserConfig class] option:option];
     }
     return self;
 }
 
 //MARK: --- config
 - (QNServerConfig *)getConfigFromDisk {
-    NSData *data = nil;
-    @synchronized (self) {
-        data = [self.recorder get:kQNServerConfigDiskKey];
-    }
-    if (data == nil) {
-        return nil;
-    }
-
-    NSError *error = nil;
-    NSDictionary *info = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&error];
-    if (error != nil || ![info isKindOfClass:[NSDictionary class]]) {
-        @synchronized (self) {
-            [self.recorder del:kQNServerConfigDiskKey];
-        }
-        return nil;
-    }
-    return [QNServerConfig config:info];
+    return [self.configCache cacheForKey:kQNServerConfigDiskKey];
 }
 
 - (void)saveConfigToDisk:(QNServerConfig *)config {
-    if (self.recorder == nil || config.info == nil) {
-        return;
-    }
-    NSData *data = [NSJSONSerialization dataWithJSONObject:config.info options:NSJSONWritingPrettyPrinted error:nil];
-    if (data) {
-        @synchronized (self) {
-            [self.recorder set:kQNServerConfigDiskKey data:data];
-        }
-    }
+    [self.configCache cache:config forKey:kQNServerConfigDiskKey atomically:true];
 }
 
 //MARK: --- user config
 - (QNServerUserConfig *)getUserConfigFromDisk {
-    NSData *data = nil;
-    @synchronized (self) {
-        data = [self.recorder get:kQNServerUserConfigDiskKey];
-    }
-    if (data == nil) {
-        return nil;
-    }
-
-    NSError *error = nil;
-    NSDictionary *info = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableLeaves error:&error];
-    
-    if (error != nil || ![info isKindOfClass:[NSDictionary class]]) {
-        @synchronized (self) {
-            [self.recorder del:kQNServerUserConfigDiskKey];
-        }
-        return nil;
-    }
-    return [QNServerUserConfig config:info];
+    return [self.userConfigCache cacheForKey:kQNServerUserConfigDiskKey];
 }
 
 - (void)saveUserConfigToDisk:(QNServerUserConfig *)config {
-    if (self.recorder == nil || config.info == nil) {
-        return;
-    }
-    NSData *data = [NSJSONSerialization dataWithJSONObject:config.info options:NSJSONWritingPrettyPrinted error:nil];
-    if (data) {
-        @synchronized (self) {
-            [self.recorder set:kQNServerUserConfigDiskKey data:data];
-        }
-    }
+    [self.userConfigCache cache:config forKey:kQNServerUserConfigDiskKey atomically:true];
 }
 
 - (void)removeConfigCache {
     @synchronized (self) {
-        [self.recorder del:kQNServerConfigDiskKey];
-        [self.recorder del:kQNServerUserConfigDiskKey];
+        [self.configCache clearMemoryCache];
+        [self.configCache clearDiskCache];
+        [self.userConfigCache clearMemoryCache];
+        [self.userConfigCache clearDiskCache];
     }
 }
 

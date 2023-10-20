@@ -13,3 +13,6 @@
 
 #define kQNWeakObj(object) __weak typeof(object) weak_##object = object
 #define kQNStrongObj(object) __strong typeof(object) object = weak_##object
+
+// 过期
+#define kQNDeprecated(instead) NS_DEPRECATED(2_0, 2_0, 2_0, 2_0, instead)
