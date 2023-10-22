@@ -1,14 +1,14 @@
 Pod::Spec.new do |s|
   s.name         = 'Qiniu'
-  s.version      = '8.6.0'
+  s.version      = '8.7.0'
   s.summary      = 'Qiniu Resource Storage SDK for iOS and Mac'
   s.homepage     = 'https://github.com/qiniu/objc-sdk'
   s.social_media_url = 'http://weibo.com/qiniutek'
   s.author       = "Qiniu => sdk@qiniu.com"
   s.source       = {:git => 'https://github.com/qiniu/objc-sdk.git', :tag => "v#{s.version}"}
 
-  s.ios.deployment_target = '7.0'
-  s.osx.deployment_target = '10.9'
+  s.ios.deployment_target = '9.0'
+  s.osx.deployment_target = '10.15'
 
   s.source_files = 'QiniuSDK/BigData/**/*.{h,m}','QiniuSDK/Collect/**/*.{h,m}','QiniuSDK/Common/**/*.{h,m}','QiniuSDK/Http/**/*.{h,m}','QiniuSDK/Recorder/**/*.{h,m}','QiniuSDK/Storage/**/*.{h,m}','QiniuSDK/Transaction/**/*.{h,m}','QiniuSDK/Utils/**/*.{h,m}','QiniuSDK/QiniuSDK.h'
   s.requires_arc = true

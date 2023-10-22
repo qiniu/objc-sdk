@@ -10,23 +10,23 @@ def test_dependencies
 end
 
 target 'QiniuSDK_iOS' do
-  platform :ios, '7.0'
+  platform :ios, '9.0'
   shared_dependencies
 end
 
 target 'QiniuSDK_iOSTests' do
-  platform :ios, '7.0'
+  platform :ios, '9.0'
   shared_dependencies
   test_dependencies
 end
 
 target 'QiniuSDK_Mac' do
-  platform :osx, '10.9'
+  platform :osx, '10.15'
   shared_dependencies
 end
 
 target 'QiniuSDK_MacTests' do
-  platform :osx, '10.9'
+  platform :osx, '10.15'
   shared_dependencies
   test_dependencies
 end

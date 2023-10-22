@@ -145,7 +145,7 @@ typedef void (^QNUpCompletionHandler)(QNResponseInfo *info, NSString *key, NSDic
                key:(NSString *)key
              token:(NSString *)token
           complete:(QNUpCompletionHandler)completionHandler
-            option:(QNUploadOption *)option API_UNAVAILABLE(macos, tvos);
+            option:(QNUploadOption *)option API_DEPRECATED("use putPHAsset instead", ios(4.0, 9.0)) API_UNAVAILABLE(macos, tvos);
 #endif
 
 /**
