@@ -64,7 +64,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         QNCacheOption *option = [[QNCacheOption alloc] init];
-        option.version = @"v1.0.0";
+        option.version = @"v1.0.1";
         queryCache = [QNCache cache:[QNZonesInfo class] option:option];
     });
     return queryCache;
@@ -130,7 +130,6 @@
         return;
     }
 
-    __block int32_t saveTime = 0;
     kQNWeakSelf;
     QNSingleFlight *singleFlight = [QNAutoZone UCQuerySingleFlight];
     [singleFlight perform:token.index action:^(QNSingleFlightComplete _Nonnull complete) {
@@ -162,13 +161,8 @@
         if (responseInfo && responseInfo.isOK) {
             QNZonesInfo *zonesInfo = [QNZonesInfo infoWithDictionary:response];
             if ([zonesInfo isValid]) {
-                @synchronized (cacheKey) {
-                    if (saveTime == 0) {
-                        saveTime++;
-                        [self setZonesInfo:zonesInfo forKey:cacheKey];
-                        [[QNAutoZone zoneShareCache] cache:zonesInfo forKey:cacheKey atomically:false];
-                    }
-                }
+                [self setZonesInfo:zonesInfo forKey:cacheKey];
+                [[QNAutoZone zoneShareCache] cache:zonesInfo forKey:cacheKey atomically:false];
                 ret(0, responseInfo, metrics);
             } else {
                 ret(NSURLErrorCannotDecodeRawData, responseInfo, metrics);
