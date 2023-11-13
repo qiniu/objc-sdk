@@ -27,7 +27,7 @@ jobs:
       - name: setup-cocoapods
         uses: maxim-lobanov/setup-cocoapods@v1
         with:
-          version: 1.12.1
+          version: 1.14.2
       - name: Run Cases
         env:
           QINIU_TEST_ENV: travis
