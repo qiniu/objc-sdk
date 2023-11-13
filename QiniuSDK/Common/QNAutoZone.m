@@ -64,7 +64,7 @@
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         QNCacheOption *option = [[QNCacheOption alloc] init];
-        option.version = @"v1.0.1";
+        option.version = @"v2";
         queryCache = [QNCache cache:[QNZonesInfo class] option:option];
     });
     return queryCache;

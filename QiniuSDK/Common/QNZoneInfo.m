@@ -60,7 +60,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
     
     NSMutableDictionary *detailInfo = [detail mutableCopy];
     if (detailInfo[@"timestamp"] == nil) {
-        detailInfo[@"timestamp"] = @([QNUtils currentTimestamp]*0.001);
+        detailInfo[@"timestamp"] = @([QNUtils currentTimestamp]/1000);
     }
     long timestamp = [detailInfo[@"timestamp"] longValue];
     
