@@ -14,6 +14,7 @@
 #import "QNHttpRegionRequest.h"
 #import "QNConfiguration.h"
 #import "QNUploadOption.h"
+#import "QNUrlUtils.h"
 #import "NSURLRequest+QNRequest.h"
 
 #import "QNUploadRequestMetrics.h"
@@ -138,9 +139,8 @@ shouldRetry:(BOOL(^)(QNResponseInfo *responseInfo, NSDictionary *response))shoul
     
     self.currentServer = server;
     
-    NSString *scheme = self.config.useHttps ? @"https://" : @"http://";
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    NSString *urlString = [NSString stringWithFormat:@"%@%@%@", scheme, serverHost, action ?: @""];
+    NSString *urlString = [NSString stringWithFormat:@"%@%@", [QNUrlUtils setHostScheme:serverHost useHttps:self.config.useHttps], action ?: @""];
     request.URL = [NSURL URLWithString:urlString];
     request.HTTPMethod = method;
     [request setAllHTTPHeaderFields:headers];
