@@ -10,7 +10,7 @@
 #import "QNUserAgent.h"
 #import "NSURLRequest+QNRequest.h"
 
-@interface QNUploadSystemClient()<NSURLSessionDelegate>
+@interface QNUploadSystemClient()<NSURLSessionTaskDelegate>
 
 @property(nonatomic, strong)NSURLRequest *request;
 @property(nonatomic, strong)QNUploadSingleRequestMetrics *requestMetrics;
