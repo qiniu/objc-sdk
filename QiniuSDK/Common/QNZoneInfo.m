@@ -7,6 +7,7 @@
 //
 
 #import "QNZoneInfo.h"
+#import "QNUtils.h"
 
 NSString * const QNZoneInfoSDKDefaultIOHost = @"default_io_host";
 NSString * const QNZoneInfoEmptyRegionId = @"none";
@@ -52,10 +53,16 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
     return zoneInfo;
 }
 
-+ (QNZoneInfo *)zoneInfoFromDictionary:(NSDictionary *)detailInfo {
-    if (![detailInfo isKindOfClass:[NSDictionary class]]) {
++ (QNZoneInfo *)zoneInfoFromDictionary:(NSDictionary *)detail {
+    if (![detail isKindOfClass:[NSDictionary class]]) {
         return nil;
     }
+    
+    NSMutableDictionary *detailInfo = [detail mutableCopy];
+    if (detailInfo[@"timestamp"] == nil) {
+        detailInfo[@"timestamp"] = @([QNUtils currentTimestamp]/1000);
+    }
+    long timestamp = [detailInfo[@"timestamp"] longValue];
     
     NSString *regionId = [detailInfo objectForKey:@"region"];
     if (regionId == nil) {
@@ -73,6 +80,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
     
     NSMutableArray *allHosts = [NSMutableArray array];
     QNZoneInfo *zoneInfo = [[QNZoneInfo alloc] init:ttl regionId:regionId];
+    zoneInfo.buildDate = [NSDate dateWithTimeIntervalSince1970:timestamp];
     zoneInfo.http3Enabled = http3Enabled;
     if ([domains isKindOfClass:[NSArray class]]) {
         zoneInfo.domains = domains;
@@ -84,7 +92,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
     }
     zoneInfo.allHosts = [allHosts copy];
     
-    zoneInfo.detailInfo = detailInfo;
+    zoneInfo.detailInfo = [detailInfo copy];
     
     return zoneInfo;
 }

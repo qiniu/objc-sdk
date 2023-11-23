@@ -344,6 +344,10 @@
 		31FD09252487506300217848 /* QNRetryTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 31FD09232487506300217848 /* QNRetryTest.m */; };
 		31FE6A0B25A8320200C02B27 /* QNConnectChecker.h in Headers */ = {isa = PBXBuildFile; fileRef = 31FE6A0925A8320200C02B27 /* QNConnectChecker.h */; };
 		31FE6A0C25A8320200C02B27 /* QNConnectChecker.m in Sources */ = {isa = PBXBuildFile; fileRef = 31FE6A0A25A8320200C02B27 /* QNConnectChecker.m */; };
+		4511641A2B05C86900F2D9FC /* QNUrlUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 451164182B05C86900F2D9FC /* QNUrlUtils.h */; };
+		4511641B2B05C86900F2D9FC /* QNUrlUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 451164182B05C86900F2D9FC /* QNUrlUtils.h */; };
+		4511641C2B05C86900F2D9FC /* QNUrlUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 451164192B05C86900F2D9FC /* QNUrlUtils.m */; };
+		4511641D2B05C86900F2D9FC /* QNUrlUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 451164192B05C86900F2D9FC /* QNUrlUtils.m */; };
 		451A36B624BD893D00754A15 /* QNReportConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 451A36B424BD893D00754A15 /* QNReportConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		451A36B724BD893D00754A15 /* QNReportConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 451A36B524BD893D00754A15 /* QNReportConfig.m */; };
 		451A36B824BD893D00754A15 /* QNReportConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 451A36B524BD893D00754A15 /* QNReportConfig.m */; };
@@ -591,6 +595,8 @@
 		31FE6A0925A8320200C02B27 /* QNConnectChecker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNConnectChecker.h; sourceTree = "<group>"; };
 		31FE6A0A25A8320200C02B27 /* QNConnectChecker.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNConnectChecker.m; sourceTree = "<group>"; };
 		32036F4A07041AC3410DBF2F /* Pods-QiniuSDK_Mac.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuSDK_Mac.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuSDK_Mac/Pods-QiniuSDK_Mac.release.xcconfig"; sourceTree = "<group>"; };
+		451164182B05C86900F2D9FC /* QNUrlUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNUrlUtils.h; sourceTree = "<group>"; };
+		451164192B05C86900F2D9FC /* QNUrlUtils.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNUrlUtils.m; sourceTree = "<group>"; };
 		451A36B424BD893D00754A15 /* QNReportConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNReportConfig.h; sourceTree = "<group>"; };
 		451A36B524BD893D00754A15 /* QNReportConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNReportConfig.m; sourceTree = "<group>"; };
 		4543D6FE24D29B21006E28B1 /* QNDnsPrefetch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNDnsPrefetch.h; sourceTree = "<group>"; };
@@ -765,6 +771,8 @@
 				3177B70325A30C4500C56293 /* QNSingleFlight.m */,
 				31E8EA1A2692AC1500BD6DBE /* QNMutableArray.h */,
 				31E8EA1B2692AC1500BD6DBE /* QNMutableArray.m */,
+				451164182B05C86900F2D9FC /* QNUrlUtils.h */,
+				451164192B05C86900F2D9FC /* QNUrlUtils.m */,
 			);
 			path = Utils;
 			sourceTree = "<group>";
@@ -1174,6 +1182,7 @@
 				318E2F022552AE05004EDE8C /* QNPHAssetResource.h in Headers */,
 				318E2F172552AE2B004EDE8C /* QNRequestTransaction.h in Headers */,
 				318E2F312552AE39004EDE8C /* QNConfiguration.h in Headers */,
+				4511641B2B05C86900F2D9FC /* QNUrlUtils.h in Headers */,
 				318E2F132552AE2B004EDE8C /* QNUploadRegionInfo.h in Headers */,
 				318E2F192552AE2B004EDE8C /* QNHttpSingleRequest.h in Headers */,
 				318E2F352552AE39004EDE8C /* QNUploadManager.h in Headers */,
@@ -1228,6 +1237,7 @@
 				31259E3424E3D02C00CF7531 /* NSData+QNGZip.h in Headers */,
 				31A6985526DCDB3F00D84ABC /* QNServerConfigCache.h in Headers */,
 				3188D4FD264913B800183CAE /* QNUploadSourceStream.h in Headers */,
+				4511641A2B05C86900F2D9FC /* QNUrlUtils.h in Headers */,
 				31304CB92563DA03001034D2 /* QNUploadRequestState.h in Headers */,
 				3177B70425A30C4500C56293 /* QNSingleFlight.h in Headers */,
 				31C2EEE3242DE86300713A33 /* QNUtils.h in Headers */,
@@ -1585,6 +1595,7 @@
 				31E8EA1E2692AC1500BD6DBE /* QNMutableArray.m in Sources */,
 				31C2EED5242CC52600713A33 /* QNDnsCacheFile.m in Sources */,
 				3149A1E02462A57400A2A15B /* QNUploadServer.m in Sources */,
+				4511641C2B05C86900F2D9FC /* QNUrlUtils.m in Sources */,
 				31F553C12457FFB0000B66AD /* QNPipeline.m in Sources */,
 				4551E56024CE81DA00447285 /* QNInetAddress.m in Sources */,
 				CC25135D244C7EB3003F4C65 /* QNBaseUpload.m in Sources */,
@@ -1713,6 +1724,7 @@
 				31E8EA1F2692AC1500BD6DBE /* QNMutableArray.m in Sources */,
 				31F553C22457FFB0000B66AD /* QNPipeline.m in Sources */,
 				3149A1E12462A57400A2A15B /* QNUploadServer.m in Sources */,
+				4511641D2B05C86900F2D9FC /* QNUrlUtils.m in Sources */,
 				4551E56124CE81DA00447285 /* QNInetAddress.m in Sources */,
 				31F553AF2457D2E5000B66AD /* QNALAssetFile.m in Sources */,
 				313B380F2575E49400FBB57B /* QNPartsUploadPerformer.m in Sources */,
