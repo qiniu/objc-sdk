@@ -1,4 +1,7 @@
 #Changelog
+## 8.7.1（2023-11-23）
+- 查询区域的主备域名增加 uc.qiniuapi.com
+
 ## 8.7.0（2023-10-23）
 - iOS 最低版本调整至 iOS9
 - QNFixedZone 新增通过 RegionID 构造实例的方法
