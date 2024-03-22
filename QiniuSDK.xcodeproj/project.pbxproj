@@ -601,6 +601,8 @@
 		451A36B524BD893D00754A15 /* QNReportConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNReportConfig.m; sourceTree = "<group>"; };
 		4543D6FE24D29B21006E28B1 /* QNDnsPrefetch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QNDnsPrefetch.h; sourceTree = "<group>"; };
 		4543D6FF24D29B21006E28B1 /* QNDnsPrefetch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QNDnsPrefetch.m; sourceTree = "<group>"; };
+		4545D30B2BAD641500932C3F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		4545D30C2BAD64EE00932C3F /* info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = info.plist; sourceTree = "<group>"; };
 		4551E55D24CE81DA00447285 /* QNInetAddress.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = QNInetAddress.h; sourceTree = "<group>"; };
 		4551E55E24CE81DA00447285 /* QNInetAddress.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = QNInetAddress.m; sourceTree = "<group>"; };
 		4551E56524D0065100447285 /* NSData+QNMD5.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "NSData+QNMD5.h"; sourceTree = "<group>"; };
@@ -984,6 +986,8 @@
 				DF2CDE4E19DAC6A400CE01FB /* Common */,
 				DF2CDE5819DAC6A400CE01FB /* QiniuSDK.h */,
 				DF2CDE5919DAC6A400CE01FB /* Storage */,
+				4545D30B2BAD641500932C3F /* PrivacyInfo.xcprivacy */,
+				4545D30C2BAD64EE00932C3F /* info.plist */,
 			);
 			path = QiniuSDK;
 			sourceTree = "<group>";
