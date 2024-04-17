@@ -80,7 +80,7 @@
 
 - (void)testError_614{
     QNUploadErrorTestParam *param = [QNUploadErrorTestParam param];
-    param.tempFile = [QNTempFile createTempFileWithSize:128];
+    param.tempFile = [QNTempFile createTempFileWithSize:127];
     
     __block BOOL isComplete = NO;
     [self upload:param complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {

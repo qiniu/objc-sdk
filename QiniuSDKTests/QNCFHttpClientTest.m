@@ -85,7 +85,7 @@
     
     NSData *data = [@"This is a test" dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *params = @{@"token" : token_na0};
-    NSURLRequest *request = [self postRequest:@"http://23.236.102.2"
+    NSURLRequest *request = [self postRequest:@"http://148.153.188.136"
                                        domain:@"up-na0.qiniup.com"
                                         param:params
                                          body:data];
@@ -95,7 +95,7 @@
 - (void)testHttpsPostByIP{
     NSData *data = [@"This is a test" dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *params = @{@"token" : token_na0};
-    NSURLRequest *request = [self postRequest:@"https://23.236.102.2"
+    NSURLRequest *request = [self postRequest:@"https://148.153.188.136"
                                        domain:@"up-na0.qiniup.com"
                                         param:params
                                          body:data];

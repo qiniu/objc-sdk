@@ -1,4 +1,7 @@
 #Changelog
+## 8.7.2（2024-04-11）
+- 增加 PrivacyInfo 文件
+
 ## 8.7.1（2023-11-23）
 - 查询区域的主备域名增加 uc.qiniuapi.com
 
