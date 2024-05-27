@@ -8,6 +8,7 @@
 
 #import "QNFixedZone.h"
 #import "QNZoneInfo.h"
+#import "QNResponseInfo.h"
 
 @interface QNFixedZone ()
 
@@ -169,6 +170,10 @@
 
 - (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token {
     return self.zonesInfo;
+}
+
+- (void)query:(QNConfiguration * _Nullable)config token:(QNUpToken * _Nullable)token on:(QNQueryReturn _Nullable)ret {
+    ret([QNResponseInfo successResponse], nil, self.zonesInfo);
 }
 
 

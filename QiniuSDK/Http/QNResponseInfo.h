@@ -60,6 +60,7 @@
 
 //MARK:-- 构造函数 【内部使用】
 + (instancetype)successResponse;
++ (instancetype)successResponseWithDesc:(NSString *)desc;
 + (instancetype)cancelResponse;
 + (instancetype)responseInfoWithNetworkError:(NSString *)desc;
 + (instancetype)responseInfoWithInvalidArgument:(NSString *)desc;

@@ -106,11 +106,18 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
     [self.metrics start];
     
     kQNWeakSelf;
-    [_config.zone preQuery:self.token on:^(int code, QNResponseInfo *responseInfo, QNUploadRegionRequestMetrics *metrics) {
+    [_config.zone query:self.config token:self.token on:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, QNZonesInfo * _Nullable zonesInfo) {
+        
         kQNStrongSelf;
         self.metrics.ucQueryMetrics = metrics;
         
-        if (code == 0) {
+        if (responseInfo != nil && responseInfo.isOK && zonesInfo) {
+            if (![self setupRegions:zonesInfo]) {
+                responseInfo = [QNResponseInfo responseInfoWithInvalidArgument:[NSString stringWithFormat:@"origin response:%@", responseInfo]];
+                [self complete:responseInfo response:responseInfo.responseDictionary];
+                return;
+            }
+            
             int prepareCode = [self prepareToUpload];
             if (prepareCode == 0) {
                 [self startToUpload];
@@ -119,6 +126,11 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
                 [self complete:responseInfoP response:responseInfoP.responseDictionary];
             }
         } else {
+            if (responseInfo == nil) {
+                // responseInfo 一定会有值
+                responseInfo = [QNResponseInfo responseInfoWithSDKInteriorError:@"can't get regions"];
+            }
+            
             [self complete:responseInfo response:responseInfo.responseDictionary];
         }
     }];
@@ -129,11 +141,7 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
 }
 
 - (int)prepareToUpload{
-    int ret = 0;
-    if (![self setupRegions]) {
-        ret = -1;
-    }
-    return ret;
+    return 0;
 }
 
 - (void)startToUpload{
@@ -205,9 +213,13 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
 }
 
 //MARK:-- region
-- (BOOL)setupRegions{
+- (BOOL)setupRegions:(QNZonesInfo *)zonesInfo{
+    if (zonesInfo == nil || zonesInfo.zonesInfo == nil || zonesInfo.zonesInfo.count == 0) {
+        return NO;
+   }
+    
     NSMutableArray *defaultRegions = [NSMutableArray array];
-    NSArray *zoneInfos = [self.config.zone getZonesInfoWithToken:self.token].zonesInfo;
+    NSArray *zoneInfos = zonesInfo.zonesInfo;
     for (QNZoneInfo *zoneInfo in zoneInfos) {
         QNUploadDomainRegion *region = [[QNUploadDomainRegion alloc] init];
         [region setupRegionData:zoneInfo];

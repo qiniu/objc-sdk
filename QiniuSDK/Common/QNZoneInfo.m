@@ -20,6 +20,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
 @property(nonatomic, assign) long ttl;
 @property(nonatomic, assign) BOOL http3Enabled;
 @property(nonatomic, strong) NSArray<NSString *> *domains;
+@property(nonatomic, strong) NSArray<NSString *> *acc_domains;
 @property(nonatomic, strong) NSArray<NSString *> *old_domains;
 
 @property(nonatomic, strong) NSArray <NSString *> *allHosts;
@@ -53,6 +54,32 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
     return zoneInfo;
 }
 
++ (QNZoneInfo *)zoneInfoWithAccHosts:(NSArray <NSString *> *)accHosts
+                           mainHosts:(NSArray <NSString *> *)mainHosts
+                            oldHosts:(NSArray <NSString *> * _Nullable)oldHosts
+                            regionId:(NSString * _Nullable)regionId {
+    if ((!accHosts || ![accHosts isKindOfClass:[NSArray class]] || accHosts.count == 0) &&
+        (!mainHosts || ![mainHosts isKindOfClass:[NSArray class]] || mainHosts.count == 0)) {
+        return nil;
+    }
+    
+    if (accHosts && ![accHosts isKindOfClass:[NSArray class]]) {
+        accHosts = nil;
+    }
+    
+    if (mainHosts && ![mainHosts isKindOfClass:[NSArray class]]) {
+        mainHosts = nil;
+    }
+    
+    QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:@{@"ttl" : @(-1),
+                                                                @"region" : regionId ?: QNZoneInfoEmptyRegionId,
+                                                                @"up" : @{@"acc_domains" : mainHosts ?: @[],
+                                                                          @"domains" : mainHosts ?: @[],
+                                                                          @"old" : oldHosts ?: @[]},
+                                                                }];
+    return zoneInfo;
+}
+
 + (QNZoneInfo *)zoneInfoFromDictionary:(NSDictionary *)detail {
     if (![detail isKindOfClass:[NSDictionary class]]) {
         return nil;
@@ -75,6 +102,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
         http3Enabled = [detailInfo[@"features"][@"http3"][@"enabled"] boolValue];
     }
     NSDictionary *up = [detailInfo objectForKey:@"up"];
+    NSArray *acc_domains = [up objectForKey:@"acc_domains"];
     NSArray *domains = [up objectForKey:@"domains"];
     NSArray *old_domains = [up objectForKey:@"old"];
     
@@ -82,6 +110,10 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
     QNZoneInfo *zoneInfo = [[QNZoneInfo alloc] init:ttl regionId:regionId];
     zoneInfo.buildDate = [NSDate dateWithTimeIntervalSince1970:timestamp];
     zoneInfo.http3Enabled = http3Enabled;
+    if ([acc_domains isKindOfClass:[NSArray class]]) {
+        zoneInfo.acc_domains = acc_domains;
+        [allHosts addObjectsFromArray:domains];
+    }
     if ([domains isKindOfClass:[NSArray class]]) {
         zoneInfo.domains = domains;
         [allHosts addObjectsFromArray:domains];

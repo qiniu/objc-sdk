@@ -19,6 +19,7 @@ extern NSString *const QNZoneInfoEmptyRegionId;
 @property(nonatomic, assign, readonly)long ttl;
 @property(nonatomic, assign, readonly)BOOL http3Enabled;
 @property(nonatomic, strong, readonly)NSArray<NSString *> *domains;
+@property(nonatomic, strong, readonly)NSArray<NSString *> *acc_domains;
 @property(nonatomic, strong, readonly)NSArray<NSString *> *old_domains;
 
 @property(nonatomic,   copy, readonly)NSString *regionId;
@@ -28,7 +29,13 @@ extern NSString *const QNZoneInfoEmptyRegionId;
 + (QNZoneInfo *)zoneInfoWithMainHosts:(NSArray <NSString *> *)mainHosts
                              regionId:(NSString * _Nullable)regionId;
 
+
 + (QNZoneInfo *)zoneInfoWithMainHosts:(NSArray <NSString *> *)mainHosts
+                             oldHosts:(NSArray <NSString *> * _Nullable)oldHosts
+                             regionId:(NSString * _Nullable)regionId;
+
++ (QNZoneInfo *)zoneInfoWithAccHosts:(NSArray <NSString *> *)accHosts
+                             mainHosts:(NSArray <NSString *> *)mainHosts
                              oldHosts:(NSArray <NSString *> * _Nullable)oldHosts
                              regionId:(NSString * _Nullable)regionId;
 

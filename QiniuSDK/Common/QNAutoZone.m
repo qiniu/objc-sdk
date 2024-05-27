@@ -14,6 +14,8 @@
 #import "QNRequestTransaction.h"
 #import "QNZoneInfo.h"
 #import "QNUpToken.h"
+#import "QNUploadOption.h"
+#import "QNConfiguration.h"
 #import "QNResponseInfo.h"
 #import "QNFixedZone.h"
 #import "QNSingleFlight.h"
@@ -88,9 +90,9 @@
 }
 
 - (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *_Nullable)token {
-
+    
     if (token == nil) return nil;
-    NSString *cacheKey = [self makeCacheKey:token.index];
+    NSString *cacheKey = [self makeCacheKey:nil akAndBucket:token.index];
     QNZonesInfo *zonesInfo = nil;
     @synchronized (self) {
         zonesInfo = self.zonesDic[cacheKey];
@@ -110,23 +112,37 @@
 }
 
 - (void)preQuery:(QNUpToken *)token on:(QNPrequeryReturn)ret {
+    [self query:[QNConfiguration defaultConfiguration] token:token on:^(QNResponseInfo * _Nullable responseInfo, QNUploadRegionRequestMetrics * _Nullable metrics, QNZonesInfo * _Nullable zonesInfo) {
+        if (!ret) {
+            return;
+        }
+        
+        if (responseInfo.isOK) {
+            ret(0, responseInfo, metrics);
+        } else {
+            ret(responseInfo.statusCode, responseInfo, metrics);
+        }
+    }];
+}
 
+- (void)query:(QNConfiguration *)config token:(QNUpToken *)token on:(QNQueryReturn)ret {
     if (token == nil || ![token isValid]) {
-        ret(-1, [QNResponseInfo responseInfoWithInvalidToken:@"invalid token"], nil);
+        ret([QNResponseInfo responseInfoWithInvalidToken:@"invalid token"], nil, nil);
         return;
     }
 
     QNUploadRegionRequestMetrics *cacheMetrics = [QNUploadRegionRequestMetrics emptyMetrics];
     [cacheMetrics start];
 
-    NSString *cacheKey = [self makeCacheKey:token.index];
+    
+    NSString *cacheKey = [self makeCacheKey:config akAndBucket:token.index];
     QNZonesInfo *zonesInfo = [[QNAutoZone zoneShareCache] cacheForKey:cacheKey];
 
     // 临时的 zonesInfo 仅能使用一次
     if (zonesInfo != nil && zonesInfo.isValid && !zonesInfo.isTemporary) {
         [cacheMetrics end];
         [self setZonesInfo:zonesInfo forKey:cacheKey];
-        ret(0, [QNResponseInfo successResponse], cacheMetrics);
+        ret([QNResponseInfo successResponse], cacheMetrics, zonesInfo);
         return;
     }
 
@@ -134,7 +150,7 @@
     QNSingleFlight *singleFlight = [QNAutoZone UCQuerySingleFlight];
     [singleFlight perform:token.index action:^(QNSingleFlightComplete _Nonnull complete) {
         kQNStrongSelf;
-        QNRequestTransaction *transaction = [self createUploadRequestTransaction:token];
+        QNRequestTransaction *transaction = [self createUploadRequestTransaction:config token:token];
 
         kQNWeakSelf;
         kQNWeakObj(transaction);
@@ -163,37 +179,47 @@
             if ([zonesInfo isValid]) {
                 [self setZonesInfo:zonesInfo forKey:cacheKey];
                 [[QNAutoZone zoneShareCache] cache:zonesInfo forKey:cacheKey atomically:false];
-                ret(0, responseInfo, metrics);
+                ret(responseInfo, metrics, zonesInfo);
             } else {
-                ret(NSURLErrorCannotDecodeRawData, responseInfo, metrics);
+                responseInfo = [QNResponseInfo errorResponseInfo:NSURLErrorCannotDecodeRawData errorDesc:[NSString stringWithFormat:@"origin response:%@", responseInfo]];
+                ret(responseInfo, metrics, nil);
             }
         } else {
             if (self.defaultZone != nil) {
                 // 备用只能用一次
                 QNZonesInfo *info = [self.defaultZone getZonesInfoWithToken:token];
                 [self setZonesInfo:info forKey:cacheKey];
-                ret(0, responseInfo, metrics);
+                responseInfo = [QNResponseInfo successResponseWithDesc:[NSString stringWithFormat:@"origin response:%@", responseInfo]];
+                ret(responseInfo, metrics, info);
             } else if (zonesInfo != nil) {
                 // 缓存有，但是失效也可使用
                 [self setZonesInfo:zonesInfo forKey:cacheKey];
-                ret(0, responseInfo, metrics);
+                responseInfo = [QNResponseInfo successResponseWithDesc:[NSString stringWithFormat:@"origin response:%@", responseInfo]];
+                ret(responseInfo, metrics, zonesInfo);
             } else {
-                ret(kQNNetworkError, responseInfo, metrics);
+                ret(responseInfo, metrics, nil);
             }
         }
     }];
 }
 
-- (QNRequestTransaction *)createUploadRequestTransaction:(QNUpToken *)token {
+- (QNRequestTransaction *)createUploadRequestTransaction:(QNConfiguration *)config token:(QNUpToken *)token {
+    if (config == nil) {
+        config = [QNConfiguration defaultConfiguration];
+    }
+    
     NSArray *hosts = nil;
     if (self.ucHosts && self.ucHosts.count > 0) {
         hosts = [self.ucHosts copy];
     } else {
         hosts = kQNPreQueryHosts;
     }
-    QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithHosts:hosts
-                                                                           regionId:QNZoneInfoEmptyRegionId
-                                                                              token:token];
+    QNRequestTransaction *transaction = [[QNRequestTransaction alloc] initWithConfig:config
+                                                                        uploadOption:[QNUploadOption defaultOptions]
+                                                                               hosts:hosts
+                                                                            regionId:QNZoneInfoEmptyRegionId
+                                                                                 key:@""
+                                                                               token:token];
     @synchronized (self) {
         [self.transactions addObject:transaction];
     }
@@ -208,9 +234,20 @@
     }
 }
 
-- (NSString *)makeCacheKey:(NSString *)akAndBucket {
-    NSString *ucHost = self.ucHosts.firstObject;
-    NSString *cacheKey = [NSString stringWithFormat:@"%@:%@", ucHost, akAndBucket];
+- (NSString *)makeCacheKey:(QNConfiguration *)config akAndBucket:(NSString *)akAndBucket {
+    NSString *key = akAndBucket;
+    if (config != nil) {
+        key = [NSString stringWithFormat:@"%@:%d",key, config.accelerateUploading];
+    }
+    
+    NSString *hosts = @"";
+    for (NSString *host in self.ucHosts) {
+        if (!host) {
+            continue;
+        }
+        hosts = [NSString stringWithFormat:@"%@:%@", hosts, host];
+    }
+    NSString *cacheKey = [NSString stringWithFormat:@"%@:%@", hosts, akAndBucket];
     return [QNUrlSafeBase64 encodeString:cacheKey];
 }
 
