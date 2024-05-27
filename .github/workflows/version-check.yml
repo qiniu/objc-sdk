@@ -1,0 +1,22 @@
+name: Objective-C SDK Version Check
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+jobs:
+  linux:
+    name: Version Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Set env
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/v}" >> $GITHUB_ENV
+      - name: Check
+        run: |
+          set -e
+          grep -qF "${RELEASE_VERSION}" Qiniu.podspec
+          grep -qF "## ${RELEASE_VERSION}" CHANGELOG.md
+          grep -qF "\"${RELEASE_VERSION}\"" README.md
+          grep -qF "static NSString *const kQiniuVersion = @\"${RELEASE_VERSION}\";" QiniuSDK/Utils/QNVersion.h
+          grep -qF "<string>${RELEASE_VERSION}</string>" QiniuSDK/info.plist
