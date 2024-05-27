@@ -13,6 +13,6 @@
 #define kQNPreQueryHost01 @"kodo-config.qiniuapi.com"
 #define kQNPreQueryHost02 @"uc.qbox.me"
 #define kQNPreQueryHost03 @"api.qiniu.com"
-#define kQNPreQueryHosts @[kQNPreQueryHost00, kQNPreQueryHost01, kQNPreQueryHost02, kQNPreQueryHost03]
+#define kQNPreQueryHosts @[kQNPreQueryHost00, kQNPreQueryHost01, kQNPreQueryHost02]
 
 #define kQNUpLogHost @"uplog.qbox.me"
