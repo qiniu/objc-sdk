@@ -111,7 +111,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     _udpDnsEnable = true;
     _defaultUdpDnsIpv4Servers = [self parseBase64Array:@"WyIyMjMuNS41LjUiLCAiMTE0LjExNC4xMTQuMTE0IiwgIjEuMS4xLjEiLCAiOC44LjguOCJd"];
     
-    _globalHostFrozenTime = 10;
+    _globalHostFrozenTime = 60;
     _partialHostFrozenTime = 5*60;
     
     _connectCheckEnable = YES;

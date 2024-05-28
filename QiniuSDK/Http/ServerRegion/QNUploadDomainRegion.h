@@ -10,7 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class QNConfiguration;
+
 @interface QNUploadDomainRegion : NSObject <QNUploadRegion>
+
+- (instancetype)initWithConfig:(QNConfiguration *)config;
 
 @end
 

@@ -113,7 +113,7 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
         
         if (responseInfo != nil && responseInfo.isOK && zonesInfo) {
             if (![self setupRegions:zonesInfo]) {
-                responseInfo = [QNResponseInfo responseInfoWithInvalidArgument:[NSString stringWithFormat:@"origin response:%@", responseInfo]];
+                responseInfo = [QNResponseInfo responseInfoWithInvalidArgument:[NSString stringWithFormat:@"setup regions host fail, origin response:%@", responseInfo]];
                 [self complete:responseInfo response:responseInfo.responseDictionary];
                 return;
             }
@@ -221,7 +221,7 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
     NSMutableArray *defaultRegions = [NSMutableArray array];
     NSArray *zoneInfos = zonesInfo.zonesInfo;
     for (QNZoneInfo *zoneInfo in zoneInfos) {
-        QNUploadDomainRegion *region = [[QNUploadDomainRegion alloc] init];
+        QNUploadDomainRegion *region = [[QNUploadDomainRegion alloc] initWithConfig:self.config];
         [region setupRegionData:zoneInfo];
         if (region.isValid) {
             [defaultRegions addObject:region];

@@ -271,28 +271,33 @@
     
     BOOL accelerate = YES;
     @synchronized (self) {
-        if (self.enableAccelerateUpload && responseInfo.error != nil &&
-            [[NSString stringWithFormat:@"%@", responseInfo.error]
-                containsString:@"transfer acceleration is not configured on this bucket"]) {
-            self.enableAccelerateUpload = true;
+        if (self.enableAccelerateUpload && responseInfo.isTransferAccelerationConfigureError) {
+            self.enableAccelerateUpload = NO;
         }
         accelerate = self.enableAccelerateUpload;
     }
     
-    NSArray *hostList = nil;
-    NSDictionary *domainInfo = nil;
+    NSMutableArray *hostList = [NSMutableArray array];
+    NSMutableDictionary *domainInfo =  [NSMutableDictionary dictionary];
     if (requestState.isUseOldServer) {
-        hostList = self.oldDomainHostList;
-        domainInfo = self.oldDomainDictionary;
+        if (self.oldDomainHostList.count > 0 && self.oldDomainDictionary.count > 0) {
+            [hostList addObjectsFromArray:self.oldDomainHostList];
+            [domainInfo addEntriesFromDictionary:self.oldDomainDictionary];
+        }
     } else {
+        
+        // 优先使用 acc
         if (accelerate &&
             self.accDomainHostList.count > 0 &&
             self.accDomainDictionary.count > 0) {
-            hostList = self.accDomainHostList;
-            domainInfo = self.accDomainDictionary;
-        } else {
-            hostList = self.domainHostList;
-            domainInfo = self.domainDictionary;
+            [hostList addObjectsFromArray:self.accDomainHostList];
+            [domainInfo addEntriesFromDictionary:self.accDomainDictionary];
+        }
+        
+        if (self.domainHostList.count > 0 &&
+            self.domainDictionary.count > 0){
+            [hostList addObjectsFromArray:self.domainHostList];
+            [domainInfo addEntriesFromDictionary:self.domainDictionary];
         }
     }
     
@@ -300,10 +305,6 @@
         return nil;
     }
     
-    if (requestState.isUseOldServer && self.oldDomainHostList.count > 0 && self.oldDomainDictionary.count > 0) {
-        hostList = self.oldDomainHostList;
-        domainInfo = self.oldDomainDictionary;
-    }
     
     QNUploadServer *server = nil;
     // 1. 优先使用http3

@@ -238,6 +238,10 @@ static NSString *kQNErrorDomain = @"qiniu.com";
         return YES;
     }
     
+    if ([self isTransferAccelerationConfigureError]) {
+        return YES;
+    }
+    
     if (self.isCancelled
         || _statusCode == 100
         || (_statusCode > 300 && _statusCode < 400)
@@ -254,6 +258,10 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 
 - (BOOL)couldRegionRetry{
     if (![self isQiniu]) {
+        return YES;
+    }
+    
+    if ([self isTransferAccelerationConfigureError]) {
         return YES;
     }
     
@@ -274,6 +282,10 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 - (BOOL)couldHostRetry{
     if (![self isQiniu]) {
         return YES;
+    }
+    
+    if ([self isTransferAccelerationConfigureError]) {
+        return NO;
     }
     
     if (self.isCancelled
@@ -301,7 +313,8 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 
 - (BOOL)isHostUnavailable{
     // 基本不可恢复，注：会影响下次请求，范围太大可能会造成大量的timeout
-    if (_statusCode == 502 || _statusCode == 503 || _statusCode == 504 || _statusCode == 599) {
+    if ([self isTransferAccelerationConfigureError] ||
+        _statusCode == 502 || _statusCode == 503 || _statusCode == 504 || _statusCode == 599) {
         return true;
     } else {
         return false;
@@ -310,6 +323,11 @@ static NSString *kQNErrorDomain = @"qiniu.com";
 
 - (BOOL)isCtxExpiedError {
     return _statusCode == 701 || (_statusCode == 612 && [_message containsString:@"no such uploadId"]);
+}
+
+- (BOOL)isTransferAccelerationConfigureError {
+    NSString *errorDesc = [NSString stringWithFormat:@"%@", self.error];
+    return [errorDesc containsString:@"transfer acceleration is not configured on this bucket"];
 }
 
 - (BOOL)isConnectionBroken {

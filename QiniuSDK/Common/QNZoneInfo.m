@@ -73,7 +73,7 @@ NSString * const QNZoneInfoEmptyRegionId = @"none";
     
     QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoFromDictionary:@{@"ttl" : @(-1),
                                                                 @"region" : regionId ?: QNZoneInfoEmptyRegionId,
-                                                                @"up" : @{@"acc_domains" : mainHosts ?: @[],
+                                                                @"up" : @{@"acc_domains" : accHosts ?: @[],
                                                                           @"domains" : mainHosts ?: @[],
                                                                           @"old" : oldHosts ?: @[]},
                                                                 }];

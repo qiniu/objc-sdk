@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		26F62ADDD5B6306E978C9A3F /* libPods-QiniuDemoTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 14CB2139715DD7B6FD5B146E /* libPods-QiniuDemoTests.a */; };
-		4545D3142BAD7D0C00932C3F /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 4545D3132BAD7D0C00932C3F /* PrivacyInfo.xcprivacy */; };
 		4561F02C28D9A6F80098A697 /* UploadResource_14M.zip in Resources */ = {isa = PBXBuildFile; fileRef = 4561F02B28D9A6F80098A697 /* UploadResource_14M.zip */; };
 		45E6080929ADD57100634200 /* UploadResource_1G.zip in Resources */ = {isa = PBXBuildFile; fileRef = 45E6080829ADD57100634200 /* UploadResource_1G.zip */; };
 		93D230241C86D7F700434F6D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D230231C86D7F700434F6D /* main.m */; };
@@ -43,7 +42,6 @@
 		14CB2139715DD7B6FD5B146E /* libPods-QiniuDemoTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-QiniuDemoTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		24EE530BBB100BED89B08A3D /* Pods-QiniuDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-QiniuDemo.release.xcconfig"; path = "Pods/Target Support Files/Pods-QiniuDemo/Pods-QiniuDemo.release.xcconfig"; sourceTree = "<group>"; };
 		3189882026469145003CCA68 /* QiniuDemo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = QiniuDemo.entitlements; sourceTree = "<group>"; };
-		4545D3132BAD7D0C00932C3F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		4561F02B28D9A6F80098A697 /* UploadResource_14M.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = UploadResource_14M.zip; sourceTree = "<group>"; };
 		4561F02F28D9AB090098A697 /* Configure.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Configure.h; sourceTree = "<group>"; };
 		45E6080829ADD57100634200 /* UploadResource_1G.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = UploadResource_1G.zip; sourceTree = "<group>"; };
@@ -171,7 +169,6 @@
 				93D230301C86D7F700434F6D /* LaunchScreen.storyboard */,
 				93D230331C86D7F700434F6D /* Info.plist */,
 				93D230221C86D7F700434F6D /* Supporting Files */,
-				4545D3132BAD7D0C00932C3F /* PrivacyInfo.xcprivacy */,
 			);
 			path = QiniuDemo;
 			sourceTree = "<group>";
@@ -309,7 +306,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4545D3142BAD7D0C00932C3F /* PrivacyInfo.xcprivacy in Resources */,
 				93D230321C86D7F700434F6D /* LaunchScreen.storyboard in Resources */,
 				45E6080929ADD57100634200 /* UploadResource_1G.zip in Resources */,
 				4561F02C28D9A6F80098A697 /* UploadResource_14M.zip in Resources */,

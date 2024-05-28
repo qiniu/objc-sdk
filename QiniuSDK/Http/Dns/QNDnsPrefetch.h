@@ -43,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// @param currentZone 当前区域
 /// @param token token信息
 - (BOOL)addDnsCheckAndPrefetchTransaction:(QNZone *)currentZone token:(QNUpToken *)token;
+- (BOOL)addDnsCheckAndPrefetchTransaction:(QNConfiguration *)config zone:(QNZone *)currentZone token:(QNUpToken *)token;
 
 /// 设置定时事务：检测已缓存DNS有效情况事务 无效会重新预取
 - (void)setDnsCheckWhetherCachedValidTransactionAction;

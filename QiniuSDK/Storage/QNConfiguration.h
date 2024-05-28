@@ -224,7 +224,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property(nonatomic,   copy) NSArray <NSString *> *dohIpv6Servers;
 
 /**
- *   Host全局冻结时间  单位：秒   默认：10  推荐范围：[5 ~ 30]
+ *   Host全局冻结时间  单位：秒   默认：60  推荐范围：[30 ~ 120]
  *   当某个Host的上传失败后并且可能短时间无法恢复，会冻结该Host
  */
 @property(nonatomic, assign)UInt32 globalHostFrozenTime;

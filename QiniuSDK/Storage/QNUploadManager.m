@@ -135,7 +135,7 @@
     }
     
     QNServerConfigMonitor.token = token;
-    [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone token:t];
+    [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config zone:self.config.zone token:t];
     
     QNUpTaskCompletionHandler complete = ^(QNResponseInfo *info, NSString *key, QNUploadTaskMetrics *metrics, NSDictionary *resp) {
         [QNUploadManager complete:token
@@ -339,7 +339,7 @@
         };
 
         QNServerConfigMonitor.token = token;
-        [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config.zone token:t];
+        [[QNTransactionManager shared] addDnsCheckAndPrefetchTransaction:self.config zone:self.config.zone token:t];
 
         long long sourceSize = [source getSize];
         if (sourceSize > 0 && sourceSize <= self.config.putThreshold) {
