@@ -19,4 +19,3 @@ jobs:
           grep -qF "## ${RELEASE_VERSION}" CHANGELOG.md
           grep -qF "\"${RELEASE_VERSION}\"" README.md
           grep -qF "static NSString *const kQiniuVersion = @\"${RELEASE_VERSION}\";" QiniuSDK/Utils/QNVersion.h
-          grep -qF "<string>${RELEASE_VERSION}</string>" QiniuSDK/info.plist

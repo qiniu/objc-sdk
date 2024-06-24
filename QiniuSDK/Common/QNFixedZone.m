@@ -8,6 +8,7 @@
 
 #import "QNFixedZone.h"
 #import "QNZoneInfo.h"
+#import "QNResponseInfo.h"
 
 @interface QNFixedZone ()
 
@@ -136,11 +137,21 @@
 - (QNZonesInfo *)createZonesInfo:(NSArray <NSString *> *)upDomains
                     oldUpDomains:(NSArray <NSString *> *)oldUpDomains
                         regionId:(NSString *)regionId {
-    if (!upDomains && upDomains.count == 0) {
+    return [self createZonesInfo:nil domains:upDomains oldDomains:oldUpDomains regionId:regionId];
+}
+
+- (QNZonesInfo *)createZonesInfo:(NSArray <NSString *> *)accDomains
+                         domains:(NSArray <NSString *> *)domains
+                      oldDomains:(NSArray <NSString *> *)oldDomains
+                        regionId:(NSString *)regionId {
+    if ((!accDomains || accDomains.count == 0) && (!domains || domains.count == 0)) {
         return nil;
     }
 
-    QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoWithMainHosts:upDomains oldHosts:oldUpDomains regionId:regionId];
+    QNZoneInfo *zoneInfo = [QNZoneInfo zoneInfoWithAccHosts:accDomains
+                                                  mainHosts:domains
+                                                   oldHosts:oldDomains
+                                                   regionId:regionId];
     QNZonesInfo *zonesInfo = [[QNZonesInfo alloc] initWithZonesInfo:@[zoneInfo]];
     return zonesInfo;
 }
@@ -166,9 +177,22 @@
     }
     return self;
 }
+- (instancetype)initWithAccUpDomainList:(NSArray<NSString *> *)accUpList
+                                 upList:(NSArray<NSString *> *)upList
+                              oldUpList:(NSArray<NSString *> *)oldUpList
+                               regionId:(NSString *)regionId {
+    if (self = [super init]) {
+        self.zonesInfo = [self createZonesInfo:accUpList domains:upList oldDomains:oldUpList regionId:regionId];
+    }
+    return self;
+}
 
 - (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *)token {
     return self.zonesInfo;
+}
+
+- (void)query:(QNConfiguration * _Nullable)config token:(QNUpToken * _Nullable)token on:(QNQueryReturn _Nullable)ret {
+    ret([QNResponseInfo successResponse], nil, self.zonesInfo);
 }
 
 

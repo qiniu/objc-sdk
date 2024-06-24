@@ -64,6 +64,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
         _useHttps = builder.useHttps;
 
         _allowBackupHost = builder.allowBackupHost;
+        _accelerateUploading = builder.accelerateUploading;
 
     }
     return self;
@@ -110,7 +111,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
     _udpDnsEnable = true;
     _defaultUdpDnsIpv4Servers = [self parseBase64Array:@"WyIyMjMuNS41LjUiLCAiMTE0LjExNC4xMTQuMTE0IiwgIjEuMS4xLjEiLCAiOC44LjguOCJd"];
     
-    _globalHostFrozenTime = 10;
+    _globalHostFrozenTime = 60;
     _partialHostFrozenTime = 5*60;
     
     _connectCheckEnable = YES;
@@ -280,6 +281,7 @@ const UInt32 kQNDefaultDnsCacheTime = 2 * 60;
 
         _useHttps = YES;
         _allowBackupHost = YES;
+        _accelerateUploading = NO;
         _useConcurrentResumeUpload = NO;
         _resumeUploadVersion = QNResumeUploadVersionV1;
         _concurrentTaskCount = 3;

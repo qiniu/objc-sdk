@@ -63,6 +63,21 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (instancetype)initWithUpDomainList:(NSArray<NSString *> *)upList;
 
+
+/**
+ * Zone初始化方法
+ *
+ * @param accUpList  加速上传服务器地址列表
+ * @param upList     默认上传服务器地址列表
+ * @param oldUpList  支持 SNI 的上传服务器地址列表
+ * @param regionId   区域 ID
+ * @return Zone实例
+ */
+- (instancetype)initWithAccUpDomainList:(NSArray<NSString *> *)accUpList
+                                 upList:(NSArray<NSString *> *)upList
+                              oldUpList:(NSArray<NSString *> *)oldUpList
+                               regionId:(NSString *)regionId;
+
 /**
  *    Zone初始化方法
  *

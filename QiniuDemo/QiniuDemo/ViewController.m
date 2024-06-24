@@ -73,7 +73,7 @@ typedef NS_ENUM(NSInteger, UploadState){
         path = [[NSBundle mainBundle] pathForResource:@"UploadResource_14M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_9M.zip" ofType:nil];
 //        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_49M.zip" ofType:nil];
-        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1G.zip" ofType:nil];
+//        path = [[NSBundle mainBundle] pathForResource:@"UploadResource_1G.zip" ofType:nil];
         
 //        NSFileManager *manager = [NSFileManager defaultManager];
 //        NSURL *desktopUrl = [manager URLsForDirectory:NSDesktopDirectory inDomains:NSUserDomainMask].firstObject;
@@ -139,6 +139,7 @@ typedef NS_ENUM(NSInteger, UploadState){
     NSString *key = [NSString stringWithFormat:@"iOS_Demo_%@", [NSDate date]];
     key = @"iOS-Test";
     self.token = YourToken;
+    self.token = @"5cJEzNSnh3PjOHZR_E0u1HCkXw4Bw1ZSuWQI9ufz:-ul1AJ8Fvpc7WhtpVT91Pvdfreo=:eyJzY29wZSI6InpvbmUwLXNwYWNlIiwiZGVhZGxpbmUiOjM0MzM3NDYyNTl9";
     
     
     QNConfiguration *configuration = [QNConfiguration build:^(QNConfigurationBuilder *builder) {
@@ -147,11 +148,16 @@ typedef NS_ENUM(NSInteger, UploadState){
 //        builder.useHttps = NO;
 
         builder.useConcurrentResumeUpload = false;
-        builder.concurrentTaskCount = 10;
+        builder.concurrentTaskCount = 2;
         builder.resumeUploadVersion = QNResumeUploadVersionV2;
         builder.putThreshold = 4*1024*1024;
-        builder.chunkSize = 1*1024*1024;
-//        builder.zone = [[QNFixedZone alloc] initWithUpDomainList:@[kUploadFixHost00, kUploadFixHost01]];
+        builder.chunkSize = 5*1024*1024;
+        builder.accelerateUploading = true;
+//        builder.zone = [[QNFixedZone alloc] initWithAccUpDomainList:@[@"zone0-space.kodo-accelerate.cn-east-1.qiniucs.com"]
+//                                                             upList:@[kUploadFixHost00]
+//                                                          oldUpList:@[]
+//                                                           regionId:@"custom"];
+        // [[QNFixedZone alloc] initWithUpDomainList:@[kUploadFixHost00, kUploadFixHost01]];
         NSString *recorderPath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents"];
         NSLog(@"== record path:%@", recorderPath);
         builder.recorder = [QNFileRecorder fileRecorderWithFolder:recorderPath error:nil];

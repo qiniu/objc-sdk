@@ -6,6 +6,7 @@ target "QiniuDemo" do
 #  pod 'Qiniu', '~> 7.4.0'
 #  pod 'Qiniu', '7.1.7'
   pod 'Qiniu',:path => '../'
+  pod 'HappyDNS',:path => '../../happy-dns-objc'
 end
 
 target "QiniuDemoTests" do

@@ -170,9 +170,12 @@
 // 是否冻结过Host，PS：如果没有冻结过 Host,则当前 Region 上传也就不会有错误信息，可能会返回-9，所以必须要再进行一次尝试
 @property(atomic   , assign)BOOL hasFreezeHost;
 @property(atomic   , assign)BOOL isAllFrozen;
+@property(atomic   , assign)BOOL enableAccelerateUpload;
 // 局部http2冻结管理对象
 @property(nonatomic, strong)QNUploadServerFreezeManager *partialHttp2Freezer;
 @property(nonatomic, strong)QNUploadServerFreezeManager *partialHttp3Freezer;
+@property(nonatomic, strong)NSArray <NSString *> *accDomainHostList;
+@property(nonatomic, strong)NSDictionary <NSString *, QNUploadServerDomain *> *accDomainDictionary;
 @property(nonatomic, strong)NSArray <NSString *> *domainHostList;
 @property(nonatomic, strong)NSDictionary <NSString *, QNUploadServerDomain *> *domainDictionary;
 @property(nonatomic, strong)NSArray <NSString *> *oldDomainHostList;
@@ -182,8 +185,19 @@
 @end
 @implementation QNUploadDomainRegion
 
+- (instancetype)initWithConfig:(QNConfiguration *)config {
+    if (self = [super init]) {
+        if (config) {
+            self.enableAccelerateUpload = config.accelerateUploading;
+        }
+    }
+    return self;
+}
+
 - (BOOL)isValid{
-    return !self.isAllFrozen && (self.domainHostList.count > 0 || self.oldDomainHostList.count > 0);
+    return !self.isAllFrozen &&
+    ((self.enableAccelerateUpload && self.accDomainHostList > 0) ||
+     self.domainHostList.count > 0 || self.oldDomainHostList.count > 0);
 }
 
 - (void)setupRegionData:(QNZoneInfo *)zoneInfo{
@@ -196,6 +210,16 @@
     self.http3Enabled = false;
     
     NSMutableArray *serverGroups = [NSMutableArray array];
+    NSMutableArray *accDomainHostList = [NSMutableArray array];
+    if (zoneInfo.acc_domains) {
+        [serverGroups addObjectsFromArray:zoneInfo.acc_domains];
+        [accDomainHostList addObjectsFromArray:zoneInfo.acc_domains];
+    }
+    self.accDomainHostList = accDomainHostList;
+    self.accDomainDictionary = [self createDomainDictionary:serverGroups];
+    
+    
+    [serverGroups removeAllObjects];
     NSMutableArray *domainHostList = [NSMutableArray array];
     if (zoneInfo.domains) {
         [serverGroups addObjectsFromArray:zoneInfo.domains];
@@ -245,14 +269,44 @@
     
     [self freezeServerIfNeed:responseInfo freezeServer:freezeServer];
     
-    QNUploadServer *server = nil;
-    NSArray *hostList = self.domainHostList;
-    NSDictionary *domainInfo = self.domainDictionary;
-    if (requestState.isUseOldServer && self.oldDomainHostList.count > 0 && self.oldDomainDictionary.count > 0) {
-        hostList = self.oldDomainHostList;
-        domainInfo = self.oldDomainDictionary;
+    BOOL accelerate = YES;
+    @synchronized (self) {
+        if (self.enableAccelerateUpload && responseInfo.isTransferAccelerationConfigureError) {
+            self.enableAccelerateUpload = NO;
+        }
+        accelerate = self.enableAccelerateUpload;
     }
     
+    NSMutableArray *hostList = [NSMutableArray array];
+    NSMutableDictionary *domainInfo =  [NSMutableDictionary dictionary];
+    if (requestState.isUseOldServer) {
+        if (self.oldDomainHostList.count > 0 && self.oldDomainDictionary.count > 0) {
+            [hostList addObjectsFromArray:self.oldDomainHostList];
+            [domainInfo addEntriesFromDictionary:self.oldDomainDictionary];
+        }
+    } else {
+        
+        // 优先使用 acc
+        if (accelerate &&
+            self.accDomainHostList.count > 0 &&
+            self.accDomainDictionary.count > 0) {
+            [hostList addObjectsFromArray:self.accDomainHostList];
+            [domainInfo addEntriesFromDictionary:self.accDomainDictionary];
+        }
+        
+        if (self.domainHostList.count > 0 &&
+            self.domainDictionary.count > 0){
+            [hostList addObjectsFromArray:self.domainHostList];
+            [domainInfo addEntriesFromDictionary:self.domainDictionary];
+        }
+    }
+    
+    if (hostList.count == 0 || domainInfo.count == 0) {
+        return nil;
+    }
+    
+    
+    QNUploadServer *server = nil;
     // 1. 优先使用http3
     if (self.http3Enabled) {
         for (NSString *host in hostList) {

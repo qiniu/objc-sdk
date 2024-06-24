@@ -106,6 +106,11 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property (nonatomic, assign) BOOL allowBackupHost;
 
 /**
+ *  是否允许使用加速域名，默认为 false
+ */
+@property (nonatomic, assign, readonly) BOOL accelerateUploading;
+
+/**
  *  持久化记录接口，可以实现将记录持久化到文件，数据库等
  */
 @property (nonatomic, readonly) id<QNRecorderDelegate> recorder;
@@ -219,7 +224,7 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
 @property(nonatomic,   copy) NSArray <NSString *> *dohIpv6Servers;
 
 /**
- *   Host全局冻结时间  单位：秒   默认：10  推荐范围：[5 ~ 30]
+ *   Host全局冻结时间  单位：秒   默认：60  推荐范围：[30 ~ 120]
  *   当某个Host的上传失败后并且可能短时间无法恢复，会冻结该Host
  */
 @property(nonatomic, assign)UInt32 globalHostFrozenTime;
@@ -296,6 +301,12 @@ typedef void (^QNConfigurationBuilderBlock)(QNConfigurationBuilder *builder);
  *    重试时是否允许使用备用上传域名，默认为YES
  */
 @property (nonatomic, assign) BOOL allowBackupHost;
+
+/**
+ *    是否允许使用加速域名，默认为 false
+ */
+@property (nonatomic, assign) BOOL accelerateUploading;
+
 
 /**
  *   是否开启并发分片上传，默认为NO

@@ -55,11 +55,14 @@
 @property (nonatomic, readonly) BOOL isHostUnavailable;
 /// 在断点续上传过程中，ctx 信息已过期。
 @property (nonatomic, readonly) BOOL isCtxExpiedError;
+/// 是否是加速配置错误
+@property (nonatomic, readonly) BOOL isTransferAccelerationConfigureError;
 /// 是否为 七牛响应
 @property (nonatomic, readonly, getter=isNotQiniu) BOOL notQiniu;
 
 //MARK:-- 构造函数 【内部使用】
 + (instancetype)successResponse;
++ (instancetype)successResponseWithDesc:(NSString *)desc;
 + (instancetype)cancelResponse;
 + (instancetype)responseInfoWithNetworkError:(NSString *)desc;
 + (instancetype)responseInfoWithInvalidArgument:(NSString *)desc;
