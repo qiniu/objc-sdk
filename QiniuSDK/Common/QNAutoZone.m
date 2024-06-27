@@ -92,7 +92,7 @@
 - (QNZonesInfo *)getZonesInfoWithToken:(QNUpToken *_Nullable)token {
     
     if (token == nil) return nil;
-    NSString *cacheKey = [self makeCacheKey:nil akAndBucket:token.index];
+    NSString *cacheKey = [self makeCacheKey:[QNConfiguration defaultConfiguration] akAndBucket:token.index];
     QNZonesInfo *zonesInfo = nil;
     @synchronized (self) {
         zonesInfo = self.zonesDic[cacheKey];
@@ -247,7 +247,7 @@
         }
         hosts = [NSString stringWithFormat:@"%@:%@", hosts, host];
     }
-    NSString *cacheKey = [NSString stringWithFormat:@"%@:%@", hosts, akAndBucket];
+    NSString *cacheKey = [NSString stringWithFormat:@"%@:%@", hosts, key];
     return [QNUrlSafeBase64 encodeString:cacheKey];
 }
 
