@@ -247,7 +247,7 @@
         }
         hosts = [NSString stringWithFormat:@"%@:%@", hosts, host];
     }
-    NSString *cacheKey = [NSString stringWithFormat:@"%@:%@", hosts, akAndBucket];
+    NSString *cacheKey = [NSString stringWithFormat:@"%@:%@", hosts, key];
     return [QNUrlSafeBase64 encodeString:cacheKey];
 }
 
