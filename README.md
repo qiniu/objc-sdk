@@ -14,7 +14,7 @@
 通过 CocoaPods
 
 ```ruby
-pod "Qiniu", "~> 8.8.0" 
+pod "Qiniu", "~> 8.8.1" 
 ```
 
 通过 Swift Package Manager (Xcode 11+)

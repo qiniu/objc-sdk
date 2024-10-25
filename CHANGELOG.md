@@ -1,4 +1,7 @@
 #Changelog
+## 8.8.1（2024-10-25）
+- 处理 iOS 18 PHAssetResource 信息 fetch 失败而导致异常问题
+
 ## 8.8.0（2024-06-24）
 - 上传支持加速域名
 - 查询区域移除备用域名：api.qiniu.com
