@@ -16,13 +16,14 @@
 //#import "QNTransactionManager.h"
 #import <HappyDNS/HappyDNS.h>
 #import <Photos/Photos.h>
+#import <TZImagePickerController/TZImagePickerController.h>
 
 typedef NS_ENUM(NSInteger, UploadState){
     UploadStatePrepare,
     UploadStateUploading,
     UploadStateCancelling
 };
-@interface DnsItem : NSObject <QNIDnsNetworkAddress>
+@interface DnsItem : NSObject <QNIDnsNetworkAddress,TZImagePickerControllerDelegate>
 @property(nonatomic,   copy)NSString *hostValue;
 @property(nonatomic,   copy)NSString *ipValue;
 @property(nonatomic, strong)NSNumber *ttlValue;
@@ -42,6 +43,7 @@ typedef NS_ENUM(NSInteger, UploadState){
 @property (nonatomic, assign) UploadState uploadState;
 @property (nonatomic, strong) NSString *token;
 @property (nonatomic, strong) UIImage *pickImage;
+@property (nonatomic, strong) PHAsset *pickFile;
 
 @end
 
@@ -176,20 +178,22 @@ typedef NS_ENUM(NSInteger, UploadState){
                                                      cancellationSignal:^BOOL{
         return weakSelf.uploadState == UploadStateCancelling;
     }];
-    
-    [upManager putFile:filePath key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-        NSLog(@"info ===== %@", info);
-        NSLog(@"resp ===== %@", resp);
 
-        [weakSelf changeUploadState:UploadStatePrepare];
-        [weakSelf alertMessage:info.message];
-        
-        if (complete) {
-            complete();
-        }
-    }
-                option:uploadOption];
-    
+    // File
+//    [upManager putFile:filePath key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//        NSLog(@"info ===== %@", info);
+//        NSLog(@"resp ===== %@", resp);
+//
+//        [weakSelf changeUploadState:UploadStatePrepare];
+//        [weakSelf alertMessage:info.message];
+//        
+//        if (complete) {
+//            complete();
+//        }
+//    }
+//                option:uploadOption];
+   
+    // NSInputStream no size
 //    NSDate *startData = [NSDate date];
 //    long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize];
 //    NSInputStream *stream = [NSInputStream inputStreamWithFileAtPath:filePath];
@@ -201,26 +205,24 @@ typedef NS_ENUM(NSInteger, UploadState){
 //        [weakSelf alertMessage:[NSString stringWithFormat:@"%@ \n duration:%f", info.message, [[NSDate date] timeIntervalSinceDate:startData]]];
 //    } option:uploadOption];
     
-//    NSURL *url = [NSURL fileURLWithPath:filePath];
-//    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
-//    PHAsset *asset = [self getPHAssert];
-//    [upManager putPHAsset:asset key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-
+    
+    // NSInputStream has size
 //    long long fileSize = [[[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil] fileSize];
 //    NSInputStream *stream = [NSInputStream inputStreamWithFileAtPath:filePath];
 //    [upManager putInputStream:stream sourceId:filePath.lastPathComponent size:fileSize fileName:filePath.lastPathComponent key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
-
+//
 //        NSLog(@"info ===== %@", info);
 //        NSLog(@"resp ===== %@", resp);
 //
 //        [weakSelf changeUploadState:UploadStatePrepare];
 //        [weakSelf alertMessage:info.message];
 //    } option:uploadOption];
+
     
+    // PHAsset
 //    NSURL *url = [NSURL fileURLWithPath:filePath];
 //    PHFetchResult *fetchResult = [PHAsset fetchAssetsWithALAssetURLs:@[url] options:nil];
-//    PHAsset *asset = [self getPHAssert];
-//    [upManager putPHAsset:asset key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+//    [upManager putPHAsset:self.pickFile key:key token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
 //        NSLog(@"info ===== %@", info);
 //        NSLog(@"resp ===== %@", resp);
 //
@@ -228,6 +230,22 @@ typedef NS_ENUM(NSInteger, UploadState){
 //        [weakSelf alertMessage:info.message];
 //    }
 //                option:uploadOption];
+    
+    
+    // PHAssetResource
+    // 注意：这里可能还需要包括其他你需要的资源类型
+    PHAssetResource *source = [PHAssetResource assetResourcesForAsset:self.pickFile].firstObject;
+    [upManager putPHAssetResource:source key:source.assetLocalIdentifier token:self.token complete:^(QNResponseInfo *info, NSString *key, NSDictionary *resp) {
+        NSLog(@"info ===== %@", info);
+        NSLog(@"resp ===== %@", resp);
+        NSLog(@"key  ===== %@", self.pickFile.burstIdentifier);
+
+        [weakSelf changeUploadState:UploadStatePrepare];
+        [weakSelf alertMessage:info.message];
+        
+    } option:uploadOption];
+    
+    
 }
 
 - (PHAsset *)getPHAssert {
@@ -237,28 +255,16 @@ typedef NS_ENUM(NSInteger, UploadState){
     option.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"creationDate" ascending:NO]];
     
     __block PHAsset *phAsset = nil;
-    //fetchAssetCollectionsWithType
-    PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionTypeSmartAlbum subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
+    PHFetchResult *smartAlbums = [PHAssetCollection fetchAssetCollectionsWithType:PHAssetCollectionSubtypeAny subtype:PHAssetCollectionSubtypeAlbumRegular options:nil];
     for (PHAssetCollection *collection in smartAlbums) {
         // 有可能是PHCollectionList类的的对象，过滤掉
         if (![collection isKindOfClass:[PHAssetCollection class]]) continue;
         // 过滤空相册
         if (collection.estimatedAssetCount <= 0) continue;
 
-        PHFetchResult *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:option];
-        
-        [fetchResult enumerateObjectsUsingBlock:^(id  _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-            
-            phAsset = (PHAsset *)obj;
-            //可通过此PHAsset用下边方法分别获取时常、地址及缩略图
-            
-            if (phAsset) {
-                *stop = true;
-            }
-        }];
-        
-        if (phAsset) {
-            break;
+        PHFetchResult<PHAsset *> *fetchResult = [PHAsset fetchAssetsInAssetCollection:collection options:option];
+        if (fetchResult.count > 0) {
+            return fetchResult.firstObject;
         }
     }
     
@@ -266,26 +272,28 @@ typedef NS_ENUM(NSInteger, UploadState){
 }
 
 - (void)gotoImageLibrary {
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary]) {
-        UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-        picker.delegate = self;
-        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-        [self presentViewController:picker animated:YES completion:nil];
-    } else {
-        [self alertMessage:@"访问图片库错误"];
-    }
-}
+    
+    TZImagePickerController *imagePickerVc = [[TZImagePickerController alloc] initWithMaxImagesCount:1 delegate:self];
 
-#pragma mark UIImagePickerControllerDelegate
-- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<UIImagePickerControllerInfoKey, id> *)info {
-    self.pickImage = info[UIImagePickerControllerOriginalImage];
-    self.preViewImage.image = self.pickImage;
-    [picker dismissViewControllerAnimated:YES completion:^{
+    // You can get the photos by block, the same as by delegate.
+    // 你可以通过block或者代理，来得到用户选择的照片.
+    [imagePickerVc setDidFinishPickingPhotosHandle:^(NSArray<UIImage *> *photos, NSArray *assets, BOOL isSelectOriginalPhoto) {
+        if (assets.firstObject) {
+            self.pickFile = assets.firstObject;
+            self.preViewImage.image = photos.firstObject;
+//            [[TZImageManager manager] getOriginalPhotoWithAsset:self.pickFile completion:^(UIImage *photo, NSDictionary *info) {
+//                self.preViewImage.image = photo;
+//            }];
+        }
     }];
-}
-
-- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker {
-    [picker dismissViewControllerAnimated:YES completion:nil];
+    [imagePickerVc setDidFinishPickingVideoHandle:^(UIImage *coverImage, PHAsset *asset) {
+        self.pickFile = asset;
+        self.preViewImage.image = coverImage;
+//        [[TZImageManager manager] getVideoWithAsset:asset completion:^(AVPlayerItem *playerItem, NSDictionary *info) {
+//            self.preViewImage.image = photo;
+//        }];
+    }];
+    [self presentViewController:imagePickerVc animated:YES completion:nil];
 }
 
 //照片获取本地路径转换
