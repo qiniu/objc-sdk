@@ -14,13 +14,19 @@
 
 @interface QNFormUpload ()
 
+@property(nonatomic, strong)NSLock *locker;
 @property(nonatomic, strong)QNUpProgress *progress;
-
 @property(nonatomic, strong)QNRequestTransaction *uploadTransaction;
 
 @end
 
 @implementation QNFormUpload
+
+- (void)initData {
+    [super initData];
+    
+    _locker = [[NSLock alloc] init];
+}
 
 - (void)startToUpload {
     [super startToUpload];
@@ -61,9 +67,11 @@
 }
 
 - (QNUpProgress *)progress {
+    [self.locker lock];
     if (_progress == nil) {
         _progress = [QNUpProgress progress:self.option.progressHandler byteProgress:self.option.byteProgressHandler];
     }
+    [self.locker unlock];
     return _progress;
 }
 

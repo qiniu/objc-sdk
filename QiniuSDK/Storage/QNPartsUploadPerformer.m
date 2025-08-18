@@ -63,7 +63,7 @@
         _config = config;
         _recorder = config.recorder;
         _recorderKey = recorderKey;
-        
+        _progressLocker = [[NSLock alloc] init];
         [self initData];
     }
     return self;
@@ -100,10 +100,15 @@
         return;
     }
     
+    QNUpProgress *progress = self.progress;
+    if (progress == nil) {
+        return;
+    }
+    
     if (isCompleted) {
-        [self.progress notifyDone:self.key totalBytes:[self.uploadInfo getSourceSize]];
+        [progress notifyDone:self.key totalBytes:[self.uploadInfo getSourceSize]];
     } else {
-        [self.progress progress:self.key uploadBytes:[self.uploadInfo uploadSize] totalBytes:[self.uploadInfo getSourceSize]];
+        [progress progress:self.key uploadBytes:[self.uploadInfo uploadSize] totalBytes:[self.uploadInfo getSourceSize]];
     }
 }
 

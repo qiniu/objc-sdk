@@ -7,6 +7,7 @@
 //
 
 #import "QNAsyncRun.h"
+#import "QNDefine.h"
 #import "QNUpProgress.h"
 
 @interface QNUpProgress()
@@ -66,7 +67,9 @@
     }
     
     if (self.byteProgress) {
+        kQNWeakSelf;
         QNAsyncRunInMain(^{
+            kQNStrongSelf;
             self.byteProgress(key, uploadBytes, totalBytes);
         });
         return;
@@ -77,7 +80,9 @@
     }
     
     if (self.progress) {
+        kQNWeakSelf;
         QNAsyncRunInMain(^{
+            kQNStrongSelf;
             double notifyPercent = (double) uploadBytes / (double) totalBytes;
             self.progress(key, notifyPercent);
         });
