@@ -445,11 +445,10 @@
     
     [QNUploadManager reportQuality:key source:source responseInfo:responseInfo taskMetrics:taskMetrics token:token];
     
-    QNAsyncRunInMain(^{
-        if (completionHandler) {
-            completionHandler(responseInfo, key, response);
-        }
-    });
+    
+    if (completionHandler) {
+        completionHandler(responseInfo, key, response);
+    }
 }
 
 

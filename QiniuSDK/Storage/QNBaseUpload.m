@@ -207,9 +207,18 @@ NSString *const QNUploadUpTypeResumableV2 = @"resumable_v2";
         [self.metrics addMetrics:self.currentRegionRequestMetrics];
     }
     if (self.completionHandler) {
-        self.completionHandler(info, _key, _metrics, response);
+        kQNWeakSelf;
+        QNAsyncRunInMain(^{
+            kQNStrongSelf;
+            
+            if (self) {
+                self.completionHandler(info, self.key, self.metrics, response);
+                self.strongSelf = nil;
+            }
+        });
+    } else {
+        self.strongSelf = nil;
     }
-    self.strongSelf = nil;
 }
 
 //MARK:-- region

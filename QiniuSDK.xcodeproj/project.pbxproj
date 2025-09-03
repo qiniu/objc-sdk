@@ -1365,6 +1365,7 @@
 				DF2CDDFB19DAC05500CE01FB /* Sources */,
 				DF2CDDFC19DAC05500CE01FB /* Frameworks */,
 				DF2CDDFD19DAC05500CE01FB /* Headers */,
+				B940B9ABDE4E592EBAA1F9E0 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1384,6 +1385,7 @@
 				DF2CDE0719DAC05500CE01FB /* Frameworks */,
 				DF2CDE0819DAC05500CE01FB /* Resources */,
 				45BDB3C72C045E8F00F184D7 /* Embed Libraries */,
+				76584E53BEB48A9FB97225EE /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1421,6 +1423,7 @@
 				DF2CDE2019DAC08400CE01FB /* Sources */,
 				DF2CDE2119DAC08400CE01FB /* Frameworks */,
 				DF2CDE2219DAC08400CE01FB /* Resources */,
+				18F63637D3DB5A4B72E2ABEE /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -1518,6 +1521,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		18F63637D3DB5A4B72E2ABEE /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-QiniuSDK_iOSTests/Pods-QiniuSDK_iOSTests-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/HappyDNS-iOS/HappyDNS.privacy.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/HappyDNS.privacy.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-QiniuSDK_iOSTests/Pods-QiniuSDK_iOSTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		31259E4A24E63BBB00CF7531 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1571,6 +1592,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		76584E53BEB48A9FB97225EE /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-QiniuSDK_MacTests/Pods-QiniuSDK_MacTests-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/HappyDNS-macOS/HappyDNS.privacy.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/HappyDNS.privacy.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-QiniuSDK_MacTests/Pods-QiniuSDK_MacTests-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		9635BFBB21C34ACD5AEDC9EB /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1587,6 +1626,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		B940B9ABDE4E592EBAA1F9E0 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-QiniuSDK_Mac/Pods-QiniuSDK_Mac-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/HappyDNS-macOS/HappyDNS.privacy.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/HappyDNS.privacy.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-QiniuSDK_Mac/Pods-QiniuSDK_Mac-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

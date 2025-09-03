@@ -70,7 +70,10 @@
         kQNWeakSelf;
         QNAsyncRunInMain(^{
             kQNStrongSelf;
-            self.byteProgress(key, uploadBytes, totalBytes);
+            
+            if (self && self.byteProgress) {
+                self.byteProgress(key, uploadBytes, totalBytes);
+            }
         });
         return;
     }
@@ -83,8 +86,11 @@
         kQNWeakSelf;
         QNAsyncRunInMain(^{
             kQNStrongSelf;
-            double notifyPercent = (double) uploadBytes / (double) totalBytes;
-            self.progress(key, notifyPercent);
+            
+            if (self && self.progress) {
+                double notifyPercent = (double) uploadBytes / (double) totalBytes;
+                self.progress(key, notifyPercent);
+            }
         });
     }
 }
