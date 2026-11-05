@@ -83,8 +83,9 @@ connectionProxy:(NSDictionary *)connectionProxy
                        waitUntilDone:NO];
 }
 
+// 将取消操作投递到流所属线程，没有活动请求时直接返回。
 - (void)cancel {
-    if (self.thread) {
+    if (!self.thread || !self.httpClient) {
         return;
     }
     
