@@ -8,7 +8,10 @@ on:
 name: Run Test Cases
 jobs:
   test-on-mac:
-    runs-on: macos-12
+    runs-on: macos-15-intel
+    timeout-minutes: 60
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -35,6 +38,6 @@ jobs:
           rm -rf $HOME/.cocoapods
           pod setup --silent
           pod install --silent --no-repo-update
-          xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -configuration Debug -destination 'platform=iOS Simulator,name=iPhone 14 Pro' -enableCodeCoverage YES
+          xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -configuration Debug -destination 'platform=iOS Simulator,OS=18.5,name=iPhone 16 Pro' -enableCodeCoverage YES
           xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -configuration Debug -destination 'platform=macOS,arch=x86_64'
           bash <(curl -s https://codecov.io/bash)
