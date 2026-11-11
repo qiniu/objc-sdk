@@ -27,6 +27,14 @@ jobs:
       #     rm -rf $HOME/.cocoapods
       #     pod setup --silent
       #     pod install --silent --no-repo-update
+      - name: Prepare iOS simulator
+        run: |
+          xcodebuild -version
+          xcrun simctl list runtimes
+          simulator_id=$(xcrun simctl create "QiniuSDK Tests" com.apple.CoreSimulator.SimDeviceType.iPhone-16-Pro com.apple.CoreSimulator.SimRuntime.iOS-18-5)
+          xcrun simctl boot "$simulator_id"
+          xcrun simctl bootstatus "$simulator_id" -b
+          echo "QINIU_TEST_SIMULATOR_ID=$simulator_id" >> "$GITHUB_ENV"
       - name: setup-cocoapods
         uses: maxim-lobanov/setup-cocoapods@v1
         with:
@@ -38,6 +46,6 @@ jobs:
           rm -rf $HOME/.cocoapods
           pod setup --silent
           pod install --silent --no-repo-update
-          xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -configuration Debug -destination 'platform=iOS Simulator,OS=18.5,name=iPhone 16 Pro' -enableCodeCoverage YES
+          xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -configuration Debug -destination "platform=iOS Simulator,id=$QINIU_TEST_SIMULATOR_ID" -enableCodeCoverage YES
           xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -configuration Debug -destination 'platform=macOS,arch=x86_64'
           bash <(curl -s https://codecov.io/bash)
