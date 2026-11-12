@@ -10,6 +10,7 @@
 #import "NSURLRequest+QNRequest.h"
 #import "QNCFHttpClientInner.h"
 #import "QNTestConfig.h"
+#import "QNUpToken.h"
 #import "XCTestCase+QNTest.h"
 #import <XCTest/XCTest.h>
 #import <netinet/in.h>
@@ -291,7 +292,7 @@
 }
 
 - (void)testHttpGet{
-    NSString *urlString = @"http://uc.qbox.me/v3/query?ak=jH983zIUFIP1OVumiBVGeAfiLYJvwrF45S-t22eu&bucket=zone0-space";
+    NSString *urlString = [NSString stringWithFormat:@"http://uc.qbox.me/v3/query?ak=%@&bucket=%@", ak, [QNUpToken parse:token_z0].bucket];
     NSURL *url = [NSURL URLWithString:urlString];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     
@@ -299,14 +300,14 @@
 }
 
 - (void)testHttpsGet{
-    NSURL *url = [NSURL URLWithString:@"https://uc.qbox.me/v3/query?ak=jH983zIUFIP1OVumiBVGeAfiLYJvwrF45S-t22eu&bucket=zone0-space"];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://uc.qbox.me/v3/query?ak=%@&bucket=%@", ak, [QNUpToken parse:token_z0].bucket]];
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     
     [self request:request];
 }
 
 - (void)testHttpGetByIP{
-    NSURL *url = [NSURL URLWithString:@"http://101.251.144.177/v3/query?ak=jH983zIUFIP1OVumiBVGeAfiLYJvwrF45S-t22eu&bucket=zone0-space"];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"http://101.251.144.177/v3/query?ak=%@&bucket=%@", ak, [QNUpToken parse:token_z0].bucket]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     request.qn_domain = @"uc.qbox.me";
     
@@ -314,7 +315,7 @@
 }
 
 - (void)testHttpsGetByIP{
-    NSURL *url = [NSURL URLWithString:@"https://101.251.144.177/v3/query?ak=jH983zIUFIP1OVumiBVGeAfiLYJvwrF45S-t22eu&bucket=zone0-space"];
+    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://101.251.144.177/v3/query?ak=%@&bucket=%@", ak, [QNUpToken parse:token_z0].bucket]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
     request.qn_domain = @"uc.qbox.me";
     

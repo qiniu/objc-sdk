@@ -6,6 +6,8 @@
 //  Copyright (c) 2014年 Qiniu. All rights reserved.
 //
 #import <Foundation/Foundation.h>
+static NSString *const ak = @"dxVQk8gyk3WswArbNhdKIwmwibJ9nFsQhMNUmtIM";
+
 // 华东上传凭证
 static NSString *const token_z0 = @"dxVQk8gyk3WswArbNhdKIwmwibJ9nFsQhMNUmtIM:fUHrWz-X25jv7RHHMs0BsZlfatE=:eyJzY29wZSI6ImtvZG8tcGhvbmUtem9uZTAtc3BhY2UiLCJkZWFkbGluZSI6MTc5NDYwNjY4OCwgInJldHVybkJvZHkiOiJ7XCJmb29cIjokKHg6Zm9vKSwgXCJiYXJcIjokKHg6YmFyKSwgXCJtaW1lVHlwZVwiOiQobWltZVR5cGUpLCBcImhhc2hcIjokKGV0YWcpLCBcImtleVwiOiQoa2V5KSwgXCJmbmFtZVwiOiQoZm5hbWUpLCBcImZzaXplXCI6JChmc2l6ZSl9In0=";
 // 华北上传
