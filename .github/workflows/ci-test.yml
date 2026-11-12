@@ -12,6 +12,7 @@ jobs:
     timeout-minutes: 60
     env:
       DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+      QINIU_TEST_ENV: travis
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
@@ -39,13 +40,12 @@ jobs:
         uses: maxim-lobanov/setup-cocoapods@v1
         with:
           version: 1.14.2
-      - name: Run Cases
-        env:
-          QINIU_TEST_ENV: travis
-        run: |
-          rm -rf $HOME/.cocoapods
-          pod setup --silent
-          pod install --silent --no-repo-update
-          xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -configuration Debug -destination "platform=iOS Simulator,id=$QINIU_TEST_SIMULATOR_ID" -enableCodeCoverage YES
-          xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -configuration Debug -destination 'platform=macOS,arch=x86_64'
-          bash <(curl -s https://codecov.io/bash)
+      - name: Install dependencies
+        timeout-minutes: 15
+        run: pod install --no-repo-update
+      - name: Run iOS tests
+        run: xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_iOS -configuration Debug -destination "platform=iOS Simulator,id=$QINIU_TEST_SIMULATOR_ID" -enableCodeCoverage YES
+      - name: Run macOS tests
+        run: xcodebuild test -workspace QiniuSDK.xcworkspace -scheme QiniuSDK_Mac -configuration Debug -destination 'platform=macOS,arch=x86_64'
+      - name: Upload coverage
+        run: bash <(curl -s https://codecov.io/bash)

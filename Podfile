@@ -1,4 +1,4 @@
-source 'https://github.com/CocoaPods/Specs.git'
+source 'https://cdn.cocoapods.org/'
 
 def shared_dependencies
   pod 'HappyDNS', '~> 1.0.3'
