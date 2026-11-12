@@ -21,7 +21,6 @@
 @property(nonatomic, strong)NSMutableURLRequest *request;
 @property(nonatomic, strong)NSDictionary *connectionProxy;
 @property(nonatomic, assign)BOOL isReadResponseHeader;
-@property(nonatomic, assign)BOOL isReadResponseBody;
 @property(nonatomic, assign)BOOL isInputStreamEvaluated;
 @property(nonatomic, strong)NSInputStream *inputStream;
 
@@ -29,6 +28,7 @@
 @property(nonatomic, strong)NSTimer *progressTimer; // 进度定时器
 @property(nonatomic, assign)int64_t totalBytesSent; // 已上传大小
 @property(nonatomic, assign)int64_t totalBytesExpectedToSend; // 总大小
+@property (nonatomic, assign) NSTimeInterval lastActivityTime; // 最近收发活动的单调时间
 
 @end
 @implementation QNCFHttpClientInner
@@ -44,10 +44,15 @@
     return client;
 }
 
+// 启动流和定时检查，取消后的请求不再打开连接。
 - (void)main {
+    if (self.isCallFinishOrError) {
+        return;
+    }
     [self prepare];
-    [self openInputStream];
+    self.lastActivityTime = [NSProcessInfo processInfo].systemUptime;
     [self startProgress];
+    [self openInputStream];
 }
 
 - (void)prepare {
@@ -68,9 +73,28 @@
     [self closeInputStream];
 }
 
+// 主动取消使用取消错误，与空闲超时区分。
 - (void)cancel {
-    [self releaseResource];
-    [self delegate_onError:[self createError:NSURLErrorCancelled errorDescription:@"user cancel"]];
+    [self finishWithError:[self createError:NSURLErrorCancelled errorDescription:@"user cancel"]];
+}
+
+// 先认领结束状态，再清理流和定时器，保证终态回调只执行一次。
+- (void)finishWithError:(NSError *)error {
+    @synchronized(self) {
+        if (self.isCallFinishOrError) {
+            return;
+        }
+        self.isCallFinishOrError = YES;
+    }
+    [self endProgress:error != nil];
+    [self closeInputStream];
+    if (error) {
+        if ([self.delegate respondsToSelector:@selector(onError:)]) {
+            [self.delegate onError:error];
+        }
+    } else if ([self.delegate respondsToSelector:@selector(didFinish)]) {
+        [self.delegate didFinish];
+    }
 }
 
 //MARK: -- request -> stream
@@ -158,6 +182,7 @@
     }
 }
 
+// 首次收到完整响应头时更新活动时间并通知代理。
 - (void)inputStreamGetAndNotifyHttpResponse{
     @synchronized (self) {
         if (self.isReadResponseHeader) {
@@ -165,7 +190,7 @@
         }
         self.isReadResponseHeader = YES;
     }
-    
+    self.lastActivityTime = [NSProcessInfo processInfo].systemUptime;
 
     CFReadStreamRef readStream = (__bridge CFReadStreamRef)self.inputStream;
     CFHTTPMessageRef httpMessage = (CFHTTPMessageRef)CFReadStreamCopyProperty(readStream, kCFStreamPropertyHTTPResponseHeader);
@@ -186,26 +211,21 @@
     CFRelease(httpMessage);
 }
 
+// 每次实际读到响应体才刷新活动时间，持续接收不能被误判为空闲。
 - (void)inputStreamGetAndNotifyHttpData{
-    @synchronized (self) {
-        if (self.isReadResponseBody) {
+    UInt8 buffer[16 * 1024];
+    while (self.inputStream.hasBytesAvailable && !self.isCallFinishOrError) {
+        NSInteger amount = [self.inputStream read:buffer maxLength:sizeof(buffer)];
+        if (amount <= 0) {
+            if (amount < 0) {
+                [self finishWithError:[self translateCFNetworkErrorIntoUrlError:self.inputStream.streamError]];
+            }
             return;
         }
-        self.isReadResponseBody = YES;
+        self.lastActivityTime = [NSProcessInfo processInfo].systemUptime;
+        NSData *data = [[NSData alloc] initWithBytes:buffer length:amount];
+        [self delegate_didLoadData:data];
     }
-    
-    UInt8 buffer[16 * 1024];
-    UInt8 *buf = NULL;
-    NSUInteger length = 0;
-    
-    if (![self.inputStream getBuffer:&buf length:&length]) {
-        NSInteger amount = [self.inputStream read:buffer maxLength:sizeof(buffer)];
-        buf = buffer;
-        length = amount;
-    }
-    
-    NSData *data = [[NSData alloc] initWithBytes:buf length:length];
-    [self delegate_didLoadData:data];
 }
 
 - (BOOL)isInputStreamHttpResponseHeaderComplete{
@@ -272,7 +292,8 @@
                                                           statusCode:statusCode
                                                          HTTPVersion:httpVersionString
                                                         headerFields:headInfo];
-    
+
+    self.isCallFinishOrError = YES;
     [self releaseResource];
     [self delegate_redirectedToRequest:request redirectResponse:response];
     
@@ -280,7 +301,11 @@
 }
 
 //MARK: -- NSStreamDelegate
+// 在流所属线程处理事件，忽略已经结束或替换的流。
 - (void)stream:(NSStream *)aStream handleEvent:(NSStreamEvent)eventCode{
+    if (self.isCallFinishOrError || aStream != self.inputStream) {
+        return;
+    }
     @autoreleasepool {
         switch (eventCode) {
             case NSStreamEventHasBytesAvailable:{
@@ -295,9 +320,8 @@
             case NSStreamEventHasSpaceAvailable:
                 break;
             case NSStreamEventErrorOccurred:{
-                [self releaseResource];
-                [self endProgress: YES];
-                [self delegate_onError:[self translateCFNetworkErrorIntoUrlError:[aStream streamError]]];
+                NSError *error = [self translateCFNetworkErrorIntoUrlError:[aStream streamError]];
+                [self finishWithError:error];
             }
                 break;
             case NSStreamEventEndEncountered:{
@@ -307,10 +331,8 @@
                     
                     [self inputStreamGetAndNotifyHttpResponse];
                     [self inputStreamGetAndNotifyHttpData];
-                    
-                    [self releaseResource];
-                    [self endProgress: NO];
-                    [self delegate_didFinish];
+
+                    [self finishWithError:nil];
                 }
             }
                 break;
@@ -340,6 +362,7 @@
     }
 }
 
+// 复用进度定时器检查空闲时间，先保存定时器以便回调中清理。
 - (void)createTimer{
     
     if (_progressTimer) {
@@ -354,8 +377,8 @@
                                             repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:timer forMode:NSDefaultRunLoopMode];
     
-    [self timerAction];
     _progressTimer = timer;
+    [self timerAction];
 }
 
 - (void)invalidateTimer{
@@ -363,14 +386,30 @@
     self.progressTimer = nil;
 }
 
+// 按请求流可见的写入进度计时，无法判断底层发送缓冲区是否仍在排空。
 - (void)timerAction{
-    long long totalBytesSent = [(NSNumber *)CFBridgingRelease(CFReadStreamCopyProperty((CFReadStreamRef)[self inputStream], kCFStreamPropertyHTTPRequestBytesWrittenCount)) longLongValue];
+    if (self.isCallFinishOrError || self.inputStream == nil) {
+        return;
+    }
+    NSNumber *writtenCount = CFBridgingRelease(CFReadStreamCopyProperty((CFReadStreamRef)[self inputStream], kCFStreamPropertyHTTPRequestBytesWrittenCount));
+    long long totalBytesSent = self.totalBytesSent;
+    if ([writtenCount isKindOfClass:[NSNumber class]] && writtenCount.longLongValue > totalBytesSent) {
+        totalBytesSent = writtenCount.longLongValue;
+    }
     long long bytesSent = totalBytesSent - self.totalBytesSent;
     self.totalBytesSent = totalBytesSent;
-    if (bytesSent > 0 && self.totalBytesSent <= self.totalBytesSent) {
+    if (bytesSent > 0) {
+        self.lastActivityTime = [NSProcessInfo processInfo].systemUptime;
         [self delegate_didSendBodyData:bytesSent
                         totalBytesSent:self.totalBytesSent
               totalBytesExpectedToSend:self.totalBytesExpectedToSend];
+    }
+    if (self.request.timeoutInterval > 0 &&
+        [NSProcessInfo processInfo].systemUptime - self.lastActivityTime >= self.request.timeoutInterval) {
+        NSError *error = [NSError errorWithDomain:NSURLErrorDomain
+                                             code:NSURLErrorTimedOut
+                                         userInfo:@{ NSLocalizedDescriptionKey : @"Request idle timeout" }];
+        [self finishWithError:error];
     }
 }
 
@@ -798,19 +837,6 @@
     }
 }
 
-- (void)delegate_onError:(NSError *)error{
-    @synchronized (self) {
-        if (self.isCallFinishOrError) {
-            return;
-        }
-        self.isCallFinishOrError = YES;
-    }
-    
-    if ([self.delegate respondsToSelector:@selector(onError:)]) {
-        [self.delegate onError:error];
-    }
-}
-
 - (void)delegate_didSendBodyData:(int64_t)bytesSent
                   totalBytesSent:(int64_t)totalBytesSent
         totalBytesExpectedToSend:(int64_t)totalBytesExpectedToSend{
@@ -831,19 +857,6 @@
 - (void)delegate_didLoadData:(NSData *)data{
     if ([self.delegate respondsToSelector:@selector(didLoadData:)]) {
         [self.delegate didLoadData:data];
-    }
-}
-
-- (void)delegate_didFinish{
-    @synchronized (self) {
-        if (self.isCallFinishOrError) {
-            return;
-        }
-        self.isCallFinishOrError = YES;
-    }
-    
-    if ([self.delegate respondsToSelector:@selector(didFinish)]) {
-        [self.delegate didFinish];
     }
 }
 

@@ -49,7 +49,11 @@
 
 - (void)testError_401{
     QNUploadErrorTestParam *param = [QNUploadErrorTestParam param];
-    param.token = @"jH983zIUFIP1OVumiBVGeAfiLYJvwrF45S-t22eu:5Ee-ICYAd_SAZKO_DLfyJQVHsQ=:eyJzY29wZSI6InpvbmUwLXNwYWNlIiwiZGVhZGxpbmUiOjE1ODkyNjAxNzR9";
+    // 使用配置中的有效空间和 AK，故意破坏签名以验证鉴权失败。
+    NSMutableArray *tokenParts = [[token_na0 componentsSeparatedByString:@":"] mutableCopy];
+    tokenParts[0] = ak;
+    tokenParts[1] = @"invalid-signature";
+    param.token = [tokenParts componentsJoinedByString:@":"];
     
     __block BOOL isComplete = NO;
     [self upload:param complete:^(QNResponseInfo *i, NSString *k, NSDictionary *resp) {
